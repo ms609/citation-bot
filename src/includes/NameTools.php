@@ -73,10 +73,10 @@ function clean_up_first_names(string $value): string {
     } else {
         $value = sanitize_string($value);
     }
-    if (mb_strlen($value) === 1) {
+    if (mb_strlen($value) === 1 && is_initials($value)) {
         $value .= '.';
-    } elseif (mb_substr($value, -2, 1) === " ") {
-        if (mb_strlen($value) === 3) { // Special case for "F M" -- add dots to both
+    } elseif (mb_substr($value, -2, 1) === " " && is_initials(mb_substr($value, -1))) {
+        if (mb_strlen($value) === 3 && is_initials(mb_substr($value, 0, 1))) { // Special case for "F M" -- add dots to both
             $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
         } elseif (mb_strlen($value) > 3) { // Single character at end
              $value .= '.';
@@ -135,13 +135,13 @@ function format_surname(string $surname): string {
 
 function format_surname_2(string $surname): string {
     $ret = str_replace(" - ", "-", $surname);
-    $formatted = preg_replace_callback("~(\p{L})(\p{L}+)~u",
+    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*)+)~u",
         static function (array $matches): string {
                 return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
         },
         $ret);
     if ($formatted !== null) {
-        $ret = $formatted;
+        $ret = normalize_unicode_nfc($formatted);
     }
     $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
     return safe_preg_replace_callback('~;\w~',
@@ -187,7 +187,7 @@ function is_initials(string $str): bool {
     if (!$str) {
         return false;
     }
-    if (preg_match('~[\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]~u', $str) === 1) {
+    if (preg_match('~\p{Lo}~u', $str) === 1) {
         return false;
     }
     if (mb_strlen(str_replace(["-", ".", ";"], "", $str)) > 3) {
@@ -243,6 +243,11 @@ function format_author(string $author): string {
     $author = html_entity_decode($author, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $author = mb_trim(normalize_unicode_nfc($author));
     if (is_institutional_author_acronym($author)) {
+        return $author;
+    }
+    // An unstructured name in a caseless script provides no signal for name order.
+    if (!str_contains($author, ',') && preg_match('~\p{Lo}~u', $author) === 1 &&
+            preg_match('~[\p{Lu}\p{Ll}\p{Lt}]~u', $author) === 0) {
         return $author;
     }
     [$author, $junior] = junior_test($author);

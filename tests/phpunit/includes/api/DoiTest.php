@@ -384,7 +384,7 @@ final class DoiTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossref_JaLC_Journal2(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
-        $this->assertSame('{{Cite journal| last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー | date=2013 | volume=2 }}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal| last1=川崎 | first1=努 | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー | date=2013 | volume=2 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_mEDRA_Journal(): void {
