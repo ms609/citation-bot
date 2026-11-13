@@ -6878,7 +6878,7 @@ final class Template
                         return;
                     }
                     // Only strip a real prefix ("Vol. 3", "Volume 3", "No 5", "vol3"), not the start of a word such as "Volumes" or "Notes"
-                    $this->set($param, (string) preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
+                    $this->set($param, safe_preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
                     if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
@@ -7070,7 +7070,7 @@ final class Template
                         return;
                     }
                     if (!preg_match('~^p\d+\s*:\s*\d~ui', $value)) { // P10:1–P10:42 is an article locator, not a "p" page prefix
-                        $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                        $value = safe_preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
                     }
                     $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
@@ -7150,7 +7150,7 @@ final class Template
                         // The volume is about to be stripped from the page range: keep it rather than lose it
                         $this->set('volume', $trailing_volume[2]);
                     }
-                    $value = (string) preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
+                    $value = safe_preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
                     $this->set($param, $value);
                     if (mb_substr($this->get($param), -4) === ' etc') {
                         $this->set($param, $this->get($param) . '.');
@@ -9155,7 +9155,7 @@ final class Template
             return true;
         }
         $journal = str_replace(['[[', ']]'], '', $this->get($param));
-        $journal = (string) preg_replace('~\s+~u', ' ', $journal);
+        $journal = safe_preg_replace('~\s+~u', ' ', $journal);
         $journal = mb_strtolower(mb_trim($journal));
         if ($journal !== 'antibiotics and chemotherapy') {
             return true;
