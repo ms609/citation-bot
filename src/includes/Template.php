@@ -2634,9 +2634,6 @@ final class Template
                 if ($this->had_initial_publisher) {
                     return false;
                 }
-                if (mb_strlen(preg_replace('~[\.\s\d\,]~', '', $value)) < 5) {
-                    return false;
-                } // too few characters
                 if (mb_stripos($value, 'Springer') === 0) {
                     $value = 'Springer';
                 } // they add locations often
@@ -2663,14 +2660,31 @@ final class Template
                     return false;
                 } // Do not add if work is set, unless explicitly a book
 
-                $value = truncate_publisher($value);
-                if (in_array(mb_trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
+                $full_publisher = normalize_unicode_nfc($value);
+                $value = truncate_publisher($full_publisher);
+                $publisher_letters = safe_preg_replace('~[^\p{L}]+~u', '', $value);
+                $short_acronym = preg_match('~\A(?:[A-Z]\.?){2,4}\z~', $value) === 1;
+                $short_non_latin_name = preg_match('~\A(?:(?!\p{Latin})\p{L}\p{M}*){2,4}\z~u', $value) === 1;
+                $short_placeholder = in_array(mb_strtolower($publisher_letters), [
+                    'na', 'nd', 'np', 'sn', 'sl', 'би', '不明', '未知',
+                    'inc', 'ltd', 'llc', 'none', 'null', 'tbd', 'pdf',
+                ], true);
+                if ($short_placeholder ||
+                    in_array(mb_trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true) ||
+                    in_array(mb_trim(mb_strtolower($full_publisher), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
                     return false;
+                }
+                if (mb_strlen($publisher_letters) < 5 && !$short_acronym && !$short_non_latin_name) {
+                    if ($value === $full_publisher || mb_strlen(safe_preg_replace('~[^\p{L}]+~u', '', $full_publisher)) < 5 ||
+                        preg_match('~\p{L}~u', $value) !== 1) {
+                        return false;
+                    }
+                    $value = $full_publisher;
                 }
                 if ($this->has('via') && str_equivalent($this->get('via'), $value)) {
                     $this->rename('via', $param_name);
                 }
-                if (mb_strtoupper($value) === $value || mb_strtolower($value) === $value) {
+                if (!$short_acronym && (mb_strtoupper($value) === $value || mb_strtolower($value) === $value)) {
                     $value = title_capitalization($value, true);
                 }
                 if ($value === 'Oxford University PressOxford' || $value === 'OUP Oxford') {

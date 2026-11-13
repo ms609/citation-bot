@@ -8,6 +8,29 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
+
+    public function testPublisherKeepsFullNameWhenShortenedNameIsRejected(): void {
+        $template = $this->make_citation('{{cite book|title=Example}}');
+        $this->assertTrue($template->add_if_new('publisher', 'Page Publishing'));
+        $this->assertSame('Page Publishing', $template->get('publisher'));
+        $template = $this->make_citation('{{cite book|title=Example}}');
+        $this->assertFalse($template->add_if_new('publisher', 'NONE Publishing'));
+    }
+
+    public function testShortPublisherNamesCanBeAdded(): void {
+        foreach (['岩波書店', 'MIT', 'PLOS', 'P.U.F.', '北京大学'] as $name) {
+            $template = $this->make_citation('{{cite book|title=Example}}');
+            $this->assertTrue($template->add_if_new('publisher', $name), $name);
+            $this->assertSame($name, $template->get('publisher'));
+        }
+        foreach (['[s.n.]', 'N/A', 'N. D.', 'unknown', '1234', '??', 'A', 'Inc', 'INC', 'MIT123', '2020 MIT',
+            '不明', '未知', 'б.и.', 'S.L.', 'NONE', 'NULL', 'TBD', 'PDF'] as $name) {
+            $template = $this->make_citation('{{cite book|title=Example}}');
+            $this->assertFalse($template->add_if_new('publisher', $name), $name);
+            $this->assertNull($template->get2('publisher'));
+        }
+    }
+
     public function testND(): void {  // n.d. is special case that the template recognizes.  Must protect final period.
         $text = '{{Cite journal|date =n.d.}}';
         $expanded = $this->process_citation($text);
