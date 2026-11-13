@@ -72,6 +72,26 @@ final class parameterTest extends testBaseClass {
         $this->assertSame([], $template->modifications()['additions']);
     }
 
+    public function testEmptyImplicitArgumentCleanupIsOmittedFromDeletions(): void {
+        $template = $this->prepare_citation('{{cite book||quote=a quote}}');
+        $this->assertSame([], $template->modifications()['deletions']);
+        $this->assertSame('{{cite book|quote=a quote}}', $template->parsed_text());
+    }
+
+    public function testExplicitNumericDeletionIsReportedWhenItOverridesAnEmptyArgument(): void {
+        $template = $this->make_citation('{{cite book||1=|quote=a quote}}');
+        $template->forget('1');
+        $this->assertSame([], $template->modifications()['deletions']);
+
+        $template = $this->make_citation('{{cite book|1=|quote=a quote}}');
+        $template->forget('1');
+        $this->assertSame(['1'], array_values($template->modifications()['deletions']));
+
+        $template = $this->make_citation('{{cite book||1=written|quote=a quote}}');
+        $template->forget('1');
+        $this->assertSame(['1'], $template->modifications()['changeonly']);
+    }
+
     public function testMixedNumericArgumentsDoNotRenumberWhenAValueLooksLikeAUrl(): void {
         $input = '{{cite journal|title=Example|1=explicit|https://example.test/source|plain|3=final}}';
         $template = $this->prepare_citation($input);

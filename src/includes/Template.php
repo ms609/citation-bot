@@ -44,6 +44,8 @@ final class Template
     private array $param = [];
     /** @var array<string> */
     private array $initial_param = [];
+    /** @var array<int|string, true> */
+    private array $initial_empty_implicit_params = [];
     /** @var array<string> */
     private array $initial_author_params = [];
     private string $initial_name = '';
@@ -188,7 +190,8 @@ final class Template
             }
         }
 
-        $this->initial_param = $this->parameter_snapshot();
+        $this->initial_empty_implicit_params = [];
+        $this->initial_param = $this->parameter_snapshot($this->initial_empty_implicit_params);
         foreach ($this->param as $p) {
             // Save author params for special handling
             if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS, true) && $p->val) {
@@ -8616,13 +8619,23 @@ final class Template
         return $parameter->param;
     }
 
-    /** @return array<string> */
-    private function parameter_snapshot(): array {
+    /**
+     * @param array<int|string, true>|null &$empty_implicit_params
+     * @return array<string>
+     */
+    private function parameter_snapshot(?array &$empty_implicit_params = null): array {
         $snapshot = [];
         $position = 0;
         foreach ($this->param as $parameter) {
             $name = self::effective_parameter_name($parameter, $position);
             $snapshot[$name] = $parameter->val;
+            if ($empty_implicit_params !== null) {
+                if ($parameter->param === '' && $parameter->eq === '' && mb_trim($parameter->val) === '') {
+                    $empty_implicit_params[$name] = true;
+                } else {
+                    unset($empty_implicit_params[$name]);
+                }
+            }
         }
         return $snapshot;
     }
@@ -8918,10 +8931,11 @@ final class Template
         $ret['additions'] = array_map('strval', array_diff(array_keys($new), array_keys($old)));
         $ret['deletions'] = array_map('strval', array_diff(array_keys($old), array_keys($new)));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
-        foreach ($ret['deletions'] as $inds => $vals) {
-            if ($vals === '') {
-                unset($ret['deletions'][$inds]);
-            } // If we get rid of double pipe that appears as a deletion, not misc.
+        foreach ($ret['deletions'] as $index => $name) {
+            // Cleaning up an extra pipe is miscellaneous tidying.
+            if ($name === '' || isset($this->initial_empty_implicit_params[$name])) {
+                unset($ret['deletions'][$index]);
+            }
         }
 
         $no_dash_to_start = true;
