@@ -4,6 +4,23 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class DoiRedirectDestinationTest extends testBaseClass {
+    public function testIeeeDownloadUrlsSurviveExtractionAndDoiCleanup(): void {
+        foreach ([
+            'https://ieeexplore.ieee.org/iel5/12/34/1234567.pdf?download=1',
+            'https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1234567',
+            'https://ieeexplore.ieee.org/document/1234567/pdf',
+        ] as $url) {
+            $archive = 'https://web.archive.org/web/20240201000000/' . $url;
+            $template = $this->make_citation('{{cite journal|title=Example|doi=10.1109/EXAMPLE.2024.1234567|url=' .
+                $url . '|archive-url=' . $archive . '}}');
+            $template->get_identifiers_from_url();
+            $templates = [$template];
+            drop_urls_that_match_dois($templates);
+            $this->assertSame($url, $template->get2('url'));
+            $this->assertSame($archive, $template->get2('archive-url'));
+        }
+    }
+
     public function testIeeeUrlIsDroppedOnlyAfterResolvingToTheSameDocument(): void {
         $url = 'https://ieeexplore.ieee.org/document/1234567';
         $archive = 'https://web.archive.org/web/20240201000000/' . $url;

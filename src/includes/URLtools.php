@@ -1464,8 +1464,12 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
         return false;
     }
     // IEEE
-    if (mb_strpos($url, 'ieeexplore') !== false) {
-        if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
+    if (mb_stripos($url, 'ieeexplore') !== false) {
+        // A direct PDF or stamp link is a separate destination from the DOI's landing page.
+        if (preg_match('~\Ahttps?://ieeexplore\.ieee\.org(?::[0-9]+)?/(?:iel[0-9]+/|stamp/|document/[0-9]+/pdf(?:[/?#]|\z))~i', $url) === 1) {
+            return false;
+        }
+        if (preg_match('~\Ahttps?://ieeexplore\.ieee\.org(?::80)?/(?:arnumber=|[^?#]*\?arnumber=)([0-9]+)/?\z~i', $url, $matches)) {
             $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
             $update_url($url_type, $url);
         }
@@ -1473,7 +1477,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
             $update_url($url_type, $url); // Normalize to HTTPS and remove abstract and remove trailing slash etc
         }
-        if (preg_match('~^https?://ieeexplore\.ieee\.org.*/iel5/\d+/\d+/(\d+).pdf(?:|\?.*)$~', $url, $matches)) {
+        if (preg_match('~^https?://ieeexplore\.ieee\.org[.][^/]+/iel5/\d+/\d+/(\d+)\.pdf(?:\?.*)?$~', $url, $matches)) {
             $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
             $update_url($url_type, $url);
         }
