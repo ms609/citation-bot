@@ -34,6 +34,24 @@ final class ZoteroYearOnlyDateTest extends testBaseClass {
         }
     }
 
+    public function testPublicationDateKeepsWrittenDayAcrossTimeZones(): void {
+        foreach ([
+            ['2000-01-02T00:30:00+01:00', 'January 2, 2000'],
+            ['2000-01-01T12:00:00+13:00', 'January 1, 2000'],
+            ['2000-01-01T23:30:00-03:00', 'January 1, 2000'],
+            ['January 2000', 'January 2000'],
+        ] as [$input, $expected]) {
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+            Template::$date_style = DateStyle::DATES_MDY;
+            try {
+                $this->assertTrue($template->add_if_new('date', $input));
+                $this->assertSame($expected, $template->get('date'));
+            } finally {
+                Template::$date_style = DateStyle::DATES_WHATEVER;
+            }
+        }
+    }
+
     public function testEpochDatesAreComparedAgainstAccessDate(): void {
         $this->assertNull($this->expand_with_date('1 January 1970', '1969-12-31')->get2('title'));
         $this->assertNull($this->expand_with_date('2 January 1970', '1970-01-01')->get2('title'));

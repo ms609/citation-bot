@@ -1559,7 +1559,20 @@ final class Template
                     if (self::$date_style !== DateStyle::DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
                         if ($time !== false) {
                             $day = date('d', $time);
-                            if ($day !== '01' || publication_date_has_explicit_day($value)) {
+                            $has_day = publication_date_has_explicit_day($value);
+                            if ($has_day) {
+                                $parsed = date_parse($date_input);
+                                if ($parsed['is_localtime'] && is_int($parsed['year']) && is_int($parsed['month']) &&
+                                    is_int($parsed['day']) && checkdate($parsed['month'], $parsed['day'], $parsed['year'])) {
+                                    // Format the date as written, even when the instant falls on a different UTC day.
+                                    $calendar_day = DateTimeImmutable::createFromFormat('!Y-m-d',
+                                        sprintf('%04d-%02d-%02d', $parsed['year'], $parsed['month'], $parsed['day']));
+                                    if ($calendar_day !== false) {
+                                        $time = $calendar_day->getTimestamp();
+                                    }
+                                }
+                            }
+                            if ($day !== '01' || $has_day) {
                                 $value = self::localize_dates($time);
                             }
                         }
