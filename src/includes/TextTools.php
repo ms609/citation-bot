@@ -682,22 +682,14 @@ function normalize_c1_quotes(string $str): string {
         return '';
     }
 
-    // Raw C1 quote bytes are safe to replace byte-for-byte. Do not guess the
-    // encoding of the rest of a malformed string here.
-    if (!mb_check_encoding($str, 'UTF-8')) {
-        $str = str_replace(
-            ["\x91", "\x92", "\x93", "\x94"],
-            ["'", "'", '"', '"'],
-            $str
-        );
-        if (!mb_check_encoding($str, 'UTF-8')) {
-            return $str;
-        }
-    }
-
-    // Handle valid UTF-8 control characters (U+0091-U+0094)
-    $str = safe_preg_replace('~[\x{0091}\x{0092}]~u', "'", $str);
-    $str = safe_preg_replace('~[\x{0093}\x{0094}]~u', '"', $str);
+    // Skip valid multibyte sequences before handling standalone legacy bytes.
+    // C2 + a C1 quote byte is itself a UTF-8 encoded quote control.
+    $valid_utf8 = '[\xC2-\xDF][\x80-\xBF]|'
+        . '\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE-\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|'
+        . '\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2}';
+    $str = safe_preg_replace_callback('~\xC2[\x91-\x94]|(?:' . $valid_utf8 . ')(*SKIP)(*F)|[\x91-\x94]~',
+        static fn (array $match): string => in_array(mb_substr($match[0], -1, 1, '8bit'), ["\x91", "\x92"], true) ? "'" : '"',
+        $str);
 
     return $str;
 }
