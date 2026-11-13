@@ -125,6 +125,7 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'same numbers, different punctuation' => ['Covid-19 in children', 'Covid 19 in children'],
             'same Chinese title with spacing' => ['肺癌诊疗指南', '肺癌 诊疗 指南'],
             'same Japanese title with old kanji' => ['東京図書館の歴史', '東京圖書館の歴史'],
+            'same Han-only Japanese title with old kanji' => ['東京図書館', '東京圖書館'],
         ];
     }
 

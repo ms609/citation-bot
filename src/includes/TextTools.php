@@ -399,10 +399,14 @@ function citation_east_asian_title_match(string $left, string $right): ?bool {
     if ($left_east_asian === '' || $right_east_asian === '') {
         return false;
     }
+    // Common Japanese spellings can differ from simplified Chinese and can
+    // occur in titles written entirely in kanji.
+    $variants = ['圖' => '図', '國' => '国', '學' => '学', '醫' => '医', '體' => '体', '會' => '会', '歷' => '歴', '實' => '実'];
     if (preg_match('~[\p{Hiragana}\p{Katakana}]~u', $left_east_asian . $right_east_asian) === 1) {
-        // Match common Japanese forms that differ from simplified Chinese.
-        $variants = ['圖' => '図', '國' => '国', '學' => '学', '醫' => '医', '體' => '体', '會' => '会', '歷' => '歴', '實' => '実'];
         return strtr($left, $variants) === strtr($right, $variants);
+    }
+    if (strtr($left, $variants) === $right || strtr($right, $variants) === $left) {
+        return true;
     }
     if (!function_exists('transliterator_transliterate')) {
         return false;

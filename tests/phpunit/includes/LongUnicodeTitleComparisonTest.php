@@ -5,12 +5,19 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class LongUnicodeTitleComparisonTest extends testBaseClass {
     public function testLongTitleToleranceCountsCharacters(): void {
-        $title = str_repeat('日本古典文学研究', 35);
-        $this->assertTrue(titles_are_similar($title, str_repeat('日本古典文学研究', 34) . '日本古典文学研号'));
-        $this->assertFalse(titles_are_similar($title, str_repeat('日本古典文学研究', 34) . '日夲占與丈斈硏姤'));
-        $large = str_repeat('研究', 2300);
+        $title = str_repeat('тест data ', 40);
+        $this->assertTrue(titles_are_similar($title, str_repeat('тест data ', 34) . str_repeat('тёст data ', 6)));
+        $this->assertFalse(titles_are_similar($title, str_repeat('тест data ', 33) . str_repeat('тест date ', 7)));
+        $large = str_repeat('на', 2300);
         $this->assertTrue(titles_are_similar($large, $large));
-        $this->assertFalse(titles_are_similar($large, str_repeat('研究', 2299) . '研攷'));
+        $this->assertFalse(titles_are_similar($large, str_repeat('на', 2299) . 'но'));
+    }
+
+    public function testLongJapaneseTitlesRequireMatchingText(): void {
+        $common = str_repeat('日本古典文学研究', 34);
+        $title = $common . '日本古典文学研究';
+        $this->assertTrue(titles_are_similar($title, $title));
+        $this->assertFalse(titles_are_similar($title, $common . '日本古典文学研号'));
     }
 
     public function testBandedDistanceAgreesWithExactDistanceAtBoundary(): void {
