@@ -650,6 +650,23 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testGetBioRxivPublishedDoiChecksCalendarBeforeLookup(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub bioRxiv');
+        }
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', '{"messages":[{"status":"ok"}]}');
+        try {
+            $this->assertNull(get_biorxiv_published_doi('10.1101/2021.02.29.123456', 'biorxiv', $status));
+            $this->assertNull($status);
+            $this->assertNull(get_biorxiv_published_doi('10.64898/2024.02.29.12345678v2', 'medrxiv', $status));
+            $this->assertSame('ok', $status);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
+    }
+
     public function testGetBioRxivPublishedDoi(): void {
         $result = get_biorxiv_published_doi('10.1234/invalid');
         $this->assertNull($result);

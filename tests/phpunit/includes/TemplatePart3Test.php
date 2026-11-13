@@ -2360,6 +2360,18 @@ XML;
         $this->assertSame('cite journal', $prepared->wikiname());
     }
 
+    public function testPreprintIdWithImpossibleDateIsNotAddedOrMoved(): void {
+        foreach (['biorxiv' => '10.1101/2021.02.29.123456', 'medrxiv' => '10.64898/2025.04.31.123456v2'] as $server => $doi) {
+            $template = $this->make_citation('{{cite journal |title=Test |journal=' . $server . ' |doi=' . $doi . '}}');
+            $template->tidy_parameter('journal');
+            $this->assertSame('cite journal', $template->wikiname());
+            $this->assertSame($doi, $template->get2('doi'));
+            $this->assertFalse($template->add_if_new($server, $doi));
+            $this->assertFalse($template->add_if_new($server, '2021.02.29.123456'));
+            $this->assertNull($template->get2($server));
+        }
+    }
+
     public function testMedRxivNoConversionDifferentJournal(): void {
         $text = '{{cite journal |title=Test Paper |journal=Nature Medicine |doi=10.1101/123456 |volume=500 |pages=123-456}}';
         $prepared = $this->prepare_citation($text);

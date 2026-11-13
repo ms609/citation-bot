@@ -1606,6 +1606,15 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(rxiv_id_valid(''));
     }
 
+    public function testRxivIdValidChecksCalendarDates(): void {
+        $this->assertTrue(rxiv_id_valid('10.1101/2020.02.29.123456'));
+        $this->assertTrue(rxiv_id_valid('10.64898/2024.02.29.12345678v2'));
+        $this->assertTrue(rxiv_id_valid('10.64898/2025.04.30.123456'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2021.02.29.123456'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2020.02.30.123456'));
+        $this->assertFalse(rxiv_id_valid('10.64898/2025.04.31.123456v2'));
+    }
+
     public function testBibcodeValid(): void {
         $this->assertTrue(bibcode_valid('2015arXiv151206696F'));
         $this->assertTrue(bibcode_valid('2005A&A...430.1063G'));

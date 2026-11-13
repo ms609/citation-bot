@@ -1698,20 +1698,16 @@ function pmc_valid(string $value): bool {
 }
 
 /**
- * Validate a bioRxiv/medRxiv identifier against CS1's structural rules:
- * a legacy six-to-eight digit form (bioRxiv used 6 digits, early medRxiv 8,
- * e.g. 10.1101/19000380) or the dated yyyy.mm.dd.nnnnnn form (with the newer
- * 10.64898 prefix and 6-8 digit identifiers), each with an optional version
- * suffix.
+ * Validate the structure and calendar date of a bioRxiv/medRxiv identifier.
+ * Accept legacy six-to-eight digit IDs under 10.1101 and dated IDs under
+ * 10.1101 or 10.64898, each with an optional version suffix.
  */
 function rxiv_id_valid(string $value): bool {
     if (preg_match('~^10\.1101/\d{6,8}(v\d+)?$~', $value) === 1) {
         return true; // legacy identifier
     }
     if (preg_match('~^10\.(1101|64898)/(20\d\d)\.(\d{2})\.(\d{2})\.\d{6,8}(v\d+)?$~', $value, $match) === 1) {
-        $month = intval($match[3]);
-        $day = intval($match[4]);
-        return $month >= 1 && $month <= 12 && $day >= 1 && $day <= 31;
+        return checkdate((int) $match[3], (int) $match[4], (int) $match[2]);
     }
     return false;
 }

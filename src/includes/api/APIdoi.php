@@ -937,7 +937,7 @@ function get_biorxiv_published_doi(
 ): ?string {
     $api_status = null;
 
-    if (mb_strpos($doi, '10.1101/') !== 0 && mb_strpos($doi, '10.64898/') !== 0) {
+    if (!rxiv_id_valid($doi)) {
         return null;
     }
 
