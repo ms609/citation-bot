@@ -176,7 +176,17 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref');
                 }
             }
-            $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
+            $series_title = (string) $crossRef->series_title;
+            if (
+                $series_title === '' &&
+                str_starts_with($doi, '10.1117/12.') &&
+                $doi_type === 'proceedings-article' &&
+                isset($crossRefNewAPI->{'container-title'}[0]) &&
+                $crossRefNewAPI->{'container-title'}[0] === 'SPIE Proceedings'
+            ) {
+                $series_title = 'Proceedings of SPIE';
+            }
+            $template->add_if_new('series', $series_title, 'crossref');
             if (mb_strpos($doi, '10.7817/jameroriesoci') === false || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
                 $template->add_if_new("year", (string) $crossRef->year, 'crossref');
             }
