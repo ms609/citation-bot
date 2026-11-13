@@ -45,7 +45,8 @@ if (!defined('MAX_PAGES_OVERRIDE') && linked_pages_should_override_limit($api->g
     $dev_user_run = true;
 }
 
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from {$page_name} | #UCB_webform_linked ";
+$edit_summary_end = '| ' . edit_summary_phrase('Suggested by') . ' ' . $api->get_the_user() .
+    ' | ' . edit_summary_phrase('Linked from') . " {$page_name} | #UCB_webform_linked ";
 if ($dev_user_run) {
     $edit_summary_end .= "| Developer - max linked-pages limit override enabled ";
 }
