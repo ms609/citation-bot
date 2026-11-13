@@ -1622,7 +1622,7 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(rxiv_id_valid('10.1101/2019.12.11.123456', 'biorxiv'));
         $this->assertFalse(rxiv_id_valid('10.1101/2019.12.10.123456', 'biorxiv'));
         $this->assertTrue(rxiv_id_valid('10.1101/2020.01.01.12345678', 'medrxiv'));
-        $this->assertFalse(rxiv_id_valid('10.1101/2019.12.31.12345678', 'medrxiv'));
+        $this->assertTrue(rxiv_id_valid('10.1101/2019.12.26.19014274', 'medrxiv'));
         $this->assertFalse(rxiv_id_valid('10.1101/2020.01.01.123456', 'medrxiv'));
         $this->assertFalse(rxiv_id_valid('10.1101/2020.01.01.12345678', 'biorxiv'));
         $this->assertFalse(rxiv_id_valid("10.1101/2020.01.01.123456\n", 'biorxiv'));

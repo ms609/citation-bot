@@ -650,6 +650,20 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testPreprintIdsUseCs1ParameterForms(): void {
+        foreach ([
+            ['biorxiv', '078733', '10.1101/078733'],
+            ['biorxiv', '2020.02.29.123456v2', '10.1101/2020.02.29.123456v2'],
+            ['medrxiv', '2020.02.29.12345678v2', '10.1101/2020.02.29.12345678v2'],
+            ['medrxiv', '10.1101/19000380', '19000380'],
+            ['medrxiv', '10.1101/2019.12.26.19014274', '10.1101/2019.12.26.19014274'],
+        ] as [$server, $input, $expected]) {
+            $template = $this->make_citation('{{cite ' . $server . '|title=Example}}');
+            $this->assertTrue($template->add_if_new($server, $input));
+            $this->assertSame($expected, $template->get($server));
+        }
+    }
+
     public function testGetBioRxivPublishedDoiChecksCalendarBeforeLookup(): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub bioRxiv');
@@ -660,6 +674,8 @@ final class DoiTest extends testBaseClass {
             $this->assertNull(get_biorxiv_published_doi('10.1101/2021.02.29.123456', 'biorxiv', $status));
             $this->assertNull($status);
             $this->assertNull(get_biorxiv_published_doi('10.64898/2024.02.29.12345678v2', 'medrxiv', $status));
+            $this->assertSame('ok', $status);
+            $this->assertNull(get_biorxiv_published_doi('10.1101/2019.12.26.19014274', 'medrxiv', $status));
             $this->assertSame('ok', $status);
         } finally {
             /** @psalm-suppress UnusedFunctionCall */

@@ -1713,7 +1713,9 @@ function rxiv_id_valid(string $value, string $server = ''): bool {
     if (($server === 'biorxiv' && $is_medrxiv) || ($server === 'medrxiv' && !$is_medrxiv)) {
         return false;
     }
-    $earliest = $is_medrxiv ? '20200101' : '20191211';
+    // Both servers issued dated identifiers in December 2019. This is also
+    // the lower bound used by the deployed CS1 identifier handlers.
+    $earliest = '20191211';
     $tomorrow = new DateTimeImmutable('tomorrow', new DateTimeZone('UTC'));
     $date = $match[2] . $match[3] . $match[4];
     return strcmp($date, $earliest) >= 0 && strcmp($date, $tomorrow->format('Ymd')) <= 0;
@@ -1721,10 +1723,10 @@ function rxiv_id_valid(string $value, string $server = ''): bool {
 
 /** CS1 spells legacy medRxiv identifiers without their DOI prefix. */
 function rxiv_citation_id(string $value, string $server): string {
-    if (preg_match('~\A(10\.1101/)?([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) === 1) {
-        return $server === 'medrxiv' ? $match[2] : $match[1] . $match[2];
+    if (preg_match('~\A(?:10\.1101/)?([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) === 1) {
+        return $server === 'medrxiv' ? $match[1] : rxiv_doi_from_id($match[1]);
     }
-    return $value;
+    return rxiv_doi_from_id($value);
 }
 
 /**
