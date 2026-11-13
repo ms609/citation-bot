@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// When adding a wiki, also review the parse-error messages in Page.php and the UI in index.php.
+// When adding a wiki, also add it to TEMPLATE_PARSE_ERRORS below and review the UI in index.php.
 const SUPPORTED_WIKIS = ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'];
 const ENGLISH_WIKI = ['en', 'simple', 'mdwiki'];
 
@@ -20,6 +20,33 @@ const ENG_ERR2 = 'If that is not the problem, then run the single page with &prc
 
 const VI_ERR1 = 'Đoạn văn bản sau có thể giúp bạn xác định lỗi trên trang (Tìm các ký tự { hoặc } đơn lẻ, hoặc comment chưa đóng)';
 const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trên một trang riêng lẻ với &prce=1 thêm vào URL để thay đổi trình phân tích cú pháp';
+
+// Template-extraction failure text shown by Page::extract_object(), keyed by wiki code: [ERR1, ERR2].
+// Wikis without native text yet (the languages proposed in #6143) fall back to the English text.
+// Every wiki in SUPPORTED_WIKIS must have an entry here; otherwise the failure path stops the run.
+const TEMPLATE_PARSE_ERRORS = [
+    'en' => [ENG_ERR1, ENG_ERR2],
+    'simple' => [ENG_ERR1, ENG_ERR2],
+    'mdwiki' => [ENG_ERR1, ENG_ERR2],
+    'ru' => [RU_ERR1, RU_ERR2],
+    'mk' => [MK_ERR1, MK_ERR2],
+    'sr' => [SR_ERR1, SR_ERR2],
+    'vi' => [VI_ERR1, VI_ERR2],
+    'zh' => [ENG_ERR1, ENG_ERR2],
+    'uk' => [ENG_ERR1, ENG_ERR2],
+    'ms' => [ENG_ERR1, ENG_ERR2],
+    'th' => [ENG_ERR1, ENG_ERR2],
+    'he' => [ENG_ERR1, ENG_ERR2],
+    'hi' => [ENG_ERR1, ENG_ERR2],
+    'te' => [ENG_ERR1, ENG_ERR2],
+    'hu' => [ENG_ERR1, ENG_ERR2],
+    'et' => [ENG_ERR1, ENG_ERR2],
+    'hy' => [ENG_ERR1, ENG_ERR2],
+    'az' => [ENG_ERR1, ENG_ERR2],
+    'ne' => [ENG_ERR1, ENG_ERR2],
+    'ml' => [ENG_ERR1, ENG_ERR2],
+    'pa' => [ENG_ERR1, ENG_ERR2],
+];
 
 /* links to verify
 https://mk.wikipedia.org/wiki/Template:Cite_journal

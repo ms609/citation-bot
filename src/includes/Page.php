@@ -1009,33 +1009,12 @@ class Page {
             $this->page_error = true;
             report_minor_error('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
             if ($class === "Template") {
-                switch (WIKI_BASE) {
-                    case 'en':
-                    case 'simple':
-                    case 'mdwiki':
-                        $err1 = ENG_ERR1;
-                        $err2 = ENG_ERR2;
-                        break;
-                    case 'ru':
-                        $err1 = RU_ERR1;
-                        $err2 = RU_ERR2;
-                        break;
-                    case 'mk':
-                        $err1 = MK_ERR1;
-                        $err2 = MK_ERR2;
-                        break;
-                    case 'sr':
-                        $err1 = SR_ERR1;
-                        $err2 = SR_ERR2;
-                        break;
-                    case 'vi':
-                        $err1 = VI_ERR1;
-                        $err2 = VI_ERR2;
-                        break;
-                    default:
-                        report_warning('invalid wiki in Template error message code');
-                        exit(0);
+                $parse_errors = TEMPLATE_PARSE_ERRORS[WIKI_BASE] ?? null;
+                if ($parse_errors === null) {
+                    report_warning('invalid wiki in Template error message code');
+                    exit(0);
                 }
+                [$err1, $err2] = $parse_errors;
                 echo '<p><h3>', $err1, '</h3><h4>', $err2, '</h4></p><p>', echoable($text), '</p>';
             }
             // @codeCoverageIgnoreEnd
