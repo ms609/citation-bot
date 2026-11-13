@@ -94,6 +94,19 @@ const MAC_SURNAMES_WITHOUT_INNER_CAPITAL = [
     'mackey', 'mackie', 'macklin', 'macomber', 'macready', 'macron', 'macura',
 ];
 
+/** These letters give casing rules for dotted and dotless I in Turkic names. */
+function name_uses_turkic_casing(string $name): bool {
+    return preg_match('~[İıĞğ]~u', $name) === 1;
+}
+
+function lowercase_name(string $name, bool $turkic): string {
+    return mb_strtolower($turkic ? strtr($name, ['I' => 'ı', 'İ' => 'i']) : $name);
+}
+
+function uppercase_name_initial(string $initial, bool $turkic): string {
+    return mb_strtoupper($turkic ? strtr($initial, ['i' => 'İ', 'ı' => 'I']) : $initial);
+}
+
 /** Institutional author acronyms must not be formatted as personal surnames. */
 function is_institutional_author_acronym(string $name): bool {
     return in_array($name, ['ESA', 'NASA'], true);
@@ -117,27 +130,31 @@ function format_surname(string $surname): string {
     if ($hyphenated !== null) {
         $surname = $hyphenated;
     }
-    $surname = mb_convert_case(mb_trim($surname), MB_CASE_LOWER);
-    if (mb_substr($surname, 0, 2) === "o'") {
-        return "O'" . format_surname_2(mb_substr($surname, 2));
+    $prefix = mb_strtolower(mb_substr($surname, 0, 2));
+    if ($prefix === "o'" || $prefix === 'o’') {
+        return 'O' . mb_substr($prefix, 1) . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 2) === "mc") {
+    if ($prefix === 'mc') {
         return "Mc" . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($surname, 3, 1) !== "h" && !in_array($surname, MAC_SURNAMES_WITHOUT_INNER_CAPITAL, true)) {
+    $lower_surname = mb_strtolower($surname);
+    if (mb_substr($lower_surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($lower_surname, 3, 1) !== "h" && !in_array($lower_surname, MAC_SURNAMES_WITHOUT_INNER_CAPITAL, true)) {
         return "Mac" . format_surname_2(mb_substr($surname, 3));
-    }
-    if (mb_substr($surname, 0, 1) === "&") {
-        return "&" . format_surname_2(mb_substr($surname, 1));
     }
     return format_surname_2($surname); // Case of surname
 }
 
 function format_surname_2(string $surname): string {
     $ret = str_replace(" - ", "-", $surname);
-    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*)+)~u",
+    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*)*)~u",
         static function (array $matches): string {
-                return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
+            if ($matches[2] === '') {
+                return mb_strtolower($matches[1]);
+            }
+            $turkic = name_uses_turkic_casing($matches[0]);
+            $lowercase = lowercase_name($matches[0], $turkic);
+            $initial_length = mb_strlen(lowercase_name($matches[1], $turkic));
+            return uppercase_name_initial($matches[1], $turkic) . mb_substr($lowercase, $initial_length);
         },
         $ret);
     if ($formatted !== null) {
@@ -156,13 +173,16 @@ function format_forename(string $forename): string {
     if ($forename === '-' || $forename === '') {
         return '';
     }
-    $formatted = preg_replace_callback("~(\p{L})(\p{L}{3,})~u",
+    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*){3,})~u",
         static function (array $matches): string {
-            return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
+            $turkic = name_uses_turkic_casing($matches[0]);
+            $lowercase = lowercase_name($matches[0], $turkic);
+            $initial_length = mb_strlen(lowercase_name($matches[1], $turkic));
+            return uppercase_name_initial($matches[1], $turkic) . mb_substr($lowercase, $initial_length);
         },
         $forename);
     if ($formatted !== null) {
-        $forename = $formatted;
+        $forename = normalize_unicode_nfc($formatted);
     }
     return str_replace([" ."], "", mb_trim($forename));
 }
