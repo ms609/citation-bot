@@ -1037,9 +1037,14 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         for ($layer = 0; $layer < 2 && !str_starts_with($the_match, 'https://'); ++$layer) {
             $the_match = decode_wrapped_citation_url($the_match);
         }
-        if (preg_match("~^(https://[^?\x00-\x20]+?)/privacy\-?(?:gate|wall|confirm)(?:|/accept)(?:|\-tcf2)\?redirectUri=(/.+)$~", $the_match, $matches) &&
-                is_wrapped_url_path($matches[2])) {
-            $template->set($param, $matches[1] . $matches[2]);
+        if (preg_match("~^(https://[^?\x00-\x20]+?)/privacy\-?(?:gate|wall|confirm)(?:|/accept)(?:|\-tcf2)\?redirectUri=(.+)$~", $the_match, $matches)) {
+            $path = $matches[2];
+            if (mb_strtolower(mb_substr($path, 0, 3, '8bit'), '8bit') === '%2f') {
+                $path = decode_wrapped_citation_url($path);
+            }
+            if (is_wrapped_url_path($path)) {
+                $template->set($param, $matches[1] . $path);
+            }
         }
     } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $template->get($param), $matches)) {
         $path = str_starts_with($matches[1], '/') ? $matches[1] : decode_wrapped_citation_url($matches[1]);
@@ -1149,11 +1154,17 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
                 }
             }
         } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?://)(.+)$~", $template->get($param), $matches)) {
-            $destination = safe_preg_replace('~^([^/%?#]+)%2f~i', '$1/', $matches[2]);
-            $template->set($param, $matches[1] . $destination);
-            report_info("Remove proxy from URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
+            $destination = $matches[2];
+            if (preg_match('~^[^/%?#]+%2f[^/?#]*$~iD', $destination) === 1) {
+                $destination = decode_wrapped_citation_url($destination);
+            }
+            if (preg_match('~^[^/%?#]+%2f~i', $destination) === 0 &&
+                    preg_match('~[\x00-\x20\x7f]~', $destination) === 0) {
+                $template->set($param, $matches[1] . $destination);
+                report_info("Remove proxy from URL");
+                if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                    $template->forget('via');
+                }
             }
         } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?%3A%2F%2F.+)$~i", $template->get($param), $matches)) {
             $destination = str_contains($matches[1], '/') || str_contains($matches[1], '?')
