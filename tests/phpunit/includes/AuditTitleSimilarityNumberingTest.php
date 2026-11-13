@@ -29,6 +29,14 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
         }
     }
 
+    public function testSimplifiedAndTraditionalChineseTitlesCanMatch(): void {
+        if (!function_exists('transliterator_transliterate')) {
+            $this->markTestSkipped('ICU transliteration is unavailable');
+        }
+        $this->assertTrue(titles_are_similar('中国历史研究', '中國歷史研究'));
+        $this->assertTrue(titles_are_similar('中國歷史研究', '中国历史研究'));
+    }
+
     #[DataProvider('differentWorksProvider')]
     public function testDifferentWorksAreNotSimilar(string $title1, string $title2): void {
         $this->assertFalse(titles_are_similar($title1, $title2));
@@ -73,6 +81,8 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'number mismatch with two spelling typos' => ['Color Vison Part 1 Measurements', 'Colour Vision Part 2 Measurements'],
             'chapter number lost during normalization' => ['Chapter 1 - Introduction to Chemistry', 'Chapter 2 - Introduction to Chemistry'],
             'short Chinese titles differing by one character' => ['肺癌诊疗指南', '胃癌诊疗指南'],
+            'longer Japanese titles differing by one character' => ['日本歴史研究：近代社会における肺癌診療と地域医療', '日本歴史研究：近代社会における胃癌診療と地域医療'],
+            'distinct traditional characters with a common simplified form' => ['髮型研究方法', '發型研究方法'],
             'Japanese spelled-out volume numbers' => ['日本史研究第一巻', '日本史研究第二巻'],
             'long Chinese volume labels' => [str_repeat('历史研究资料', 45) . '第一卷', str_repeat('历史研究资料', 45) . '第二卷'],
         ];
@@ -114,6 +124,7 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'number against no number' => ['Windows 10 guide', 'Windows guide'],
             'same numbers, different punctuation' => ['Covid-19 in children', 'Covid 19 in children'],
             'same Chinese title with spacing' => ['肺癌诊疗指南', '肺癌 诊疗 指南'],
+            'same Japanese title with old kanji' => ['東京図書館の歴史', '東京圖書館の歴史'],
         ];
     }
 

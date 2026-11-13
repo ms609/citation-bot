@@ -366,7 +366,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle = str_replace($drops, "", $inTitle);
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
-    // This will convert &delta into delta
+    // Require East Asian words to match at every length. Handle script variants
+    // explicitly before allowing the ordinary typo tolerance elsewhere.
+    $east_asian_match = citation_east_asian_title_match($inTitle, $dbTitle);
+    if ($east_asian_match !== null) {
+        return !$east_asian_match || compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
+            compare_title_numbering($inSpaced, $dbSpaced) === false;
+    }
     // Long titles still require matching section labels and numbers.
     if ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254 || mb_strlen($inTitle2) > 254) &&
             (compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
@@ -380,6 +386,31 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
                 ? long_titles_are_dissimilar($inTitle2, $dbTitle)
                 : short_titles_are_dissimilar($inTitle2, $dbTitle, $inSpaced, $dbSpaced));
+}
+
+/** Decide differing East Asian text, or defer to ordinary matching when it agrees. */
+function citation_east_asian_title_match(string $left, string $right): ?bool {
+    $other_characters = '~[^\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]+~u';
+    $left_east_asian = safe_preg_replace($other_characters, '', $left);
+    $right_east_asian = safe_preg_replace($other_characters, '', $right);
+    if ($left_east_asian === $right_east_asian) {
+        return null;
+    }
+    if ($left_east_asian === '' || $right_east_asian === '') {
+        return false;
+    }
+    if (preg_match('~[\p{Hiragana}\p{Katakana}]~u', $left_east_asian . $right_east_asian) === 1) {
+        // Match common Japanese forms that differ from simplified Chinese.
+        $variants = ['圖' => '図', '國' => '国', '學' => '学', '醫' => '医', '體' => '体', '會' => '会', '歷' => '歴', '實' => '実'];
+        return strtr($left, $variants) === strtr($right, $variants);
+    }
+    if (!function_exists('transliterator_transliterate')) {
+        return false;
+    }
+    // Require one spelling to convert into the other. A shared simplified
+    // form alone can conflate distinct traditional characters, e.g. 髮 and 發.
+    return transliterator_transliterate('Traditional-Simplified', $left) === $right ||
+        transliterator_transliterate('Traditional-Simplified', $right) === $left;
 }
 
 /** Compare long titles by characters with bounded fuzzy matching. */
@@ -420,14 +451,6 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
         return true;
     }
     $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
-    if ($shorter <= 19) {
-        // A single character can change a word in a short East Asian title.
-        // Compare those characters before allowing edits elsewhere in the title.
-        $other_characters = '~[^\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]+~u';
-        if (safe_preg_replace($other_characters, '', $inTitle) !== safe_preg_replace($other_characters, '', $dbTitle)) {
-            return true;
-        }
-    }
     $distance = unicode_levenshtein($inTitle, $dbTitle);
     if ($distance === 0 || $numbering_matches === true ||
             titles_have_equivalent_final_y_plural($inTitle, $dbTitle)) {
