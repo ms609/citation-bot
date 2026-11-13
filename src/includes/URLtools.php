@@ -1483,7 +1483,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 } elseif (($query === '' || $query === 'reload=true') &&
                     preg_match('~\A/(?:abstract/)?document/([0-9]+)/?\z~i', $path, $matches) === 1) {
                     $document_id = $matches[1];
-                } elseif (preg_match('~\A/xpl/articleDetails\.jsp\z~i', $path) === 1 &&
+                } elseif (preg_match('~\A/(?:xpl/articleDetails|xpls?/(?:free)?abs_all)\.jsp\z~i', $path) === 1 &&
                     preg_match_all('~(?:\A|&)arnumber=([0-9]+)(?=&|\z)~i', $query, $matches) === 1) {
                     $document_id = $matches[1][0];
                 }

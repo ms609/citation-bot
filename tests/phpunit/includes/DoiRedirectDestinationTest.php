@@ -9,6 +9,10 @@ final class DoiRedirectDestinationTest extends testBaseClass {
         foreach ([
             '/xpl/articleDetails.jsp?tp=&arnumber=5170033',
             '/xpl/articleDetails.jsp?arnumber=5170033&isnumber=5170032',
+            '/xpls/abs_all.jsp?arnumber=5170033',
+            '/xpls/abs_all.jsp?tp=&arnumber=5170033&isnumber=5170032',
+            '/xpls/freeabs_all.jsp?arnumber=5170033',
+            '/xpl/freeabs_all.jsp?arnumber=5170033',
             '/arnumber=5170033',
         ] as $path) {
             $template = $this->make_citation('{{cite journal|title=Example|url=' . $ieee . $path . '}}');
@@ -18,6 +22,8 @@ final class DoiRedirectDestinationTest extends testBaseClass {
         foreach ([
             $ieee . '/xpl/articleDetails.jsp?arnumber=5170033#references',
             $ieee . '/xpl/articleDetails.jsp?arnumber=5170033&arnumber=5170032',
+            $ieee . '/xpls/abs_all.jsp?arnumber=5170033#references',
+            $ieee . '/xpls/freeabs_all.jsp?arnumber=5170033&arnumber=5170032',
             $ieee . '.example.test/iel5/12/34/5170033.pdf',
         ] as $url) {
             $template = $this->make_citation('{{cite journal|title=Example|url=' . $url . '}}');
