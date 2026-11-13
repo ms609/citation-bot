@@ -4,6 +4,24 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class CaselessCitationAuthorTest extends testBaseClass {
+    public function testLiteralCreatorsUsePlainTextAndTheCalMattersFilter(): void {
+        $url = 'https://calmatters.org/report';
+        $template = $this->make_citation('{{cite web|url=' . $url . '}}');
+        $item = [
+            'title' => 'Example report',
+            'itemType' => 'report',
+            'creators' => [
+                ['name' => 'Guest Commentary'],
+                ['name' => "Research Council <ref>Note</ref> ''Group''"],
+                ['firstName' => 'Jane', 'lastName' => 'Smith'],
+            ],
+        ];
+        Zotero::process_zotero_response(json_encode([$item], JSON_THROW_ON_ERROR), $template, $url, 0, false, true, true);
+        $this->assertSame('Research Council &#60;ref&#62;Note&#60;/ref&#62; &#0039;&#0039;Group&#0039;&#0039;', $template->get2('author1'));
+        $this->assertSame('Smith', $template->get2('last2'));
+        $this->assertStringNotContainsString('<ref>', $template->parsed_text());
+    }
+
     public function testCitoidKeepsInstitutionalAuthorNamesWhole(): void {
         $url = 'https://example.test/report';
         foreach ([

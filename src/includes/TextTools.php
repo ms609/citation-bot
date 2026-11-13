@@ -217,7 +217,9 @@ function sanitize_string(string $str): string {
     }
     $dirty = ['[', ']', '|', '{', '}', " what�s "];
     $clean = ['&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's "];
-    $str = mb_trim(str_replace($dirty, $clean, safe_preg_replace('~[;.,]+$~', '', $str)));
+    // Keep the semicolon that closes an entity, even before trailing punctuation.
+    $str = safe_preg_replace('~(&(?:[a-z][a-z0-9]*|#[0-9]+|#x[0-9a-f]+);)[;.,]*+\z|[;.,]++\z~i', '$1', $str);
+    $str = mb_trim(str_replace($dirty, $clean, $str));
     if ($math_templates_present) {
         $str = str_replace($placeholder, $replacement, $str);
     }

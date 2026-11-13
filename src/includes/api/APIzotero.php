@@ -1867,14 +1867,11 @@ final class Zotero {
         }
         // CalMatters supplies this collective byline as two parts of a person's name.
         $creator_host = parse_url($url, PHP_URL_HOST);
-        if (is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true)) {
+        $is_calmatters = is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true);
+        if ($is_calmatters) {
             $result->author = array_values(array_filter(
                 $result->author ?? [],
                 static fn (array $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name[0] ?? '') . ' ' . mb_trim($name[1] ?? '')))
-            ));
-            $result->creators = array_values(array_filter(
-                $result->creators ?? [],
-                static fn (object $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name->firstName ?? '') . ' ' . mb_trim($name->lastName ?? '')))
             ));
         }
         // Filter out bad author name components and remove entirely empty author entries
@@ -2076,8 +2073,9 @@ final class Zotero {
                     }
                     if ($literal_name || isset($creator->firstName, $creator->lastName)) {
                         // Skip creators whose name is really the site or publication name.
-                        $creator_name = $given_name . ' ' . $family_name;
-                        if (self::creator_is_site_name($creator_name, $url, $result)) {
+                        $creator_name = mb_trim(mb_trim($given_name) . ' ' . mb_trim($family_name));
+                        if (($is_calmatters && str_i_same('Guest Commentary', $creator_name)) ||
+                            self::creator_is_site_name($creator_name, $url, $result)) {
                             $i++;
                             continue;
                         }

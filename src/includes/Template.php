@@ -2932,12 +2932,20 @@ final class Template
             if (!$institution && !author_is_human($name)) {
                 return;
             }
+            $name_as_wikitext = strtr($name, [
+                '<' => '&#60;', '>' => '&#62;', '[' => '&#91;', ']' => '&#93;',
+                '{' => '&#123;', '}' => '&#125;', '|' => '&#124;',
+            ]);
+            $name_as_wikitext = safe_preg_replace_callback("~'{2,}~",
+                static fn (array $match): string => str_repeat('&#0039;', mb_strlen($match[0], '8bit')),
+                $name_as_wikitext
+            );
             if (mb_stripos($check_against, $name) !== false ||
                 in_array(mb_strtolower(mb_trim(mb_strrchr(' ' . $name, ' ') ?: $name)), PUBLISHER_ENDINGS, true)) {
-                $this->add_if_new('publisher', $name);
+                $this->add_if_new('publisher', $name_as_wikitext);
                 return;
             }
-            $this->add_if_new($author_param, $name, literal_author: true);
+            $this->add_if_new($author_param, $name_as_wikitext, literal_author: true);
             return;
         }
         if (
