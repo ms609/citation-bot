@@ -57,7 +57,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 $template->blank(DOI_BROKEN_ALIASES)) {
             set_time_limit(120);
             // A record DOI does not identify an individual file or an in-record target.
-            if (preg_match('~\Ahttps?://(?:www\.)?zenodo\.org(?::[0-9]+)?/records?/[0-9]+(?:/files?(?:/|[?#]|\z)|[?#])~i', $url) === 1) {
+            if (preg_match('~\Ahttps?://(?:www\.)?zenodo\.org(?::[0-9]+)?/records?/[0-9]+(?:/files?(?:/|[?#]|\z)|/?[?#])~i', $url) === 1) {
                 continue;
             }
             if (str_ireplace(PROXY_HOSTS_TO_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {

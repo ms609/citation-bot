@@ -369,6 +369,10 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
             'https://zenodo.org/record/1234/files/supplement.csv?download=1',
             'https://zenodo.org/records/1234/files/supplement.csv#section',
             'https://zenodo.org/records/1234#files',
+            'https://zenodo.org/records/1234/#files',
+            'https://zenodo.org/records/1234/?download=1',
+            'https://zenodo.org/record/1234/?download=1',
+            'https://zenodo.org/record/1234?download=1',
         ] as $url) {
             $archive = 'https://web.archive.org/web/20240101000000/' . $url;
             $template = $this->make_citation('{{cite journal|title=Example|journal=Example Journal|volume=3|year=2020' .
