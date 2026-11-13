@@ -390,7 +390,7 @@ function archive_html_tag_end(string $html, int $start): ?int {
  *
  * @return list<string>
  */
-function archive_html_scan(string $html, bool $find_head_title): array {
+function archive_html_scan(string $html, bool $find_head_title, bool $find_html_tag = false): array {
     $tags = [];
     $in_head = false;
     $length = mb_strlen($html, '8bit');
@@ -446,6 +446,9 @@ function archive_html_scan(string $html, bool $find_head_title): array {
         }
 
         $name = mb_strtolower($match[1], '8bit');
+        if ($find_html_tag && !$closing && $name === 'html') {
+            return ['<' . $inside . '>'];
+        }
         if (!$closing && $name === 'plaintext') {
             break;
         }
@@ -565,7 +568,7 @@ function archive_meta_declared_encodings(string $html): array {
  *
  * @return list<string>
  */
-function archive_candidate_encodings(string $html): array {
+function archive_candidate_encodings(string $html, bool $include_guesses = true): array {
     $declared = [];
     $guessed = [];
     $headers = archive_http_header_block($html);
@@ -591,7 +594,7 @@ function archive_candidate_encodings(string $html): array {
             }
         }
 
-        if (preg_match('~^x-archive-guessed-charset:\s*([^\s;]+)~im', $headers, $match)) {
+        if ($include_guesses && preg_match('~^x-archive-guessed-charset:\s*([^\s;]+)~im', $headers, $match)) {
             $guessed[] = mb_trim(
                 $match[1],
                 ARCHIVE_ASCII_WHITESPACE . "\"'",
@@ -647,7 +650,7 @@ function archive_candidate_encodings(string $html): array {
  * @param list<string> $encodings
  * @param string $archive_url
  */
-function archive_decode_title(string $title, array $encodings, string $archive_url): string {
+function archive_decode_title(string $title, array $encodings, string $archive_url, string $language = '', string $guess = ''): string {
     if ($title === '' || mb_check_encoding($title, 'UTF-8')) {
         return $title;
     }
@@ -660,16 +663,40 @@ function archive_decode_title(string $title, array $encodings, string $archive_u
     }
 
     $fallback = convert_to_utf8($title);
-    if ($fallback === '') {
-        return '';
-    }
-
-    // The detector can agree with itself even when it left a valid encoding
-    // out of its candidate list. A different lossless decoding is ambiguous.
-    foreach (['EUC-JP', 'EUC-CN', 'EUC-KR', 'SJIS-win', 'BIG-5'] as $encoding) {
+    $guessed_title = $guess === '' ? '' : smart_decode($title, $guess, $archive_url);
+    $candidates = [];
+    foreach (['EUC-JP' => 'ja', 'SJIS-win' => 'ja', 'EUC-CN' => 'zh', 'BIG-5' => 'zh', 'EUC-KR' => 'ko'] as $encoding => $locale) {
         if (mb_check_encoding($title, $encoding)) {
             $decoded = mb_convert_encoding($title, 'UTF-8', $encoding);
-            if ($decoded !== $fallback && mb_convert_encoding($decoded, $encoding, 'UTF-8') === $title) {
+            if (mb_convert_encoding($decoded, $encoding, 'UTF-8') === $title) {
+                $candidates[$locale][] = $decoded;
+            }
+        }
+    }
+    if (isset($candidates[$language])) {
+        // HTML language is independent of the archive's charset guess.
+        $localized = array_values(array_unique($candidates[$language]));
+        if (count($localized) === 1) {
+            return $localized[0];
+        }
+        if ($fallback !== '' && in_array($fallback, $localized, true) &&
+            ($guessed_title === '' || $guessed_title === $fallback)) {
+            return $fallback;
+        }
+        // Distinguish readable text from half-width kana produced by a competing decoding.
+        $readable = array_values(array_filter($localized, static fn (string $value): bool =>
+            preg_match('~[\x{FF61}-\x{FF9F}]~u', $value) !== 1));
+        return count($readable) === 1 ? $readable[0] : '';
+    }
+    if ($fallback === '') {
+        return $candidates === [] ? $guessed_title : '';
+    }
+    if ($guessed_title !== '' && $guessed_title !== $fallback) {
+        return '';
+    }
+    foreach ($candidates as $decodings) {
+        foreach ($decodings as $decoded) {
+            if ($decoded !== $fallback) {
                 return '';
             }
         }
@@ -684,13 +711,13 @@ function archive_decode_title(string $title, array $encodings, string $archive_u
  * @param list<string> $encodings
  * @param string $archive_url
  */
-function archive_decode_title_candidate(string $raw_title, array $encodings, string $archive_url): string {
+function archive_decode_title_candidate(string $raw_title, array $encodings, string $archive_url, string $language = '', string $guess = ''): string {
     if ($raw_title === '') {
         return '';
     }
 
     // Decode first: byte trimming can split UTF-16 code units (for example, 0x20 0x00).
-    $title = archive_decode_title($raw_title, $encodings, $archive_url);
+    $title = archive_decode_title($raw_title, $encodings, $archive_url, $language, $guess);
     if ($title === '' || !mb_check_encoding($title, 'UTF-8')) {
         return '';
     }
@@ -741,7 +768,9 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                 $raw_html = fetch_archive_page($ch, $archive_url);
                 $title_scan_html = archive_title_scan_window($raw_html);
                 $decoded_prefix_only = false;
-                foreach (archive_candidate_encodings($raw_html) as $encoding) {
+                $declared = archive_candidate_encodings($raw_html, false);
+                $guesses = array_values(array_diff(archive_candidate_encodings($raw_html), $declared));
+                foreach ($declared as $encoding) {
                     $encoding_key = mb_strtolower($encoding, '8bit');
                     if (!in_array($encoding_key, ['utf-16', 'utf-16le', 'utf-16be', 'iso-2022-jp'], true)) {
                         continue;
@@ -761,6 +790,12 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     }
                 }
                 unset($raw_html);
+                $language = '';
+                $html_tag = archive_html_scan($title_scan_html, false, true)[0] ?? '';
+                $attributes = archive_html_attributes($html_tag);
+                if (preg_match('~\A(ja|zh|ko)(?:[-_]|\z)~i', mb_trim($attributes['lang'] ?? ''), $match) === 1) {
+                    $language = mb_strtolower($match[1], '8bit');
+                }
                 foreach ([
                     '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
                     '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
@@ -784,9 +819,8 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     }
                     if ($raw_title !== '') {
                         set_time_limit(120);
-                        $encode = archive_candidate_encodings($title_scan_html);
-                        $title = archive_decode_title_candidate($raw_title, $encode, $archive_url);
-                        unset($encode, $match);
+                        $title = archive_decode_title_candidate($raw_title, $declared, $archive_url, $language, $guesses[0] ?? '');
+                        unset($match);
                         if ($title !== '' &&
                             mb_stripos($title, 'archive') === false &&
                             mb_stripos($title, 'wayback') === false

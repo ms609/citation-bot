@@ -7,13 +7,16 @@ final class ArchiveBomTitleTest extends testBaseClass {
     public function testAmbiguousUndeclaredEucTitleKeepsExistingTitle(): void {
         $archive = 'https://web.archive.org/web/20120101000000/https://example.org/a';
         foreach ([
-            ['', 'Archived copy'],
-            ['; charset=EUC-JP', '東京大学'],
-            ['; charset=GB2312', '澎叠络池'],
-        ] as [$charset, $expected]) {
-            $html = '<!doctype html><html><head><title>東京大学</title></head><body>Example</body></html>';
-            $response = "HTTP/1.1 200 OK\r\nContent-Type: text/html" . $charset . "\r\n\r\n" .
-                mb_convert_encoding($html, 'EUC-JP', 'UTF-8');
+            ['', '', '', 'EUC-JP', '東京大学', 'Archived copy'],
+            ['', "\r\nX-Archive-Guessed-Charset: GB2312", '', 'EUC-JP', '東京大学', 'Archived copy'],
+            ['; charset=EUC-JP', '', '', 'EUC-JP', '東京大学', '東京大学'],
+            ['; charset=GB2312', '', '', 'EUC-JP', '東京大学', '澎叠络池'],
+            ['', '', ' lang="zh-CN"', 'EUC-CN', '中国历史研究', '中国历史研究'],
+            ['', '', ' lang="ko"', 'EUC-KR', '한국역사연구', '한국역사연구'],
+        ] as [$charset, $guess, $lang, $encoding, $title, $expected]) {
+            $html = '<!doctype html><html' . $lang . '><head><title>' . $title . '</title></head><body>Example</body></html>';
+            $response = "HTTP/1.1 200 OK\r\nContent-Type: text/html" . $charset . $guess . "\r\n\r\n" .
+                mb_convert_encoding($html, $encoding, 'UTF-8');
             $this->assertTrue(uopz_set_return('fetch_archive_page', $response));
             try {
                 $template = $this->make_citation('{{cite web|archive-url=' . $archive . '|title=Archived copy}}');
