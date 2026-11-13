@@ -86,6 +86,7 @@ function filter_runnable_page_titles(array $pages): array {
             report_warning('Skipping page title with invalid UTF-8.');
             continue;
         }
+        $page_title = normalize_unicode_nfc($page_title);
         if (mb_trim($page_title) === '') {
             continue;
         }
@@ -99,6 +100,13 @@ function filter_runnable_page_titles(array $pages): array {
         $filtered[] = $page_title;
     }
     return array_values(array_unique($filtered, SORT_STRING));
+}
+
+/** Keep saved-page filenames distinct and within the 255-byte basename limit. */
+function page_output_filename(string $page_title): string {
+    $basename = safe_preg_replace('~[/\\\\:*?"<>|\s\x00-\x1f\x7f]~u', '_', $page_title);
+    $suffix = '-' . mb_substr(hash('sha256', $page_title), 0, 16, '8bit') . '.md';
+    return mb_strcut($basename, 0, 255 - mb_strlen($suffix, '8bit'), 'UTF-8') . $suffix;
 }
 
 /**
@@ -115,6 +123,12 @@ function page_batch_input_within_limit(string $pages, ?int $max_pages = null): b
     return mb_strlen($pages, '8bit') <= $max_bytes;
 }
 
+function edit_summary_phrase(string $phrase): string {
+    /** @var array<string, array<string, string>> $translations */
+    $translations = EDIT_SUMMARY_TRANSLATIONS;
+    return $translations[WIKI_BASE][$phrase] ?? $phrase;
+}
+
 /**
  * Build the edit summary suffix for a category run.
  *
@@ -128,7 +142,8 @@ function page_batch_input_within_limit(string $pages, ?int $max_pages = null): b
  * linked-pages precedent.
  */
 function category_edit_summary_end(string $username, string $category, bool $has_override = false, bool $is_dev_run = false, ?string $edit = null): string {
-    $edit_summary_end = "| Suggested by " . $username . " | [[Category:{$category}]] ";
+    $edit_summary_end = '| ' . edit_summary_phrase('Suggested by') . ' ' . $username .
+        ' | ' . edit_summary_phrase('[[Category:') . $category . ']] ';
     if ($edit === 'template') {
         $edit_summary_end .= "| #UCB_template ";
     } elseif ($edit === 'automated_tools') {
@@ -140,7 +155,7 @@ function category_edit_summary_end(string $username, string $category, bool $has
         if ($is_dev_run) {
             $edit_summary_end .= "| Developer - max category limit override enabled ";
         } else {
-            $edit_summary_end .= "| Whitelisted category ";
+            $edit_summary_end .= '| ' . edit_summary_phrase('Whitelisted category ');
         }
     }
     return $edit_summary_end;
@@ -167,7 +182,7 @@ function linked_pages_should_override_limit(string $username): bool {
  */
 function process_page_edit_summary_end(string $username, bool $is_html_output, ?string $edit): string {
     if ($is_html_output) {
-        $edit_summary_end = "| Suggested by " . $username . " ";
+        $edit_summary_end = '| ' . edit_summary_phrase('Suggested by') . ' ' . $username . ' ';
     } else {
         $edit_summary_end = ""; // Command line edits as the person
     }
@@ -593,7 +608,7 @@ function edit_a_list_of_pages(
                     if (SAVETOFILES_MODE) {
                         // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
                         // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
-                        $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
+                        $filename = page_output_filename($page_title);
                         report_phase("Saving to file " . echoable($filename));
                         $body = $page->parsed_text();
                         $bodylen = mb_strlen($body, '8bit'); // byte count, not character count
@@ -743,9 +758,15 @@ function bot_html_header(): void {
 /**
  * @codeCoverageIgnore
  */
-function bot_html_footer(): void {
-    if (HTML_OUTPUT) {
-        echo '</pre></main><footer><a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Edit another page</a>? | <a href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use" title="Wikimedia Cloud Services End User Terms of Use">Terms&nbsp;of&nbsp;Use</a> | <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" title="Wikimedia Foundation Privacy Policy">Privacy&nbsp;Policy</a></footer></body></html>'; // @codeCoverageIgnore
+function bot_html_footer(bool $template_generator = false): void {
+    // The template generator always emits an HTML document.
+    if (HTML_OUTPUT || $template_generator) {
+        $return_link = $template_generator
+            ? '<a href="./" title="Use Citation Bot">Back to Citation Bot</a>'
+            : '<a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Edit another page</a>?';
+        echo '</pre></main><footer>', $return_link,
+            ' | <a href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use" title="Wikimedia Cloud Services End User Terms of Use">Terms&nbsp;of&nbsp;Use</a>',
+            ' | <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" title="Wikimedia Foundation Privacy Policy">Privacy&nbsp;Policy</a></footer></body></html>';
     }
     echo "\n";
 }

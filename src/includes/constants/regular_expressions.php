@@ -13,7 +13,7 @@ const REGEXP_TO_EN_DASH = "~--?|&mdash;|\xe2\x80\x94|\?\?\?~u";
 const REGEXP_EN_DASH = "\xe2\x80\x93";
 
 const REGEXP_BIBCODE = '~^https?://(?:(?:\w+.)?adsabs\.harvard\.edu|ads\.ari\.uni-heidelberg\.de|ads\.inasan\.ru|ads\.mao\.kiev\.ua|ads\.astro\.puc\.cl|ads\.on\.br|ads\.nao\.ac\.jp|ads\.bao\.ac\.cn|ads\.iucaa\.ernet\.in|ads\.lipi\.go\.id|cdsads\.u-strasbg\.fr|esoads\.eso\.org|ukads\.nottingham\.ac\.uk|www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~';
-const REGEXP_DOI = '~10\.\d[\d\.]+\d/\S+~';
+const REGEXP_DOI = '~10\.[0-9][0-9.]+[0-9]/\S+~u';
 const REGEXP_SICI = '~(\d{4}-\d{3}[\dxX])' . // ISSN
                     '\((\d{4})(\d{2})?/?(\d{2})?\)' . // Chronology, YY MM DD
                     '(\d+):?([\+\d]*)' . // Enumeration: Volume / issue

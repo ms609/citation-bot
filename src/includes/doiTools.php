@@ -441,7 +441,7 @@ function sanitize_doi(string $doi): string {
     $doi = safe_preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
     $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
     $doi = str_replace("+", "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
-    $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode($doi)));
+    $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode_valid_utf8($doi)));
     $pos = (int) mb_strrpos($doi, '.');
     if ($pos) {
         $extension = (string) mb_substr($doi, $pos);
@@ -511,9 +511,12 @@ function sanitize_doi(string $doi): string {
  * would be cut down to the bare registrant.
  */
 function trim_doi_url_suffix(string $doi): string {
-    if (preg_match(
-                "~^(10\.\d{4,9}(?:/|%2[fF]).+?)((?:/abstracts?|/e?pdf(?:plus|direct)?|/full(?:-?text)?|/figures?|/default)(?=$|[/?#.\s|\"]|</|[)\]}]+[.,;:]*(?:$|[\s|\"]|</))|</span>|[\s\|\"\?]|</).*+$~",
-                $doi, $new_match)) {
+    $pattern = "~^(10\.[0-9]{4,9}(?:/|%2[fF]).+?)((?:/abstracts?|/e?pdf(?:plus|direct)?|/full(?:-?text)?|/figures?|/default)(?=$|[/?#.\s|\"]|</|[)\]}]+[.,;:]*(?:$|[\s|\"]|</))|</span>|[\s\|\"\?]|</).*+$~u";
+    $matched = preg_match($pattern, $doi, $new_match);
+    if ($matched === false && !mb_check_encoding($doi, 'UTF-8')) {
+        $matched = preg_match(mb_substr($pattern, 0, -1, '8bit'), $doi, $new_match);
+    }
+    if ($matched === 1) {
         return $new_match[1];
     }
     return $doi;
@@ -525,9 +528,12 @@ function trim_doi_url_suffix(string $doi): string {
  * 1 => the decoded DOI
  */
 function extract_doi(string $text): array {
-    if (preg_match(
-                "~(10\.\d{4,9}(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
-                $text, $match)) {
+    $pattern = "~(10\.[0-9]{4,9}(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~u";
+    $matched = preg_match($pattern, $text, $match);
+    if ($matched === false && !mb_check_encoding($text, 'UTF-8')) {
+        $matched = preg_match(mb_substr($pattern, 0, -1, '8bit'), $text, $match);
+    }
+    if ($matched === 1) {
         $doi = trim_doi_url_suffix($match[1]);
         $doi_candidate = sanitize_doi($doi);
         while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_works($doi_candidate)) {

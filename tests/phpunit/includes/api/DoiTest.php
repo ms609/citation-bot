@@ -6,6 +6,32 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class DoiTest extends testBaseClass {
+    public function testCrossrefContributorDecodesHtmlEntitiesBeforeNameFormatting(): void {
+        $template = $this->make_citation('{{cite journal|title=Example|doi=10.5555/example}}');
+        $record = new SimpleXMLElement(
+            '<query><article_title>Example</article_title><journal_title>Example Journal</journal_title>' .
+            '<contributors><contributor contributor_role="author"><surname>M&amp;amp;uuml;ller</surname>' .
+            '<given_name>Fran&amp;amp;ccedil;ois</given_name></contributor>' .
+            '<contributor contributor_role="author"><surname>Smith&amp;#60;ref&amp;#62;Test&amp;#60;/ref&amp;#62;</surname>' .
+            '<given_name>Jane</given_name></contributor></contributors></query>'
+        );
+        $this->assertTrue(uopz_set_return('doi_works', true));
+        $this->assertTrue(uopz_set_return('query_crossref', $record));
+        $this->assertTrue(uopz_set_return('query_crossref_newapi', (object) []));
+        try {
+            expand_by_doi($template, true);
+            $this->assertSame('Müller', $template->get('last1'));
+            $this->assertSame('François', $template->get('first1'));
+            $this->assertStringContainsString('&#60;', $template->get('last2'));
+            $this->assertStringNotContainsString('<', $template->get('last2'));
+            $this->assertStringNotContainsString('<Ref>', $template->parsed_text());
+        } finally {
+            $this->assertTrue(uopz_unset_return('query_crossref_newapi'));
+            $this->assertTrue(uopz_unset_return('query_crossref'));
+            $this->assertTrue(uopz_unset_return('doi_works'));
+        }
+    }
+
     public function testCrossrefStopsAfterTwoUnusableResponses(): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub Crossref');
@@ -376,15 +402,39 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testExpansion_doi_not_from_crossref_JaLC_Journal(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub DOI content negotiation');
+        }
         $expanded = $this->make_citation('{{Cite journal}}');
-        expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
+        $response = json_encode([
+            'type' => 'article-journal',
+            'title' => '大学におけるWebメールとターミナルサービスの研究',
+            'container-title' => 'Society for Standardization Studies',
+            'author' => [
+                ['family' => '竹本', 'given' => '賢太郎'],
+                ['family' => '川東', 'given' => '正美'],
+                ['family' => '久保', 'given' => '信行'],
+                ['family' => '左近', 'given' => '多喜男'],
+            ],
+            'issued' => ['date-parts' => [[2009]]],
+            'volume' => '7',
+            'page' => '11-20',
+        ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', $response);
+        try {
+            expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
         $this->assertSame('{{Cite journal| last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies | date=2009 | volume=7 | pages=11–20 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_JaLC_Journal2(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
-        $this->assertSame('{{Cite journal| last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー | date=2013 | volume=2 }}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal| last1=川崎 | first1=努 | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー | date=2013 | volume=2 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_mEDRA_Journal(): void {
@@ -491,6 +541,49 @@ final class DoiTest extends testBaseClass {
         $text = "{{Cite book | doi = 10.1117/12.135408|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertSame("Kopera", $template->get2('editor-last1'));
+    }
+
+    public function testSpieProceedingsSeriesFromCrossrefContainer(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.703370';
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $chapter = 'Digital imaging sensor identification (Further study)';
+        $record = new SimpleXMLElement(
+            '<query><article_title>' . $chapter . '</article_title>' .
+            '<volume_title>' . $title . '</volume_title><volume>6505</volume><year>2007</year></query>'
+        );
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'title' => [$chapter],
+                'container-title' => ['SPIE Proceedings', $title],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $template->final_tidy();
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame($title, $template->get('title'));
+            $this->assertSame($chapter, $template->get('chapter'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('6505', $template->get('volume'));
+            $this->assertNull($template->get2('editor-last1'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
     }
 
     public function testBlankTypeFromDX1(): void {
@@ -650,12 +743,61 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testPreprintIdsUseCs1ParameterForms(): void {
+        foreach ([
+            ['biorxiv', '078733', '10.1101/078733'],
+            ['biorxiv', '2020.02.29.123456v2', '10.1101/2020.02.29.123456v2'],
+            ['medrxiv', '2020.02.29.12345678v2', '10.1101/2020.02.29.12345678v2'],
+            ['medrxiv', '10.1101/19000380', '19000380'],
+            ['medrxiv', '10.1101/2019.12.26.19014274', '10.1101/2019.12.26.19014274'],
+        ] as [$server, $input, $expected]) {
+            $template = $this->make_citation('{{cite ' . $server . '|title=Example}}');
+            $this->assertTrue($template->add_if_new($server, $input));
+            $this->assertSame($expected, $template->get($server));
+        }
+    }
+
+    public function testGetBioRxivPublishedDoiChecksCalendarBeforeLookup(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub bioRxiv');
+        }
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', '{"messages":[{"status":"ok"}]}');
+        try {
+            $this->assertNull(get_biorxiv_published_doi('10.1101/2021.02.29.123456', 'biorxiv', $status));
+            $this->assertNull($status);
+            $this->assertNull(get_biorxiv_published_doi('10.64898/2024.02.29.12345678v2', 'medrxiv', $status));
+            $this->assertSame('ok', $status);
+            $this->assertNull(get_biorxiv_published_doi('10.1101/2019.12.26.19014274', 'medrxiv', $status));
+            $this->assertSame('ok', $status);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
+    }
+
     public function testGetBioRxivPublishedDoi(): void {
         $result = get_biorxiv_published_doi('10.1234/invalid');
         $this->assertNull($result);
 
         $result = get_biorxiv_published_doi('10.1101/999999999');
         $this->assertNull($result);
+    }
+
+    public function testCrossrefOpenUrlIncludesZeroLocatorsWithoutAnAuthor(): void {
+        $template = $this->make_citation('{{cite journal|title=Example article|journal=Example journal|volume=0|pages=0–2}}');
+        $queries = [];
+        $this->assertTrue(uopz_set_return('bot_curl_exec', static function (CurlHandle $handle) use (&$queries): string {
+            $queries[] = curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+            return '<crossref_result><query_result><body><query status="unresolved"/></body></query_result></crossref_result>';
+        }, true));
+        try {
+            get_doi_from_crossref($template);
+        } finally {
+            $this->assertTrue(uopz_unset_return('bot_curl_exec'));
+        }
+        $this->assertCount(1, $queries);
+        $this->assertStringContainsString('&spage=0&epage=2&volume=0&', implode('', $queries));
     }
 
     public function testCrossrefXmlParserRejectsMalformedResponses(): void {

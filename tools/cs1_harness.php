@@ -379,13 +379,9 @@ function check_citation(Template $template): array {
     }
     foreach (['biorxiv', 'medrxiv'] as $param) {
         if ($template->has($param)) {
-            $test_value = $template->get($param);
-            // Mirror the add_if_new gate: normalize the prefix before validating.
-            if (mb_strpos($test_value, '10.1101/') !== 0 && mb_strpos($test_value, '10.64898/') !== 0) {
-                $test_value = '10.1101/' . $test_value;
-            }
-            if (!rxiv_id_valid($test_value)) {
-                $violations[] = 'rxiv-malformed: CS1 "Check |biorxiv=/|medrxiv= value"';
+            if (!rxiv_id_valid(rxiv_doi_from_id($template->get($param)), $param) ||
+                rxiv_citation_id($template->get($param), $param) !== $template->get($param)) {
+                $violations[] = "rxiv-malformed: invalid |$param= identifier";
             }
         }
     }
@@ -581,6 +577,7 @@ function build_matrix(): array {
         ['Clean cite web with work= (periodical alias)', '{{cite web |url=https://example.com |title=X |work=SomeWebsite}}', 'pass'],
         ['Clean cite arxiv', '{{cite arxiv |arxiv=2401.99999 |title=X}}', 'pass'],
         ['Clean cite biorxiv', '{{cite biorxiv |biorxiv=10.1101/2020.01.01.000001 |title=X}}', 'pass'],
+        ['Clean cite biorxiv with a leap-day identifier', '{{cite biorxiv |biorxiv=10.1101/2020.02.29.000001 |title=X}}', 'pass'],
         ['Clean cite ssrn', '{{cite ssrn |ssrn=1234567 |title=X}}', 'pass'],
 
         // --- known gaps (documented current CS1 violations, tracked) ---

@@ -73,10 +73,10 @@ function clean_up_first_names(string $value): string {
     } else {
         $value = sanitize_string($value);
     }
-    if (mb_strlen($value) === 1) {
+    if (mb_strlen($value) === 1 && is_initials($value)) {
         $value .= '.';
-    } elseif (mb_substr($value, -2, 1) === " ") {
-        if (mb_strlen($value) === 3) { // Special case for "F M" -- add dots to both
+    } elseif (mb_substr($value, -2, 1) === " " && is_initials(mb_substr($value, -1))) {
+        if (mb_strlen($value) === 3 && is_initials(mb_substr($value, 0, 1))) { // Special case for "F M" -- add dots to both
             $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
         } elseif (mb_strlen($value) > 3) { // Single character at end
              $value .= '.';
@@ -94,13 +94,43 @@ const MAC_SURNAMES_WITHOUT_INNER_CAPITAL = [
     'mackey', 'mackie', 'macklin', 'macomber', 'macready', 'macron', 'macura',
 ];
 
+/** These letters give casing rules for dotted and dotless I in Turkic names. */
+function name_uses_turkic_casing(string $name): bool {
+    return preg_match('~[İıĞğ]~u', $name) === 1;
+}
+
+function lowercase_name(string $name, bool $turkic): string {
+    return mb_strtolower($turkic ? strtr($name, ['I' => 'ı', 'İ' => 'i']) : $name);
+}
+
+function uppercase_name_initial(string $initial, bool $turkic): string {
+    return mb_strtoupper($turkic ? strtr($initial, ['i' => 'İ', 'ı' => 'I']) : $initial);
+}
+
 /** Institutional author acronyms must not be formatted as personal surnames. */
 function is_institutional_author_acronym(string $name): bool {
     return in_array($name, ['ESA', 'NASA'], true);
 }
 
+/** Decode imported names as plain text while protecting wikitext delimiters. */
+function decode_name_entities(string $name): string {
+    for ($i = 0; $i < 3 && str_contains($name, '&'); ++$i) {
+        $decoded = html_entity_decode($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+        if ($decoded === $name) {
+            break;
+        }
+        $name = $decoded;
+    }
+    return str_replace(
+        ['<', '>', '[', ']', '{', '}', '|', "''"],
+        ['&#60;', '&#62;', '&#91;', '&#93;', '&#123;', '&#125;', '&#124;', '&#0039;&#0039;'],
+        $name
+    );
+}
+
 function format_surname(string $surname): string {
-    $surname = mb_trim($surname);
+    $surname = decode_name_entities($surname);
+    $surname = mb_trim(normalize_unicode_nfc($surname));
     if (is_institutional_author_acronym($surname)) {
         return $surname;
     }
@@ -117,31 +147,35 @@ function format_surname(string $surname): string {
     if ($hyphenated !== null) {
         $surname = $hyphenated;
     }
-    $surname = mb_convert_case(mb_trim($surname), MB_CASE_LOWER);
-    if (mb_substr($surname, 0, 2) === "o'") {
-        return "O'" . format_surname_2(mb_substr($surname, 2));
+    $prefix = mb_strtolower(mb_substr($surname, 0, 2));
+    if ($prefix === "o'" || $prefix === 'o’') {
+        return 'O' . mb_substr($prefix, 1) . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 2) === "mc") {
+    if ($prefix === 'mc') {
         return "Mc" . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($surname, 3, 1) !== "h" && !in_array($surname, MAC_SURNAMES_WITHOUT_INNER_CAPITAL, true)) {
+    $lower_surname = mb_strtolower($surname);
+    if (mb_substr($lower_surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($lower_surname, 3, 1) !== "h" && !in_array($lower_surname, MAC_SURNAMES_WITHOUT_INNER_CAPITAL, true)) {
         return "Mac" . format_surname_2(mb_substr($surname, 3));
-    }
-    if (mb_substr($surname, 0, 1) === "&") {
-        return "&" . format_surname_2(mb_substr($surname, 1));
     }
     return format_surname_2($surname); // Case of surname
 }
 
 function format_surname_2(string $surname): string {
     $ret = str_replace(" - ", "-", $surname);
-    $formatted = preg_replace_callback("~(\p{L})(\p{L}+)~u",
+    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*)*)~u",
         static function (array $matches): string {
-                return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
+            if ($matches[2] === '') {
+                return mb_strtolower($matches[1]);
+            }
+            $turkic = name_uses_turkic_casing($matches[0]);
+            $lowercase = lowercase_name($matches[0], $turkic);
+            $initial_length = mb_strlen(lowercase_name($matches[1], $turkic));
+            return uppercase_name_initial($matches[1], $turkic) . mb_substr($lowercase, $initial_length);
         },
         $ret);
     if ($formatted !== null) {
-        $ret = $formatted;
+        $ret = normalize_unicode_nfc($formatted);
     }
     $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
     return safe_preg_replace_callback('~;\w~',
@@ -152,17 +186,21 @@ function format_surname_2(string $surname): string {
 }
 
 function format_forename(string $forename): string {
-    $forename = mb_trim($forename);
+    $forename = decode_name_entities($forename);
+    $forename = mb_trim(normalize_unicode_nfc($forename));
     if ($forename === '-' || $forename === '') {
         return '';
     }
-    $formatted = preg_replace_callback("~(\p{L})(\p{L}{3,})~u",
+    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*){3,})~u",
         static function (array $matches): string {
-            return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
+            $turkic = name_uses_turkic_casing($matches[0]);
+            $lowercase = lowercase_name($matches[0], $turkic);
+            $initial_length = mb_strlen(lowercase_name($matches[1], $turkic));
+            return uppercase_name_initial($matches[1], $turkic) . mb_substr($lowercase, $initial_length);
         },
         $forename);
     if ($formatted !== null) {
-        $forename = $formatted;
+        $forename = normalize_unicode_nfc($formatted);
     }
     return str_replace([" ."], "", mb_trim($forename));
 }
@@ -173,7 +211,7 @@ function format_forename(string $forename): string {
  * @param string $str A series of initials, in any format.  NOTE! Do not pass a forename here!
  */
 function format_initials(string $str): string {
-    $str = mb_trim($str);
+    $str = mb_trim(normalize_unicode_nfc($str));
     if ($str === "") {
         return "";
     }
@@ -183,8 +221,11 @@ function format_initials(string $str): string {
 }
 
 function is_initials(string $str): bool {
-    $str = mb_trim($str);
+    $str = mb_trim(normalize_unicode_nfc($str));
     if (!$str) {
+        return false;
+    }
+    if (preg_match('~\p{Lo}~u', $str) === 1) {
         return false;
     }
     if (mb_strlen(str_replace(["-", ".", ";"], "", $str)) > 3) {
@@ -218,6 +259,7 @@ function author_is_human(string $author): bool {
         || mb_substr(mb_strtolower($author), 0, 4) === "the "
         || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
         || preg_match("~[A-Z]{3}~", $author)
+        || is_institutional_author_name($author)
         || is_generic_name($author) // CS1 "Cite uses generic name" triggers
         || mb_substr(mb_strtolower($author), -4) === " inc"
         || mb_substr(mb_strtolower($author), -5) === " inc."
@@ -233,13 +275,26 @@ function author_is_human(string $author): bool {
     return true;
 }
 
+/** Recognize organization names that start with a Cyrillic institutional label. */
+function is_institutional_author_name(string $name): bool {
+    return preg_match(
+        '~\A(?:министерство|міністерство|департамент|комитет|комітет|агентство|академия|академія|университет|університет)\s+\p{L}~iu',
+        mb_trim($name)
+    ) === 1;
+}
+
 /** Returns the author's name formatted as Surname, F.I. */
 function format_author(string $author): string {
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
     $author = html_entity_decode($author, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
-    $author = mb_trim($author);
-    if (is_institutional_author_acronym($author)) {
+    $author = mb_trim(normalize_unicode_nfc($author));
+    if (is_institutional_author_acronym($author) || is_institutional_author_name($author)) {
+        return $author;
+    }
+    // An unstructured name in a caseless script provides no signal for name order.
+    if (!str_contains($author, ',') && preg_match('~\p{Lo}~u', $author) === 1 &&
+            preg_match('~[\p{Lu}\p{Ll}\p{Lt}]~u', $author) === 0) {
         return $author;
     }
     [$author, $junior] = junior_test($author);

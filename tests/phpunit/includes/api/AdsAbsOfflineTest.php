@@ -8,6 +8,82 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class AdsAbsOfflineTest extends testBaseClass {
+    public function testCooldownUsesElapsedTimeAndBucketsAreIndependent(): void {
+        $clock = (object) ['now' => 100_000_000_000];
+        AdsAbsControl::big_back_on();
+        AdsAbsControl::small_back_on();
+        $this->assertTrue(uopz_set_return('hrtime', static function () use ($clock): int {
+            return $clock->now;
+        }, true));
+        try {
+            AdsAbsControl::big_give_up(60);
+            AdsAbsControl::small_give_up(120);
+            for ($i = 0; $i < 1100; ++$i) {
+                if (!AdsAbsControl::big_gave_up_yet()) {
+                    $this->fail('Polling consumed the cooldown');
+                }
+            }
+            $clock->now += 60_000_000_000;
+            $this->assertFalse(AdsAbsControl::big_gave_up_yet());
+            $this->assertTrue(AdsAbsControl::small_gave_up_yet());
+            $clock->now += 60_000_000_000;
+            $this->assertFalse(AdsAbsControl::small_gave_up_yet());
+        } finally {
+            $this->assertTrue(uopz_unset_return('hrtime'));
+            AdsAbsControl::big_back_on();
+            AdsAbsControl::small_back_on();
+        }
+    }
+
+    public function testRetryAfterParsesFinalResponseAndHttpDate(): void {
+        $now = 1_700_000_000;
+        $this->assertTrue(uopz_set_return('time', $now));
+        try {
+            $this->assertSame(90, adsabs_retry_after("HTTP/1.1 100 Continue\r\nRetry-After: 1\r\n\r\nHTTP/1.1 429\r\nRetry-After: 90\r\n\r\n", null));
+            $this->assertSame(120, adsabs_retry_after('Retry-After: ' . gmdate('D, d M Y H:i:s \G\M\T', $now + 120), null));
+            $this->assertSame(45, adsabs_retry_after('Retry-After: invalid', $now + 45));
+            $this->assertNull(adsabs_retry_after('Retry-After: invalid', $now - 45));
+        } finally {
+            $this->assertTrue(uopz_unset_return('time'));
+        }
+    }
+
+    public function testInterimRateLimitResetDoesNotAffectFinalResponse(): void {
+        $header = "HTTP/1.1 100 Continue\r\nX-RateLimit-Reset: " . (time() + 600) .
+            "\r\n\r\nHTTP/1.1 429 Too Many Requests\r\n\r\n";
+        $limits = adsabs_rate_limit_headers($header);
+        $this->assertNull($limits['reset']);
+        $this->assertNull(adsabs_retry_after($header, $limits['reset']));
+    }
+
+    public function testNonJson429ArmsOnlyTheRequestedAdsBucket(): void {
+        $clock = (object) ['now' => 100_000_000_000];
+        $header = "HTTP/1.1 429 Too Many Requests\r\nRetry-After: 120\r\n\r\n";
+        AdsAbsControl::big_back_on();
+        AdsAbsControl::small_back_on();
+        $this->assertTrue(uopz_set_return('hrtime', static function () use ($clock): int {
+            return $clock->now;
+        }, true));
+        $this->assertTrue(uopz_set_return('bot_curl_exec', $header . '<html>ADS is down for maintenance</html>'));
+        $this->assertTrue(uopz_set_return('curl_getinfo', static fn (CurlHandle $handle, int $option): int => $option === CURLINFO_HTTP_CODE ? 429 : mb_strlen($header, '8bit'), true));
+        try {
+            $response = Bibcode_Response_Processing([], 'https://api.adsabs.harvard.edu/v1/search/bigquery');
+            $this->assertSame(0, $response->numFound);
+            $this->assertTrue(AdsAbsControl::big_gave_up_yet());
+            $this->assertFalse(AdsAbsControl::small_gave_up_yet());
+            $clock->now += 119_000_000_000;
+            $this->assertTrue(AdsAbsControl::big_gave_up_yet());
+            $clock->now += 1_000_000_000;
+            $this->assertFalse(AdsAbsControl::big_gave_up_yet());
+        } finally {
+            $this->assertTrue(uopz_unset_return('curl_getinfo'));
+            $this->assertTrue(uopz_unset_return('bot_curl_exec'));
+            $this->assertTrue(uopz_unset_return('hrtime'));
+            AdsAbsControl::big_back_on();
+            AdsAbsControl::small_back_on();
+        }
+    }
+
     /** @return array<string, array{mixed}> */
     public static function invalidEnvelopeProvider(): array {
         return [

@@ -9,6 +9,53 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
  * date and its metadata was thrown away.
  */
 final class ZoteroYearOnlyDateTest extends testBaseClass {
+    public function testExplicitFirstOfMonthAndEpochArePreserved(): void {
+        foreach ([
+            ['1 January 1970', '1 January 1970'],
+            ['31 December 1969', '31 December 1969'],
+            ['2020-May-01', '1 May 2020'],
+            ['1. May 2020', '1 May 2020'],
+            ['2020-05-01', '1 May 2020'],
+            ['1 mai 2020', '1 May 2020'],
+            ['2020-05', 'May 2020'],
+            ['May 2020', 'May 2020'],
+            ['2020-05-00', 'May 2020'],
+        ] as [$source, $expected]) {
+            $template = $this->expand_with_date($source, '2024-06-01');
+            $this->assertSame($expected, $template->get('date'), $source);
+        }
+    }
+
+    public function testZoteroEpochSentinelsLeaveOtherMetadataAvailable(): void {
+        foreach (['1969-12-31', '1970-01-01', '1970-01-01T00:00:00Z'] as $source) {
+            $template = $this->expand_with_date($source, '2024-06-01');
+            $this->assertNull($template->get2('date'), $source);
+            $this->assertSame('Offline year only title', $template->get2('title'));
+        }
+    }
+
+    public function testPublicationDateKeepsWrittenDayAcrossTimeZones(): void {
+        foreach ([
+            ['2000-01-02T00:30:00+01:00', 'January 2, 2000'],
+            ['2000-01-01T12:00:00+13:00', 'January 1, 2000'],
+            ['2000-01-01T23:30:00-03:00', 'January 1, 2000'],
+            ['January 2000', 'January 2000'],
+        ] as [$input, $expected]) {
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+            Template::$date_style = DateStyle::DATES_MDY;
+            try {
+                $this->assertTrue($template->add_if_new('date', $input));
+                $this->assertSame($expected, $template->get('date'));
+            } finally {
+                Template::$date_style = DateStyle::DATES_WHATEVER;
+            }
+        }
+    }
+
+    public function testEpochDatesAreComparedAgainstAccessDate(): void {
+        $this->assertNull($this->expand_with_date('1 January 1970', '1969-12-31')->get2('title'));
+        $this->assertNull($this->expand_with_date('2 January 1970', '1970-01-01')->get2('title'));
+    }
 
     private function expand_with_date(string $result_date, string $access_date): Template {
         $template = $this->make_citation('{{cite web|url=https://example.test/page|access-date=' . $access_date . '}}');

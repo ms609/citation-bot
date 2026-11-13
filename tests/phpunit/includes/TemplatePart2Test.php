@@ -8,6 +8,22 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart2Test extends testBaseClass {
+    public function testExplicitZeroLocatorsSurviveCleanup(): void {
+        foreach (['issue=0', 'number=0', 'issue=|issue=0', 'number=No. 0', 'issue=00'] as $params) {
+            $template = $this->prepare_citation('{{cite journal|title=Editorial|journal=OUSL Journal|volume=1|' . $params . '}}');
+            $template->tidy();
+            $name = str_starts_with($params, 'number') ? 'number' : 'issue';
+            $this->assertSame($params === 'issue=00' ? null : '0', $template->get2($name));
+        }
+    }
+
+    public function testZeroYearAndCombinedZeroIssueAreHandledIndependently(): void {
+        $template = $this->prepare_citation('{{cite journal|title=Editorial|journal=OUSL Journal|year=0|volume=1(0)}}');
+        $template->tidy();
+        $this->assertNull($template->get2('year'));
+        $this->assertSame('1', $template->get('volume'));
+        $this->assertSame('0', $template->get('issue'));
+    }
 
     public function testTidyWork1a(): void {
         $text = "{{citation|work=|website=X}}";
@@ -165,6 +181,39 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->make_citation($text);
         $template->tidy_parameter('via');
         $this->assertNull($template->get2('via'));
+    }
+
+    public function testTidyViaRemovesRedundantBbcCredit(): void {
+        foreach (['publisher=BBC News Online', 'work=BBC News Online'] as $source) {
+            foreach (['BBC', 'The BBC', 'bbc.co.uk'] as $via) {
+                $template = $this->make_citation('{{cite web|' . $source . '|via=' . $via . '}}');
+                $template->tidy_parameter('via');
+                $this->assertNull($template->get2('via'), $source . '|via=' . $via);
+            }
+        }
+    }
+
+    public function testTidyViaKeepsDistinctBbcCredit(): void {
+        $template = $this->make_citation('{{cite web|publisher=Reuters|via=BBC}}');
+        $template->tidy_parameter('via');
+        $this->assertSame('BBC', $template->get2('via'));
+
+        $template = $this->make_citation('{{cite web|publisher=BBC News Online|via=Reuters}}');
+        $template->tidy_parameter('via');
+        $this->assertSame('Reuters', $template->get2('via'));
+    }
+
+    public function testTidyViaKeepsUnrelatedOrSpecificBbcCredits(): void {
+        foreach ([
+            ['BBC News', 'BBC Monitoring'],
+            ['ABBC Press', 'BBC'],
+            ['BBC News', 'Example BBC Archives'],
+            ['BBC', 'BBC News'],
+        ] as [$publisher, $via]) {
+            $template = $this->make_citation('{{cite web|publisher=' . $publisher . '|via=' . $via . '}}');
+            $template->tidy_parameter('via');
+            $this->assertSame($via, $template->get2('via'));
+        }
     }
 
     public function testConversionOfURL1(): void {
@@ -1132,6 +1181,52 @@ final class TemplatePart2Test extends testBaseClass {
         $template->add_if_new('author', 'null');
         $template->add_if_new('journal', 'null');
         $this->assertSame('{{cite book}}', $template->parsed_text());
+    }
+
+    public function testInvalidCrossrefYearCannotReplaceExistingYear(): void {
+        $current_year = (int) date('Y');
+        foreach (['n.d.', 'in press', 'forthcoming', '2025x', '0000', (string) ($current_year + 4)] as $year) {
+            $template = $this->make_citation('{{cite journal|title=Example|year=2019}}');
+            $template->set('doi', '10.1000/example');
+            $this->assertFalse($template->add_if_new('year', $year, 'crossref'));
+            $this->assertSame('2019', $template->get('year'));
+        }
+
+        $template = $this->make_citation('{{cite journal|title=Example|year=2019}}');
+        $template->set('doi', '10.1000/example');
+        $this->assertTrue($template->add_if_new('year', (string) ($current_year - 1), 'crossref'));
+        $this->assertSame((string) ($current_year - 1), $template->get('year'));
+    }
+
+    public function testDoiYearUsesUnpaddedCs1Year(): void {
+        foreach ([400, 999, '0999', '0001'] as $year) {
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+            process_doi_json($template, '10.5555/example', ['issued' => ['date-parts' => [[$year]]]]);
+            $this->assertSame(is_int($year) ? (string) $year : null, $template->get2('date'));
+        }
+    }
+
+    public function testHistoricalCrossrefYearIsAccepted(): void {
+        $template = $this->make_citation('{{cite journal|title=Example}}');
+        $this->assertTrue($template->add_if_new('year', '1200', 'crossref'));
+        $this->assertSame('1200', $template->get('date'));
+    }
+
+    public function testDoiJsonSkipsInvalidYearsAndUsesValidFallback(): void {
+        $template = $this->make_citation('{{cite journal|title=Example}}');
+        process_doi_json($template, '10.5555/example', [
+            'issued' => ['date-parts' => [['2025x']]],
+            'created' => ['date-parts' => [[0]]],
+            'published-print' => ['date-parts' => [[1200]]],
+        ]);
+        $this->assertSame('1200', $template->get('date'));
+    }
+
+    public function testZeroYearIsRejectedThroughSiciPreparation(): void {
+        $template = $this->prepare_citation('{{cite journal|title=Example|id=1234-5678(0000)1:2<42:AB>2.0.CO;2-A}}');
+        $this->assertFalse($template->add_if_new('date', '0000'));
+        $this->assertNull($template->get2('date'));
+        $this->assertSame('42', $template->get('page'));
     }
 
     public function testUpdateYear1(): void {

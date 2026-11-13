@@ -8,6 +8,29 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
+
+    public function testPublisherKeepsFullNameWhenShortenedNameIsRejected(): void {
+        $template = $this->make_citation('{{cite book|title=Example}}');
+        $this->assertTrue($template->add_if_new('publisher', 'Page Publishing'));
+        $this->assertSame('Page Publishing', $template->get('publisher'));
+        $template = $this->make_citation('{{cite book|title=Example}}');
+        $this->assertFalse($template->add_if_new('publisher', 'NONE Publishing'));
+    }
+
+    public function testShortPublisherNamesCanBeAdded(): void {
+        foreach (['岩波書店', 'MIT', 'PLOS', 'P.U.F.', '北京大学'] as $name) {
+            $template = $this->make_citation('{{cite book|title=Example}}');
+            $this->assertTrue($template->add_if_new('publisher', $name), $name);
+            $this->assertSame($name, $template->get('publisher'));
+        }
+        foreach (['[s.n.]', 'N/A', 'N. D.', 'unknown', '1234', '??', 'A', 'Inc', 'INC', 'MIT123', '2020 MIT',
+            '不明', '未知', 'б.и.', 'S.L.', 'NONE', 'NULL', 'TBD', 'PDF'] as $name) {
+            $template = $this->make_citation('{{cite book|title=Example}}');
+            $this->assertFalse($template->add_if_new('publisher', $name), $name);
+            $this->assertNull($template->get2('publisher'));
+        }
+    }
+
     public function testND(): void {  // n.d. is special case that the template recognizes.  Must protect final period.
         $text = '{{Cite journal|date =n.d.}}';
         $expanded = $this->process_citation($text);
@@ -631,12 +654,14 @@ final class TemplatePart3Test extends testBaseClass {
     }
 
     public function testChangeNameURL(): void {
-        $text = "{{cite web|url=x|chapter-url=X|chapter=Z}}";
-        $template = $this->process_citation($text);
-        $this->assertSame('cite book', $template->wikiname());
-        $this->assertSame('Z', $template->get2('chapter'));
-        $this->assertSame('X', $template->get2('chapter-url'));
-        $this->assertNull($template->get2('url')); // Remove since identical to chapter
+        foreach (['X' => null, 'x' => 'x'] as $url => $expected_url) {
+            $text = "{{cite web|url={$url}|chapter-url=X|chapter=Z}}";
+            $template = $this->process_citation($text);
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame('Z', $template->get2('chapter'));
+            $this->assertSame('X', $template->get2('chapter-url'));
+            $this->assertSame($expected_url, $template->get2('url'));
+        }
     }
 
     public function testRenameToExisting(): void {
@@ -2335,17 +2360,21 @@ XML;
     }
 
     public function testMedRxivConversion(): void {
-        $text = '{{cite journal |last=Smith |first=John |title=Test Paper |journal=medRxiv |doi=10.1101/123456 |year=2023}}';
-        $prepared = $this->prepare_citation($text);
+        $text = '{{cite journal |last=Smith |first=John |title=Test Paper |journal=medRxiv |doi=10.1101/19000380 |year=2023}}';
+        $prepared = $this->make_citation($text);
+        $prepared->tidy_parameter('journal');
+        $prepared->tidy();
         $this->assertSame('cite medrxiv', $prepared->wikiname());
-        $this->assertSame('10.1101/123456', $prepared->get2('medrxiv'));
+        $this->assertSame('19000380', $prepared->get2('medrxiv'));
         $this->assertNull($prepared->get2('doi'));
         $this->assertNull($prepared->get2('journal'));
     }
 
     public function testMedRxivParameterFiltering(): void {
-        $text = '{{cite journal |title=Test |journal=medRxiv |doi=10.1101/062109 |volume=10 |pmid=123 |pmc=456}}';
-        $prepared = $this->prepare_citation($text);
+        $text = '{{cite journal |title=Test |journal=medRxiv |doi=10.1101/19000380 |volume=10 |pmid=123 |pmc=456}}';
+        $prepared = $this->make_citation($text);
+        $prepared->tidy_parameter('journal');
+        $prepared->tidy();
         $this->assertSame('cite medrxiv', $prepared->wikiname());
         $this->assertNull($prepared->get2('volume'));
         $this->assertNull($prepared->get2('pmid'));
@@ -2356,6 +2385,18 @@ XML;
         $text = '{{cite journal |title=Test |journal=medRxiv |doi=10.1234/wrong}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('cite journal', $prepared->wikiname());
+    }
+
+    public function testPreprintIdWithImpossibleDateIsNotAddedOrMoved(): void {
+        foreach (['biorxiv' => '10.1101/2021.02.29.123456', 'medrxiv' => '10.64898/2025.04.31.123456v2'] as $server => $doi) {
+            $template = $this->make_citation('{{cite journal |title=Test |journal=' . $server . ' |doi=' . $doi . '}}');
+            $template->tidy_parameter('journal');
+            $this->assertSame('cite journal', $template->wikiname());
+            $this->assertSame($doi, $template->get2('doi'));
+            $this->assertFalse($template->add_if_new($server, $doi));
+            $this->assertFalse($template->add_if_new($server, '2021.02.29.123456'));
+            $this->assertNull($template->get2($server));
+        }
     }
 
     public function testMedRxivNoConversionDifferentJournal(): void {
@@ -2371,10 +2412,12 @@ XML;
 
     public function testMedRxivRealWorldExample(): void {
         // Test case from GitHub issue - parameters should be removed even if present in input
-        $text = '{{cite journal |vauthors=Smith A, Johnson B, Williams C |title=COVID-19 Vaccine Study |journal=medRxiv: The Preprint Server for Health Sciences |date=January 2024 |pmid=12345678 |pmc=87654321 |doi=10.1101/2024.01.15.123456}}';
-        $prepared = $this->prepare_citation($text);
+        $text = '{{cite journal |vauthors=Smith A, Johnson B, Williams C |title=COVID-19 Vaccine Study |journal=medRxiv: The Preprint Server for Health Sciences |date=January 2024 |pmid=12345678 |pmc=87654321 |doi=10.1101/2024.01.15.20243001}}';
+        $prepared = $this->make_citation($text);
+        $prepared->tidy_parameter('journal');
+        $prepared->tidy();
         $this->assertSame('cite medrxiv', $prepared->wikiname());
-        $this->assertSame('10.1101/2024.01.15.123456', $prepared->get2('medrxiv'));
+        $this->assertSame('10.1101/2024.01.15.20243001', $prepared->get2('medrxiv'));
         $this->assertNull($prepared->get2('doi'), 'DOI should be removed (converted to medrxiv parameter)');
         $this->assertNull($prepared->get2('pmid'), 'PMID should be removed from cite medrxiv');
         $this->assertNull($prepared->get2('pmc'), 'PMC should be removed from cite medrxiv');
@@ -2387,10 +2430,12 @@ XML;
 
     public function testMedRxivComprehensiveParameterFiltering(): void {
         // Test that ALL disallowed parameters are removed, not just pmid/pmc/doi/journal
-        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.64898/2099.12.31.999999 |year=2023 |volume=5 |issue=3 |pages=100-200 |publisher=Cold Spring Harbor |issn=1234-5678 |url=https://example.com}}';
-        $prepared = $this->prepare_citation($text);
+        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.64898/2025.12.10.20253600 |year=2023 |volume=5 |issue=3 |pages=100-200 |publisher=Cold Spring Harbor |issn=1234-5678 |url=https://example.com}}';
+        $prepared = $this->make_citation($text);
+        $prepared->tidy_parameter('journal');
+        $prepared->tidy();
         $this->assertSame('cite medrxiv', $prepared->wikiname());
-        $this->assertSame('10.64898/2099.12.31.999999', $prepared->get2('medrxiv'));
+        $this->assertSame('10.64898/2025.12.10.20253600', $prepared->get2('medrxiv'));
         // Check that disallowed parameters are removed
         $this->assertNull($prepared->get2('doi'));
         $this->assertNull($prepared->get2('journal'));
@@ -2407,7 +2452,7 @@ XML;
 
     public function testMedRxivCapitalization(): void {
         // Test that medRxiv template name has proper capitalization (capital R)
-        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.1101/123456 |year=2023}}';
+        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.1101/19000380 |year=2023}}';
         $expanded = $this->process_citation($text);
         // The actual template name should have capital R
         $this->assertStringContainsString('{{cite medRxiv', $expanded->parsed_text());

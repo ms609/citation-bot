@@ -4,6 +4,12 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class UrlToolsCoverageMoreTest extends testBaseClass {
+    public function testGoogleSearchKeepsRestrictionsAndZero(): void {
+        $query = 'q=what?&as_epq=0&lr=lang_fr&tbs=qdr:y&as_qdr=m&as_drrb=b&as_minm=1&as_mind=2&num=50&site=example.com';
+        $url = 'https://www.google.com/search?' . $query;
+        $this->assertSame($url, simplify_google_search($url . '&ved=tracking&as_epq='));
+        $this->assertSame('https://www.google.com/search?q=0', simplify_google_search('https://www.google.com/search?q=0'));
+    }
 
     public function testSimplifyGoogleSearchPreservesNonDefaultParameters(): void {
         $url = 'https://www.google.com/search?resnum=12&gl=us&rllag=1&lsig=abc'

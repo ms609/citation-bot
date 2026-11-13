@@ -154,7 +154,7 @@ final class Zotero {
                     report_warning("Malformed Zotero response creator entry for URL " . echoable($url));
                     return false;
                 }
-                foreach (['creatorType', 'firstName', 'lastName'] as $field) {
+                foreach (['creatorType', 'firstName', 'lastName', 'name'] as $field) {
                     if (isset($creator->{$field})) {
                         if (!is_scalar($creator->{$field})) {
                             report_warning("Malformed Zotero response creator field '" . $field . "' for URL " . echoable($url));
@@ -179,7 +179,7 @@ final class Zotero {
     private static function creator_is_site_name(string $name, string $url, object $result): bool {
         $name = mb_trim($name);
         foreach (['publicationTitle', 'bookTitle'] as $field) {
-            if (isset($result->{$field}) && str_i_same($name, (string) $result->{$field})) {
+            if (isset($result->{$field}) && str_i_same(normalize_unicode_nfc($name), normalize_unicode_nfc((string) $result->{$field}))) {
                 return true;
             }
         }
@@ -226,35 +226,21 @@ final class Zotero {
             if (!doi_active($doi)) { // Do not expand if DOI works with CrossRef
                 self::expand_by_zotero($template);
             }
-            if ($template->has('biorxiv')) {
-                // biorxiv= may already hold a full DOI (10.1101 or 10.64898 prefix), so do not blindly prepend a prefix
-                $biorxiv_doi = rxiv_doi_from_id($template->get('biorxiv'));
-                if ($template->blank('doi')) {
-                    $template->add_if_new('doi', $biorxiv_doi);
-                    expand_by_doi($template, true); // this data is better than zotero
-                } elseif (mb_strstr($template->get('doi'), '10.1101') === false && mb_strstr($template->get('doi'), '10.64898') === false) {
-                    expand_doi_with_dx($template, $biorxiv_doi);  // dx data is better than zotero
-                    self::expand_by_zotero($template, 'https://dx.doi.org/' . $biorxiv_doi); // Rare case there is a different DOI
+            foreach (['biorxiv', 'medrxiv'] as $preprint_param) {
+                $preprint_id = $template->get($preprint_param);
+                if ($preprint_id === '') {
+                    continue;
                 }
-            }
-            if ($template->has('medrxiv')) {
+                $preprint_doi = rxiv_doi_from_id($preprint_id);
+                if (!rxiv_id_valid($preprint_doi, $preprint_param)) {
+                    continue;
+                }
                 if ($template->blank('doi')) {
-                    // medRxiv can use either 10.1101 or 10.64898 prefix
-                    $medrxiv_id = $template->get('medrxiv');
-                    if (mb_strpos($medrxiv_id, '10.1101/') === 0) {
-                        $template->add_if_new('doi', $medrxiv_id);
-                    } elseif (mb_strpos($medrxiv_id, '10.64898/') === 0) {
-                        $template->add_if_new('doi', $medrxiv_id);
-                    } else {
-                        // Assume 10.1101 prefix if not specified
-                        $template->add_if_new('doi', '10.1101/' . $medrxiv_id);
-                    }
+                    $template->add_if_new('doi', $preprint_doi);
                     expand_by_doi($template, true); // this data is better than zotero
                 } elseif (mb_strstr($template->get('doi'), '10.1101') === false && mb_strstr($template->get('doi'), '10.64898') === false) {
-                    $medrxiv_id = $template->get('medrxiv');
-                    $doi_to_try = (mb_strpos($medrxiv_id, '10.') === 0) ? $medrxiv_id : '10.1101/' . $medrxiv_id;
-                    expand_doi_with_dx($template, $doi_to_try);  // dx data is better than zotero
-                    self::expand_by_zotero($template, 'https://dx.doi.org/' . $doi_to_try); // Rare case there is a different DOI
+                    expand_doi_with_dx($template, $preprint_doi);  // dx data is better than zotero
+                    self::expand_by_zotero($template, 'https://dx.doi.org/' . $preprint_doi); // Rare case there is a different DOI
                 }
             }
             $doi = $template->get('doi'); // might have changed
@@ -879,12 +865,12 @@ final class Zotero {
             if (in_array($template->get('url-status'), BAD_URL_STATUS, true)) {
                 return;
             }
-            $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
-            $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
-            if ($access_date && $archive_date) {
-                $access_date = min($access_date, $archive_date); // Whichever was first
-            } elseif ($archive_date) {
-                $access_date = $archive_date;
+            $access = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
+            $archive = strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
+            if ($access !== false && $archive !== false) {
+                $access_date = min($access, $archive);
+            } else {
+                $access_date = $access !== false ? $access : (int) $archive;
             }
             if ($template->has('url')) {
                 $url = $template->get('url');
@@ -1059,7 +1045,12 @@ final class Zotero {
                 $candidate = $result->bookTitle;
             }
             if ($candidate === '' || !self::citoid_title_field_matches($template, 'title', $candidate)) {
-                return false;
+                $native = $template->get('script-title');
+                if ($candidate === '' || $result->itemType === 'bookSection' ||
+                        !citation_titles_use_romanization($template->get('title'), $native) ||
+                        normalize_unicode_nfc(mb_trim(html_entity_decode($candidate, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'))) !== citation_script_title_text($native)) {
+                    return false;
+                }
             }
             $original_title_matched = true;
         }
@@ -1070,6 +1061,13 @@ final class Zotero {
                 }
                 $original_title_matched = true;
             }
+        }
+        if (!$original_title_matched && $template->has('script-title')) {
+            $script_title = citation_script_title_text($template->get('script-title'));
+            if (!isset($result->title) || !titles_are_similar($script_title, (string) $result->title)) {
+                return false;
+            }
+            $original_title_matched = true;
         }
         // A translated title need not match Citoid's original title. Preserve
         // the conservative comparison when it is the only available title.
@@ -1641,18 +1639,36 @@ final class Zotero {
         if (isset($result->ISBN)) {
             $template->add_if_new('isbn', $result->ISBN);
         }
-        if ($access_date && isset($result->date)) {
-            $tidied_result_date = tidy_date((string) $result->date); // One time got an integer
+        if (isset($result->date)) {
+            // Unqualified epoch dates in Zotero feeds can be missing-date sentinels.
+            // An explicit textual publication date can still be imported.
+            $source_date = mb_trim((string) $result->date);
+            if (preg_match('~\A(?:1969-12-31|1970-01-01)(?:[T ](?:00:00(?::00)?|23:59:59)(?:\.0+)?(?:Z|[+-]\d{2}:?\d{2})?)?\z~i', $source_date) === 1) {
+                unset($result->date);
+            }
+        }
+        $has_access_date = $access_date !== 0;
+        if (!$has_access_date && isset($result->date)) {
+            // The existing public entry point also uses 0 for an absent access date.
+            foreach (['access-date', 'accessdate', 'archive-date', 'archivedate'] as $param) {
+                if (strtotime(tidy_date($template->get($param))) === 0) {
+                    $has_access_date = true;
+                    break;
+                }
+            }
+        }
+        if ($has_access_date && isset($result->date)) {
+            $source_date = (string) $result->date;
+            $localized_date = WIKI_BASE === 'en' ? localized_citation_date($source_date) : null;
+            $tidied_result_date = tidy_date($localized_date ?? $source_date);
             if (preg_match('~^\d{4}$~', $tidied_result_date) === 1) {
                 $new_date = strtotime('1 January ' . $tidied_result_date); // strtotime('2015') is a time of day: 8:15pm today
             } else {
                 $new_date = strtotime($tidied_result_date);
             }
-            if ($new_date) { // can compare
-                if ($new_date > $access_date) {
-                    report_info("URL appears to have changed since access-date " . echoable($url));
-                    return;
-                }
+            if ($new_date !== false && $new_date > $access_date) {
+                report_info("URL appears to have changed since access-date " . echoable($url));
+                return;
             }
         }
         if (str_i_same(mb_substr((string) @$result->publicationTitle, 0, 4), 'http') ||
@@ -1761,8 +1777,8 @@ final class Zotero {
         }
         if (isset($result->pages)) {
             $pos_pages = (string) $result->pages;
-            if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv
-                $pos_pages = str_ireplace(['σελ.', 'σελ ', 'pages ', 'page ', 'pages:', 'page:', 'pages', 'page'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $pos_pages);
+            if (preg_match('~\p{Nd}~u', $pos_pages) && !preg_match('~\p{Nd}+\.\p{Nd}+.\p{Nd}+~u', $pos_pages)) { // At least one number but not a dotted number from medRxiv
+                $pos_pages = safe_preg_replace('~σελ\.?\s*|pages?\s*:?\s*~iu', ' ', $pos_pages);
                 $pos_pages = mb_trim($pos_pages);
                 $pos_pages = str_ireplace(['  ', '  ', '  '], [' ', ' ', ' '], $pos_pages);
                 $template->add_if_new('pages', $pos_pages);
@@ -1822,7 +1838,17 @@ final class Zotero {
             $template->add_if_new('volume', clean_volume((string) $result->volume));
         }
         if (isset($result->date) && mb_strlen((string) $result->date) > 3) {
-            $new_date = tidy_date((string) $result->date);
+            $source_date = (string) $result->date;
+            $localized_date = WIKI_BASE === 'en' ? localized_citation_date($source_date) : null;
+            $new_date = tidy_date($localized_date ?? $source_date);
+            if (preg_match('~^[0-9]{4}$~D', $new_date) === 1 &&
+                mb_trim($source_date) !== $new_date &&
+                (preg_match('~\p{L}~u', $source_date) === 1 ||
+                 preg_match_all('~(?<![0-9])[0-9]{4}(?![0-9])~', $source_date) > 1)) {
+                // A localized month or a date range must not be silently
+                // replaced with a year that means something different.
+                $new_date = '';
+            }
             if (mb_stripos($url, 'indiatimes') !== false) { // "re-posted" website all at once
                 $maybe_date = (int) strtotime($new_date);
                 $end_date1 = strtotime('10 January 2017');
@@ -1845,14 +1871,11 @@ final class Zotero {
         }
         // CalMatters supplies this collective byline as two parts of a person's name.
         $creator_host = parse_url($url, PHP_URL_HOST);
-        if (is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true)) {
+        $is_calmatters = is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true);
+        if ($is_calmatters) {
             $result->author = array_values(array_filter(
                 $result->author ?? [],
                 static fn (array $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name[0] ?? '') . ' ' . mb_trim($name[1] ?? '')))
-            ));
-            $result->creators = array_values(array_filter(
-                $result->creators ?? [],
-                static fn (object $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name->firstName ?? '') . ' ' . mb_trim($name->lastName ?? '')))
             ));
         }
         // Filter out bad author name components and remove entirely empty author entries
@@ -1879,15 +1902,6 @@ final class Zotero {
             $result->author = array_values($result->author);
         }
 
-        // Special case: remove a single non-human author
-        if (isset($result->author[0]) && !isset($result->author[1]) &&
-                !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
-            unset($result->author[0]); // Do not add a single non-human author
-            if (isset($result->author) && is_array($result->author)) {
-                $result->author = array_values($result->author); // Re-index again after removal
-            }
-        }
-
         // Use a dedicated counter for author numbering to ensure contiguous numbering
         // Do not rely on array indices, as they may have gaps if authors were filtered
         // Citoid sometimes returns the same author more than once. Skip exact duplicates
@@ -1896,7 +1910,13 @@ final class Zotero {
         $seen_zotero_authors = [];
         $i = 0;
         while (isset($result->author[$i])) {
-            if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) {
+            $full_name = mb_trim(($result->author[$i][0] ?? '') . ' ' . ($result->author[$i][1] ?? ''));
+            $institution = mb_trim($result->author[$i][0] ?? '') === '' && is_institutional_author_name($full_name);
+            if ($institution && self::creator_is_site_name($full_name, $url, $result)) {
+                ++$i;
+                continue;
+            }
+            if ($institution || author_is_human($full_name)) {
                 $author_key = mb_strtolower(mb_trim((string) @$result->author[$i][0])) . '|' . mb_strtolower(mb_trim((string) @$result->author[$i][1]));
                 if (isset($seen_zotero_authors[$author_key])) {
                     $i++;
@@ -1908,7 +1928,10 @@ final class Zotero {
                                                                 isset($result->rights) ? (string) $result->rights : '', false);
                 // Break if nothing was added (e.g., template already has authors)
                 if ($template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
-                    break;
+                    if (!$institution || $template->had_initial_author() || $template->had_initial_editor()) {
+                        break;
+                    }
+                    --$author_number;
                 }
             }
             $i++;
@@ -2041,16 +2064,27 @@ final class Zotero {
                 $editor_i = 0;
                 $translator_i = 0;
                 while (isset($result->creators[$i])) {
-                    $creatorType = $result->creators[$i]->creatorType ?? 'author';
-                    if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
-                        // Websites often have non-authors listed in metadata.
+                    $creator = $result->creators[$i];
+                    $creatorType = $creator->creatorType ?? 'author';
+                    $given_name = (string) ($creator->firstName ?? '');
+                    $family_name = (string) ($creator->lastName ?? '');
+                    $single_field = mb_trim((string) ($creator->name ?? ''));
+                    $literal_name = $single_field !== '' ||
+                        (in_array($creator->fieldMode ?? null, [1, '1'], true) && mb_trim($given_name) === '');
+                    if ($single_field !== '') {
+                        $given_name = '';
+                        $family_name = $single_field;
+                    }
+                    if ($literal_name || isset($creator->firstName, $creator->lastName)) {
                         // Skip creators whose name is really the site or publication name.
-                        if (self::creator_is_site_name($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName, $url, $result)) {
+                        $creator_name = mb_trim(mb_trim($given_name) . ' ' . mb_trim($family_name));
+                        if (($is_calmatters && str_i_same('Guest Commentary', $creator_name)) ||
+                            self::creator_is_site_name($creator_name, $url, $result)) {
                             $i++;
                             continue;
                         }
-                        $creator_first = mb_strtolower(mb_trim((string) $result->creators[$i]->firstName));
-                        $creator_last = mb_strtolower(mb_trim((string) $result->creators[$i]->lastName));
+                        $creator_first = mb_strtolower(normalize_unicode_nfc(mb_trim($given_name)));
+                        $creator_last = mb_strtolower(normalize_unicode_nfc(mb_trim($family_name)));
                         $creator_role = mb_strtolower(mb_trim((string) $creatorType));
                         $creator_key = $creator_first . '|' . $creator_last . '|' . $creator_role;
                         if (isset($seen_creators[$creator_key])) {
@@ -2058,8 +2092,8 @@ final class Zotero {
                             continue;
                         }
                         $seen_creators[$creator_key] = true;
-                        // Only process if author passes validation
-                        if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
+                        if ($literal_name || author_is_human($creator_name) ||
+                            (mb_trim($given_name) === '' && is_institutional_author_name($family_name))) {
                             // Increment counter only after validation passes, based on creator type
                             switch ($creatorType) {
                                 case 'author':
@@ -2090,16 +2124,22 @@ final class Zotero {
                                 case 'performer': // http://catalog.nypl.org/search/o77059475
                                     $authorParam = '';
                                     break;
+                                case 'presenter': // https://zenodo.org/records/4249971
+                                    $authorParam = '';
+                                    break;
+                                case 'seriesEditor': // https://www.jstor.org/stable/10.3138/9781442689039
+                                    $authorParam = '';
+                                    break;
                                 default:                                // @codeCoverageIgnore
                                     report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));   // @codeCoverageIgnore
                                     $authorParam = '';                          // @codeCoverageIgnore
                             }
                             if ($authorParam) {
-                                if (is_bad_author((string) $result->creators[$i]->lastName)) {
-                                    $result->creators[$i]->lastName = '';
+                                if (is_bad_author($family_name)) {
+                                    $family_name = '';
                                 }
-                                if (is_bad_author((string) $result->creators[$i]->firstName)) {
-                                    $result->creators[$i]->firstName = '';
+                                if (is_bad_author($given_name)) {
+                                    $given_name = '';
                                 }
                                 // SSRN Zotero translator (Citoid) returns names in wrong fields.
                                 // This is a known upstream translator bug:
@@ -2112,21 +2152,34 @@ final class Zotero {
                                 // We reconstruct the full name by concatenating both fields,
                                 // producing e.g. "Alesina, Alberto F." or "Zeira, Joseph",
                                 // then let format_author() parse it correctly into last/first.
-                                if ($template->has('ssrn') && mb_strpos((string) $result->creators[$i]->firstName, ',') !== false) {
-                                    $fullName = mb_trim((string) $result->creators[$i]->firstName) . ' ' . mb_trim((string) $result->creators[$i]->lastName);
+                                if (!$literal_name && $template->has('ssrn') && mb_strpos($given_name, ',') !== false) {
+                                    $fullName = mb_trim($given_name) . ' ' . mb_trim($family_name);
                                     $template->validate_and_add($authorParam, $fullName, '', isset($result->rights) ? (string) $result->rights : '', false);
                                 } else {
-                                    $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
-                                    isset($result->rights) ? (string) $result->rights : '', false);
+                                    $template->validate_and_add($authorParam, $family_name, $given_name,
+                                    isset($result->rights) ? (string) $result->rights : '', false, $literal_name);
                                 }
-                                // Break out if nothing added
-                                if ((mb_strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
-                                    break;
-                                }
-                                if ((mb_strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string) ($editor_i)])) {
-                                    break;
-                                }
-                                if ((mb_strpos($authorParam, 'translator') === 0) && $template->blank(['translator' . (string) ($translator_i)])) {
+                                if ($literal_name || (mb_trim($given_name) === '' && is_institutional_author_name($family_name))) {
+                                    if ($template->had_initial_author() || $template->had_initial_editor()) {
+                                        break;
+                                    }
+                                    // A rejected or reclassified creator does not consume a slot.
+                                    $creator_params = str_starts_with($authorParam, 'author')
+                                        ? [$authorParam, 'first' . $author_i, 'last' . $author_i]
+                                        : [$authorParam];
+                                    if ($template->blank($creator_params)) {
+                                        if (str_starts_with($authorParam, 'author')) {
+                                            --$author_i;
+                                        } elseif (str_starts_with($authorParam, 'editor')) {
+                                            --$editor_i;
+                                        } else {
+                                            --$translator_i;
+                                        }
+                                    }
+                                } elseif (
+                                    (str_starts_with($authorParam, 'author') && $template->blank([$authorParam, 'first' . $author_i, 'last' . $author_i])) ||
+                                    (!str_starts_with($authorParam, 'author') && $template->blank($authorParam))
+                                ) {
                                     break;
                                 }
                             }

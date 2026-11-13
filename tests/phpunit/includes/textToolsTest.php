@@ -229,7 +229,7 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
         $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
         $this->assertSame('2011-05-10', tidy_date('2011-05-10T06:34:00-0400'));
-        $this->assertSame('July 2014', tidy_date('2014-07-01T23:50:00Z, 2014-07-01'));
+        $this->assertSame('2014-07-01', tidy_date('2014-07-01T23:50:00Z, 2014-07-01'));
         $this->assertSame('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
     }
 
@@ -262,14 +262,14 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('Invalid'));
         $this->assertSame('', tidy_date('1/1/0001'));
         $this->assertSame('', tidy_date('0001-01-01'));
-        $this->assertSame('', tidy_date('1969-12-31'));
+        $this->assertSame('1969-12-31', tidy_date('1969-12-31'));
         $this->assertSame('', tidy_date('19xx'));
     }
 
     public function testTidyDate6(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('2000 1999-1998'));
-        $this->assertSame('', tidy_date('1969-12-31'));
+        $this->assertSame('1969-12-31', tidy_date('1969-12-31'));
         $this->assertSame('', tidy_date('0011-10-07'));
         $this->assertSame('', tidy_date('4444-10-07'));
     }
@@ -1604,6 +1604,28 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(rxiv_id_valid('10.64898/test123'));           // 10.64898 requires the dated form
         $this->assertFalse(rxiv_id_valid('bogus'));
         $this->assertFalse(rxiv_id_valid(''));
+    }
+
+    public function testRxivIdValidChecksCalendarDates(): void {
+        $this->assertTrue(rxiv_id_valid('10.1101/2020.02.29.123456'));
+        $this->assertTrue(rxiv_id_valid('10.64898/2024.02.29.12345678v2'));
+        $this->assertTrue(rxiv_id_valid('10.64898/2025.04.30.123456'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2021.02.29.123456'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2020.02.30.123456'));
+        $this->assertFalse(rxiv_id_valid('10.64898/2025.04.31.123456v2'));
+    }
+
+    public function testRxivDateWindowAndServerSpecificIdentifiers(): void {
+        $tomorrow = new DateTimeImmutable('tomorrow', new DateTimeZone('UTC'));
+        $this->assertTrue(rxiv_id_valid('10.1101/' . $tomorrow->format('Y.m.d') . '.123456', 'biorxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/' . $tomorrow->modify('+1 day')->format('Y.m.d') . '.123456', 'biorxiv'));
+        $this->assertTrue(rxiv_id_valid('10.1101/2019.12.11.123456', 'biorxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2019.12.10.123456', 'biorxiv'));
+        $this->assertTrue(rxiv_id_valid('10.1101/2020.01.01.12345678', 'medrxiv'));
+        $this->assertTrue(rxiv_id_valid('10.1101/2019.12.26.19014274', 'medrxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2020.01.01.123456', 'medrxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2020.01.01.12345678', 'biorxiv'));
+        $this->assertFalse(rxiv_id_valid("10.1101/2020.01.01.123456\n", 'biorxiv'));
     }
 
     public function testBibcodeValid(): void {

@@ -176,7 +176,17 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref');
                 }
             }
-            $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
+            $series_title = (string) $crossRef->series_title;
+            if (
+                $series_title === '' &&
+                str_starts_with($doi, '10.1117/12.') &&
+                $doi_type === 'proceedings-article' &&
+                isset($crossRefNewAPI->{'container-title'}[0]) &&
+                $crossRefNewAPI->{'container-title'}[0] === 'SPIE Proceedings'
+            ) {
+                $series_title = 'Proceedings of SPIE';
+            }
+            $template->add_if_new('series', $series_title, 'crossref');
             if (mb_strpos($doi, '10.7817/jameroriesoci') === false || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
                 $template->add_if_new("year", (string) $crossRef->year, 'crossref');
             }
@@ -789,8 +799,8 @@ function get_doi_from_crossref(Template $template): void {
         $year = parse_decimal_integer($year_match[1]);
     }
     $data = [
-        'title' => de_wikify($template->get('title')),
-        'journal' => de_wikify($template->get('journal')),
+        'title' => de_wikify($template->get('title'), true),
+        'journal' => de_wikify($template->get('journal'), true),
         'author' => $template->first_surname(),
         'year' => $year,
         'volume' => $template->get('volume'),
@@ -816,7 +826,7 @@ function get_doi_from_crossref(Template $template): void {
 
     $novel_data = false;
     foreach ($data as $key => $value) {
-        if ($value) {
+        if ($value !== null && $value !== '') {
             if (!$template->api_has_used('crossref', equivalent_parameters($key))) {
                 $novel_data = true;
             }
@@ -828,17 +838,17 @@ function get_doi_from_crossref(Template $template): void {
         return;
     }
     // They already allow some fuzziness in matches
-    if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
+    if (($data['journal'] || $data['issn']) && ($data['start_page'] !== '' || $data['author'])) {
         /** @psalm-taint-escape ssrf */
         $url =
         "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" .
         CROSSREFUSERNAME .
         ($data['title'] ? "&atitle=" . urlencode($data['title']) : '') .
         ($data['author'] ? "&aulast=" . urlencode($data['author']) : '') .
-        ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '') .
-        ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '') .
+        ($data['start_page'] !== '' ? "&spage=" . urlencode($data['start_page']) : '') .
+        ($data['end_page'] !== null && $data['end_page'] !== '' ? "&epage=" . urlencode($data['end_page']) : '') .
         ($data['year'] ? "&date=" . urlencode($data['year']) : '') .
-        ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '') .
+        ($data['volume'] !== '' ? "&volume=" . urlencode($data['volume']) : '') .
         ($data['issn'] ? "&issn=" . urlencode($data['issn']) : "&title=" . urlencode($data['journal'])) .
         "&mailto=" .
         CROSSREFUSERNAME; // do not encode crossref email
@@ -937,7 +947,7 @@ function get_biorxiv_published_doi(
 ): ?string {
     $api_status = null;
 
-    if (mb_strpos($doi, '10.1101/') !== 0 && mb_strpos($doi, '10.64898/') !== 0) {
+    if (!rxiv_id_valid($doi, $server)) {
         return null;
     }
 

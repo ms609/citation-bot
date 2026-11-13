@@ -18,7 +18,7 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 /**
  * This function converts formatting from external sources into wiki style
  */
-function wikify_external_text(string $title): string {
+function wikify_external_text(string $title, bool $use_title_case = false): string {
     $title = str_replace(["\r\n", "\n", "\r"], ' ', $title);
     $replacement = [];
     $placeholder = [];
@@ -61,6 +61,9 @@ function wikify_external_text(string $title): string {
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    if ($use_title_case) {
+        $title = title_case($title);
+    }
     $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
     if (mb_substr($title, -6) === "&nbsp;") {
         $title = mb_substr($title, 0, -6); // @codeCoverageIgnore
@@ -130,9 +133,19 @@ function wikify_external_text(string $title): string {
         $title = sanitize_string($title);
     }
 
-    $title = str_replace(['​'], [' '], $title); // Funky spaces
-
     $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
+    if ($use_title_case) {
+        // Imported journal text may contain encoded tags. Only allow bare formatting tags.
+        $title = safe_preg_replace_callback('~<!--.*?-->|<[^<>]*>|[<>]~s',
+            static function (array $match): string {
+                if (preg_match('~\A</?(?:b|i|em|strong|sup|sub|small|math)>\z~i', $match[0]) === 1) {
+                    return $match[0];
+                }
+                return strtr($match[0], ['<' => '&#60;', '>' => '&#62;']);
+            },
+            $title
+        );
+    }
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
     $title = mb_trim($title, " \t\n\r\0\x0B\u{00A0}");
@@ -219,7 +232,9 @@ function sanitize_string(string $str): string {
     }
     $dirty = ['[', ']', '|', '{', '}', " what�s "];
     $clean = ['&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's "];
-    $str = mb_trim(str_replace($dirty, $clean, safe_preg_replace('~[;.,]+$~', '', $str)));
+    // Keep the semicolon that closes an entity, even before trailing punctuation.
+    $str = safe_preg_replace('~(&(?:[a-z][a-z0-9]*|#[0-9]+|#x[0-9a-f]+);)[;.,]*+\z|[;.,]++\z~i', '$1', $str);
+    $str = mb_trim(str_replace($dirty, $clean, $str));
     if ($math_templates_present) {
         $str = str_replace($placeholder, $replacement, $str);
     }
@@ -293,22 +308,45 @@ function is_annual_review_cell_biology(string $journal, string $doi = ''): bool 
         str_equivalent($journal, 'Annual Review of Cell and Developmental Biology');
 }
 
+/**
+ * Remove a CS1 language tag before comparing original script text.
+ */
+function citation_script_title_text(string $title): string {
+    $title = safe_preg_replace('~^[a-z]{2,3}(?:-[a-z0-9]{1,8})*:\s*~i', '', $title);
+    return normalize_unicode_nfc(mb_trim(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+}
+
+/** A Latin title and a genuinely non-Latin original can coexist. */
+function citation_titles_use_romanization(string $title, string $native): bool {
+    $latin = normalize_unicode_nfc(mb_trim(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+    $native = citation_script_title_text($native);
+    return preg_match('~\p{Latin}~u', $latin) === 1 &&
+        preg_match('~^[\p{Latin}\p{M}0-9\s.,;:!?\'’"()\-–—]+$~uD', $latin) === 1 &&
+        preg_match('~[^\p{Latin}\p{Common}\p{Inherited}]~u', $native) === 1;
+}
+
 /** See also str_equivalent() */
 function titles_are_similar(string $title1, string $title2): bool {
     if (!titles_are_dissimilar($title1, $title2)) {
         return true;
     }
-    // Try again but with funky stuff mapped out of existence
-    $title1 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title1));
-    $title2 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title2));
+    // The first pass already transliterates diacritics. Removing their letters
+    // here makes different titles such as Section Å and Section Ø identical.
+    $title1 = str_replace('�', '', $title1);
+    $title2 = str_replace('�', '', $title2);
     if (!titles_are_dissimilar($title1, $title2)) {
         return true;
     }
     return false;
 }
 
-function de_wikify(string $string): string {
-    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"], $string));
+function de_wikify(string $string, bool $decode_entities = false): string {
+    $string = safe_preg_replace('~<[^>]*>~', '', $string);
+    $string = safe_preg_replace('~\[\[[^\|\]]*\|([^\]]*)\]\]~', '$1', $string);
+    $string = $decode_entities
+        ? html_entity_decode($string, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')
+        : safe_preg_replace('~\&[\w\d]{2,7};~', '', $string);
+    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], $string);
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
@@ -324,16 +362,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
             }
         }
     }
-    // Strip diacritics before decode
-    $inTitle = strip_diacritics($inTitle);
-    $dbTitle = strip_diacritics($dbTitle);
-    // Decode entities before tokenizing numbers, including spaces such as &nbsp;.
-    $inSpaced = html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
-    $dbSpaced = html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    // Keep the original labels for identity checks before accent folding.
+    $inSpaced = normalize_unicode_nfc(html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
+    $dbSpaced = normalize_unicode_nfc(html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
     // always decode new data
     $dbTitle = titles_simple(htmlspecialchars($dbSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     // old data both decoded and not
-    $inTitle2 = titles_simple($inTitle);
+    $inTitle2 = titles_simple(strip_diacritics($inTitle));
     $inTitle = titles_simple(htmlspecialchars($inSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     $dbTitle = strip_diacritics($dbTitle);
     $inTitle = strip_diacritics($inTitle);
@@ -348,24 +383,76 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle = str_replace($drops, "", $inTitle);
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
-    // This will convert &delta into delta
-    // Long titles use a 98% similarity threshold rather than edit distance. It
-    // must not override a different section label or number: a 300-character
-    // title with Part A and Part B can be more than 98% identical.
+    // Require East Asian words to match at every length. Handle script variants
+    // explicitly before allowing the ordinary typo tolerance elsewhere.
+    $east_asian_match = citation_east_asian_title_match($inTitle, $dbTitle);
+    if ($east_asian_match !== null) {
+        return !$east_asian_match || compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
+            compare_title_numbering($inSpaced, $dbSpaced) === false;
+    }
+    // Long titles still require matching section labels and numbers.
     if ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254 || mb_strlen($inTitle2) > 254) &&
             (compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
              compare_title_numbering($inSpaced, $dbSpaced) === false)) {
         return true;
     }
     return ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254)
-                ? (mb_strlen($inTitle) !== mb_strlen($dbTitle)
-            || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle, '8bit') < 0.98)
+                ? long_titles_are_dissimilar($inTitle, $dbTitle)
                 : short_titles_are_dissimilar($inTitle, $dbTitle, $inSpaced, $dbSpaced))
     &&
     ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
-                ? (mb_strlen($inTitle2) !== mb_strlen($dbTitle)
-            || similar_text($inTitle2, $dbTitle) / mb_strlen($inTitle2, '8bit') < 0.98)
+                ? long_titles_are_dissimilar($inTitle2, $dbTitle)
                 : short_titles_are_dissimilar($inTitle2, $dbTitle, $inSpaced, $dbSpaced));
+}
+
+/** Compare East Asian titles with script-aware identity rules. */
+function citation_east_asian_title_match(string $left, string $right): ?bool {
+    $east_asian = '~[\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]~u';
+    $left_has_east_asian = preg_match($east_asian, $left) === 1;
+    $right_has_east_asian = preg_match($east_asian, $right) === 1;
+    if (!$left_has_east_asian && !$right_has_east_asian) {
+        return null;
+    }
+    if (!$left_has_east_asian || !$right_has_east_asian) {
+        return false;
+    }
+    if ($left === $right) {
+        return true;
+    }
+    // Accept the common terminal spelling variant of these Japanese loanwords.
+    // Keep the long vowel mark significant in other words.
+    $loanword_variants = ['コンピューター' => 'コンピュータ', 'プリンター' => 'プリンタ'];
+    $left = strtr($left, $loanword_variants);
+    $right = strtr($right, $loanword_variants);
+    // Common Japanese spellings can differ from simplified Chinese and can
+    // occur in titles written entirely in kanji.
+    $variants = ['圖' => '図', '國' => '国', '學' => '学', '醫' => '医', '體' => '体', '會' => '会', '歷' => '歴', '實' => '実'];
+    if (preg_match('~[\p{Hiragana}\p{Katakana}]~u', $left . $right) === 1) {
+        return strtr($left, $variants) === strtr($right, $variants);
+    }
+    if (strtr($left, $variants) === $right || strtr($right, $variants) === $left) {
+        return true;
+    }
+    if (!function_exists('transliterator_transliterate')) {
+        return false;
+    }
+    // Require one spelling to convert into the other. A shared simplified
+    // form alone can conflate distinct traditional characters, e.g. 髮 and 發.
+    return transliterator_transliterate('Traditional-Simplified', $left) === $right ||
+        transliterator_transliterate('Traditional-Simplified', $right) === $left;
+}
+
+/** Compare long titles by characters with bounded fuzzy matching. */
+function long_titles_are_dissimilar(string $left, string $right): bool {
+    if ($left === $right) {
+        return false;
+    }
+    $length = mb_strlen($left);
+    if ($length > 4096 || $length !== mb_strlen($right)) {
+        return true;
+    }
+    $allowed = min(32, intdiv($length, 50));
+    return unicode_levenshtein($left, $right, $allowed) > $allowed;
 }
 
 /**
@@ -383,7 +470,6 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
  * decoded but with their words still separate.
  */
 function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $inSpaced, string $dbSpaced): bool {
-    $distance = unicode_levenshtein($inTitle, $dbTitle);
     // Check original, spaced titles first. Normalization can erase chapter numbers,
     // so an edit distance of zero does not always mean the same work.
     if (compare_title_lettered_labels($inSpaced, $dbSpaced) === false) {
@@ -393,11 +479,12 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
     if ($numbering_matches === false) {
         return true;
     }
+    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
+    $distance = unicode_levenshtein($inTitle, $dbTitle);
     if ($distance === 0 || $numbering_matches === true ||
             titles_have_equivalent_final_y_plural($inTitle, $dbTitle)) {
         return false;
     }
-    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
     if ($shorter <= 4) {
         $allowed = 0;
     } elseif ($shorter <= 9) {
@@ -446,7 +533,7 @@ function compare_title_lettered_labels(string $title1, string $title2): ?bool {
     if ($labels1 === $labels2 && $skeleton1 === $skeleton2) {
         return true;
     }
-    if ($skeleton1 === $skeleton2 || unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+    if ($skeleton1 === $skeleton2 || unicode_levenshtein($skeleton1, $skeleton2, 3) <= 3) {
         if ($labels1 !== $labels2) {
             return compare_title_numbering($title1, $title2) === true;
         }
@@ -456,8 +543,8 @@ function compare_title_lettered_labels(string $title1, string $title2): ?bool {
 
 /** @return array{0: string, 1: array<string>} */
 function title_lettered_labels(string $title): array {
-    $title = mb_strtolower(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
-    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    $title = mb_strtolower(normalize_title_numeral_letters(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'))));
+    $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
     }
@@ -468,17 +555,17 @@ function title_lettered_labels(string $title): array {
     $labels = [];
     $label_words = ['appendix', 'class', 'figure', 'group', 'hepatitis', 'panel',
         'part', 'phase', 'physica', 'region', 'section', 'series', 'stage',
-        'table', 'type', 'variant', 'vitamin'];
+        'table', 'type', 'variant', 'vitamin', 'гепатит', 'μέρος', 'κεφάλαιο'];
     foreach ($parts as $index => $part) {
         if ($index > 0 && in_array($parts[$index - 1], $label_words, true) &&
-                (preg_match('~^[a-z]$~', $part) === 1 || preg_match('~^\d{1,9}$~', $part) === 1 ||
+                (preg_match('~^\p{L}\p{M}*$~u', $part) === 1 || preg_match('~^\p{Nd}{1,9}$~u', $part) === 1 ||
                  // Multi-character Roman numerals may also be section labels.
                  // Limit to <=50 so ordinary words like 'mix' are not mistaken for 1009.
                  (mb_strlen($part) > 1 &&
                   preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                   roman_numeral_value($part) <= 50))) {
             $skeleton[] = '#letter';
-            $labels[] = preg_match('~^\d~', $part) === 1 ? '#' . $part : $part;
+            $labels[] = preg_match('~^\p{Nd}~u', $part) === 1 ? '#' . $part : $part;
         } else {
             $skeleton[] = $part;
         }
@@ -491,11 +578,12 @@ function title_lettered_labels(string $title): array {
  * those numbers.  Arabic and Roman numerals are both numbers, and are returned as integers so
  * that "Part 1" and "Part I" carry the same number.
  *
- * @return array{0: string, 1: array<int>}
+ * @return array{0: string, 1: array<int|string>}
  */
 function title_numbering(string $title, bool $require_roman_label = false): array {
-    $title = mb_strtolower(strip_tags($title));
-    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    $title = mb_strtolower(normalize_title_numeral_letters(strip_tags($title)));
+    $title = safe_preg_replace('~(第[〇零一二三四五六七八九十百千]+[章巻卷])~u', ' $1 ', $title);
+    $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
     }
@@ -505,9 +593,17 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
     $skeleton = [];
     $numbers = [];
     foreach ($parts as $index => $part) {
-        if (preg_match('~^\d{1,9}$~', $part) === 1) {
+        if (preg_match('~^[0-9]{1,9}$~', $part) === 1) {
             $skeleton[] = '#';
             $numbers[] = intval($part);
+        } elseif (preg_match('~^第[〇零一二三四五六七八九十百千]+([章巻卷])$~u', $part, $ordinal) === 1) {
+            $skeleton[] = '第#' . $ordinal[1];
+            $numbers[] = $part;
+        } elseif (preg_match('~^\p{Nd}{1,9}$~u', $part) === 1) {
+            // Keep the original digits as an identity token. Casting non-ASCII
+            // numerals with intval() would collapse different years to zero.
+            $skeleton[] = '#';
+            $numbers[] = $part;
         } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                 // Single C/L/D/M tokens are more likely letter labels than 100/50/500/1000.
                 (mb_strlen($part) > 1 || in_array($part, ['i', 'v', 'x'], true)) &&
@@ -523,6 +619,19 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
         }
     }
     return [implode(' ', $skeleton), $numbers];
+}
+
+/** Expand numeral letters such as Ⅲ to III without changing the rest of a title. */
+function normalize_title_numeral_letters(string $title): string {
+    $normalized = preg_replace_callback(
+        '~\p{Nl}~u',
+        static function (array $match): string {
+            $value = Normalizer::normalize($match[0], Normalizer::FORM_KC);
+            return is_string($value) ? $value : $match[0];
+        },
+        $title
+    );
+    return $normalized ?? $title;
 }
 
 /** Value of a valid lower-case Roman numeral. */
@@ -554,7 +663,7 @@ function compare_title_numbering(string $title1, string $title2): ?bool {
     if ($skeleton1 === $skeleton2) {
         return $numbers1 === $numbers2;
     }
-    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2, 3) <= 3) {
         return false; // Several typos do not erase a different part number.
     }
     return null;
@@ -615,9 +724,11 @@ function normalize_unicode_nfc(string $input): string {
     return is_string($normalized) ? $normalized : $input;
 }
 
-function unicode_levenshtein(string $left, string $right): int {
+/** With a cutoff, return cutoff + 1 for distances above the cutoff. */
+function unicode_levenshtein(string $left, string $right, ?int $cutoff = null): int {
     if (!mb_check_encoding($left, 'UTF-8') || !mb_check_encoding($right, 'UTF-8')) {
-        return levenshtein($left, $right);
+        $distance = levenshtein($left, $right);
+        return $cutoff === null ? $distance : min($distance, $cutoff + 1);
     }
 
     $left = normalize_unicode_nfc($left);
@@ -632,20 +743,34 @@ function unicode_levenshtein(string $left, string $right): int {
         return levenshtein($left, $right); // @codeCoverageIgnore
     }
 
-    $previous = range(0, count($right_chars));
+    $left_length = count($left_chars);
+    $right_length = count($right_chars);
+    $band = $cutoff ?? max($left_length, $right_length);
+    $outside = $band + 1;
+    if (abs($left_length - $right_length) > $band) {
+        return $outside;
+    }
+
+    $previous = range(0, min($right_length, $band));
     foreach ($left_chars as $left_pos => $left_char) {
-        $current = [$left_pos + 1];
-        foreach ($right_chars as $right_pos => $right_char) {
-            $current[] = min(
-                $previous[$right_pos + 1] + 1,
-                $current[$right_pos] + 1,
-                $previous[$right_pos] + ($left_char === $right_char ? 0 : 1)
+        $row = $left_pos + 1;
+        $current = $row <= $band ? [$row] : [];
+        $start = max(1, $row - $band);
+        $end = min($right_length, $row + $band);
+        for ($column = $start; $column <= $end; ++$column) {
+            $current[$column] = min(
+                ($previous[$column] ?? $outside) + 1,
+                ($current[$column - 1] ?? $outside) + 1,
+                ($previous[$column - 1] ?? $outside) + ($left_char === $right_chars[$column - 1] ? 0 : 1)
             );
+        }
+        if ($cutoff !== null && ($current === [] || min($current) > $band)) {
+            return $outside;
         }
         $previous = $current;
     }
 
-    return $previous[count($right_chars)];
+    return min($previous[$right_length], $outside);
 }
 
 function strip_diacritics (string $input): string {
@@ -659,22 +784,14 @@ function normalize_c1_quotes(string $str): string {
         return '';
     }
 
-    // Raw C1 quote bytes are safe to replace byte-for-byte. Do not guess the
-    // encoding of the rest of a malformed string here.
-    if (!mb_check_encoding($str, 'UTF-8')) {
-        $str = str_replace(
-            ["\x91", "\x92", "\x93", "\x94"],
-            ["'", "'", '"', '"'],
-            $str
-        );
-        if (!mb_check_encoding($str, 'UTF-8')) {
-            return $str;
-        }
-    }
-
-    // Handle valid UTF-8 control characters (U+0091-U+0094)
-    $str = safe_preg_replace('~[\x{0091}\x{0092}]~u', "'", $str);
-    $str = safe_preg_replace('~[\x{0093}\x{0094}]~u', '"', $str);
+    // Skip valid multibyte sequences before handling standalone legacy bytes.
+    // C2 + a C1 quote byte is itself a UTF-8 encoded quote control.
+    $valid_utf8 = '[\xC2-\xDF][\x80-\xBF]|'
+        . '\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE-\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|'
+        . '\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2}';
+    $str = safe_preg_replace_callback('~\xC2[\x91-\x94]|(?:' . $valid_utf8 . ')(*SKIP)(*F)|[\x91-\x94]~',
+        static fn (array $match): string => in_array(mb_substr($match[0], -1, 1, '8bit'), ["\x91", "\x92"], true) ? "'" : '"',
+        $str);
 
     return $str;
 }
@@ -843,7 +960,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     );
     /** French l'Words and d'Words */
     $new_case = safe_preg_replace_callback(
-        "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
+        "~(\s[LD][\'\x{00B4}])((?:\p{L}\p{M}*)+)~u",
         static function (array $matches): string {
             return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);
         },
@@ -852,7 +969,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     /** Italian dell'xxx words */
     $new_case = safe_preg_replace_callback(
-        "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
+        "~(\s)(Dell|Degli|Delle)([\'\x{00B4}](?:\p{L}\p{M}*){3})~u",
         static function (array $matches): string {
             return $matches[1] . mb_strtolower($matches[2]) . $matches[3];
         },
@@ -877,9 +994,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     );
 
     // Lowercase each solitary A unless the preceding word makes it a label.
+    $has_non_latin_script = preg_match('~[^\p{Latin}\p{Common}\p{Inherited}]~u', $in) === 1;
     $new_case = safe_preg_replace_callback('~(\w+)(\s+)A(?=\s+\w)~u',
-        static function (array $matches): string {
-            if (in_array(mb_strtolower($matches[1]), ['class', 'section', 'part', 'series', 'physica'], true)) {
+        static function (array $matches) use ($has_non_latin_script): string {
+            if ($has_non_latin_script || in_array(mb_strtolower($matches[1]),
+                ['class', 'section', 'part', 'series', 'physica', 'vitamin', 'vitamine', 'vitamines'], true)) {
                 return $matches[0];
             }
             return $matches[1] . $matches[2] . 'a';
@@ -924,7 +1043,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     // Series has historically promoted series letters, even when lowercase in the input.
     if (mb_substr($new_case, -2, 1) === ' ' &&
             preg_match('~\b(?i:class|section|part|physica)\s+a$~u', mb_trim($in)) !== 1) {
-        $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
+        $last = mb_substr($new_case, -1);
+        $new_case = mb_substr($new_case, 0, -1) . ($last === 'ß' ? 'ẞ' : mb_ucfirst($last));
     }
 
     if ($new_case === 'Now and then') {
@@ -1047,6 +1167,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     } elseif ($new_case === 'Melus') {
         $new_case = 'MELUS';
     }
+    if (mb_strpos($in, 'İ') !== false) {
+        // Unicode lowercase İ is i plus combining dot; Turkish lowercase i
+        // already has its dot, so retaining both changes the visible spelling.
+        $new_case = str_replace("i\u{0307}", 'i', $new_case);
+    }
     return $new_case;
 }
 
@@ -1059,7 +1184,7 @@ function mb_strrev(string $string, string $encode = ''): string {
 function mb_ucwords(string $string): string {
     return preg_replace_callback('~(\S)(\S*\s*)|(\s+)~u',
         static function (array $match): string {
-            return $match[3] ?? mb_strtoupper($match[1]) . $match[2];
+            return $match[3] ?? mb_ucfirst($match[1]) . $match[2];
         },
         $string) ?? $string;
 }
@@ -1089,6 +1214,37 @@ function remove_brackets(string $string): string {
 // ============================================= Data processing functions ======================================
 
 /**
+ * Convert an unambiguous localized day–month–year date for English CS1.
+ * Return null for unfamiliar formats and an empty string for invalid dates.
+ */
+function localized_citation_date(string $date): ?string {
+    $date = mb_strtolower(normalize_unicode_nfc(mb_trim($date)));
+    if (preg_match('~^([0-9]{1,2})\.?\s+(\p{L}[\p{L}\p{M}]*)\s+([0-9]{4})$~uD', $date, $parts) !== 1) {
+        return null;
+    }
+    $months = [
+        'janvier' => 1, 'février' => 2, 'mars' => 3, 'avril' => 4, 'mai' => 5, 'juin' => 6,
+        'juillet' => 7, 'août' => 8, 'septembre' => 9, 'octobre' => 10, 'novembre' => 11, 'décembre' => 12,
+        'januar' => 1, 'februar' => 2, 'märz' => 3, 'april' => 4, 'juni' => 6,
+        'juli' => 7, 'august' => 8, 'september' => 9, 'oktober' => 10, 'dezember' => 12,
+        'enero' => 1, 'febrero' => 2, 'marzo' => 3, 'abril' => 4, 'mayo' => 5, 'junio' => 6,
+        'julio' => 7, 'agosto' => 8, 'septiembre' => 9, 'octubre' => 10, 'noviembre' => 11, 'diciembre' => 12,
+        'января' => 1, 'февраля' => 2, 'марта' => 3, 'апреля' => 4, 'мая' => 5, 'июня' => 6,
+        'июля' => 7, 'августа' => 8, 'сентября' => 9, 'октября' => 10, 'ноября' => 11, 'декабря' => 12,
+    ];
+    $month = $months[$parts[2]] ?? null;
+    if ($month === null) {
+        return null;
+    }
+    $day = (int) $parts[1];
+    $year = (int) $parts[3];
+    if (!checkdate($month, $day, $year)) {
+        return '';
+    }
+    return $day . ' ' . MONTH_SEASONS[$month - 1] . ' ' . $parts[3];
+}
+
+/**
  * Wrapper to change all pre-1900 dates to just years
  */
 function tidy_date(string $string): string {
@@ -1097,7 +1253,7 @@ function tidy_date(string $string): string {
         return $string;
     }
     $time = strtotime($string);
-    if (!$time) {
+    if ($time === false) {
         return $string;
     }
     // Check for future dates (more than 3 days ahead)
@@ -1115,6 +1271,17 @@ function tidy_date(string $string): string {
         return mb_ltrim($new, "0"); // Also cleans up 0000
     }
     return $string;
+}
+
+/** Recognize an explicit calendar day before localizing a publication date. */
+function publication_date_has_explicit_day(string $date): bool {
+    return preg_match(
+        '~(?:^|[^0-9])(?:[0-9]{4}[-/][0-9]{1,2}[-/][0-9]{1,2}|[0-9]{1,2}[-/.][0-9]{1,2}[-/.][0-9]{2,4})(?![0-9])~',
+        $date
+    ) === 1 || preg_match(
+        '~^(?:[0-9]{4}-[A-Za-z]{3,9}-[0-9]{1,2}(?![0-9])|(?:[A-Za-z]+,?\s+)?(?:[0-9]{1,2}(?:st|nd|rd|th|\.)?[\s-]+[A-Za-z]+\.?|[A-Za-z]+\.?[\s-]+[0-9]{1,2}(?:st|nd|rd|th)?)[,\s-]+[0-9]{2,4}(?![0-9]))~i',
+        $date
+    ) === 1;
 }
 
 function tidy_date_inside(string $string): string {
@@ -1176,9 +1343,6 @@ function tidy_date_inside(string $string): string {
     if (mb_strpos($string, '0001-11-30') !== false) {
         return '';
     }
-    if (mb_strpos($string, '1969-12-31') !== false) {
-        return '';
-    }
     if (str_i_same('19xx', $string)) {
         return ''; //archive.org gives this if unknown
     }
@@ -1229,6 +1393,8 @@ function tidy_date_inside(string $string): string {
     if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.    The comma is evil and strtotime is stupid
         $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
     }
+    // A dot after a day is an ordinal separator in several date styles.
+    $string = safe_preg_replace('~^(\d{1,2})\.(?=\s+[A-Za-z])~', '$1', $string);
     $parsed_date = date_parse($string);
     if (is_int($parsed_date['year']) && in_array('The parsed date was invalid', $parsed_date['warnings'], true)) {
         // strtotime() would quietly roll 31 June over into July, or 30 February into March
@@ -1244,13 +1410,13 @@ function tidy_date_inside(string $string): string {
         return (string) $parsed_date['year']; // Do not know the day or month. just give year
     }
     $time = strtotime($string);
-    if ($time && !is_int($parsed_date['year'])) {
+    if ($time !== false && !is_int($parsed_date['year'])) {
         // No year was written ("12 hours ago", "May 15", "10:30", "March, 2020"), so strtotime()
         // has borrowed today's.  That is not a date we were given; let the fallbacks below decide.
         $time = false;
     }
-    if ($time && is_int($parsed_date['month']) && is_int($parsed_date['day']) &&
-        $parsed_date['year'] >= 1000 && checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
+    if ($time !== false && is_int($parsed_date['year']) && is_int($parsed_date['month']) &&
+        is_int($parsed_date['day']) && $parsed_date['year'] >= 1000 && checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
         // strtotime() interprets timezone-bearing timestamps as instants: formatting that
         // timestamp in the runner's timezone may change the written calendar day.
         // Use the date_parse() calendar fields, without making another timestamp.
@@ -1258,18 +1424,19 @@ function tidy_date_inside(string $string): string {
         if ($year > (int) date("Y") + 10) {
             return '';
         }
-        if ($parsed_date['day'] === 1) { // Preserve the existing first-of-month heuristic
-            return date('F Y', (int) strtotime(sprintf('%04d-%02d-01', $year, $parsed_date['month'])));
+        // PHP fills in day 1 for bare year/month forms. Keep that inferred day out.
+        if ($parsed_date['day'] === 1 && !publication_date_has_explicit_day($string)) {
+            return date('F Y', $time);
         }
         return sprintf('%04d-%02d-%02d', $year, $parsed_date['month'], $parsed_date['day']);
     }
-    if ($time) {
+    if ($time !== false) {
         $day = date('d', $time);
         $year = intval(date('Y', $time));
         if ($year < 100 || $year > (int) date("Y") + 10) {
             return ''; // We got an invalid year
         }
-        if ($day === '01') { // Probably just got month and year
+        if ($day === '01' && !publication_date_has_explicit_day($string)) {
             $string = date('F Y', $time);
         } else {
             $string = date('Y-m-d', $time);
@@ -1370,8 +1537,14 @@ function doi_encode (string $doi): string {
     return str_replace('%2F', '/', $doi);
 }
 
+/** Decode percent escapes only when the resulting value remains valid UTF-8. */
+function urldecode_valid_utf8(string $value): string {
+    $decoded = urldecode($value);
+    return mb_check_encoding($decoded, 'UTF-8') ? $decoded : $value;
+}
+
 function hdl_decode(string $hdl): string {
-    $hdl = urldecode($hdl);
+    $hdl = urldecode_valid_utf8($hdl);
     $hdl = str_replace(';', '%3B', $hdl);
     $hdl = str_replace('#', '%23', $hdl);
     return str_replace(' ', '%20', $hdl);
@@ -1528,7 +1701,7 @@ function addISBNdashes(string $isbn): string {
 
 function isbn_valid(string $isbn): bool {
     $digits = str_replace('x', 'X', $isbn);
-    $digits = str_replace(['–', '—', '−', '‐'], '-', $digits);
+    $digits = str_replace(['–', '—', '−', '‐', '‑', '‒', '―'], '-', $digits);
     $digits = str_replace(['-', ' '], '', $digits);
     if (preg_match('~^[0-9]{9}[0-9X]$~', $digits) === 1) {
         // ISBN-10: each digit weighted by 10..1 (X = 10); valid if the sum is a multiple of 11
@@ -1596,23 +1769,36 @@ function pmc_valid(string $value): bool {
     return intval($value) >= 1;
 }
 
-/**
- * Validate a bioRxiv/medRxiv identifier against CS1's structural rules:
- * a legacy six-to-eight digit form (bioRxiv used 6 digits, early medRxiv 8,
- * e.g. 10.1101/19000380) or the dated yyyy.mm.dd.nnnnnn form (with the newer
- * 10.64898 prefix and 6-8 digit identifiers), each with an optional version
- * suffix.
- */
-function rxiv_id_valid(string $value): bool {
-    if (preg_match('~^10\.1101/\d{6,8}(v\d+)?$~', $value) === 1) {
-        return true; // legacy identifier
+/** Validate the structure and publication window of a bioRxiv or medRxiv DOI. */
+function rxiv_id_valid(string $value, string $server = ''): bool {
+    if (!in_array($server, ['', 'biorxiv', 'medrxiv'], true)) {
+        return false;
     }
-    if (preg_match('~^10\.(1101|64898)/(20\d\d)\.(\d{2})\.(\d{2})\.\d{6,8}(v\d+)?$~', $value, $match) === 1) {
-        $month = intval($match[3]);
-        $day = intval($match[4]);
-        return $month >= 1 && $month <= 12 && $day >= 1 && $day <= 31;
+    if (preg_match('~\A10\.1101/([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $legacy) === 1) {
+        return $server === '' || ($server === 'biorxiv' ? mb_strlen($legacy[1], '8bit') === 6 : mb_strlen($legacy[1], '8bit') === 8);
     }
-    return false;
+    if (preg_match('~\A10\.(1101|64898)/(20[0-9]{2})\.([0-9]{2})\.([0-9]{2})\.([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) !== 1 ||
+        !checkdate((int) $match[3], (int) $match[4], (int) $match[2])) {
+        return false;
+    }
+    $is_medrxiv = mb_strlen($match[5], '8bit') === 8;
+    if (($server === 'biorxiv' && $is_medrxiv) || ($server === 'medrxiv' && !$is_medrxiv)) {
+        return false;
+    }
+    // Both servers issued dated identifiers in December 2019. This is also
+    // the lower bound used by the deployed CS1 identifier handlers.
+    $earliest = '20191211';
+    $tomorrow = new DateTimeImmutable('tomorrow', new DateTimeZone('UTC'));
+    $date = $match[2] . $match[3] . $match[4];
+    return strcmp($date, $earliest) >= 0 && strcmp($date, $tomorrow->format('Ymd')) <= 0;
+}
+
+/** CS1 spells legacy medRxiv identifiers without their DOI prefix. */
+function rxiv_citation_id(string $value, string $server): string {
+    if (preg_match('~\A(?:10\.1101/)?([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) === 1) {
+        return $server === 'medrxiv' ? $match[1] : rxiv_doi_from_id($match[1]);
+    }
+    return rxiv_doi_from_id($value);
 }
 
 /**
@@ -1662,7 +1848,7 @@ function doi_valid(string $value): bool {
     if (preg_match('~[.,]$~', $value) === 1) {
         return false;
     }
-    if (preg_match('~^10\.\d+(?:\.\d+)*/\S+$~u', $value) !== 1) {
+    if (preg_match('~^10\.[0-9]+(?:\.[0-9]+)*/\S+$~u', $value) !== 1) {
         return false;
     }
     return true;
@@ -1964,7 +2150,7 @@ function asin_tld_valid(string $value): bool {
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
     // Written as escapes (U+2014 em dash, U+2015 horizontal bar, U+2013 en dash, U+2012 figure dash, U+2212 minus sign, U+2010 hyphen) so that an encoding round trip cannot corrupt them into '?'
-    $dash_variants = ["\u{2014}", "\u{2015}", "\u{2013}", "\u{2012}", "\u{2212}", "\u{2010}"];
+    $dash_variants = ["\u{2014}", "\u{2015}", "\u{2013}", "\u{2012}", "\u{2011}", "\u{2212}", "\u{2010}"];
     $test = str_replace([...$dash_variants, '-', ' '], '', $isbn10);
     if (mb_strlen($test) < 10 || mb_strlen($test) > 13) {
         return $isbn10;

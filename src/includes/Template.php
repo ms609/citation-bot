@@ -40,10 +40,12 @@ final class Template
     public ?string $conflicting_journal_doi = null;
     private string $example_param = '';
     private string $name = '';
-    /** @var array<Parameter> */
+    /** @var array<int, Parameter> */
     private array $param = [];
     /** @var array<string> */
     private array $initial_param = [];
+    /** @var array<int|string, true> */
+    private array $initial_empty_implicit_params = [];
     /** @var array<string> */
     private array $initial_author_params = [];
     private string $initial_name = '';
@@ -72,7 +74,7 @@ final class Template
     ];
     /** @var array<Template> */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
-    /** @var array<Parameter>|null */
+    /** @var array<int, Parameter>|null */
     private ?array $cookie_absent_original_parameters = null;
     private ?string $cookie_absent_original_name = null;
     /** @var array<string>|null */
@@ -188,10 +190,9 @@ final class Template
             }
         }
 
-        // extract initial parameters/values from Parameters in $this->param
+        $this->initial_empty_implicit_params = [];
+        $this->initial_param = $this->parameter_snapshot($this->initial_empty_implicit_params);
         foreach ($this->param as $p) {
-            $this->initial_param[$p->param] = $p->val;
-
             // Save author params for special handling
             if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS, true) && $p->val) {
                 $this->initial_author_params[$p->param] = $p->val;
@@ -849,7 +850,7 @@ final class Template
      */
     public function blank(array|string $param): bool {
         // Accepts arrays of strings and string
-        if (!$param) {
+        if ($param === '' || $param === []) {
             report_error('null passed to blank()'); // @codeCoverageIgnore
         }
         if (empty($this->param)) {
@@ -858,8 +859,16 @@ final class Template
         if (!is_array($param)) {
             $param = [$param];
         }
+        foreach ($param as $name) {
+            if (ctype_digit($name)) {
+                $key = $this->get_param_key($name, true);
+                if ($key !== null && mb_trim($this->param[$key]->val) !== '') {
+                    return false;
+                }
+            }
+        }
         foreach ($this->param as $p) {
-            if (in_array($p->param, $param, true) && mb_trim($p->val) !== '' && !str_i_same('Epub ahead of print', $p->val)) {
+            if (!ctype_digit($p->param) && in_array($p->param, $param, true) && mb_trim($p->val) !== '' && !str_i_same('Epub ahead of print', $p->val)) {
                 return false;
             }
         }
@@ -871,7 +880,7 @@ final class Template
      */
     public function blank_other_than_comments(array|string $param): bool {
         // Accepts arrays of strings and string
-        if (!$param) {
+        if ($param === '' || $param === []) {
             report_error('null passed to blank_other_than_comments()'); // @codeCoverageIgnore
         }
         if (empty($this->param)) {
@@ -880,8 +889,13 @@ final class Template
         if (!is_array($param)) {
             $param = [$param];
         }
+        foreach ($param as $name) {
+            if (ctype_digit($name) && $this->get_without_comments_and_placeholders($name) !== '') {
+                return false;
+            }
+        }
         foreach ($this->param as $p) {
-            if (in_array($p->param, $param, true)) {
+            if (!ctype_digit($p->param) && in_array($p->param, $param, true)) {
                 $value = $p->val;
                 $value = mb_trim($value);
                 if (mb_stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== false) {
@@ -904,9 +918,10 @@ final class Template
      * $api (string) specifies the API route by which a parameter was found; this will log the
      * parameter so it is not used to trigger a new search via the same API.
      */
-    public function add_if_new(string $param_name, string $value, string $api = ''): bool {
+    public function add_if_new(string $param_name, string $value, string $api = '', bool $literal_author = false): bool {
         // Clean up weird stuff from CrossRef etc.
-        $value = safe_preg_replace('~[\x{2000}-\x{200B}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
+        // U+200B can mark a word boundary in Thai and must remain invisible.
+        $value = safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
         $value = safe_preg_replace("~^\xE2\x80\x8B~", " ", $value); // Zero-width at start
         $value = safe_preg_replace("~\xE2\x80\x8B$~", " ", $value); // Zero-width at end
         $value = safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $value); // tabs, linefeeds, null bytes
@@ -1085,6 +1100,14 @@ final class Template
             }
         }
 
+        if (ctype_digit($param_name)) {
+            $value = str_replace(
+                ['|', '{', '}', '[', ']', '<', '>'],
+                ['&#124;', '&#123;', '&#125;', '&#91;', '&#93;', '&#60;', '&#62;'],
+                $value
+            );
+            return $this->blank($param_name) && $this->add($param_name, $value);
+        }
         $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
 
         switch ($param_name) {
@@ -1160,7 +1183,7 @@ final class Template
                 if ($this->blank(FIRST_AUTHOR_ALIASES)) {
                     $value = clean_up_full_names($value);
                     $au = split_author($value);
-                    if (!empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
+                    if (!$literal_author && !empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
                         $this->add('last' . (mb_substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_surname($au[0])));
                         return $this->add_if_new('first' . (mb_substr($param_name, -1) === '1' ? '1' : ''), clean_up_first_names(format_forename(mb_trim($au[1]))));
                     } elseif (mb_strpos($param_name, 'last') === false) {
@@ -1381,7 +1404,7 @@ final class Template
                 ) {
                     $value = clean_up_full_names($value);
                     $au = split_author($value);
-                    if (!empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
+                    if (!$literal_author && !empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
                         $this->add('last' . $auNo, clean_up_last_names(format_surname($au[0])));
                         return $this->add_if_new('first' . $auNo, clean_up_first_names(format_forename(mb_trim($au[1]))));
                     } else {
@@ -1548,16 +1571,30 @@ final class Template
 
             case "date":
                 if (!preg_match('~^\d{4}$~', $value)) {
-                    $time = strtotime($value);
+                    $date_input = safe_preg_replace('~^(\d{1,2})\.(?=\s+[A-Za-z])~', '$1', $value);
+                    $time = strtotime($date_input);
                     $almost_today = strtotime('-14 days');
                     $the_future = strtotime('+14 days');
                     if ((int) $time > $almost_today && (int) $time < $the_future) {
                         return false;  // Reject bad data
                     }
                     if (self::$date_style !== DateStyle::DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
-                        if ($time) {
+                        if ($time !== false) {
                             $day = date('d', $time);
-                            if ($day !== '01') { // Probably just got month and year if day=1
+                            $has_day = publication_date_has_explicit_day($value);
+                            if ($has_day) {
+                                $parsed = date_parse($date_input);
+                                if ($parsed['is_localtime'] && is_int($parsed['year']) && is_int($parsed['month']) &&
+                                    is_int($parsed['day']) && checkdate($parsed['month'], $parsed['day'], $parsed['year'])) {
+                                    // Format the date as written, even when the instant falls on a different UTC day.
+                                    $calendar_day = DateTimeImmutable::createFromFormat('!Y-m-d',
+                                        sprintf('%04d-%02d-%02d', $parsed['year'], $parsed['month'], $parsed['day']));
+                                    if ($calendar_day !== false) {
+                                        $time = $calendar_day->getTimestamp();
+                                    }
+                                }
+                            }
+                            if ($day !== '01' || $has_day) {
                                 $value = self::localize_dates($time);
                             }
                         }
@@ -1565,6 +1602,19 @@ final class Template
                 }
                 // no break; we want to go straight in to year;
             case "year":
+                if (preg_match('~\A0+\z~', $value)) {
+                    return false;
+                }
+                $imported_year = null;
+                if ($param_name === 'year' && in_array($api, ['crossref', 'dx'], true)) {
+                    if (preg_match('~\A[1-9][0-9]{0,3}\z~', $value) !== 1) {
+                        return false;
+                    }
+                    $imported_year = (int) $value;
+                    if ($imported_year > (int) date('Y') + 3) {
+                        return false;
+                    }
+                }
                 if ($this->has('publication-date')) {
                     return false;
                 } // No idea what to do with this
@@ -1583,7 +1633,8 @@ final class Template
                     }
                 }
                 // Update Year with CrossRef data in a few limited cases
-                if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && $this->year_int() < $value && (int) date('Y') - 3 < $value) {
+                if ($api === 'crossref' && $imported_year !== null && $this->no_initial_doi &&
+                    $this->year_int() < $imported_year && (int) date('Y') - 3 < $imported_year) {
                     if ($this->blank('year')) {
                         $this->forget('year');
                         $this->set('date', $value);
@@ -1672,7 +1723,7 @@ final class Template
                         $this->forget('issue');
                         $this->forget('number');
                     } // No issues, just volumes
-                    $value = wikify_external_text(title_case($value));
+                    $value = wikify_external_text($value, use_title_case: true);
                     if ($this->has('series') && (str_equivalent($this->get('series'), $value) || $this->memoirs_series_matches($value))) {
                         return false;
                     }
@@ -1907,8 +1958,7 @@ final class Template
                     } else {
                         $value = mb_trim($value);
                         $script_value = $this->get('script-title');
-                        if (preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $value) && mb_stripos($script_value, $value) === false && mb_stripos($value, $script_value) === false && !preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $script_value)) {
-                            // Neither one is part of the other and script is not all ascii and new title is all ascii
+                        if (citation_titles_use_romanization($value, $script_value)) {
                             return $this->add($param_name, wikify_external_text($value));
                         }
                     }
@@ -2107,7 +2157,7 @@ final class Template
                 }
                 $pages_value = $this->get('pages');
                 $all_page_values = $pages_value . $this->get('page') . $this->get('pp') . $this->get('p') . $this->get('at');
-                $en_dash = ["\u{2013}", chr(150), chr(226), '-', '&ndash;'];
+                $en_dash = ["\u{2013}", "\u{2014}", "\u{2012}", '-', '&ndash;'];
                 $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
                 if (
                     mb_stripos($all_page_values, 'see ') !== false || // Someone is pointing to a specific part
@@ -2121,6 +2171,13 @@ final class Template
                     mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== false
                 ) {
                     // A comment or template will block the bot
+                    return false;
+                }
+                if (!$this->blank(PAGE_ALIASES) &&
+                    preg_match('~(?![0-9])\p{Nd}~u', $value . $all_page_values) === 1) {
+                    // The specific-page containment check below parses ASCII
+                    // digits only. Preserve the editor's page when either
+                    // locator uses a different decimal numeral script.
                     return false;
                 }
                 if (
@@ -2248,7 +2305,7 @@ final class Template
                 } // TITLE_LINK_ALIASES within the title
                 $value = sanitize_string($value);
                 foreach (ALL_URL_TYPES as $existing) {
-                    if (str_i_same($value, $this->get($existing))) {
+                    if (citation_urls_equivalent($value, $this->get($existing))) {
                         return false;
                     }
                 }
@@ -2261,7 +2318,7 @@ final class Template
                 }
                 $value = sanitize_string($value);
                 foreach (ALL_URL_TYPES as $existing) {
-                    if (str_i_same($value, $this->get($existing))) {
+                    if (citation_urls_equivalent($value, $this->get($existing))) {
                         return false;
                     }
                 }
@@ -2613,9 +2670,6 @@ final class Template
                 if ($this->had_initial_publisher) {
                     return false;
                 }
-                if (mb_strlen(preg_replace('~[\.\s\d\,]~', '', $value)) < 5) {
-                    return false;
-                } // too few characters
                 if (mb_stripos($value, 'Springer') === 0) {
                     $value = 'Springer';
                 } // they add locations often
@@ -2642,14 +2696,31 @@ final class Template
                     return false;
                 } // Do not add if work is set, unless explicitly a book
 
-                $value = truncate_publisher($value);
-                if (in_array(mb_trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
+                $full_publisher = normalize_unicode_nfc($value);
+                $value = truncate_publisher($full_publisher);
+                $publisher_letters = safe_preg_replace('~[^\p{L}]+~u', '', $value);
+                $short_acronym = preg_match('~\A(?:[A-Z]\.?){2,4}\z~', $value) === 1;
+                $short_non_latin_name = preg_match('~\A(?:(?!\p{Latin})\p{L}\p{M}*){2,4}\z~u', $value) === 1;
+                $short_placeholder = in_array(mb_strtolower($publisher_letters), [
+                    'na', 'nd', 'np', 'sn', 'sl', 'би', '不明', '未知',
+                    'inc', 'ltd', 'llc', 'none', 'null', 'tbd', 'pdf',
+                ], true);
+                if ($short_placeholder ||
+                    in_array(mb_trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true) ||
+                    in_array(mb_trim(mb_strtolower($full_publisher), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
                     return false;
+                }
+                if (mb_strlen($publisher_letters) < 5 && !$short_acronym && !$short_non_latin_name) {
+                    if ($value === $full_publisher || mb_strlen(safe_preg_replace('~[^\p{L}]+~u', '', $full_publisher)) < 5 ||
+                        preg_match('~\p{L}~u', $value) !== 1) {
+                        return false;
+                    }
+                    $value = $full_publisher;
                 }
                 if ($this->has('via') && str_equivalent($this->get('via'), $value)) {
                     $this->rename('via', $param_name);
                 }
-                if (mb_strtoupper($value) === $value || mb_strtolower($value) === $value) {
+                if (!$short_acronym && (mb_strtoupper($value) === $value || mb_strtolower($value) === $value)) {
                     $value = title_capitalization($value, true);
                 }
                 if ($value === 'Oxford University PressOxford' || $value === 'OUP Oxford') {
@@ -2744,14 +2815,11 @@ final class Template
             case 'medrxiv':
             case 'via':
                 if ($param_name === 'biorxiv' || $param_name === 'medrxiv') {
-                    $test_value = $value;
-                    if (mb_strpos($test_value, '10.1101/') !== 0 && mb_strpos($test_value, '10.64898/') !== 0) {
-                        $test_value = '10.1101/' . $test_value; // Same normalization prepare_rxiv() applies
-                    }
-                    if (!rxiv_id_valid($test_value)) {
+                    if (!rxiv_id_valid(rxiv_doi_from_id($value), $param_name)) {
                         report_inaction("Not adding malformed $param_name identifier: " . echoable($value));
                         return false;
                     }
+                    $value = rxiv_citation_id($value, $param_name);
                 }
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
@@ -2909,10 +2977,38 @@ final class Template
         return false;
     }
 
-    public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing): void {
+    public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing, bool $literal_name = false): void {
         if (!$add_even_if_existing && ($this->had_initial_author() || $this->had_initial_editor())) {
             return;
         } // Zotero does not know difference between editors and authors often
+        if (mb_trim($forename) === '' && ($literal_name || is_institutional_author_name($author))) {
+            $name = mb_trim(safe_preg_replace('~(?:^|\s)\S*@\S*(?=\s|$)~u', ' ', $author));
+            if ($name === '' || is_bad_author($name) || is_generic_name($name) ||
+                in_array(mb_strtolower($name), BAD_AUTHORS, true)) {
+                return;
+            }
+            $institution = is_institutional_author_name($name) ||
+                is_institutional_author_acronym($name) ||
+                preg_match('~\b(?:academy|association|committee|council|department|foundation|institute|ministry|university)\b~iu', $name) === 1;
+            if (!$institution && !author_is_human($name)) {
+                return;
+            }
+            $name_as_wikitext = strtr($name, [
+                '<' => '&#60;', '>' => '&#62;', '[' => '&#91;', ']' => '&#93;',
+                '{' => '&#123;', '}' => '&#125;', '|' => '&#124;',
+            ]);
+            $name_as_wikitext = safe_preg_replace_callback("~'{2,}~",
+                static fn (array $match): string => str_repeat('&#0039;', mb_strlen($match[0], '8bit')),
+                $name_as_wikitext
+            );
+            if (mb_stripos($check_against, $name) !== false ||
+                in_array(mb_strtolower(mb_trim(mb_strrchr(' ' . $name, ' ') ?: $name)), PUBLISHER_ENDINGS, true)) {
+                $this->add_if_new('publisher', $name_as_wikitext);
+                return;
+            }
+            $this->add_if_new($author_param, $name_as_wikitext, literal_author: true);
+            return;
+        }
         if (
             in_array(mb_strtolower($author), BAD_AUTHORS, true) === false &&
             in_array(mb_strtolower($forename), BAD_AUTHORS, true) === false &&
@@ -2972,7 +3068,7 @@ final class Template
 
     private function get_doi_from_text(): void {
         set_time_limit(120);
-        if ($this->blank('doi') && preg_match('~10\.\d{4,9}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
+        if ($this->blank('doi') && preg_match('~10(?:\.|%2e)[0-9]{4,9}(?:/|%2f)[^&\s|{}]+~iu', $this->parsed_text(), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
                 return;
             } // generally bad, and not helpful
@@ -2981,7 +3077,11 @@ final class Template
             } // generally bad, and not helpful
             // Search the entire citation text for anything in a DOI format.
             // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
-            $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
+            $candidate = rawurldecode($match[0]);
+            if (!mb_check_encoding($candidate, 'UTF-8')) {
+                return;
+            }
+            $doi = safe_preg_replace("~(\.x)/(?:\w+)~", "$1", $candidate);
             $doi = extract_doi($doi)[1];
             if ($doi === '') {
                 return;
@@ -3035,7 +3135,9 @@ final class Template
         $duplicate_identical = [];
 
         foreach ($this->param as $pointer => $par) {
-            if ($par->param && isset($param_occurrences[$par->param])) {
+            // Leave explicit numeric arguments in order. Unnamed arguments
+            // can refer to the same position and MediaWiki resolves precedence.
+            if ($par->param !== '' && !ctype_digit($par->param) && isset($param_occurrences[$par->param])) {
                 $duplicate_pos = $param_occurrences[$par->param];
                 if ($par->val === '') {
                     $par->val = $this->param[$duplicate_pos]->val;
@@ -3082,10 +3184,17 @@ final class Template
                 }
             }
         }
+        // Removing an unnamed argument would renumber subsequent arguments
+        // and could change which value wins against an explicit number.
+        foreach ($this->param as $p) {
+            if (ctype_digit($p->param)) {
+                return;
+            }
+        }
         $blank_count = 0;
         foreach ($this->param as &$p) {
             // Protect them from being overwritten
-            if (empty($p->param)) {
+            if ($p->param === '') {
                 $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY_' . (string) $blank_count;
                 $blank_count++;
                 $p->eq = ' = ';
@@ -3614,6 +3723,10 @@ final class Template
                     case "lccn8": // Assume not normal template for a reason
                     case "google books": // Usually done for fancy formatting and because already has title-link/url
                     case "url": // Untrustable: used by bozos
+                    case "doi-inline":
+                    case "lang":
+                    case "muse":
+                    case "newsbank text":
                         break;
                     default:
                         report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
@@ -3691,7 +3804,7 @@ final class Template
 
         foreach ($this->param as $p) {
             if (
-                mb_strlen($p->param) > 0 &&
+                $p->param !== '' && !ctype_digit($p->param) &&
                 !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list, true) || in_array($p->param, $parameter_list, true)) && // Some parameters have actual numbers in them
                 mb_stripos($p->param, 'CITATION_BOT') === false
             ) {
@@ -3875,7 +3988,7 @@ final class Template
                             $v .= ', ';
                         }
                         $suffix_test = junior_test($fv);
-                        $fv_base = mb_trim($suffix_test[0]);
+                        $fv_base = normalize_unicode_nfc(mb_trim($suffix_test[0]));
                         $fv_suffix = $suffix_test[1];
                         $v .= mb_trim($lv . ' ' . mb_substr($fv_base, 0, 1));
                         $lve = explode(' ', $fv_base);
@@ -4263,7 +4376,7 @@ final class Template
             $new_name_mapped = $new_name;
             if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
                 foreach (ALL_TEMPLATES_MAP as $map_array) {
-                    if (isset($map_array[mb_strtolower($this->name)])) {
+                    if (isset($map_array[mb_strtolower(mb_trim($this->name))])) {
                         // Current name is foreign in this map: render the new name in the same language
                         foreach ($map_array as $map_in => $map_out) {
                             if ($new_name === $map_out) {
@@ -4280,7 +4393,7 @@ final class Template
             $new_name_mapped = str_replace('biorxiv', 'bioRxiv', $new_name_mapped); // Without the capital R is the alias
             $new_name_mapped = str_replace('medrxiv', 'medRxiv', $new_name_mapped); // Without the capital R is the alias
             $new_name_mapped = str_replace('ssrn', 'SSRN', $new_name_mapped); // Proper capitalization for SSRN
-            if (ctype_upper(mb_substr($this->name, 0, 1))) {
+            if (preg_match('~^\p{Lu}~u', mb_trim($this->name)) === 1) {
                 $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
             if ($invoke !== '') {
@@ -4300,7 +4413,7 @@ final class Template
             // so we use chapter-url so that the template is well rendered afterwards
             if (should_url2chapter($this, true)) {
                 $this->rename('url', 'chapter-url');
-            } elseif (!$this->blank(['chapter-url', 'chapterurl']) && str_i_same($this->get('chapter-url'), $this->get('url'))) {
+            } elseif (!$this->blank(['chapter-url', 'chapterurl']) && citation_urls_equivalent($this->get('chapter-url'), $this->get('url'))) {
                 $this->forget('url');
             } // otherwise they are different urls
 
@@ -4465,7 +4578,7 @@ final class Template
         // Note: Parameters are treated in alphabetical order, except where one
         // case necessarily continues from the previous (without a return).
 
-        if (!$param) {
+        if ($param === '' || ctype_digit($param)) {
             return;
         }
 
@@ -4549,7 +4662,6 @@ final class Template
                 $this->set($param, mb_trim($this->get($param), " \t\n\r\0\x0B"));
                 $this->set($param, safe_preg_replace("~^\xE2\x80\x8B~", " ", $this->get($param))); // Zero-width at start
                 $this->set($param, safe_preg_replace("~\xE2\x80\x8B$~", " ", $this->get($param))); // Zero-width at end
-                $this->set($param, safe_preg_replace("~\x{200B}~u", " ", $this->get($param))); //Zero-width anywhere
                 while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
                     $this->set($param, mb_trim($matches[1], " \t\n\r\0\x0B"));
                 }
@@ -4914,13 +5026,23 @@ final class Template
                     $day = $this->get('day');
                     $month = $this->get('month');
                     $year = $this->get('year');
-                    if ($day === '' && preg_match('~^([a-zA-Z]+) 0*(\d+)$~', $month, $matches)) {
+                    if ($day === '' && preg_match('~^([\p{L}\p{M}]+) 0*([0-9]+)$~u', $month, $matches)) {
                         $day = $matches[2];
                         $month = $matches[1];
                     }
-                    if ($day === '' && preg_match('~^0*(\d+) ([a-zA-Z]+)$~', $month, $matches)) {
+                    if ($day === '' && preg_match('~^0*([0-9]+) ([\p{L}\p{M}]+)$~u', $month, $matches)) {
                         $day = $matches[1];
                         $month = $matches[2];
+                    }
+                    if (WIKI_BASE === 'en') {
+                        $localized_date = localized_citation_date($day . ' ' . $month . ' ' . $year);
+                        if ($localized_date !== null) {
+                            if ($localized_date !== '') {
+                                $this->forget('day');
+                                $this->rename($param, 'date', $localized_date);
+                            }
+                            return;
+                        }
                     }
                     if (!preg_match('~^\d*$~', $day)) {
                         return;
@@ -5577,10 +5699,10 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
+                        if (rxiv_id_valid($doi_value, 'biorxiv')) {
                             // Convert to cite bioRxiv
                             $this->change_name_to('cite bioRxiv', true, true);
-                            $this->rename('doi', 'biorxiv');
+                            $this->rename('doi', 'biorxiv', rxiv_citation_id($doi_value, 'biorxiv'));
 
                             // Remove parameters not allowed in cite bioRxiv
                             $params_to_remove = [];
@@ -5622,10 +5744,10 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
+                        if (rxiv_id_valid($doi_value, 'medrxiv')) {
                             // Convert to cite medRxiv
                             $this->change_name_to('cite medRxiv', true, true);
-                            $this->rename('doi', 'medrxiv');
+                            $this->rename('doi', 'medrxiv', rxiv_citation_id($doi_value, 'medrxiv'));
 
                             // Remove parameters not allowed in cite medRxiv
                             $params_to_remove = [];
@@ -5688,7 +5810,7 @@ final class Template
                         mb_substr_count($periodical, '[[') !== 1 ||
                         mb_substr_count($periodical, ']]') !== 1) &&
                         !preg_match('~^(?:the |)(?:publications|publication|journal|transactions|letters|annals|bulletin|reports|history) of the ~i', $periodical) &&
-                        !preg_match('~(magazin für |magazin fur |magazine for |section )~i', $periodical)
+                        !preg_match('~(magazin für |magazin fur |magazine for |section )~iu', $periodical)
                     ) {
                         $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
                         $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
@@ -6048,11 +6170,11 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    if (mb_strtolower($this->get('journal')) === $publisher) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('journal'))) === normalize_unicode_nfc($publisher)) {
                         $this->forget($param);
                         return;
                     }
-                    if (mb_strtolower($this->get('newspaper')) === $publisher) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('newspaper'))) === normalize_unicode_nfc($publisher)) {
                         $this->forget($param);
                         return;
                     }
@@ -6836,9 +6958,15 @@ final class Template
                     if ($this->blank('via')) {
                         return;
                     }
+                    $via = $this->get('via');
                     foreach (array_merge(['publisher'], WORK_ALIASES) as $others) {
                         if ($this->has($others)) {
-                            if (str_equivalent($this->get($others), $this->get('via')) || (mb_stripos($this->get($others), 'bbc') !== false && mb_stripos($this->get('via'), 'bbc')) !== false) {
+                            $source = $this->get($others);
+                            $source_name = mb_trim(de_wikify($source, true));
+                            $via_name = mb_trim(de_wikify($via, true));
+                            if (str_equivalent($source, $via) ||
+                                (preg_match('~\A(?:the )?bbc(?: news(?: online)?|\.co\.uk)?\z~i', $source_name) === 1 &&
+                                preg_match('~\A(?:the )?(?:www\.)?bbc(?:\.co\.uk)?\z~i', $via_name) === 1)) {
                                 $this->forget('via');
                                 return;
                             }
@@ -6867,7 +6995,7 @@ final class Template
                         return;
                     }
                     // Only strip a real prefix ("Vol. 3", "Volume 3", "No 5", "vol3"), not the start of a word such as "Volumes" or "Notes"
-                    $this->set($param, (string) preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
+                    $this->set($param, safe_preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
                     if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
@@ -6963,6 +7091,10 @@ final class Template
                     if ($this->get($param) === 'n.d.') {
                         return;
                     } // Special no-date code that the citation template recognizes.
+                    if (preg_match('~\A0+\z~', $this->get('year')) === 1) {
+                        $this->forget('year');
+                        return;
+                    }
                     // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
                     // no break
                 case 'issue':
@@ -6989,20 +7121,14 @@ final class Template
                         }
                     }
                     // Remove leading zeroes
-                    if ($value && $this->get('journal') !== 'Insecta Mundi') {
+                    if ($value !== '0' && $this->get('journal') !== 'Insecta Mundi') {
                         $value = safe_preg_replace('~^0+~', '', $value);
-                        if ($value === '') {
-                            $this->forget($param); // Was all zeros
-                        }
                     }
-                    if ($value) {
-                        $this->set($param, $value);
-                    } else {
-                        if (!$this->blank($param)) {
-                            $this->forget($param);
-                        }
+                    if ($value === '') {
+                        $this->forget($param);
                         return;
                     }
+                    $this->set($param, $value);
                     if ($param === 'issue' || $param === 'number') {
                         $this->volume_issue_demix($this->get($param), $param);
                         if ($this->blank($param)) {
@@ -7059,7 +7185,7 @@ final class Template
                         return;
                     }
                     if (!preg_match('~^p\d+\s*:\s*\d~ui', $value)) { // P10:1–P10:42 is an article locator, not a "p" page prefix
-                        $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                        $value = safe_preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
                     }
                     $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
@@ -7139,7 +7265,7 @@ final class Template
                         // The volume is about to be stripped from the page range: keep it rather than lose it
                         $this->set('volume', $trailing_volume[2]);
                     }
-                    $value = (string) preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
+                    $value = safe_preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
                     $this->set($param, $value);
                     if (mb_substr($this->get($param), -4) === ' etc') {
                         $this->set($param, $this->get($param) . '.');
@@ -7787,13 +7913,13 @@ final class Template
                     if ($this->blank($worky)) {
                         $this->forget($worky);
                     } // Discourage filling these in
-                    if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('publisher'))) === normalize_unicode_nfc(mb_strtolower($this->get($worky)))) {
                         $this->forget($worky);
                     }
                 }
             } elseif ($this->has('publisher')) {
                 foreach (WORK_ALIASES as $worky) {
-                    if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('publisher'))) === normalize_unicode_nfc(mb_strtolower($this->get($worky)))) {
                         $this->forget('publisher');
                     }
                 }
@@ -8488,52 +8614,30 @@ final class Template
     }
 
     public function get(string $name): string {
-        // NOTE $this->param and $p->param are different and refer to different types!
-        // $this->param is an array of Parameter objects
-        // $parameter_i->param is the parameter name within the Parameter object
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                $the_val = $parameter_i->val;
-                if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
-                    $the_val = mb_trim($matches[1]);
-                }
-                return $the_val;
-            }
-        }
-        return '';
+        return $this->get2($name) ?? '';
     }
 
     /** This one is used in the test suite to distinguish there-but-blank vs not-there-at-all */
     public function get2(string $name): ?string {
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                $the_val = $parameter_i->val;
-                if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
-                    $the_val = mb_trim($matches[1]);
-                }
-                return $the_val;
-            }
+        $key = $this->get_param_key($name, true);
+        if ($key === null) {
+            return null;
         }
-        return null;
+        $the_val = $this->param[$key]->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
+            return mb_trim($matches[1]);
+        }
+        return $the_val;
     }
 
     public function get3(string $name): string {
-        // like get() only includes (( ))
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                return $parameter_i->val;
-            }
-        }
-        return '';
+        // Like get(), but keeps (( )).
+        $key = $this->get_param_key($name, true);
+        return $key === null ? '' : $this->param[$key]->val;
     }
 
     public function has_but_maybe_blank(string $name): bool {
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                return true;
-            }
-        }
-        return false;
+        return $this->get_param_key($name, true) !== null;
     }
 
     private function has_multiple_params(): bool {
@@ -8579,9 +8683,45 @@ final class Template
         return mb_trim($ret);
     }
 
-    private function get_param_key(string $needle): ?int {
-        if (empty($this->param)) {
-            return null;
+    private static function effective_parameter_name(Parameter $parameter, int &$position): string {
+        if ($parameter->param === '' && $parameter->eq === '') {
+            return (string) ++$position;
+        }
+        return $parameter->param;
+    }
+
+    /**
+     * @param array<int|string, true>|null &$empty_implicit_params
+     * @return array<string>
+     */
+    private function parameter_snapshot(?array &$empty_implicit_params = null): array {
+        $snapshot = [];
+        $position = 0;
+        foreach ($this->param as $parameter) {
+            $name = self::effective_parameter_name($parameter, $position);
+            $snapshot[$name] = $parameter->val;
+            if ($empty_implicit_params !== null) {
+                if ($parameter->param === '' && $parameter->eq === '' && mb_trim($parameter->val) === '') {
+                    $empty_implicit_params[$name] = true;
+                } else {
+                    unset($empty_implicit_params[$name]);
+                }
+            }
+        }
+        return $snapshot;
+    }
+
+    private function get_param_key(string $needle, bool $include_unnamed = false): ?int {
+        if (ctype_digit($needle)) {
+            $position = 0;
+            $key = null;
+            foreach ($this->param as $i => $p) {
+                $name = $include_unnamed ? self::effective_parameter_name($p, $position) : $p->param;
+                if ($name === $needle) {
+                    $key = $i;
+                }
+            }
+            return $key;
         }
         foreach ($this->param as $i => $p) {
             if ($p->param === $needle) {
@@ -8612,8 +8752,8 @@ final class Template
         if ($this->get($par) !== $this->get3($par)) {
             return false;
         }
-        $pos = $this->get_param_key($par);
-        if ($pos !== null) {
+        $pos = $this->get_param_key($par, true);
+        if ($pos !== null && $this->param[$pos]->param === $par) {
             $this->param[$pos]->val = $val;
             return true;
         }
@@ -8621,6 +8761,11 @@ final class Template
         $p->parse_text($this->example_param);
         $p->param = $par;
         $p->val = $val;
+        if ($pos !== null && ctype_digit($par)) {
+            // Add the explicit override after the effective unnamed argument.
+            $this->param[] = $p;
+            return true;
+        }
 
         $insert_after = prior_parameters($par);
         $prior_pos_best = -1;
@@ -8658,7 +8803,7 @@ final class Template
         if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== false) {
             return;
         }
-        $pos = $this->get_param_key($par);
+        $pos = $this->get_param_key($par, true);
         if ($pos !== null) {
             // Could be zero which is "false"
             $this->param[$pos]->val .= $val;
@@ -8819,11 +8964,8 @@ final class Template
         if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
             return [];
         }
-        $new = [];
+        $new = $this->parameter_snapshot();
         $ret = [];
-        foreach ($this->param as $p) {
-            $new[$p->param] = $p->val;
-        }
 
         $old = $this->initial_param ? $this->initial_param : [];
 
@@ -8855,14 +8997,16 @@ final class Template
             }
         }
 
-        $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
-        $ret['additions'] = array_diff(array_keys($new), array_keys($old));
-        $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
+        // PHP coerces integer-shaped parameter keys into ints in the maps.
+        $ret['modifications'] = array_map('strval', array_keys(array_diff_assoc($new, $old)));
+        $ret['additions'] = array_map('strval', array_diff(array_keys($new), array_keys($old)));
+        $ret['deletions'] = array_map('strval', array_diff(array_keys($old), array_keys($new)));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
-        foreach ($ret['deletions'] as $inds => $vals) {
-            if ($vals === '') {
-                unset($ret['deletions'][$inds]);
-            } // If we get rid of double pipe that appears as a deletion, not misc.
+        foreach ($ret['deletions'] as $index => $name) {
+            // Cleaning up an extra pipe is miscellaneous tidying.
+            if ($name === '' || isset($this->initial_empty_implicit_params[$name])) {
+                unset($ret['deletions'][$index]);
+            }
         }
 
         $no_dash_to_start = true;
@@ -9043,7 +9187,14 @@ final class Template
             } // probably a year or range of years
             if ($param === 'volume') {
                 if ($this->blank(ISSUE_ALIASES)) {
-                    $this->add_if_new($the_issue, $possible_issue);
+                    if ($possible_issue === '0') {
+                        // This locator was written in the citation, not imported as metadata.
+                        if (!$this->add($the_issue, $possible_issue)) {
+                            return;
+                        }
+                    } else {
+                        $this->add_if_new($the_issue, $possible_issue);
+                    }
                     $this->set('volume', $possible_volume);
                 } elseif (str_replace(".", "", $this->get('issue')) === str_replace(".", "", $possible_issue) || str_replace(".", "", $this->get('number')) === str_replace(".", "", $possible_issue)) {
                     $this->set('volume', $possible_volume);
@@ -9144,7 +9295,7 @@ final class Template
             return true;
         }
         $journal = str_replace(['[[', ']]'], '', $this->get($param));
-        $journal = (string) preg_replace('~\s+~u', ' ', $journal);
+        $journal = safe_preg_replace('~\s+~u', ' ', $journal);
         $journal = mb_strtolower(mb_trim($journal));
         if ($journal !== 'antibiotics and chemotherapy') {
             return true;

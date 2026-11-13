@@ -29,10 +29,11 @@ function pubmed_item_name(SimpleXMLElement $item): string {
  * @return array{0: string, 1: string, 2: string}|null  [whole match, surname, initials]
  */
 function pubmed_split_author_name(string $name): ?array {
-    if (preg_match("~(.*) (\w+)$~u", $name, $names) !== 1) {
+    $name = normalize_unicode_nfc($name);
+    if (preg_match("~(.*) ([\w-]+)$~u", $name, $names) !== 1) {
         return null;
     }
-    $first = mb_trim((string) preg_replace('~(?<=\p{Lu})(\p{Lu})~u', ". $1", $names[2]));
+    $first = mb_trim(safe_preg_replace('~(?<=\p{Lu})(\p{Lu})~u', ". $1", $names[2]));
     return [$names[0], $names[1], $first];
 }
 
@@ -393,19 +394,30 @@ function do_pumbed_query(Template $template, array $terms): array {
         $term = mb_strtolower($term);
         if ($term === "title") {
             $data = $template->get_without_comments_and_placeholders('title');
-            if ($data) {
-                $key = 'Title';
-                $data = straighten_quotes($data, true);
-                $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
-                $data = strip_diacritics($data);
-                $data_array = explode(" ", $data);
-                foreach ($data_array as $val) {
-                    if (!in_array(mb_strtolower($val), SHORT_STRING, true) && mb_strlen($val) > 3) {
-                        // Small words are NOT indexed
-                        $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
-                    }
+            $data = straighten_quotes($data, true);
+            $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'], ' ', $data);
+            $data = strip_diacritics($data);
+            $title_words = preg_split('~[\s\p{Z}]+~u', $data, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            $title_query = '';
+            $has_searchable_word = false;
+            foreach ($title_words as $word) {
+                if (in_array(mb_strtolower($word), SHORT_STRING, true) || preg_match('~[\p{L}\p{N}]~u', $word) !== 1) {
+                    continue;
+                }
+                $has_searchable_word = true;
+                if (mb_strlen($word) > 3) {
+                    $title_query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($word)) . "[Title])";
                 }
             }
+            if ($title_query === '') {
+                if (!$has_searchable_word) {
+                    return ['', 0, []];
+                }
+                // Keep a title constraint when every useful word is short.
+                $phrase = str_replace("%E2%80%93", "-", urlencode(implode(' ', $title_words)));
+                $title_query = ' AND ("' . $phrase . '"[Title])';
+            }
+            $query .= $title_query;
         } elseif ($term === "page") {
             $pages = $template->page_range();
             if ($pages) {
