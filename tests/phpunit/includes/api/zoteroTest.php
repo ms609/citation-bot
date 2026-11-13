@@ -515,6 +515,34 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
     }
 
+    public function testZoteroDoesNotPromotePreprintIdsWithImpossibleDates(): void {
+        if (!SLOW_MODE || !function_exists('uopz_set_return')) {
+            $this->markTestSkipped('Slow mode and uopz are required for the preprint lookup');
+        }
+        $bio = $this->make_citation('{{cite journal |title=X |biorxiv=2021.02.29.123456}}');
+        $med = $this->make_citation('{{cite journal |title=Y |medrxiv=10.64898/2025.04.31.12345678v2}}');
+        $valid = $this->make_citation('{{cite journal |title=Z |medrxiv=10.1101/2024.02.29.12345678}}');
+        $templates = [$bio, $med, $valid];
+        $stubs = ['doi_active' => true, 'doi_works' => false, 'expand_by_doi' => null];
+        foreach ($stubs as $function => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($function, $value);
+        }
+        try {
+            Zotero::query_url_api_class($templates);
+            $this->assertNull($bio->get2('doi'));
+            $this->assertNull($med->get2('doi'));
+            $this->assertSame('2021.02.29.123456', $bio->get2('biorxiv'));
+            $this->assertSame('10.64898/2025.04.31.12345678v2', $med->get2('medrxiv'));
+            $this->assertSame('10.1101/2024.02.29.12345678', $valid->get2('doi'));
+        } finally {
+            foreach (array_keys($stubs) as $function) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($function);
+            }
+        }
+    }
+
     public function testZoteroExpansion_biorxiv2(): void {
         $text = '{{Cite journal| biorxiv=326363 |doi=10.0001/Rubbish_bot_failure_test}}';
         $expanded = $this->process_citation($text);

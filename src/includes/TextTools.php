@@ -1740,23 +1740,36 @@ function pmc_valid(string $value): bool {
     return intval($value) >= 1;
 }
 
-/**
- * Validate a bioRxiv/medRxiv identifier against CS1's structural rules:
- * a legacy six-to-eight digit form (bioRxiv used 6 digits, early medRxiv 8,
- * e.g. 10.1101/19000380) or the dated yyyy.mm.dd.nnnnnn form (with the newer
- * 10.64898 prefix and 6-8 digit identifiers), each with an optional version
- * suffix.
- */
-function rxiv_id_valid(string $value): bool {
-    if (preg_match('~^10\.1101/\d{6,8}(v\d+)?$~', $value) === 1) {
-        return true; // legacy identifier
+/** Validate the structure and publication window of a bioRxiv or medRxiv DOI. */
+function rxiv_id_valid(string $value, string $server = ''): bool {
+    if (!in_array($server, ['', 'biorxiv', 'medrxiv'], true)) {
+        return false;
     }
-    if (preg_match('~^10\.(1101|64898)/(20\d\d)\.(\d{2})\.(\d{2})\.\d{6,8}(v\d+)?$~', $value, $match) === 1) {
-        $month = intval($match[3]);
-        $day = intval($match[4]);
-        return $month >= 1 && $month <= 12 && $day >= 1 && $day <= 31;
+    if (preg_match('~\A10\.1101/([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $legacy) === 1) {
+        return $server === '' || ($server === 'biorxiv' ? mb_strlen($legacy[1], '8bit') === 6 : mb_strlen($legacy[1], '8bit') === 8);
     }
-    return false;
+    if (preg_match('~\A10\.(1101|64898)/(20[0-9]{2})\.([0-9]{2})\.([0-9]{2})\.([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) !== 1 ||
+        !checkdate((int) $match[3], (int) $match[4], (int) $match[2])) {
+        return false;
+    }
+    $is_medrxiv = mb_strlen($match[5], '8bit') === 8;
+    if (($server === 'biorxiv' && $is_medrxiv) || ($server === 'medrxiv' && !$is_medrxiv)) {
+        return false;
+    }
+    // Both servers issued dated identifiers in December 2019. This is also
+    // the lower bound used by the deployed CS1 identifier handlers.
+    $earliest = '20191211';
+    $tomorrow = new DateTimeImmutable('tomorrow', new DateTimeZone('UTC'));
+    $date = $match[2] . $match[3] . $match[4];
+    return strcmp($date, $earliest) >= 0 && strcmp($date, $tomorrow->format('Ymd')) <= 0;
+}
+
+/** CS1 spells legacy medRxiv identifiers without their DOI prefix. */
+function rxiv_citation_id(string $value, string $server): string {
+    if (preg_match('~\A(?:10\.1101/)?([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) === 1) {
+        return $server === 'medrxiv' ? $match[1] : rxiv_doi_from_id($match[1]);
+    }
+    return rxiv_doi_from_id($value);
 }
 
 /**
