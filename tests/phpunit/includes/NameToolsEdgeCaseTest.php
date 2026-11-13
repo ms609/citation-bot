@@ -13,6 +13,20 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class NameToolsEdgeCaseTest extends testBaseClass {
+    public function testPersonalNameCasingPreservesSpelling(): void {
+        $this->assertSame('Çağrı', format_forename('ÇAĞRI'));
+        $this->assertSame('Çağrı', format_surname('ÇAĞRI'));
+        $this->assertSame('Demir', format_surname('DEMİR'));
+        $this->assertSame('Demir', format_forename("DEMI\u{0307}R"));
+        $this->assertSame('Adebọ̀lá', format_forename('ADEBỌ̀LÁ'));
+        $this->assertSame('Irvine', format_surname('IRVINE'));
+        $this->assertSame('O’Brien', format_surname('O’Brien'));
+        $this->assertSame("O'Brien", format_surname("O'Brien"));
+
+        $template = $this->make_citation('{{cite journal|title=Example}}');
+        $this->assertTrue($template->add_if_new('last1', format_surname('O’Brien'), 'crossref'));
+        $this->assertSame("O'Brien", $template->get('last1'));
+    }
 
     #[DataProvider('juniorBoundaryProvider')]
     public function testJuniorTestBoundaryCases(
