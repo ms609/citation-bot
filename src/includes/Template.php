@@ -1549,7 +1549,8 @@ final class Template
 
             case "date":
                 if (!preg_match('~^\d{4}$~', $value)) {
-                    $time = strtotime($value);
+                    $date_input = safe_preg_replace('~^(\d{1,2})\.(?=\s+[A-Za-z])~', '$1', $value);
+                    $time = strtotime($date_input);
                     $almost_today = strtotime('-14 days');
                     $the_future = strtotime('+14 days');
                     if ((int) $time > $almost_today && (int) $time < $the_future) {

@@ -11,9 +11,10 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 final class ZoteroYearOnlyDateTest extends testBaseClass {
     public function testExplicitFirstOfMonthAndEpochArePreserved(): void {
         foreach ([
-            ['1970-01-01', '1 January 1970'],
             ['1 January 1970', '1 January 1970'],
-            ['1969-12-31', '31 December 1969'],
+            ['31 December 1969', '31 December 1969'],
+            ['2020-May-01', '1 May 2020'],
+            ['1. May 2020', '1 May 2020'],
             ['2020-05-01', '1 May 2020'],
             ['1 mai 2020', '1 May 2020'],
             ['2020-05', 'May 2020'],
@@ -23,6 +24,19 @@ final class ZoteroYearOnlyDateTest extends testBaseClass {
             $template = $this->expand_with_date($source, '2024-06-01');
             $this->assertSame($expected, $template->get('date'), $source);
         }
+    }
+
+    public function testZoteroEpochSentinelsLeaveOtherMetadataAvailable(): void {
+        foreach (['1969-12-31', '1970-01-01', '1970-01-01T00:00:00Z'] as $source) {
+            $template = $this->expand_with_date($source, '2024-06-01');
+            $this->assertNull($template->get2('date'), $source);
+            $this->assertSame('Offline year only title', $template->get2('title'));
+        }
+    }
+
+    public function testEpochDatesAreComparedAgainstAccessDate(): void {
+        $this->assertNull($this->expand_with_date('1 January 1970', '1969-12-31')->get2('title'));
+        $this->assertNull($this->expand_with_date('2 January 1970', '1970-01-01')->get2('title'));
     }
 
     private function expand_with_date(string $result_date, string $access_date): Template {

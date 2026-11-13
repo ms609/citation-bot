@@ -1218,7 +1218,7 @@ function publication_date_has_explicit_day(string $date): bool {
         '~(?:^|[^0-9])(?:[0-9]{4}[-/][0-9]{1,2}[-/][0-9]{1,2}|[0-9]{1,2}[-/.][0-9]{1,2}[-/.][0-9]{2,4})(?![0-9])~',
         $date
     ) === 1 || preg_match(
-        '~^(?:[A-Za-z]+,?\s+)?(?:[0-9]{1,2}(?:st|nd|rd|th)?[\s-]+[A-Za-z]+\.?|[A-Za-z]+\.?[\s-]+[0-9]{1,2}(?:st|nd|rd|th)?)[,\s-]+[0-9]{2,4}(?![0-9])~i',
+        '~^(?:[0-9]{4}-[A-Za-z]{3,9}-[0-9]{1,2}(?![0-9])|(?:[A-Za-z]+,?\s+)?(?:[0-9]{1,2}(?:st|nd|rd|th|\.)?[\s-]+[A-Za-z]+\.?|[A-Za-z]+\.?[\s-]+[0-9]{1,2}(?:st|nd|rd|th)?)[,\s-]+[0-9]{2,4}(?![0-9]))~i',
         $date
     ) === 1;
 }
@@ -1332,6 +1332,8 @@ function tidy_date_inside(string $string): string {
     if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.    The comma is evil and strtotime is stupid
         $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
     }
+    // A dot after a day is an ordinal separator in several date styles.
+    $string = safe_preg_replace('~^(\d{1,2})\.(?=\s+[A-Za-z])~', '$1', $string);
     $parsed_date = date_parse($string);
     if (is_int($parsed_date['year']) && in_array('The parsed date was invalid', $parsed_date['warnings'], true)) {
         // strtotime() would quietly roll 31 June over into July, or 30 February into March

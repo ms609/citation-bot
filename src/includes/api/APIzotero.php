@@ -879,12 +879,12 @@ final class Zotero {
             if (in_array($template->get('url-status'), BAD_URL_STATUS, true)) {
                 return;
             }
-            $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
-            $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
-            if ($access_date && $archive_date) {
-                $access_date = min($access_date, $archive_date); // Whichever was first
-            } elseif ($archive_date) {
-                $access_date = $archive_date;
+            $access = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
+            $archive = strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
+            if ($access !== false && $archive !== false) {
+                $access_date = min($access, $archive);
+            } else {
+                $access_date = $access !== false ? $access : (int) $archive;
             }
             if ($template->has('url')) {
                 $url = $template->get('url');
@@ -1653,18 +1653,36 @@ final class Zotero {
         if (isset($result->ISBN)) {
             $template->add_if_new('isbn', $result->ISBN);
         }
-        if ($access_date && isset($result->date)) {
-            $tidied_result_date = tidy_date((string) $result->date); // One time got an integer
+        if (isset($result->date)) {
+            // Unqualified epoch dates in Zotero feeds can be missing-date sentinels.
+            // An explicit textual publication date can still be imported.
+            $source_date = mb_trim((string) $result->date);
+            if (preg_match('~\A(?:1969-12-31|1970-01-01)(?:[T ](?:00:00(?::00)?|23:59:59)(?:\.0+)?(?:Z|[+-]\d{2}:?\d{2})?)?\z~i', $source_date) === 1) {
+                unset($result->date);
+            }
+        }
+        $has_access_date = $access_date !== 0;
+        if (!$has_access_date && isset($result->date)) {
+            // The existing public entry point also uses 0 for an absent access date.
+            foreach (['access-date', 'accessdate', 'archive-date', 'archivedate'] as $param) {
+                if (strtotime(tidy_date($template->get($param))) === 0) {
+                    $has_access_date = true;
+                    break;
+                }
+            }
+        }
+        if ($has_access_date && isset($result->date)) {
+            $source_date = (string) $result->date;
+            $localized_date = WIKI_BASE === 'en' ? localized_citation_date($source_date) : null;
+            $tidied_result_date = tidy_date($localized_date ?? $source_date);
             if (preg_match('~^\d{4}$~', $tidied_result_date) === 1) {
                 $new_date = strtotime('1 January ' . $tidied_result_date); // strtotime('2015') is a time of day: 8:15pm today
             } else {
                 $new_date = strtotime($tidied_result_date);
             }
-            if ($new_date) { // can compare
-                if ($new_date > $access_date) {
-                    report_info("URL appears to have changed since access-date " . echoable($url));
-                    return;
-                }
+            if ($new_date !== false && $new_date > $access_date) {
+                report_info("URL appears to have changed since access-date " . echoable($url));
+                return;
             }
         }
         if (str_i_same(mb_substr((string) @$result->publicationTitle, 0, 4), 'http') ||
