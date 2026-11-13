@@ -681,7 +681,7 @@ function unicode_levenshtein(string $left, string $right, ?int $cutoff = null): 
                 ($previous[$column - 1] ?? $outside) + ($left_char === $right_chars[$column - 1] ? 0 : 1)
             );
         }
-        if ($cutoff !== null && min($current) > $band) {
+        if ($cutoff !== null && ($current === [] || min($current) > $band)) {
             return $outside;
         }
         $previous = $current;
