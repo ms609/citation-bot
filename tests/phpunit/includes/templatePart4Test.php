@@ -364,6 +364,24 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('https://www.academia.edu/1234', $template->get2('url'));
     }
 
+    public function testZenodoFileAndItsArchiveSurviveDoiCleanup(): void {
+        foreach ([
+            'https://zenodo.org/record/1234/files/supplement.csv?download=1',
+            'https://zenodo.org/records/1234/files/supplement.csv#section',
+            'https://zenodo.org/records/1234#files',
+        ] as $url) {
+            $archive = 'https://web.archive.org/web/20240101000000/' . $url;
+            $template = $this->make_citation('{{cite journal|title=Example|journal=Example Journal|volume=3|year=2020' .
+                '|doi=10.5281/zenodo.1234|doi-access=free|url-status=dead|url=' . $url .
+                '|archive-url=' . $archive . '|archive-date=2024-01-01}}');
+            $templates = [$template];
+            drop_urls_that_match_dois($templates);
+            $this->assertSame($url, $template->get2('url'));
+            $this->assertSame($archive, $template->get2('archive-url'));
+            $this->assertSame('2024-01-01', $template->get2('archive-date'));
+        }
+    }
+
     public function testZenodoFileAndFragmentArePreserved(): void {
         foreach (['record/1234/files/Supplement.pdf', 'records/1234/files/Supplement.pdf', 'record/1234#files'] as $path) {
             $url = 'https://zenodo.org/' . $path;

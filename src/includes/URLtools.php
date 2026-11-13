@@ -55,7 +55,11 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
                 (mb_strpos($doi, '10.1093/') === false) &&
                 $template->blank(DOI_BROKEN_ALIASES)) {
-                set_time_limit(120);
+            set_time_limit(120);
+            // A record DOI does not identify an individual file or an in-record target.
+            if (preg_match('~\Ahttps?://(?:www\.)?zenodo\.org(?::[0-9]+)?/records?/[0-9]+(?:/files?(?:/|[?#]|\z)|[?#])~i', $url) === 1) {
+                continue;
+            }
             if (str_ireplace(PROXY_HOSTS_TO_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
                 report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
                 $template->forget($url_type);
