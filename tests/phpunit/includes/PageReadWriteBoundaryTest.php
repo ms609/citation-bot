@@ -245,6 +245,7 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
         try {
             $this->assertSame($accepted, (new WikipediaBot())->write_statistics_page($title, 'Statistics', 'Update statistics'));
             $this->assertSame($existing === true ? [$title] : [], $reads);
+            /** @var non-empty-list<array<string, string>> $requests */
             $requests = $recorded_requests->getArrayCopy();
             $this->assertSame(['action' => 'query', 'prop' => 'info|revisions', 'rvprop' => 'timestamp',
                 'meta' => 'tokens', 'titles' => $title], $requests[0]);

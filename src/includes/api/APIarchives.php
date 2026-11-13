@@ -72,7 +72,10 @@ function fetch_archive_page(CurlHandle $ch, string $url): string {
         }
 
         throttle_archive();
-        /** @psalm-taint-escape ssrf */
+        /**
+         * @psalm-taint-escape ssrf
+         * @psalm-taint-escape file
+         */
         $safe_url = $url;
         curl_setopt($ch, CURLOPT_URL, $safe_url);
         try {

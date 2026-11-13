@@ -290,6 +290,10 @@ function bot_curl_init(float $time, array $ops, int $max_bytes): CurlHandle {
         CURLOPT_CONNECTTIMEOUT => (int) ceil(BOT_CONNECTION_TIMEOUT * $time),
     ]);
     // 3 - Specific options and overrides of defaults
+    /**
+     * Caller-supplied options are restricted by bot_curl_apply_security_options() below.
+     * @psalm-suppress TaintedInput
+     */
     curl_setopt_array($ch, $ops);
     // 4 - Security restrictions. These must be applied after caller-supplied
     // options so callers cannot accidentally enable unsafe protocols.

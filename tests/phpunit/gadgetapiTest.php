@@ -116,6 +116,7 @@ final class gadgetapiTest extends testBaseClass {
 
     public function testGadget(): void {
         new TestPage(); // Fill page name with test name for debugging
+        $base_buffer_level = ob_get_level();
         ob_start();
         $_POST['text'] = '{{cite journal|doi=10.1021/acs.jpca.4c00688 |pmid=<!-- --> |arxiv=<!-- --> |pmc=<!-- --> |url=<!-- --> }}';
         $_POST['summary'] = 'Something Nice';
@@ -124,11 +125,9 @@ final class gadgetapiTest extends testBaseClass {
         require(dirname(__DIR__, 2) . '/src/gadgetapi.php');
         unset($_SERVER['HTTP_ORIGIN']);
         $json_text = ob_get_contents();
-        ob_end_clean();
-        while (ob_get_level()) {
-            ob_end_flush();
+        while (ob_get_level() > $base_buffer_level) {
+            ob_end_clean();
         }
-        ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
         unset($_POST);
         unset($_REQUEST);
         // Output checking time

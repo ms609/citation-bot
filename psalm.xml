@@ -21,4 +21,10 @@
         <directory name="tests" />
         <directory name="tools" />
     </projectFiles>
+    <taintAnalysis>
+        <ignoreFiles>
+            <directory name="tests" />
+            <directory name="tools" />
+        </ignoreFiles>
+    </taintAnalysis>
 </psalm>

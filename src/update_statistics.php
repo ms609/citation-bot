@@ -117,5 +117,5 @@ if ($ok) {
     echo "Successfully updated {$stats_page}\n";
     exit(0);
 }
-report_warning("Failed to update {$stats_page}");
+report_warning('Failed to update ' . echoable($stats_page));
 exit(1);

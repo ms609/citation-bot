@@ -134,7 +134,10 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                         report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                         $template->forget($url_type);
                     } else { // See if $url redirects
-                        /** @psalm-taint-escape ssrf */
+                        /**
+                         * @psalm-taint-escape ssrf
+                         * @psalm-taint-escape file
+                         */
                         $the_url = $url;
                         curl_setopt($ch_doi, CURLOPT_URL, $the_url);
                         $ch_return = bot_curl_exec($ch_doi);

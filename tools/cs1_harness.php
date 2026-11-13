@@ -27,7 +27,7 @@ set_time_limit(0);
 // Bootstrap (must come before any class use)
 // ---------------------------------------------------------------------------
 
-$slow_mode = in_array('--slow', $argv, true);
+$slow_mode = in_array('--slow', $argv ?? [], true);
 if (!defined('SLOW_MODE')) {
     define('SLOW_MODE', $slow_mode);
 }
@@ -652,7 +652,7 @@ function run_case(string $wikitext, ?string $convert_to): array {
     return [count($templates) > 0, array_values(array_unique($violations))];
 }
 
-$list_only = in_array('--list', $argv, true);
+$list_only = in_array('--list', $argv ?? [], true);
 $matrix = build_matrix();
 
 if ($list_only) {

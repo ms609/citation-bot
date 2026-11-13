@@ -608,6 +608,10 @@ function edit_a_list_of_pages(
                     if (SAVETOFILES_MODE) {
                         // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
                         // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
+                        /**
+                         * The filename is sanitized by page_output_filename().
+                         * @psalm-taint-escape file
+                         */
                         $filename = page_output_filename($page_title);
                         report_phase("Saving to file " . echoable($filename));
                         $body = $page->parsed_text();
@@ -700,7 +704,7 @@ function edit_a_list_of_pages(
             } else {
                 echo "\n\n---\nPages skipped due to edit conflict — please try again (", $retry_count, "):\n";
                 foreach ($pages_edit_conflict as $conflict_title) {
-                    echo "  * ", $conflict_title, "\n";
+                    echo "  * ", echoable($conflict_title), "\n";
                 }
             }
         }
@@ -713,7 +717,7 @@ function edit_a_list_of_pages(
                     "\n\nPage skipped due to edit conflict — please try again: " . $pages_edit_conflict[0]
                 );
             } else {
-                echo "\n\nPage skipped due to edit conflict — please try again: ", $pages_edit_conflict[0], "\n";
+                echo "\n\nPage skipped due to edit conflict — please try again: ", echoable($pages_edit_conflict[0]), "\n";
             }
         }
     }

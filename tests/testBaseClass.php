@@ -63,9 +63,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     private bool $testing_skip_bibcode;
     private bool $testing_skip_wiki;
+    private int $output_buffer_level = 0;
 
     #[\Override]
     protected function setUp(): void {
+        $this->output_buffer_level = ob_get_level();
         Zotero::create_ch_zotero();
         $wb = new WikipediaBot();
         unset($wb);
@@ -293,14 +295,12 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     protected function flush(): void {
-        $level = ob_get_level();
-        for ($count = 0; $count < $level; $count++) {
+        // Only unwind buffers opened during the test. PHPUnit owns the buffer
+        // at $output_buffer_level and considers closing it a risky test.
+        while (ob_get_level() > $this->output_buffer_level) {
             ob_end_flush();
         }
         flush();
-        for ($count = 0; $count < $level; $count++) {
-            ob_start();
-        }
     }
 
     protected function sleep_S2(): void {
