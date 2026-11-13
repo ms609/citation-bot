@@ -904,7 +904,7 @@ final class Template
      * $api (string) specifies the API route by which a parameter was found; this will log the
      * parameter so it is not used to trigger a new search via the same API.
      */
-    public function add_if_new(string $param_name, string $value, string $api = ''): bool {
+    public function add_if_new(string $param_name, string $value, string $api = '', bool $literal_author = false): bool {
         // Clean up weird stuff from CrossRef etc.
         // U+200B can mark a word boundary in Thai and must remain invisible.
         $value = safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
@@ -1161,7 +1161,7 @@ final class Template
                 if ($this->blank(FIRST_AUTHOR_ALIASES)) {
                     $value = clean_up_full_names($value);
                     $au = split_author($value);
-                    if (!empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
+                    if (!$literal_author && !empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
                         $this->add('last' . (mb_substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_surname($au[0])));
                         return $this->add_if_new('first' . (mb_substr($param_name, -1) === '1' ? '1' : ''), clean_up_first_names(format_forename(mb_trim($au[1]))));
                     } elseif (mb_strpos($param_name, 'last') === false) {
@@ -1382,7 +1382,7 @@ final class Template
                 ) {
                     $value = clean_up_full_names($value);
                     $au = split_author($value);
-                    if (!empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
+                    if (!$literal_author && !empty($au) && mb_substr($param_name, 0, 3) === 'aut') {
                         $this->add('last' . $auNo, clean_up_last_names(format_surname($au[0])));
                         return $this->add_if_new('first' . $auNo, clean_up_first_names(format_forename(mb_trim($au[1]))));
                     } else {
@@ -2927,10 +2927,38 @@ final class Template
         return false;
     }
 
-    public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing): void {
+    public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing, bool $literal_name = false): void {
         if (!$add_even_if_existing && ($this->had_initial_author() || $this->had_initial_editor())) {
             return;
         } // Zotero does not know difference between editors and authors often
+        if (mb_trim($forename) === '' && ($literal_name || is_institutional_author_name($author))) {
+            $name = mb_trim(safe_preg_replace('~(?:^|\s)\S*@\S*(?=\s|$)~u', ' ', $author));
+            if ($name === '' || is_bad_author($name) || is_generic_name($name) ||
+                in_array(mb_strtolower($name), BAD_AUTHORS, true)) {
+                return;
+            }
+            $institution = is_institutional_author_name($name) ||
+                is_institutional_author_acronym($name) ||
+                preg_match('~\b(?:academy|association|committee|council|department|foundation|institute|ministry|university)\b~iu', $name) === 1;
+            if (!$institution && !author_is_human($name)) {
+                return;
+            }
+            $name_as_wikitext = strtr($name, [
+                '<' => '&#60;', '>' => '&#62;', '[' => '&#91;', ']' => '&#93;',
+                '{' => '&#123;', '}' => '&#125;', '|' => '&#124;',
+            ]);
+            $name_as_wikitext = safe_preg_replace_callback("~'{2,}~",
+                static fn (array $match): string => str_repeat('&#0039;', mb_strlen($match[0], '8bit')),
+                $name_as_wikitext
+            );
+            if (mb_stripos($check_against, $name) !== false ||
+                in_array(mb_strtolower(mb_trim(mb_strrchr(' ' . $name, ' ') ?: $name)), PUBLISHER_ENDINGS, true)) {
+                $this->add_if_new('publisher', $name_as_wikitext);
+                return;
+            }
+            $this->add_if_new($author_param, $name_as_wikitext, literal_author: true);
+            return;
+        }
         if (
             in_array(mb_strtolower($author), BAD_AUTHORS, true) === false &&
             in_array(mb_strtolower($forename), BAD_AUTHORS, true) === false &&

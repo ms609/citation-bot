@@ -154,7 +154,7 @@ final class Zotero {
                     report_warning("Malformed Zotero response creator entry for URL " . echoable($url));
                     return false;
                 }
-                foreach (['creatorType', 'firstName', 'lastName'] as $field) {
+                foreach (['creatorType', 'firstName', 'lastName', 'name'] as $field) {
                     if (isset($creator->{$field})) {
                         if (!is_scalar($creator->{$field})) {
                             report_warning("Malformed Zotero response creator field '" . $field . "' for URL " . echoable($url));
@@ -1871,14 +1871,11 @@ final class Zotero {
         }
         // CalMatters supplies this collective byline as two parts of a person's name.
         $creator_host = parse_url($url, PHP_URL_HOST);
-        if (is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true)) {
+        $is_calmatters = is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true);
+        if ($is_calmatters) {
             $result->author = array_values(array_filter(
                 $result->author ?? [],
                 static fn (array $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name[0] ?? '') . ' ' . mb_trim($name[1] ?? '')))
-            ));
-            $result->creators = array_values(array_filter(
-                $result->creators ?? [],
-                static fn (object $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name->firstName ?? '') . ' ' . mb_trim($name->lastName ?? '')))
             ));
         }
         // Filter out bad author name components and remove entirely empty author entries
@@ -1905,15 +1902,6 @@ final class Zotero {
             $result->author = array_values($result->author);
         }
 
-        // Special case: remove a single non-human author
-        if (isset($result->author[0]) && !isset($result->author[1]) &&
-                !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
-            unset($result->author[0]); // Do not add a single non-human author
-            if (isset($result->author) && is_array($result->author)) {
-                $result->author = array_values($result->author); // Re-index again after removal
-            }
-        }
-
         // Use a dedicated counter for author numbering to ensure contiguous numbering
         // Do not rely on array indices, as they may have gaps if authors were filtered
         // Citoid sometimes returns the same author more than once. Skip exact duplicates
@@ -1922,7 +1910,13 @@ final class Zotero {
         $seen_zotero_authors = [];
         $i = 0;
         while (isset($result->author[$i])) {
-            if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) {
+            $full_name = mb_trim(($result->author[$i][0] ?? '') . ' ' . ($result->author[$i][1] ?? ''));
+            $institution = mb_trim($result->author[$i][0] ?? '') === '' && is_institutional_author_name($full_name);
+            if ($institution && self::creator_is_site_name($full_name, $url, $result)) {
+                ++$i;
+                continue;
+            }
+            if ($institution || author_is_human($full_name)) {
                 $author_key = mb_strtolower(mb_trim((string) @$result->author[$i][0])) . '|' . mb_strtolower(mb_trim((string) @$result->author[$i][1]));
                 if (isset($seen_zotero_authors[$author_key])) {
                     $i++;
@@ -1934,7 +1928,10 @@ final class Zotero {
                                                                 isset($result->rights) ? (string) $result->rights : '', false);
                 // Break if nothing was added (e.g., template already has authors)
                 if ($template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
-                    break;
+                    if (!$institution || $template->had_initial_author() || $template->had_initial_editor()) {
+                        break;
+                    }
+                    --$author_number;
                 }
             }
             $i++;
@@ -2067,16 +2064,27 @@ final class Zotero {
                 $editor_i = 0;
                 $translator_i = 0;
                 while (isset($result->creators[$i])) {
-                    $creatorType = $result->creators[$i]->creatorType ?? 'author';
-                    if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
-                        // Websites often have non-authors listed in metadata.
+                    $creator = $result->creators[$i];
+                    $creatorType = $creator->creatorType ?? 'author';
+                    $given_name = (string) ($creator->firstName ?? '');
+                    $family_name = (string) ($creator->lastName ?? '');
+                    $single_field = mb_trim((string) ($creator->name ?? ''));
+                    $literal_name = $single_field !== '' ||
+                        (in_array($creator->fieldMode ?? null, [1, '1'], true) && mb_trim($given_name) === '');
+                    if ($single_field !== '') {
+                        $given_name = '';
+                        $family_name = $single_field;
+                    }
+                    if ($literal_name || isset($creator->firstName, $creator->lastName)) {
                         // Skip creators whose name is really the site or publication name.
-                        if (self::creator_is_site_name($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName, $url, $result)) {
+                        $creator_name = mb_trim(mb_trim($given_name) . ' ' . mb_trim($family_name));
+                        if (($is_calmatters && str_i_same('Guest Commentary', $creator_name)) ||
+                            self::creator_is_site_name($creator_name, $url, $result)) {
                             $i++;
                             continue;
                         }
-                        $creator_first = mb_strtolower(normalize_unicode_nfc(mb_trim((string) $result->creators[$i]->firstName)));
-                        $creator_last = mb_strtolower(normalize_unicode_nfc(mb_trim((string) $result->creators[$i]->lastName)));
+                        $creator_first = mb_strtolower(normalize_unicode_nfc(mb_trim($given_name)));
+                        $creator_last = mb_strtolower(normalize_unicode_nfc(mb_trim($family_name)));
                         $creator_role = mb_strtolower(mb_trim((string) $creatorType));
                         $creator_key = $creator_first . '|' . $creator_last . '|' . $creator_role;
                         if (isset($seen_creators[$creator_key])) {
@@ -2084,8 +2092,8 @@ final class Zotero {
                             continue;
                         }
                         $seen_creators[$creator_key] = true;
-                        // Only process if author passes validation
-                        if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
+                        if ($literal_name || author_is_human($creator_name) ||
+                            (mb_trim($given_name) === '' && is_institutional_author_name($family_name))) {
                             // Increment counter only after validation passes, based on creator type
                             switch ($creatorType) {
                                 case 'author':
@@ -2127,11 +2135,11 @@ final class Zotero {
                                     $authorParam = '';                          // @codeCoverageIgnore
                             }
                             if ($authorParam) {
-                                if (is_bad_author((string) $result->creators[$i]->lastName)) {
-                                    $result->creators[$i]->lastName = '';
+                                if (is_bad_author($family_name)) {
+                                    $family_name = '';
                                 }
-                                if (is_bad_author((string) $result->creators[$i]->firstName)) {
-                                    $result->creators[$i]->firstName = '';
+                                if (is_bad_author($given_name)) {
+                                    $given_name = '';
                                 }
                                 // SSRN Zotero translator (Citoid) returns names in wrong fields.
                                 // This is a known upstream translator bug:
@@ -2144,21 +2152,34 @@ final class Zotero {
                                 // We reconstruct the full name by concatenating both fields,
                                 // producing e.g. "Alesina, Alberto F." or "Zeira, Joseph",
                                 // then let format_author() parse it correctly into last/first.
-                                if ($template->has('ssrn') && mb_strpos((string) $result->creators[$i]->firstName, ',') !== false) {
-                                    $fullName = mb_trim((string) $result->creators[$i]->firstName) . ' ' . mb_trim((string) $result->creators[$i]->lastName);
+                                if (!$literal_name && $template->has('ssrn') && mb_strpos($given_name, ',') !== false) {
+                                    $fullName = mb_trim($given_name) . ' ' . mb_trim($family_name);
                                     $template->validate_and_add($authorParam, $fullName, '', isset($result->rights) ? (string) $result->rights : '', false);
                                 } else {
-                                    $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
-                                    isset($result->rights) ? (string) $result->rights : '', false);
+                                    $template->validate_and_add($authorParam, $family_name, $given_name,
+                                    isset($result->rights) ? (string) $result->rights : '', false, $literal_name);
                                 }
-                                // Break out if nothing added
-                                if ((mb_strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
-                                    break;
-                                }
-                                if ((mb_strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string) ($editor_i)])) {
-                                    break;
-                                }
-                                if ((mb_strpos($authorParam, 'translator') === 0) && $template->blank(['translator' . (string) ($translator_i)])) {
+                                if ($literal_name || (mb_trim($given_name) === '' && is_institutional_author_name($family_name))) {
+                                    if ($template->had_initial_author() || $template->had_initial_editor()) {
+                                        break;
+                                    }
+                                    // A rejected or reclassified creator does not consume a slot.
+                                    $creator_params = str_starts_with($authorParam, 'author')
+                                        ? [$authorParam, 'first' . $author_i, 'last' . $author_i]
+                                        : [$authorParam];
+                                    if ($template->blank($creator_params)) {
+                                        if (str_starts_with($authorParam, 'author')) {
+                                            --$author_i;
+                                        } elseif (str_starts_with($authorParam, 'editor')) {
+                                            --$editor_i;
+                                        } else {
+                                            --$translator_i;
+                                        }
+                                    }
+                                } elseif (
+                                    (str_starts_with($authorParam, 'author') && $template->blank([$authorParam, 'first' . $author_i, 'last' . $author_i])) ||
+                                    (!str_starts_with($authorParam, 'author') && $template->blank($authorParam))
+                                ) {
                                     break;
                                 }
                             }
