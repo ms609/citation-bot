@@ -2921,10 +2921,23 @@ final class Template
             return;
         } // Zotero does not know difference between editors and authors often
         if (mb_trim($forename) === '' && ($literal_name || is_institutional_author_name($author))) {
-            $name = mb_trim($author);
-            if ($name !== '' && !in_array(mb_strtolower($name), BAD_AUTHORS, true)) {
-                $this->add_if_new($author_param, $name, literal_author: true);
+            $name = mb_trim(safe_preg_replace('~(?:^|\s)\S*@\S*(?=\s|$)~u', ' ', $author));
+            if ($name === '' || is_bad_author($name) || is_generic_name($name) ||
+                in_array(mb_strtolower($name), BAD_AUTHORS, true)) {
+                return;
             }
+            $institution = is_institutional_author_name($name) ||
+                is_institutional_author_acronym($name) ||
+                preg_match('~\b(?:academy|association|committee|council|department|foundation|institute|ministry|university)\b~iu', $name) === 1;
+            if (!$institution && !author_is_human($name)) {
+                return;
+            }
+            if (mb_stripos($check_against, $name) !== false ||
+                in_array(mb_strtolower(mb_trim(mb_strrchr(' ' . $name, ' ') ?: $name)), PUBLISHER_ENDINGS, true)) {
+                $this->add_if_new('publisher', $name);
+                return;
+            }
+            $this->add_if_new($author_param, $name, literal_author: true);
             return;
         }
         if (

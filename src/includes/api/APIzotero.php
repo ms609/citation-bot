@@ -1927,7 +1927,10 @@ final class Zotero {
                                                                 isset($result->rights) ? (string) $result->rights : '', false);
                 // Break if nothing was added (e.g., template already has authors)
                 if ($template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
-                    break;
+                    if (!$institution || $template->had_initial_author() || $template->had_initial_editor()) {
+                        break;
+                    }
+                    --$author_number;
                 }
             }
             $i++;
@@ -2154,14 +2157,27 @@ final class Zotero {
                                     $template->validate_and_add($authorParam, $family_name, $given_name,
                                     isset($result->rights) ? (string) $result->rights : '', false, $literal_name);
                                 }
-                                // Break out if nothing added
-                                if ((mb_strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
-                                    break;
-                                }
-                                if ((mb_strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string) ($editor_i)])) {
-                                    break;
-                                }
-                                if ((mb_strpos($authorParam, 'translator') === 0) && $template->blank(['translator' . (string) ($translator_i)])) {
+                                if ($literal_name || (mb_trim($given_name) === '' && is_institutional_author_name($family_name))) {
+                                    if ($template->had_initial_author() || $template->had_initial_editor()) {
+                                        break;
+                                    }
+                                    // A rejected or reclassified creator does not consume a slot.
+                                    $creator_params = str_starts_with($authorParam, 'author')
+                                        ? [$authorParam, 'first' . $author_i, 'last' . $author_i]
+                                        : [$authorParam];
+                                    if ($template->blank($creator_params)) {
+                                        if (str_starts_with($authorParam, 'author')) {
+                                            --$author_i;
+                                        } elseif (str_starts_with($authorParam, 'editor')) {
+                                            --$editor_i;
+                                        } else {
+                                            --$translator_i;
+                                        }
+                                    }
+                                } elseif (
+                                    (str_starts_with($authorParam, 'author') && $template->blank([$authorParam, 'first' . $author_i, 'last' . $author_i])) ||
+                                    (!str_starts_with($authorParam, 'author') && $template->blank($authorParam))
+                                ) {
                                     break;
                                 }
                             }

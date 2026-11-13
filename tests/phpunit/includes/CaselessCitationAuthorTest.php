@@ -37,6 +37,29 @@ final class CaselessCitationAuthorTest extends testBaseClass {
         $this->assertSame('Jane', $template->get2('first2'));
     }
 
+    public function testCitoidLiteralCreatorsStillUseAuthorFilters(): void {
+        $url = 'https://example.test/report';
+        $template = $this->make_citation('{{cite web|url=' . $url . '}}');
+        $item = [
+            'title' => 'Example report',
+            'itemType' => 'report',
+            'rights' => 'Copyright Northstar Research Trust',
+            'creators' => [
+                ['name' => 'Staff Reporter'],
+                ['name' => 'unknown'],
+                ['name' => 'BBC News'],
+                ['fieldMode' => 1, 'lastName' => 'Northstar Research Trust'],
+                ['name' => 'Jane Smith jsmith@example.org @jsmith'],
+                ['firstName' => 'John', 'lastName' => 'Doe'],
+            ],
+        ];
+        Zotero::process_zotero_response(json_encode([$item], JSON_THROW_ON_ERROR), $template, $url, 0, false, true, true);
+        $this->assertSame('Northstar Research Trust', $template->get2('publisher'));
+        $this->assertSame('Jane Smith', $template->get2('author1'));
+        $this->assertSame('Doe', $template->get2('last2'));
+        $this->assertSame('John', $template->get2('first2'));
+    }
+
     public function testUnstructuredCaselessNamesKeepTheirTextAndOrder(): void {
         foreach (['علي حسن', 'דן כהן', 'สม ชาย', 'राम शर्मा', '山田 太郎'] as $name) {
             $this->assertSame($name, format_author($name));
