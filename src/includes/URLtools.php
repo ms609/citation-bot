@@ -1488,7 +1488,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     $document_id = $matches[1][0];
                 }
                 if ($document_id !== '') {
-                    $document_id = ltrim($document_id, '0') ?: '0';
+                    $document_id = mb_ltrim($document_id, '0') ?: '0';
                     $url = 'https://ieeexplore.ieee.org/document/' . $document_id;
                     $update_url($url_type, $url);
                 }

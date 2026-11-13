@@ -433,11 +433,11 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('https://ieeexplore.ieee.org/document/1234', $template->get2('url'));
     }
 
-    public function testTidy54b(): void {
-        $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/iel5/232/32/123456.pdf?yup}}";
-        $template = $this->make_citation($text);
+    public function testIeeeProxiedPdfKeepsItsDestination(): void {
+        $url = 'https://ieeexplore.ieee.org.proxy/iel5/232/32/123456.pdf?yup';
+        $template = $this->make_citation('{{cite journal|url=' . $url . '}}');
         $template->get_identifiers_from_url();
-        $this->assertSame('https://ieeexplore.ieee.org/document/123456', $template->get2('url'));
+        $this->assertSame($url, $template->get2('url'));
     }
 
     public function testTidy55(): void {
