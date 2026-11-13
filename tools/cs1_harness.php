@@ -379,9 +379,8 @@ function check_citation(Template $template): array {
     }
     foreach (['biorxiv', 'medrxiv'] as $param) {
         if ($template->has($param)) {
-            // Module:Citation/CS1/Identifiers checks the ID format. The bot
-            // also checks the calendar date before adding an identifier.
-            if (!rxiv_id_valid(rxiv_doi_from_id($template->get($param)))) {
+            if (!rxiv_id_valid(rxiv_doi_from_id($template->get($param)), $param) ||
+                rxiv_citation_id($template->get($param), $param) !== $template->get($param)) {
                 $violations[] = "rxiv-malformed: invalid |$param= identifier";
             }
         }

@@ -232,7 +232,7 @@ final class Zotero {
                     continue;
                 }
                 $preprint_doi = rxiv_doi_from_id($preprint_id);
-                if (!rxiv_id_valid($preprint_doi)) {
+                if (!rxiv_id_valid($preprint_doi, $preprint_param)) {
                     continue;
                 }
                 if ($template->blank('doi')) {

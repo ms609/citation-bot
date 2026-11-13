@@ -1697,19 +1697,34 @@ function pmc_valid(string $value): bool {
     return intval($value) >= 1;
 }
 
-/**
- * Validate the structure and calendar date of a bioRxiv/medRxiv identifier.
- * Accept legacy six-to-eight digit IDs under 10.1101 and dated IDs under
- * 10.1101 or 10.64898, each with an optional version suffix.
- */
-function rxiv_id_valid(string $value): bool {
-    if (preg_match('~^10\.1101/\d{6,8}(v\d+)?$~', $value) === 1) {
-        return true; // legacy identifier
+/** Validate the structure and publication window of a bioRxiv or medRxiv DOI. */
+function rxiv_id_valid(string $value, string $server = ''): bool {
+    if (!in_array($server, ['', 'biorxiv', 'medrxiv'], true)) {
+        return false;
     }
-    if (preg_match('~^10\.(1101|64898)/(20\d\d)\.(\d{2})\.(\d{2})\.\d{6,8}(v\d+)?$~', $value, $match) === 1) {
-        return checkdate((int) $match[3], (int) $match[4], (int) $match[2]);
+    if (preg_match('~\A10\.1101/([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $legacy) === 1) {
+        return $server === '' || ($server === 'biorxiv' ? mb_strlen($legacy[1], '8bit') === 6 : mb_strlen($legacy[1], '8bit') === 8);
     }
-    return false;
+    if (preg_match('~\A10\.(1101|64898)/(20[0-9]{2})\.([0-9]{2})\.([0-9]{2})\.([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) !== 1 ||
+        !checkdate((int) $match[3], (int) $match[4], (int) $match[2])) {
+        return false;
+    }
+    $is_medrxiv = mb_strlen($match[5], '8bit') === 8;
+    if (($server === 'biorxiv' && $is_medrxiv) || ($server === 'medrxiv' && !$is_medrxiv)) {
+        return false;
+    }
+    $earliest = $is_medrxiv ? '20200101' : '20191211';
+    $tomorrow = new DateTimeImmutable('tomorrow', new DateTimeZone('UTC'));
+    $date = $match[2] . $match[3] . $match[4];
+    return strcmp($date, $earliest) >= 0 && strcmp($date, $tomorrow->format('Ymd')) <= 0;
+}
+
+/** CS1 spells legacy medRxiv identifiers without their DOI prefix. */
+function rxiv_citation_id(string $value, string $server): string {
+    if (preg_match('~\A(10\.1101/)?([0-9]{6}|[0-9]{8})(?:v[0-9]+)?\z~', $value, $match) === 1) {
+        return $server === 'medrxiv' ? $match[2] : $match[1] . $match[2];
+    }
+    return $value;
 }
 
 /**

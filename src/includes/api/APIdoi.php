@@ -937,7 +937,7 @@ function get_biorxiv_published_doi(
 ): ?string {
     $api_status = null;
 
-    if (!rxiv_id_valid($doi)) {
+    if (!rxiv_id_valid($doi, $server)) {
         return null;
     }
 

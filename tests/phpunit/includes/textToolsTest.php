@@ -1615,6 +1615,19 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(rxiv_id_valid('10.64898/2025.04.31.123456v2'));
     }
 
+    public function testRxivDateWindowAndServerSpecificIdentifiers(): void {
+        $tomorrow = new DateTimeImmutable('tomorrow', new DateTimeZone('UTC'));
+        $this->assertTrue(rxiv_id_valid('10.1101/' . $tomorrow->format('Y.m.d') . '.123456', 'biorxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/' . $tomorrow->modify('+1 day')->format('Y.m.d') . '.123456', 'biorxiv'));
+        $this->assertTrue(rxiv_id_valid('10.1101/2019.12.11.123456', 'biorxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2019.12.10.123456', 'biorxiv'));
+        $this->assertTrue(rxiv_id_valid('10.1101/2020.01.01.12345678', 'medrxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2019.12.31.12345678', 'medrxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2020.01.01.123456', 'medrxiv'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2020.01.01.12345678', 'biorxiv'));
+        $this->assertFalse(rxiv_id_valid("10.1101/2020.01.01.123456\n", 'biorxiv'));
+    }
+
     public function testBibcodeValid(): void {
         $this->assertTrue(bibcode_valid('2015arXiv151206696F'));
         $this->assertTrue(bibcode_valid('2005A&A...430.1063G'));

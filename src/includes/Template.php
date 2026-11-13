@@ -2751,14 +2751,11 @@ final class Template
             case 'medrxiv':
             case 'via':
                 if ($param_name === 'biorxiv' || $param_name === 'medrxiv') {
-                    $test_value = $value;
-                    if (mb_strpos($test_value, '10.1101/') !== 0 && mb_strpos($test_value, '10.64898/') !== 0) {
-                        $test_value = '10.1101/' . $test_value; // Same normalization prepare_rxiv() applies
-                    }
-                    if (!rxiv_id_valid($test_value)) {
+                    if (!rxiv_id_valid(rxiv_doi_from_id($value), $param_name)) {
                         report_inaction("Not adding malformed $param_name identifier: " . echoable($value));
                         return false;
                     }
+                    $value = rxiv_citation_id($value, $param_name);
                 }
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
@@ -5601,10 +5598,10 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
+                        if (rxiv_id_valid($doi_value, 'biorxiv')) {
                             // Convert to cite bioRxiv
                             $this->change_name_to('cite bioRxiv', true, true);
-                            $this->rename('doi', 'biorxiv');
+                            $this->rename('doi', 'biorxiv', rxiv_citation_id($doi_value, 'biorxiv'));
 
                             // Remove parameters not allowed in cite bioRxiv
                             $params_to_remove = [];
@@ -5646,10 +5643,10 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
+                        if (rxiv_id_valid($doi_value, 'medrxiv')) {
                             // Convert to cite medRxiv
                             $this->change_name_to('cite medRxiv', true, true);
-                            $this->rename('doi', 'medrxiv');
+                            $this->rename('doi', 'medrxiv', rxiv_citation_id($doi_value, 'medrxiv'));
 
                             // Remove parameters not allowed in cite medRxiv
                             $params_to_remove = [];
