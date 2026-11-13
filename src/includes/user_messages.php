@@ -8,7 +8,7 @@ require_once __DIR__ . '/constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text = ''): void {
     if (!CI) {
-        echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore
+        echo HTML_OUTPUT ? $text : echoable($alternate_text); // @codeCoverageIgnore
     }
 }
 

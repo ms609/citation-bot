@@ -234,6 +234,10 @@ function send_configured_cors_header(?string $origin): void {
         return;
     }
     @header('Vary: Origin', false);
+    /**
+     * The value is restricted to the configured allowlist by allowed_cors_origin().
+     * @psalm-taint-escape header
+     */
     $allowed = allowed_cors_origin($origin);
     if ($allowed === null) {
         return;

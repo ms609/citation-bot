@@ -74,4 +74,4 @@ function big_run_recovery_tool_main(array $argv): int {
     return 0;
 }
 
-exit(big_run_recovery_tool_main($argv));
+exit(big_run_recovery_tool_main($argv ?? []));

@@ -488,6 +488,7 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
         }, true);
         try {
             $edits = WikipediaBot::fetch_user_contribs('Fixture bot', 48);
+            /** @var non-empty-list<array<string, mixed>> $anonymous */
             $anonymous = $recorded_anonymous->getArrayCopy();
             if ($edits === null) {
                 $this->fail('Expected a complete window after falling back to anonymous requests');

@@ -1144,16 +1144,22 @@ final class WikipediaBot {
         if ($revision !== null) {
             $params['oldid'] = (string) $revision;
         }
+        /**
+         * The URL is rooted at WIKI_ROOT and the parameters are query-encoded.
+         * @psalm-taint-escape ssrf
+         * @psalm-taint-escape file
+         */
+        $url = WIKI_ROOT . '?' . http_build_query($params);
         curl_setopt_array(self::$ch_logout, [
             CURLOPT_HTTPGET => true,
-            CURLOPT_URL => WIKI_ROOT . '?' . http_build_query($params),
+            CURLOPT_URL => $url,
         ]);
         $text = bot_curl_exec_withFalse(self::$ch_logout);
         if ($text === false) {
             // @codeCoverageIgnoreStart
             $errnoInt = curl_errno(self::$ch_logout);
             $errorStr = curl_error(self::$ch_logout);
-            report_warning('Curl error #' . $errnoInt . ' on getting Wikipedia page ' . $title . ': ' . $errorStr);
+            report_warning('Curl error #' . $errnoInt . ' on getting Wikipedia page ' . echoable($title) . ': ' . $errorStr);
         }   // @codeCoverageIgnoreEnd
         return (string) $text;
     }

@@ -359,7 +359,7 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
 
     public function testTokenCostRejectsNegativePageCounts(): void {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('non-negative');
+        $this->expectExceptionMessageIsOrContains('non-negative');
         big_run_token_cost(-1, 'webform');
     }
 

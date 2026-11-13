@@ -384,8 +384,6 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
             $pipes
         );
         $this->assertTrue(is_resource($process), 'Unable to launch short-write worker');
-        $stdout = '';
-        $stderr = '';
         try {
             $stdout = stream_get_contents($pipes[1]);
             $stderr = stream_get_contents($pipes[2]);

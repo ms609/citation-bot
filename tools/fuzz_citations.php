@@ -29,7 +29,7 @@ $iterations = filter_var(
     ['options' => ['min_range' => 1, 'max_range' => $max_iterations]]
 );
 if ($seed === false || $replay_seed === false || $iterations === false
-    || count($argv) > (($single_case || $random_cases) ? 4 : 3)
+    || count($argv ?? []) > (($single_case || $random_cases) ? 4 : 3)
     || ($single_case && $seed_input === '') || ($random_cases && $seed_input !== '')) {
     fwrite(STDERR, "Usage: php tools/fuzz_citations.php [seed 0–2147483647] [iterations 1–100000]\n");
     fwrite(STDERR, "Fresh random cases: php tools/fuzz_citations.php '' ITERATIONS --random (1–400000)\n");

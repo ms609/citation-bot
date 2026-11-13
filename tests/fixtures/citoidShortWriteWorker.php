@@ -17,6 +17,7 @@ require_once dirname(__DIR__) . '/testBaseClass.php';
 
 // Ignore SIGXFSZ so the write reports an error instead of terminating the
 // interpreter. A limit smaller than the CB1 record forces a partial write.
+/** @psalm-suppress UndefinedConstant -- POSIX-only fixture; Psalm has no pcntl/posix constant stubs */
 if (!pcntl_signal(SIGXFSZ, SIG_IGN) ||
     !posix_setrlimit(POSIX_RLIMIT_FSIZE, 16, 16)) {
     exit(3);

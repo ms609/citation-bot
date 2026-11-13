@@ -37,7 +37,7 @@ final class SecurityBoundaryCoverageTest extends PHPUnit\Framework\TestCase {
         putenv('PUBLIC_BASE_URL');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('PUBLIC_BASE_URL is missing or invalid');
+        $this->expectExceptionMessageIsOrContains('PUBLIC_BASE_URL is missing or invalid');
         public_base_url();
     }
 

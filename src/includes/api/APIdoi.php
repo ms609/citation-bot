@@ -641,6 +641,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     } else {
         $try_to_add_it('title', @$json['title']);                          // @codeCoverageIgnore
         if (!HTML_OUTPUT) {
+            /** @psalm-suppress TaintedInput */
             print_r($json);                              // @codeCoverageIgnore
         }
         report_minor_error('DOI returned unexpected data type ' . echoable($type) . ' for ' . doi_link($doi));    // @codeCoverageIgnore

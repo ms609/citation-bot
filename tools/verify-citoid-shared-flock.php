@@ -157,4 +157,4 @@ final class CitoidSharedFlockSmoke {
     }
 }
 
-exit(CitoidSharedFlockSmoke::run($argv));
+exit(CitoidSharedFlockSmoke::run($argv ?? []));

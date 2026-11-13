@@ -474,7 +474,7 @@ function adsabs_api(
                 }
             } else {
                 bot_debug_log("No match for bibcode identifier: " . $bad_boy);
-                report_warning("No match for bibcode identifier: " . $bad_boy);
+                report_warning("No match for bibcode identifier: " . echoable($bad_boy));
             }
         }
 

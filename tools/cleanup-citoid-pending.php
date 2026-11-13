@@ -186,4 +186,4 @@ final class CitoidPendingCleanup {
     }
 }
 
-exit(CitoidPendingCleanup::run($argv));
+exit(CitoidPendingCleanup::run($argv ?? []));

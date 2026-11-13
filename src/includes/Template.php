@@ -1838,7 +1838,7 @@ final class Template
                 // than create the error.  (wikiname() already canonicalizes
                 // newspaper to news and periodical to magazine.)
                 if (in_array($this->wikiname(), ['cite news', 'cite magazine', 'cite press release'], true)) {
-                    report_inaction("Not adding chapter to " . $this->wikiname() . " (ignored there)");
+                    report_inaction("Not adding chapter to " . echoable($this->wikiname()) . " (ignored there)");
                     return false;
                 }
                 // Adding a chapter immediately triggers tidy_parameter('chapter').
@@ -3886,13 +3886,13 @@ final class Template
                 } elseif ($shortest < 12 && $shortest < $shortish) {
                     bot_debug_log("levenshtein replaced " . $p->param . " with " . $closest);
                     $p->param = $closest;
-                    report_inline("replaced with {$closest} (likelihood " . (string) round(24.0 - $shortest, 1) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
+                    report_inline('replaced with ' . echoable($closest) . ' (likelihood ' . (string) round(24.0 - $shortest, 1) . '/24)'); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
                 } else {
                     $similarity = (float) similar_text($p->param, $closest) / (float) mb_strlen($p->param);
                     if ($similarity > 0.6) {
                         bot_debug_log("levenshtein replaced " . $p->param . " with " . $closest);
                         $p->param = $closest;
-                        report_inline("replaced with {$closest} (similarity " . (string) round(24.0 * $similarity, 1) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
+                        report_inline('replaced with ' . echoable($closest) . ' (similarity ' . (string) round(24.0 * $similarity, 1) . '/24)'); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
                     } else {
                         bot_debug_log("levenshtein could not fix " . $p->param);
                         report_inline("could not be replaced with confidence. Please check the citation yourself.");
@@ -7867,7 +7867,7 @@ final class Template
                     }
                 } else {
                     if ($this->get_without_comments_and_placeholders('publisher') === '' || $this->blank('publisher')) {
-                        report_inaction("Keeping " . $this->wikiname() . " because cite document requires a publisher");
+                        report_inaction("Keeping " . echoable($this->wikiname()) . " because cite document requires a publisher");
                     } elseif (mb_substr($this->name, 0, 1) === 'c') {
                         $this->name = $spacing[1] . 'cite document' . $spacing[2];
                     } else {
@@ -8871,7 +8871,7 @@ final class Template
                         $spacing[2] = ''; // @codeCoverageIgnoreEnd
                     }
                     if ($this->get_without_comments_and_placeholders('publisher') === '' || $this->blank('publisher')) {
-                        report_inaction("Keeping " . $this->wikiname() . " because cite document requires a publisher");
+                        report_inaction("Keeping " . echoable($this->wikiname()) . " because cite document requires a publisher");
                     } elseif (mb_substr($this->name, 0, 1) === 'c') {
                         $this->name = $spacing[1] . 'cite document' . $spacing[2];
                     } else {

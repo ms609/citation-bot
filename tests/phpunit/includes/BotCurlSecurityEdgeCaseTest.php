@@ -70,7 +70,7 @@ final class BotCurlSecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         uopz_set_return('curl_setopt_array', false);
         try {
             $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage('Unable to apply mandatory cURL security options.');
+            $this->expectExceptionMessageIsOrContains('Unable to apply mandatory cURL security options.');
             bot_curl_apply_security_options($handle);
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
