@@ -17,6 +17,14 @@ final class TemplatePart2Test extends testBaseClass {
         }
     }
 
+    public function testZeroYearAndCombinedZeroIssueAreHandledIndependently(): void {
+        $template = $this->prepare_citation('{{cite journal|title=Editorial|journal=OUSL Journal|year=0|volume=1(0)}}');
+        $template->tidy();
+        $this->assertNull($template->get2('year'));
+        $this->assertSame('1', $template->get('volume'));
+        $this->assertSame('0', $template->get('issue'));
+    }
+
     public function testTidyWork1a(): void {
         $text = "{{citation|work=|website=X}}";
         $template = $this->make_citation($text);

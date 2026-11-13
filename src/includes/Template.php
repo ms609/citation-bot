@@ -6987,6 +6987,10 @@ final class Template
                     if ($this->get($param) === 'n.d.') {
                         return;
                     } // Special no-date code that the citation template recognizes.
+                    if (preg_match('~\A0+\z~', $this->get('year')) === 1) {
+                        $this->forget('year');
+                        return;
+                    }
                     // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
                     // no break
                 case 'issue':
@@ -9061,7 +9065,14 @@ final class Template
             } // probably a year or range of years
             if ($param === 'volume') {
                 if ($this->blank(ISSUE_ALIASES)) {
-                    $this->add_if_new($the_issue, $possible_issue);
+                    if ($possible_issue === '0') {
+                        // This locator was written in the citation, not imported as metadata.
+                        if (!$this->add($the_issue, $possible_issue)) {
+                            return;
+                        }
+                    } else {
+                        $this->add_if_new($the_issue, $possible_issue);
+                    }
                     $this->set('volume', $possible_volume);
                 } elseif (str_replace(".", "", $this->get('issue')) === str_replace(".", "", $possible_issue) || str_replace(".", "", $this->get('number')) === str_replace(".", "", $possible_issue)) {
                     $this->set('volume', $possible_volume);
