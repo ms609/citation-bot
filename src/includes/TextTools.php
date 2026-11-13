@@ -875,7 +875,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     );
     /** French l'Words and d'Words */
     $new_case = safe_preg_replace_callback(
-        "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
+        "~(\s[LD][\'\x{00B4}])((?:\p{L}\p{M}*)+)~u",
         static function (array $matches): string {
             return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);
         },
@@ -884,7 +884,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     /** Italian dell'xxx words */
     $new_case = safe_preg_replace_callback(
-        "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
+        "~(\s)(Dell|Degli|Delle)([\'\x{00B4}](?:\p{L}\p{M}*){3})~u",
         static function (array $matches): string {
             return $matches[1] . mb_strtolower($matches[2]) . $matches[3];
         },
