@@ -36,7 +36,7 @@ final class ArchiveBomTitleTest extends testBaseClass {
         $this->assertSame($title, archive_decode_title($bytes, [], $archive, 'ko'));
 
         $this->assertTrue(uopz_set_return('mb_convert_encoding',
-            static function (string $value, string $to, ?string $from = null) use ($bytes): string|false {
+            static function (string $value, string $to, string $from) use ($bytes): string|false {
                 if ($value === $bytes && $to === 'UTF-8' && $from === 'EUC-KR') {
                     return false;
                 }
