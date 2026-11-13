@@ -134,7 +134,7 @@ function format_surname(string $surname): string {
     if ($prefix === "o'" || $prefix === 'o’') {
         return 'O' . mb_substr($prefix, 1) . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 2) === "mc") {
+    if ($prefix === 'mc') {
         return "Mc" . format_surname_2(mb_substr($surname, 2));
     }
     $lower_surname = mb_strtolower($surname);
