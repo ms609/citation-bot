@@ -14,7 +14,8 @@ final class TemplatePart3Test extends testBaseClass {
             $this->assertTrue($template->add_if_new('publisher', $name), $name);
             $this->assertSame($name, $template->get('publisher'));
         }
-        foreach (['[s.n.]', 'N/A', 'N. D.', 'unknown', '1234', '??', 'A', 'Inc'] as $name) {
+        foreach (['[s.n.]', 'N/A', 'N. D.', 'unknown', '1234', '??', 'A', 'Inc', 'INC', 'MIT123', '2020 MIT',
+            '不明', '未知', 'б.и.', 'S.L.', 'NONE', 'NULL', 'TBD', 'PDF'] as $name) {
             $template = $this->make_citation('{{cite book|title=Example}}');
             $this->assertFalse($template->add_if_new('publisher', $name), $name);
             $this->assertNull($template->get2('publisher'));

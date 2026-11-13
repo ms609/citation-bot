@@ -2647,13 +2647,17 @@ final class Template
                 } // Do not add if work is set, unless explicitly a book
 
                 $value = truncate_publisher($value);
+                $value = normalize_unicode_nfc($value);
                 $publisher_letters = safe_preg_replace('~[^\p{L}]+~u', '', $value);
-                $short_acronym = preg_match('~\A[A-Z]{2,4}\z~', $publisher_letters) === 1;
-                $short_non_latin_name = preg_match('~\A(?:(?!\p{Latin})\p{L}){2,4}\z~u', $publisher_letters) === 1;
+                $short_acronym = preg_match('~\A(?:[A-Z]\.?){2,4}\z~', $value) === 1;
+                $short_non_latin_name = preg_match('~\A(?:(?!\p{Latin})\p{L}\p{M}*){2,4}\z~u', $value) === 1;
                 if (mb_strlen($publisher_letters) < 5 && !$short_acronym && !$short_non_latin_name) {
                     return false;
                 }
-                if (in_array(mb_strtolower($publisher_letters), ['na', 'nd', 'np', 'sn'], true) ||
+                if (in_array(mb_strtolower($publisher_letters), [
+                    'na', 'nd', 'np', 'sn', 'sl', 'би', '不明', '未知',
+                    'inc', 'ltd', 'llc', 'none', 'null', 'tbd', 'pdf',
+                ], true) ||
                     in_array(mb_trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
                     return false;
                 }
