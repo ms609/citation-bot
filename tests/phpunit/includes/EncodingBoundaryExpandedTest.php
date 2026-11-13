@@ -677,7 +677,7 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
     }
 
     public function testMixedEncodingMalformedBytesBeforeMetaDoNotPreventDiscovery(): void {
-        $html = "\xFF\xFE" . '<meta charset="windows-1252">';
+        $html = "\xFF\xFD" . '<meta charset="windows-1252">';
 
         $this->assertSame(
             ['windows-1252'],
