@@ -385,13 +385,14 @@ function archive_html_tag_end(string $html, int $start): ?int {
 }
 
 /**
- * Extract actual meta start tags while skipping comments, raw-text/RCDATA
- * elements, and strings that only look like tags inside another tag's attrs.
+ * Extract meta start tags or the first complete title in the head.
+ * Skip comments, raw-text/RCDATA elements, and tags inside attributes.
  *
  * @return list<string>
  */
-function archive_html_meta_tags(string $html): array {
+function archive_html_scan(string $html, bool $find_head_title): array {
     $tags = [];
+    $in_head = false;
     $length = mb_strlen($html, '8bit');
     $position = 0;
     $skip_elements = [
@@ -448,6 +449,14 @@ function archive_html_meta_tags(string $html): array {
         if (!$closing && $name === 'plaintext') {
             break;
         }
+        if ($find_head_title) {
+            if ((!$closing && $name === 'body') || ($closing && $name === 'head')) {
+                break;
+            }
+            if (!$closing && $name === 'head') {
+                $in_head = true;
+            }
+        }
         if (!$closing && in_array($name, $skip_elements, true)) {
             $search = $end + 1;
             $close_start = false;
@@ -466,17 +475,25 @@ function archive_html_meta_tags(string $html): array {
             if ($close_end === null) {
                 break;
             }
+            if ($find_head_title && $in_head && $name === 'title') {
+                return [mb_substr($html, $end + 1, $close_start - $end - 1, '8bit')];
+            }
             $position = $close_end + 1;
             continue;
         }
 
-        if (!$closing && $name === 'meta') {
+        if (!$find_head_title && !$closing && $name === 'meta') {
             $tags[] = mb_substr($html, $start, $end - $start + 1, '8bit');
         }
         $position = $end + 1;
     }
 
     return $tags;
+}
+
+/** @return list<string> */
+function archive_html_meta_tags(string $html): array {
+    return archive_html_scan($html, false);
 }
 
 /**
@@ -553,6 +570,16 @@ function archive_candidate_encodings(string $html): array {
     $guessed = [];
     $headers = archive_http_header_block($html);
     $body = archive_http_body($html);
+
+    if (str_starts_with($body, "\xFF\xFE")) {
+        return ['UTF-16LE'];
+    }
+    if (str_starts_with($body, "\xFE\xFF")) {
+        return ['UTF-16BE'];
+    }
+    if (str_starts_with($body, "\xEF\xBB\xBF")) {
+        return ['UTF-8'];
+    }
 
     if ($headers !== '') {
         if (preg_match_all('~^content-type:\s*([^\r\n]*)\r?$~im', $headers, $header_matches)) {
@@ -698,6 +725,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                 set_time_limit(120);
                 $raw_html = fetch_archive_page($ch, $archive_url);
                 $title_scan_html = archive_title_scan_window($raw_html);
+                $decoded_prefix_only = false;
                 foreach (archive_candidate_encodings($raw_html) as $encoding) {
                     $encoding_key = mb_strtolower($encoding, '8bit');
                     if (!in_array($encoding_key, ['utf-16', 'utf-16le', 'utf-16be', 'iso-2022-jp'], true)) {
@@ -705,9 +733,15 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     }
                     // UTF-16 has no ASCII markup to search; ISO-2022-JP has
                     // ASCII markup but valid UTF-8 escape bytes in its title.
-                    $decoded_body = smart_decode(archive_http_body($raw_html), $encoding, $archive_url);
+                    $body = archive_http_body($raw_html);
+                    $body_prefix = mb_strcut($body, 0, ARCHIVE_TITLE_SCAN_MAX_BYTES, $encoding);
+                    $body_was_truncated = mb_strlen($body_prefix, '8bit') < mb_strlen($body, '8bit');
+                    unset($body);
+                    $decoded_body = smart_decode($body_prefix, $encoding, $archive_url);
+                    unset($body_prefix);
                     if ($decoded_body !== '' && mb_check_encoding($decoded_body, 'UTF-8')) {
                         $title_scan_html = archive_title_scan_window($decoded_body);
+                        $decoded_prefix_only = $body_was_truncated;
                         break;
                     }
                 }
@@ -719,12 +753,24 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
                     '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
                     '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~',
+                    null, // The decoded prefix may end before </head> or <body>.
                 ] as $regex) {
+                    if ($title_scan_html === '') {
+                        break;
+                    }
                     set_time_limit(120); // Slow regex sometimes
-                    if ($title_scan_html !== '' && preg_match($regex, $title_scan_html, $match)) {
+                    $raw_title = '';
+                    if ($regex === null) {
+                        if ($decoded_prefix_only) {
+                            $raw_title = archive_html_scan($title_scan_html, true)[0] ?? '';
+                        }
+                    } elseif (preg_match($regex, $title_scan_html, $match) === 1) {
+                        $raw_title = $match[1];
+                    }
+                    if ($raw_title !== '') {
                         set_time_limit(120);
                         $encode = archive_candidate_encodings($title_scan_html);
-                        $title = archive_decode_title_candidate($match[1], $encode, $archive_url);
+                        $title = archive_decode_title_candidate($raw_title, $encode, $archive_url);
                         unset($encode, $match);
                         if ($title !== '' &&
                             mb_stripos($title, 'archive') === false &&
