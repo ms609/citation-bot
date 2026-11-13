@@ -878,7 +878,7 @@ class Page {
         if (!$auto_summary) {
             $auto_summary = "Misc citation tidying. ";
         }
-        $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
+        $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
 
         // @codeCoverageIgnoreStart
         /** @var array<string, array<string, string>> $translations_by_wiki */
@@ -891,7 +891,7 @@ class Page {
             report_error('invalid wiki in edit summary');
         }
         // @codeCoverageIgnoreEnd
-        return $auto_summary;
+        return $auto_summary . $edit_summary_end;
     }
 
     public function write(WikipediaBot $api, string $edit_summary_end = ''): bool {

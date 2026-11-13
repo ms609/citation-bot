@@ -291,6 +291,23 @@ function is_annual_review_cell_biology(string $journal, string $doi = ''): bool 
         str_equivalent($journal, 'Annual Review of Cell and Developmental Biology');
 }
 
+/**
+ * Remove a CS1 language tag before comparing original script text.
+ */
+function citation_script_title_text(string $title): string {
+    $title = safe_preg_replace('~^[a-z]{2,3}(?:-[a-z0-9]{1,8})*:\s*~i', '', $title);
+    return normalize_unicode_nfc(mb_trim(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+}
+
+/** A Latin title and a genuinely non-Latin original can coexist. */
+function citation_titles_use_romanization(string $title, string $native): bool {
+    $latin = normalize_unicode_nfc(mb_trim(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+    $native = citation_script_title_text($native);
+    return preg_match('~\p{Latin}~u', $latin) === 1 &&
+        preg_match('~^[\p{Latin}\p{M}0-9\s.,;:!?\'’"()\-–—]+$~uD', $latin) === 1 &&
+        preg_match('~[^\p{Latin}\p{Common}\p{Inherited}]~u', $native) === 1;
+}
+
 /** See also str_equivalent() */
 function titles_are_similar(string $title1, string $title2): bool {
     if (!titles_are_dissimilar($title1, $title2)) {
@@ -306,8 +323,13 @@ function titles_are_similar(string $title1, string $title2): bool {
     return false;
 }
 
-function de_wikify(string $string): string {
-    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"], $string));
+function de_wikify(string $string, bool $decode_entities = false): string {
+    $string = safe_preg_replace('~<[^>]*>~', '', $string);
+    $string = safe_preg_replace('~\[\[[^\|\]]*\|([^\]]*)\]\]~', '$1', $string);
+    $string = $decode_entities
+        ? html_entity_decode($string, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')
+        : safe_preg_replace('~\&[\w\d]{2,7};~', '', $string);
+    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], $string);
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
@@ -323,16 +345,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
             }
         }
     }
-    // Strip diacritics before decode
-    $inTitle = strip_diacritics($inTitle);
-    $dbTitle = strip_diacritics($dbTitle);
-    // Decode entities before tokenizing numbers, including spaces such as &nbsp;.
-    $inSpaced = html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
-    $dbSpaced = html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    // Keep the original labels for identity checks before accent folding.
+    $inSpaced = normalize_unicode_nfc(html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
+    $dbSpaced = normalize_unicode_nfc(html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
     // always decode new data
     $dbTitle = titles_simple(htmlspecialchars($dbSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     // old data both decoded and not
-    $inTitle2 = titles_simple($inTitle);
+    $inTitle2 = titles_simple(strip_diacritics($inTitle));
     $inTitle = titles_simple(htmlspecialchars($inSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     $dbTitle = strip_diacritics($dbTitle);
     $inTitle = strip_diacritics($inTitle);
@@ -456,7 +475,7 @@ function compare_title_lettered_labels(string $title1, string $title2): ?bool {
 /** @return array{0: string, 1: array<string>} */
 function title_lettered_labels(string $title): array {
     $title = mb_strtolower(normalize_title_numeral_letters(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'))));
-    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
     }
@@ -467,10 +486,10 @@ function title_lettered_labels(string $title): array {
     $labels = [];
     $label_words = ['appendix', 'class', 'figure', 'group', 'hepatitis', 'panel',
         'part', 'phase', 'physica', 'region', 'section', 'series', 'stage',
-        'table', 'type', 'variant', 'vitamin', 'гепатит'];
+        'table', 'type', 'variant', 'vitamin', 'гепатит', 'μέρος', 'κεφάλαιο'];
     foreach ($parts as $index => $part) {
         if ($index > 0 && in_array($parts[$index - 1], $label_words, true) &&
-                (preg_match('~^\p{L}$~u', $part) === 1 || preg_match('~^\p{Nd}{1,9}$~u', $part) === 1 ||
+                (preg_match('~^\p{L}\p{M}*$~u', $part) === 1 || preg_match('~^\p{Nd}{1,9}$~u', $part) === 1 ||
                  // Multi-character Roman numerals may also be section labels.
                  // Limit to <=50 so ordinary words like 'mix' are not mistaken for 1009.
                  (mb_strlen($part) > 1 &&
@@ -494,7 +513,8 @@ function title_lettered_labels(string $title): array {
  */
 function title_numbering(string $title, bool $require_roman_label = false): array {
     $title = mb_strtolower(normalize_title_numeral_letters(strip_tags($title)));
-    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    $title = safe_preg_replace('~第([〇零一二三四五六七八九十百千]+)章~u', ' 第$1章 ', $title);
+    $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
     }
@@ -507,6 +527,9 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
         if (preg_match('~^[0-9]{1,9}$~', $part) === 1) {
             $skeleton[] = '#';
             $numbers[] = intval($part);
+        } elseif (preg_match('~^第[〇零一二三四五六七八九十百千]+章$~u', $part) === 1) {
+            $skeleton[] = '第#章';
+            $numbers[] = $part;
         } elseif (preg_match('~^\p{Nd}{1,9}$~u', $part) === 1) {
             // Keep the original digits as an identity token. Casting non-ASCII
             // numerals with intval() would collapse different years to zero.
@@ -676,22 +699,14 @@ function normalize_c1_quotes(string $str): string {
         return '';
     }
 
-    // Raw C1 quote bytes are safe to replace byte-for-byte. Do not guess the
-    // encoding of the rest of a malformed string here.
-    if (!mb_check_encoding($str, 'UTF-8')) {
-        $str = str_replace(
-            ["\x91", "\x92", "\x93", "\x94"],
-            ["'", "'", '"', '"'],
-            $str
-        );
-        if (!mb_check_encoding($str, 'UTF-8')) {
-            return $str;
-        }
-    }
-
-    // Handle valid UTF-8 control characters (U+0091-U+0094)
-    $str = safe_preg_replace('~[\x{0091}\x{0092}]~u', "'", $str);
-    $str = safe_preg_replace('~[\x{0093}\x{0094}]~u', '"', $str);
+    // Skip valid multibyte sequences before handling standalone legacy bytes.
+    // C2 + a C1 quote byte is itself a UTF-8 encoded quote control.
+    $valid_utf8 = '[\xC2-\xDF][\x80-\xBF]|'
+        . '\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE-\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|'
+        . '\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2}';
+    $str = safe_preg_replace_callback('~\xC2[\x91-\x94]|(?:' . $valid_utf8 . ')(*SKIP)(*F)|[\x91-\x94]~',
+        static fn (array $match): string => in_array(mb_substr($match[0], -1, 1, '8bit'), ["\x91", "\x92"], true) ? "'" : '"',
+        $str);
 
     return $str;
 }
@@ -860,7 +875,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     );
     /** French l'Words and d'Words */
     $new_case = safe_preg_replace_callback(
-        "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
+        "~(\s[LD][\'\x{00B4}])((?:\p{L}\p{M}*)+)~u",
         static function (array $matches): string {
             return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);
         },
@@ -869,7 +884,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     /** Italian dell'xxx words */
     $new_case = safe_preg_replace_callback(
-        "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
+        "~(\s)(Dell|Degli|Delle)([\'\x{00B4}](?:\p{L}\p{M}*){3})~u",
         static function (array $matches): string {
             return $matches[1] . mb_strtolower($matches[2]) . $matches[3];
         },
@@ -1111,6 +1126,37 @@ function remove_brackets(string $string): string {
 }
 
 // ============================================= Data processing functions ======================================
+
+/**
+ * Convert an unambiguous localized day–month–year date for English CS1.
+ * Return null for unfamiliar formats and an empty string for invalid dates.
+ */
+function localized_citation_date(string $date): ?string {
+    $date = mb_strtolower(normalize_unicode_nfc(mb_trim($date)));
+    if (preg_match('~^([0-9]{1,2})\.?\s+(\p{L}[\p{L}\p{M}]*)\s+([0-9]{4})$~uD', $date, $parts) !== 1) {
+        return null;
+    }
+    $months = [
+        'janvier' => 1, 'février' => 2, 'mars' => 3, 'avril' => 4, 'mai' => 5, 'juin' => 6,
+        'juillet' => 7, 'août' => 8, 'septembre' => 9, 'octobre' => 10, 'novembre' => 11, 'décembre' => 12,
+        'januar' => 1, 'februar' => 2, 'märz' => 3, 'april' => 4, 'juni' => 6,
+        'juli' => 7, 'august' => 8, 'september' => 9, 'oktober' => 10, 'dezember' => 12,
+        'enero' => 1, 'febrero' => 2, 'marzo' => 3, 'abril' => 4, 'mayo' => 5, 'junio' => 6,
+        'julio' => 7, 'agosto' => 8, 'septiembre' => 9, 'octubre' => 10, 'noviembre' => 11, 'diciembre' => 12,
+        'января' => 1, 'февраля' => 2, 'марта' => 3, 'апреля' => 4, 'мая' => 5, 'июня' => 6,
+        'июля' => 7, 'августа' => 8, 'сентября' => 9, 'октября' => 10, 'ноября' => 11, 'декабря' => 12,
+    ];
+    $month = $months[$parts[2]] ?? null;
+    if ($month === null) {
+        return null;
+    }
+    $day = (int) $parts[1];
+    $year = (int) $parts[3];
+    if (!checkdate($month, $day, $year)) {
+        return '';
+    }
+    return $day . ' ' . MONTH_SEASONS[$month - 1] . ' ' . $parts[3];
+}
 
 /**
  * Wrapper to change all pre-1900 dates to just years
@@ -1692,7 +1738,7 @@ function doi_valid(string $value): bool {
     if (preg_match('~[.,]$~', $value) === 1) {
         return false;
     }
-    if (preg_match('~^10\.\d+(?:\.\d+)*/\S+$~u', $value) !== 1) {
+    if (preg_match('~^10\.[0-9]+(?:\.[0-9]+)*/\S+$~u', $value) !== 1) {
         return false;
     }
     return true;
