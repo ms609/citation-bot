@@ -33,7 +33,7 @@ function pubmed_split_author_name(string $name): ?array {
     if (preg_match("~(.*) ([\w-]+)$~u", $name, $names) !== 1) {
         return null;
     }
-    $first = mb_trim((string) preg_replace('~(?<=\p{Lu})(\p{Lu})~u', ". $1", $names[2]));
+    $first = mb_trim(safe_preg_replace('~(?<=\p{Lu})(\p{Lu})~u', ". $1", $names[2]));
     return [$names[0], $names[1], $first];
 }
 
