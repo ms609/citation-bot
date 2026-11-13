@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 final class AdsAbsControl {
     private const int MAX_CACHE_SIZE = 50000;
-    private static int $big_counter = 0;
-    private static int $small_counter = 0;
+    public const int DEFAULT_COOLDOWN_SECONDS = 300;
+    private static int|float $big_resume_at = 0;
+    private static int|float $small_resume_at = 0;
     /** @var array<string> */
     private static array $doi2bib = [];
     /** @var array<string> */
@@ -19,29 +20,27 @@ final class AdsAbsControl {
     }
 
     public static function big_gave_up_yet(): bool {
-        self::$big_counter = max(self::$big_counter - 1, 0);
-        return self::$big_counter !== 0;
+        return hrtime(true) < self::$big_resume_at;
     }
 
-    public static function big_give_up(): void {
-        self::$big_counter = 1000;
+    public static function big_give_up(int $seconds = self::DEFAULT_COOLDOWN_SECONDS): void {
+        self::$big_resume_at = max(self::$big_resume_at, hrtime(true) + $seconds * 1_000_000_000);
     }
 
     public static function big_back_on(): void {
-        self::$big_counter = 0;
+        self::$big_resume_at = 0;
     }
 
     public static function small_gave_up_yet(): bool {
-        self::$small_counter = max(self::$small_counter - 1, 0);
-        return self::$small_counter !== 0;
+        return hrtime(true) < self::$small_resume_at;
     }
 
-    public static function small_give_up(): void {
-        self::$small_counter = 1000;
+    public static function small_give_up(int $seconds = self::DEFAULT_COOLDOWN_SECONDS): void {
+        self::$small_resume_at = max(self::$small_resume_at, hrtime(true) + $seconds * 1_000_000_000);
     }
 
     public static function small_back_on(): void {
-        self::$small_counter = 0;
+        self::$small_resume_at = 0;
     }
 
     public static function add_doi_map(string $bib, string $doi): void {
@@ -546,6 +545,12 @@ function adsabs_valid_response(mixed $decoded): ?stdClass {
     return $response;
 }
 
+/** cURL can include proxy or interim headers before the final response. */
+function adsabs_final_headers(string $header): string {
+    $blocks = preg_split('~\r?\n\r?\n~', mb_rtrim($header, "\r\n", '8bit'));
+    return $blocks === false ? $header : (string) end($blocks);
+}
+
 /**
  * @return array{limit: ?int, remaining: ?int, reset: ?int}
  */
@@ -557,7 +562,7 @@ function adsabs_rate_limit_headers(string $header): array {
     ];
     if (!preg_match_all(
         '~^x-ratelimit-(limit|remaining|reset):[ \t]*(\d+)[ \t]*\r?$~im',
-        $header,
+        adsabs_final_headers($header),
         $matches,
         PREG_SET_ORDER
     )) {
@@ -578,6 +583,23 @@ function adsabs_rate_limit_headers(string $header): array {
         }
     }
     return $values;
+}
+
+/** Read Retry-After from the final response, with an absolute ADS reset as fallback. */
+function adsabs_retry_after(string $header, ?int $reset): ?int {
+    $now = time();
+    if (preg_match('~^Retry-After:[ \t]*([^\r\n]+)~im', adsabs_final_headers($header), $matches)) {
+        $value = mb_trim($matches[1], " \t", '8bit');
+        if (ctype_digit($value)) {
+            return (int) $value;
+        }
+        $http_date_format = 'D, d M Y H:i:s \G\M\T';
+        $date = DateTimeImmutable::createFromFormat($http_date_format, $value, new DateTimeZone('UTC'));
+        if ($date !== false && $date->format($http_date_format) === $value) {
+            return max(0, $date->getTimestamp() - $now);
+        }
+    }
+    return $reset !== null && $reset > $now ? $reset - $now : null;
 }
 
 /**
@@ -606,6 +628,8 @@ function query_adsabs(string $options): stdClass {
 
 /** @param array<string|bool|array<string>> $curl_opts */
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdClass {
+    $http_response_code = 0;
+    $retry_after = null;
     try {
         $ch = bot_curl_init(1.0, $curl_opts, 16 * 1024 * 1024); // Type varies greatly
         $return = bot_curl_exec($ch);
@@ -627,6 +651,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
         $decoded = ExternalApiResponseGuard::decodeJson($body);
 
         $rate_limits = adsabs_rate_limit_headers($header);
+        $retry_after = adsabs_retry_after($header, $rate_limits['reset']);
         $ratelimit_total = $rate_limits['limit'];
         $ratelimit_left = $rate_limits['remaining'];
         $ratelimit_current = null;
@@ -648,17 +673,17 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
                 is_int($ratelimit_current) &&
                 $ratelimit_left <= 0 &&
                 $ratelimit_current >= $ratelimit_total &&
-                preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)
+                $retry_after !== null
             ) {
                 // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
                 // available actions are: sleep, exit, ignore (default).
-                $rai = intval($retry_after[1]);
-                $retry_msg .= 'Need to retry after ' . strval($rai) . 's (' . date('H:i:s', $rai) . ').';
+                $rai = $retry_after;
+                $retry_msg .= 'Need to retry after ' . strval($rai) . ' seconds.';
                 if (defined('PHP_ADSABSAPILIMITACTION') && is_string(PHP_ADSABSAPILIMITACTION)) {
                     $limit_action = mb_strtolower(PHP_ADSABSAPILIMITACTION);
                 }
                 if ($limit_action === 'sleep') {
-                    $time_to_sleep = min(60, $rai + 1);
+                    $time_to_sleep = min(59, $rai) + 1;
                 } elseif ($limit_action === 'exit') {
                     $time_to_sleep = -1;
                 } elseif ($limit_action === 'ignore' || $limit_action === '' || $limit_action === null) {
@@ -669,7 +694,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             }
             if (is_int($rate_limits['reset'])) {
                 $rlr = $rate_limits['reset'];
-                $retry_msg .= ' Rate limit resets on ' . date('Y-m-d H:i:s', $rlr) . ' UTC.';
+                $retry_msg .= ' Rate limit resets on ' . gmdate('Y-m-d H:i:s', $rlr) . ' UTC.';
             }
             $retry_msg = mb_trim($retry_msg);
             if ($retry_msg !== '') {
@@ -724,6 +749,11 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             }
             // @codeCoverageIgnoreEnd
         }
+        if ($http_response_code !== 429 && !is_object($decoded) && mb_stripos($body, 'down for maintenance', 0, '8bit') !== false) {
+            AdsAbsControl::big_give_up(900);
+            AdsAbsControl::small_give_up(900);
+            throw new Exception("ADSABS is down for maintenance", 5000);
+        }
         if ($http_response_code !== 200) {
             // @codeCoverageIgnoreStart
             $message = (string) explode("\n", $header, 2)[0];
@@ -732,11 +762,6 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
         }
 
         if (!is_object($decoded)) {
-            if (mb_stripos($body, 'down for maintenance', 0, '8bit') !== false) {
-                AdsAbsControl::big_give_up();  // @codeCoverageIgnore
-                AdsAbsControl::small_give_up();  // @codeCoverageIgnore
-                throw new Exception("ADSABS is down for maintenance", 5000);  // @codeCoverageIgnore
-            }
             $body_excerpt = mb_substr($body, 0, 2048, '8bit');
             if (mb_strlen($body, '8bit') > 2048) {
                 $body_excerpt .= "\n...[truncated]";
@@ -756,21 +781,22 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
         }
         // @codeCoverageIgnoreStart
     } catch (Throwable $e) {
-        if ($e->getCode() === 5000) { // made up code for AdsAbs error
+        if ($http_response_code === 429 || $e->getCode() === 429 || mb_stripos($e->getMessage(), 'Too many requests') !== false) {
+            report_warning('Giving up on AdsAbs for a while.  Too many requests.');
+            $cooldown = max(60, min(900, $retry_after ?? AdsAbsControl::DEFAULT_COOLDOWN_SECONDS));
+            if (mb_strpos($adsabs_url, 'bigquery') !== false) {
+                AdsAbsControl::big_give_up($cooldown);
+            } else {
+                AdsAbsControl::small_give_up($cooldown);
+            }
+        } elseif ($e->getCode() === 5000) { // made up code for AdsAbs error
             report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
         } elseif ($e->getCode() === 60) {
-            AdsAbsControl::big_give_up();
-            AdsAbsControl::small_give_up();
+            AdsAbsControl::big_give_up(900);
+            AdsAbsControl::small_give_up(900);
             report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
         } elseif (mb_strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== false) {
             report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-        } elseif ($e->getCode() === 429 || mb_strpos($e->getMessage(), 'Too many requests') !== false) {
-            report_warning('Giving up on AdsAbs for a while.  Too many requests.');
-            if (mb_strpos($adsabs_url, 'bigquery') !== false) {
-                AdsAbsControl::big_give_up();
-            } else {
-                AdsAbsControl::small_give_up();
-            }
         } elseif (mb_strpos($e->getMessage(), 'HTTP') === 0) {
             report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
         } else {
