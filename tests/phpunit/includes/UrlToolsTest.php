@@ -27,6 +27,24 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame($doi, $book_template->get2('doi'));
     }
 
+    public function testOxfordResearchEncyclopediaCandidatesWithoutNetwork(): void {
+        $cases = [
+            ['https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357',
+                '10.1093/acrefore/9780190201098.013.1357', '978-0-19-020109-8'],
+            ['https://oxfordre.com/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195',
+                '10.1093/acrefore/9780190228613.013.1195', '978-0-19-022861-3'],
+            ['https://oxfordre.com/view/10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17',
+                '10.1093/acrefore/9780199329175.013.17', '978-0-19-932917-5'],
+        ];
+        foreach ($cases as [$url, $doi, $isbn]) {
+            $this->assertSame([['doi' => $doi, 'isbn' => $isbn]], oxford_re_doi_candidates($url));
+        }
+        $this->assertSame([], oxford_re_doi_candidates('https://example.org/not-oxford'));
+        $this->assertSame([], oxford_re_doi_candidates(
+            'https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357/extra'
+        ));
+    }
+
     public function testFixupGoogle(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('https://www.google.com/search?x=cows', simplify_google_search('https://www.google.com/search?x=cows'));
