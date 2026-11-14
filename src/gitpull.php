@@ -12,6 +12,7 @@ declare(strict_types=1);
 /** @psalm-suppress MissingFile */
 require_once dirname(__DIR__) . '/env.php';
 
+require_once __DIR__ . '/includes/DeployToken.php';
 require_once __DIR__ . '/includes/PublicConfig.php';
 
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
@@ -24,18 +25,6 @@ send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVE
 const LOCK_FILE = __DIR__ . '/../git_pull.lock';
 const GITPULL_CSRF_COOKIE = 'citation_bot_gitpull_csrf';
 const GITPULL_CSRF_TTL = 600;
-
-/**
- * Deployment credentials are machine-generated 256-bit values represented as
- * lowercase hexadecimal.  Requiring the complete format keeps online guessing
- * impractical without introducing an attacker-triggerable account lockout.
- */
-function gitpull_valid_deploy_token(string $token): bool {
-    if ($token === '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef') {
-        return false; /* The example token */
-    }
-    return preg_match('~\A[a-f0-9]{64}\z~D', $token) === 1;
-}
 
 /** @return resource|false */
 function gitpull_open_lock() {
@@ -218,7 +207,7 @@ function gitpull_run_git(array $arguments): array {
 clearstatcache(true, LOCK_FILE);
 
 $deployToken = (string) @getenv('DEPLOY_TOKEN');
-if (!gitpull_valid_deploy_token($deployToken)) {
+if (!citation_bot_valid_deploy_token($deployToken)) {
     gitpull_page('Error: DEPLOY_TOKEN is missing or invalid.', false, 503);
 }
 
@@ -281,7 +270,7 @@ if ($browserSubmission) {
 
 $tokenMatches =
     is_string($tokenIn) &&
-    gitpull_valid_deploy_token($tokenIn) &&
+    citation_bot_valid_deploy_token($tokenIn) &&
     hash_equals($deployToken, $tokenIn);
 unset($deployToken, $tokenIn, $headerToken);
 
