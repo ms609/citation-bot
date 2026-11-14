@@ -1763,10 +1763,7 @@ function pmc_valid(string $value): bool {
     if (preg_match('~^[Pp][Mm][Cc](\d+)$~', $value, $match) === 1) {
         $value = $match[1];
     }
-    if (preg_match('~^\d{1,8}$~', $value) !== 1) {
-        return false;
-    }
-    return intval($value) >= 1;
+    return pmid_valid($value);
 }
 
 /** Validate the structure and publication window of a bioRxiv or medRxiv DOI. */
