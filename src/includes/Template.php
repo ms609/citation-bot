@@ -1102,11 +1102,7 @@ final class Template
         }
 
         if (ctype_digit($param_name)) {
-            $value = str_replace(
-                ['|', '{', '}', '[', ']', '<', '>'],
-                ['&#124;', '&#123;', '&#125;', '&#91;', '&#93;', '&#60;', '&#62;'],
-                $value
-            );
+            $value = strtr($value, WIKITEXT_DELIMITER_ENTITIES);
             return $this->blank($param_name) && $this->add($param_name, $value);
         }
         $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
@@ -2994,10 +2990,7 @@ final class Template
             if (!$institution && !author_is_human($name)) {
                 return;
             }
-            $name_as_wikitext = strtr($name, [
-                '<' => '&#60;', '>' => '&#62;', '[' => '&#91;', ']' => '&#93;',
-                '{' => '&#123;', '}' => '&#125;', '|' => '&#124;',
-            ]);
+            $name_as_wikitext = strtr($name, WIKITEXT_DELIMITER_ENTITIES);
             $name_as_wikitext = safe_preg_replace_callback("~'{2,}~",
                 static fn (array $match): string => str_repeat('&#0039;', mb_strlen($match[0], '8bit')),
                 $name_as_wikitext

@@ -22,6 +22,25 @@ final class CaselessCitationAuthorTest extends testBaseClass {
         $this->assertStringNotContainsString('<ref>', $template->parsed_text());
     }
 
+    public function testImportedDelimitersKeepEachPathApostropheRules(): void {
+        $prefix = 'Research Council &#60;tag&#62;&#91;x&#93;&#123;y&#125;&#124; ';
+        foreach ([1, 2, 3, 4] as $count) {
+            $apostrophes = str_repeat("'", $count);
+            $input = 'Research Council <tag>[x]{y}| ' . $apostrophes . 'Group';
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+
+            $template->validate_and_add('author1', $input, '', '', true, true);
+            $encoded_run = $count === 1 ? "'" : str_repeat('&#0039;', $count);
+            $this->assertSame($prefix . $encoded_run . 'Group', $template->get2('author1'));
+
+            $this->assertTrue($template->add_if_new('1', $input));
+            $this->assertSame($prefix . $apostrophes . 'Group', $template->get2('1'));
+
+            $encoded_pairs = str_repeat('&#0039;&#0039;', intdiv($count, 2)) . str_repeat("'", $count % 2);
+            $this->assertSame($prefix . $encoded_pairs . 'Group', decode_name_entities($input));
+        }
+    }
+
     public function testCitoidKeepsInstitutionalAuthorNamesWhole(): void {
         $url = 'https://example.test/report';
         foreach ([
