@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/bot_curl.php'; // @codeCoverageIgnore
+
 /**
  * @performance Stores results in 6 memory caches to avoid checking the same things repeatedly.
  * Clears all caches when they get too large (over 100,000 items, counting full URLs as 10 items each).
@@ -228,22 +230,7 @@ function dx_throttle_delay(
     float $last_seconds,
     float $minimum_interval_seconds = 0.040
 ): int {
-    if ($last_seconds <= 0.0 || $minimum_interval_seconds <= 0.0) {
-        return 0;
-    }
-
-    $remaining_seconds =
-        $minimum_interval_seconds -
-        ($now_seconds - $last_seconds);
-
-    if ($remaining_seconds <= 0.0) {
-        return 0;
-    }
-
-    return min(
-        (int) ceil($remaining_seconds * 1_000_000),
-        (int) ceil($minimum_interval_seconds * 1_000_000)
-    );
+    return bot_curl_throttle_delay($now_seconds, $last_seconds, $minimum_interval_seconds);
 }
 
 function throttle_dx(): void {
