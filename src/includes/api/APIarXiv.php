@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/APIResponseGuard.php'; // @codeCoverageIgnore
+
 /**
  * @param array<Template> &$templates
  */
@@ -52,16 +54,8 @@ function parse_arxiv_xml_response(string $response): ?SimpleXMLElement {
     if ($normalized === null) {
         return null;
     }
-    try {
-        $xml = @simplexml_load_string(
-            $normalized,
-            SimpleXMLElement::class,
-            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
-        );
-    } catch (Throwable) {
-        return null;
-    }
-    if ($xml === false || $xml->getName() !== 'feed') {
+    $xml = ExternalApiResponseGuard::decodeXml($normalized);
+    if ($xml === null || $xml->getName() !== 'feed') {
         return null;
     }
     return $xml;
