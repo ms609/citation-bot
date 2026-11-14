@@ -468,7 +468,7 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
     $file = $site['file'] ?? '(unknown)';
     $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
     if (str_starts_with($file, $root)) {
-        $file = substr($file, strlen($root));
+        $file = mb_substr($file, mb_strlen($root, '8bit'), null, '8bit');
     }
     $function = ($owner['class'] ?? '') . ($owner['type'] ?? '') .
         ($owner['function'] ?? '{main}');
