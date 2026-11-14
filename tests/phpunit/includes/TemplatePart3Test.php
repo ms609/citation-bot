@@ -12,9 +12,13 @@ final class TemplatePart3Test extends testBaseClass {
     public function testRxivParameterFilteringRejectsUnknownServer(): void {
         $template = $this->make_citation('{{cite journal|title=Preprint|issue=7}}');
         $method = new \ReflectionMethod(Template::class, 'remove_disallowed_rxiv_parameters');
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unsupported preprint server: unknown');
-        $method->invoke($template, 'unknown');
+        try {
+            $method->invoke($template, 'unknown');
+            $this->fail('An unsupported preprint server must be rejected');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame('Unsupported preprint server: unknown', $e->getMessage());
+        }
+        $this->assertSame('7', $template->get('issue'));
     }
 
     public function testPreprintConversionSharesServerAwareParameterFiltering(): void {
