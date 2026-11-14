@@ -6,6 +6,27 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 final class UrlToolsTest extends testBaseClass {
 
+    public function testOxfordVerifiedDoiPreservesExistingAndBrokenDoiPolicy(): void {
+        $doi = '10.1093/acrefore/9780190201098.013.1357';
+        $blank = $this->make_citation('{{cite web|title=Example}}');
+        oxford_apply_verified_doi($blank, $doi);
+        $this->assertSame($doi, $blank->get2('doi'));
+
+        $existing = $this->make_citation('{{cite web|doi=10.1000/already-good}}');
+        oxford_apply_verified_doi($existing, $doi);
+        $this->assertSame('10.1000/already-good', $existing->get2('doi'));
+
+        $broken = $this->make_citation('{{cite web|doi=10.1000/broken|doi-broken-date=2020-01-01}}');
+        oxford_apply_verified_doi($broken, $doi);
+        $this->assertSame($doi, $broken->get2('doi'));
+        $this->assertNull($broken->get2('doi-broken-date'));
+
+        $book = '10.1093/med/9780199592548.001.0001';
+        $book_template = $this->make_citation('{{cite web|doi=' . $book . '}}');
+        oxford_apply_verified_doi($book_template, $doi, $book);
+        $this->assertSame($doi, $book_template->get2('doi'));
+    }
+
     public function testFixupGoogle(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('https://www.google.com/search?x=cows', simplify_google_search('https://www.google.com/search?x=cows'));
