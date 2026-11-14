@@ -886,7 +886,6 @@ final class WikipediaBot {
                 $data = (string) $data;
                 if ($data === '') {
                     if ($attempt < 3) {
-                        sleep(4);
                         continue;
                     }
                     return '';
@@ -954,7 +953,6 @@ final class WikipediaBot {
                 $data = (string) $data;
                 if ($data === '') {
                     if ($attempt < 3) {
-                        sleep(4);
                         continue;
                     }
                     return '';

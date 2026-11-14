@@ -69,13 +69,13 @@ final class WikipediaBotRetryTest extends testBaseClass {
         $readonly = '{"error":{"code":"readonly","info":"Database read-only"}}';
         foreach (['anonymous' => false, 'authenticated' => true] as $name => $authenticated) {
             yield $name . ' recovers after mixed failures' => [
-                $authenticated, [false, $maxlag, '<html>Unavailable</html>', '{"batchcomplete":true}'], [4, 5, 10, 20], true,
+                $authenticated, [false, $maxlag, '<html>Unavailable</html>', '{"batchcomplete":true}'], [5, 10, 20], true,
             ];
             yield $name . ' stops after four retryable responses' => [
                 $authenticated, [$readonly, $readonly, $readonly, $readonly], [5, 10, 20], false,
             ];
             yield $name . ' stops after four empty responses' => [
-                $authenticated, ['', '', '', ''], [4, 5, 4, 10, 4, 20], false,
+                $authenticated, ['', '', '', ''], [5, 10, 20], false,
             ];
             yield $name . ' stops on a terminal API error' => [
                 $authenticated, ['{"error":{"code":"permissiondenied","info":"Permission denied"}}'],
