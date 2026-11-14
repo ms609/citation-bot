@@ -10,6 +10,25 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
  */
 final class TidyMalformedIdentifiersTest extends testBaseClass {
 
+    public function testArxivAndEprintUseTheSameTidyRules(): void {
+        foreach (['arxiv', 'eprint'] as $parameter) {
+            $prefix = '{{cite web|title=Example|' . $parameter . '=';
+            $template = $this->make_citation($prefix . '2401.00001}}');
+            $template->tidy_parameter($parameter);
+            $this->assertSame('cite arxiv', $template->wikiname());
+            $this->assertSame('2401.00001', $template->get2($parameter));
+
+            $commented = $prefix . '<!-- leave -->}}';
+            $template = $this->make_citation($commented);
+            $template->tidy_parameter($parameter);
+            $this->assertSame($commented, $template->parsed_text());
+
+            $template = $this->make_citation($prefix . 'not-an-id}}');
+            $template->tidy_parameter($parameter);
+            $this->assertNull($template->get2($parameter));
+        }
+    }
+
     public function testMalformedSsrnIsRemoved(): void {
         $template = $this->make_citation('{{cite journal|title=X|journal=J|ssrn=abc}}');
         $template->tidy();
