@@ -5,7 +5,8 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/bot_curl.php'; // @codeCoverageIgnore
 
 const ARCHIVE_FETCH_MAX_REDIRECTS = 5;
-const ARCHIVE_TITLE_SCAN_MAX_BYTES = 4 * 1024 * 1024;
+const ARCHIVE_ENCODING_SCAN_MAX_BYTES = 256 * 1024;
+const ARCHIVE_TITLE_SCAN_MAX_BYTES = 1 * 1024 * 1024;
 const ARCHIVE_ASCII_WHITESPACE = " \t\n\r\0\x0B\x0C";
 
 /** @var list<string> */
@@ -125,16 +126,17 @@ function archive_title_scan_window(string $raw_html): string {
         return '';
     }
 
-    $limit = min(mb_strlen($raw_html, '8bit'), ARCHIVE_TITLE_SCAN_MAX_BYTES);
-    $body_position = mb_stripos($raw_html, '<body', 0, '8bit');
-    if ($body_position !== false && $body_position < $limit) {
-        $body_end = mb_strpos($raw_html, '>', $body_position, '8bit');
+    // Bound the search itself, not only the returned substring.
+    $window = mb_substr($raw_html, 0, ARCHIVE_TITLE_SCAN_MAX_BYTES, '8bit');
+    $body_position = mb_stripos($window, '<body', 0, '8bit');
+    if ($body_position !== false) {
+        $body_end = mb_strpos($window, '>', $body_position, '8bit');
         if ($body_end !== false) {
-            $limit = min($limit, $body_end + 1);
+            return mb_substr($window, 0, $body_end + 1, '8bit');
         }
     }
 
-    return mb_substr($raw_html, 0, $limit, '8bit');
+    return $window;
 }
 
 /**
@@ -567,8 +569,10 @@ function archive_meta_declared_encodings(string $html): array {
 function archive_candidate_encodings(string $html, bool $include_guesses = true): array {
     $declared = [];
     $guessed = [];
-    $headers = archive_http_header_block($html);
-    $body = archive_http_body($html);
+    // Headers remain available in full; only the HTML body is scanned for meta tags.
+    $parts = archive_http_response_parts($html);
+    $headers = $parts['headers'];
+    $body = mb_substr($parts['body'], 0, ARCHIVE_ENCODING_SCAN_MAX_BYTES, '8bit');
 
     if (str_starts_with($body, "\xFF\xFE")) {
         return ['UTF-16LE'];
