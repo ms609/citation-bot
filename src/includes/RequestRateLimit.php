@@ -1556,12 +1556,13 @@ function big_run_try_mark_discovery_large(
         }
         $entries = big_run_prune_stale_entries($entries, $now);
         [$tokens, $updated] = big_run_refill_tokens($tokens, $updated, $now);
+        $active_count = big_run_count_bulk_entries($entries);
 
         if (!isset($entries[$entry_id]) || $entries[$entry_id]['phase'] !== 'discovery') {
-            return [false, 2, null, 'retry_later', count($entries)];
+            return [false, 2, null, 'retry_later', $active_count];
         }
         if ($entries[$entry_id]['tier'] === 'large') {
-            return [true, null, $entry_id, null, count($entries)];
+            return [true, null, $entry_id, null, $active_count];
         }
 
         $large_count = big_run_count_tier($entries, 'large');
@@ -1569,27 +1570,27 @@ function big_run_try_mark_discovery_large(
             unset($entries[$entry_id]);
             if (!big_run_store_state_file($state_path, $tokens, $updated, $entries)) {
                 big_run_log_failure('unable to persist large-discovery denial cleanup');
-                return [false, 2, null, 'retry_later', count($entries) + 1];
+                return [false, 2, null, 'retry_later', $active_count];
             }
             big_run_log('discovery_deferred', [
                 'reason' => 'large_full',
-                'active_total' => count($entries),
+                'active_total' => $active_count - 1,
                 'active_large' => $large_count,
             ]);
-            return [false, big_run_pool_retry_seconds(), null, 'large_full', count($entries)];
+            return [false, big_run_pool_retry_seconds(), null, 'large_full', $active_count - 1];
         }
 
         $entries[$entry_id]['tier'] = 'large';
         $entries[$entry_id]['last_seen_at'] = $now;
         if (!big_run_store_state_file($state_path, $tokens, $updated, $entries)) {
             big_run_log_failure('unable to persist large discovery lease');
-            return [false, 2, null, 'retry_later', count($entries)];
+            return [false, 2, null, 'retry_later', $active_count];
         }
         big_run_log('discovery_marked_large', [
-            'active_total' => count($entries),
+            'active_total' => $active_count,
             'active_large' => $large_count + 1,
         ]);
-        return [true, null, $entry_id, null, count($entries)];
+        return [true, null, $entry_id, null, $active_count];
     } finally {
         if ($locked) {
             @flock($lock_handle, LOCK_UN);
@@ -1644,6 +1645,7 @@ function big_run_try_promote(
 
         $entries = big_run_prune_stale_entries($entries, $now);
         [$tokens, $updated] = big_run_refill_tokens($tokens, $updated, $now);
+        $active_count = big_run_count_bulk_entries($entries);
 
         if (
             !isset($entries[$entry_id]) ||
@@ -1652,9 +1654,9 @@ function big_run_try_promote(
             big_run_log('promotion_deferred', [
                 'reason' => 'invalid_lease',
                 'entry_present' => isset($entries[$entry_id]),
-                'active_total' => count($entries),
+                'active_total' => $active_count,
             ]);
-            return [false, 2, null, 'retry_later', count($entries)];
+            return [false, 2, null, 'retry_later', $active_count];
         }
 
         $tier = big_run_tier($page_count);
@@ -1687,7 +1689,7 @@ function big_run_try_promote(
             unset($entries[$entry_id]);
             if (!big_run_store_state_file($state_path, $tokens, $updated, $entries)) {
                 big_run_log_failure('unable to persist failed promotion cleanup');
-                return [false, 2, null, 'retry_later', count($entries) + 1];
+                return [false, 2, null, 'retry_later', $active_count];
             }
             big_run_log('promotion_deferred', [
                 'reason' => $reason,
@@ -1696,10 +1698,10 @@ function big_run_try_promote(
                 'pages' => $page_count,
                 'cost' => $cost,
                 'tokens' => $tokens,
-                'active_total' => count($entries),
+                'active_total' => $active_count - 1,
                 'active_large' => big_run_count_tier($entries, 'large'),
             ]);
-            return [false, $retry_after, null, $reason, count($entries)];
+            return [false, $retry_after, null, $reason, $active_count - 1];
         }
 
         $entries[$entry_id]['tier'] = $tier;
@@ -1707,7 +1709,7 @@ function big_run_try_promote(
         $entries[$entry_id]['last_seen_at'] = $now;
         if (!big_run_store_state_file($state_path, $tokens - $cost, $updated, $entries)) {
             big_run_log_failure('unable to persist promoted state');
-            return [false, 2, null, 'retry_later', count($entries)];
+            return [false, 2, null, 'retry_later', $active_count];
         }
 
         big_run_log('promoted', [
@@ -1716,10 +1718,10 @@ function big_run_try_promote(
             'pages' => $page_count,
             'cost' => $cost,
             'tokens_after' => $tokens - $cost,
-            'active_total' => count($entries),
+            'active_total' => $active_count,
             'active_large' => big_run_count_tier($entries, 'large'),
         ]);
-        return [true, null, $entry_id, null, count($entries)];
+        return [true, null, $entry_id, null, $active_count];
     } finally {
         if ($locked) {
             @flock($lock_handle, LOCK_UN);

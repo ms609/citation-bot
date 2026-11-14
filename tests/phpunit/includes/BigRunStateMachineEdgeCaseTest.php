@@ -410,6 +410,7 @@ final class BigRunStateMachineEdgeCaseTest extends PHPUnit\Framework\TestCase {
 
     public function testLargeDiscoveryIsIdempotentAndBoundedByTheLargePool(): void {
         putenv('CITATION_BOT_BIG_RUN_MAX_LARGE=1');
+        $probe = $this->probeLease();
         $first = $this->discoveryLease();
         $this->assertSame([true, null, $first, null, 1], big_run_try_mark_discovery_large($first, $this->base_directory, self::NOW));
         $this->assertSame([true, null, $first, null, 1], big_run_try_mark_discovery_large($first, $this->base_directory, self::NOW), 'Marking twice is harmless');
@@ -418,23 +419,28 @@ final class BigRunStateMachineEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $denied = big_run_try_mark_discovery_large($second, $this->base_directory, self::NOW);
         $this->assertSame([false, big_run_pool_retry_seconds(), null, 'large_full', 1], $denied);
         $this->assertSame('lost', big_run_heartbeat_status($second, $this->base_directory, self::NOW), 'A denied lease is removed');
+        $this->assertSame('ok', big_run_heartbeat_status($probe, $this->base_directory, self::NOW));
     }
 
     public function testPromotionIsDeniedWhenTheLargePoolIsFull(): void {
         putenv('CITATION_BOT_BIG_RUN_MAX_LARGE=1');
+        $probe = $this->probeLease();
         $this->runningLease(60);
         $id = $this->discoveryLease();
         $denied = big_run_try_promote($id, 60, 'webform', $this->base_directory, self::NOW, false);
         $this->assertSame([false, big_run_pool_retry_seconds(), null, 'large_full', 1], $denied);
         $this->assertSame('lost', big_run_heartbeat_status($id, $this->base_directory, self::NOW));
+        $this->assertSame('ok', big_run_heartbeat_status($probe, $this->base_directory, self::NOW));
     }
 
     public function testPromotionOfAnAlreadyLargeLeaseDoesNotCountItAgainstItself(): void {
         putenv('CITATION_BOT_BIG_RUN_MAX_LARGE=1');
+        $probe = $this->probeLease();
         $id = $this->discoveryLease();
         $this->assertTrue(big_run_try_mark_discovery_large($id, $this->base_directory, self::NOW)[0]);
         $promoted = big_run_try_promote($id, 60, 'webform', $this->base_directory, self::NOW, false);
         $this->assertSame([true, null, $id, null, 1], $promoted);
+        $this->assertSame('ok', big_run_heartbeat_status($probe, $this->base_directory, self::NOW));
     }
 
     public function testPromotionIsDeniedWhenTokensRunOut(): void {

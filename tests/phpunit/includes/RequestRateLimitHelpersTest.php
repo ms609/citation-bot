@@ -935,10 +935,10 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
         $this->assertSame($retry(0), big_run_try_mark_discovery_large('b0000000000000000', $base, self::NOW));
 
         $probe = big_run_try_acquire_probe($base, self::NOW);
-        $this->assertSame($retry(1), big_run_try_mark_discovery_large((string) $probe[2], $base, self::NOW));
+        $this->assertSame($retry(0), big_run_try_mark_discovery_large((string) $probe[2], $base, self::NOW));
 
         $running = big_run_try_acquire(5, 'webform', $base, self::NOW);
-        $this->assertSame($retry(2), big_run_try_mark_discovery_large((string) $running[2], $base, self::NOW));
+        $this->assertSame($retry(1), big_run_try_mark_discovery_large((string) $running[2], $base, self::NOW));
         $this->assertSame('small', $this->entryOf($base, (string) $running[2])['tier']);
     }
 
@@ -980,7 +980,7 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
         );
         $probe = (string) big_run_try_acquire_probe($base, self::NOW)[2];
         $this->assertSame(
-            [false, 2, null, 'retry_later', 1],
+            [false, 2, null, 'retry_later', 0],
             big_run_try_promote($probe, 10, 'webform', $base, self::NOW)
         );
         $this->assertSame('probe', $this->entryOf($base, $probe)['phase']);
