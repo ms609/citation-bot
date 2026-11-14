@@ -571,6 +571,20 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testAddUrlDoesNotDuplicateAnEntryUrl(): void {
+        $entry_url = 'https://example.com/Entry';
+        foreach (['entry-url', 'entryurl'] as $alias) {
+            $template = $this->make_citation('{{cite encyclopedia|title=Example|' . $alias . '=' . $entry_url . '}}');
+            $this->assertFalse($template->add_if_new('url', 'https://EXAMPLE.com/Entry'));
+            $this->assertNull($template->get2('url'));
+
+            $distinct_url = 'https://example.com/entry';
+            $this->assertTrue($template->add_if_new('url', $distinct_url));
+            $this->assertSame($distinct_url, $template->get2('url'));
+            $this->assertSame($entry_url, $template->get2($alias));
+        }
+    }
+
     public function testAddDuplicateArchive(): void {
         $text = '{{Cite book | archiveurl=XXX}}';
         $template = $this->make_citation($text);
@@ -3107,6 +3121,23 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('archive-url'));
         $this->assertNull($template->get2('archive-date'));
         $this->assertNull($template->get2('format'));
+    }
+
+    public function testForgetUrlPreservesArchiveMetadataWhenAnEntryUrlRemains(): void {
+        $entry_url = 'https://example.com/entry';
+        $archive_url = 'https://web.archive.org/web/20240101000000/https://example.com/entry';
+        foreach (['entry-url', 'entryurl'] as $alias) {
+            $template = $this->make_citation(
+                '{{cite encyclopedia|url=https://example.com|' . $alias . '=' . $entry_url .
+                '|access-date=2024-01-01|archive-url=' . $archive_url . '|archive-date=2024-01-01}}'
+            );
+            $template->forget('url');
+            $this->assertNull($template->get2('url'));
+            $this->assertSame($entry_url, $template->get2($alias));
+            $this->assertSame('2024-01-01', $template->get2('access-date'));
+            $this->assertSame($archive_url, $template->get2('archive-url'));
+            $this->assertSame('2024-01-01', $template->get2('archive-date'));
+        }
     }
 
     public function testBad1093UrlFallbackRequiresPublisher(): void {

@@ -24,6 +24,7 @@ final class Template
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
     public const array REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su']; // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
     public const bool TREAT_IDENTICAL_SEPARATELY = false; // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
+    private const array URL_TYPES_FOR_REMOVAL = [...ALL_URL_TYPES, 'entryurl'];
     private const array BOOK_PERIODICAL_FIELDS_WITHOUT_MAPPING = [
         'magazine', 'newspaper',
         'script-journal', 'script-magazine', 'script-newspaper', 'script-periodical', 'script-website', 'script-work',
@@ -2304,7 +2305,7 @@ final class Template
                     return false;
                 } // TITLE_LINK_ALIASES within the title
                 $value = sanitize_string($value);
-                foreach (ALL_URL_TYPES as $existing) {
+                foreach ([...ALL_URL_TYPES, 'entryurl'] as $existing) {
                     if (citation_urls_equivalent($value, $this->get($existing))) {
                         return false;
                     }
@@ -8834,7 +8835,7 @@ final class Template
         if (!$this->blank($par)) {
             // do not remove all this other stuff if blank
             if ($par === 'url') {
-                if ($this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
+                if ($this->blank(array_diff(self::URL_TYPES_FOR_REMOVAL, [$par]))) {
                     $this->forgetter('archive-url', $echo_forgetting);
                     $this->forgetter('archiveurl', $echo_forgetting);
                     $this->forgetter('accessdate', $echo_forgetting);
@@ -8891,7 +8892,7 @@ final class Template
             if ($par === 'chapter-url' || $par === 'chapterurl') {
                 $this->forgetter('chapter-format', $echo_forgetting);
                 $this->forgetter('chapter-url-access', $echo_forgetting);
-                if ($this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
+                if ($this->blank(array_diff(self::URL_TYPES_FOR_REMOVAL, [$par]))) {
                     $this->forgetter('accessdate', $echo_forgetting);
                     $this->forgetter('access-date', $echo_forgetting);
                     $this->forgetter('archive-url', $echo_forgetting);
@@ -8901,7 +8902,7 @@ final class Template
             if ($par === 'contribution-url' || $par === 'contributionurl') {
                 $this->forgetter('contribution-format', $echo_forgetting);
                 $this->forgetter('contribution-url-access', $echo_forgetting);
-                if ($this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
+                if ($this->blank(array_diff(self::URL_TYPES_FOR_REMOVAL, [$par]))) {
                     $this->forgetter('accessdate', $echo_forgetting);
                     $this->forgetter('access-date', $echo_forgetting);
                     $this->forgetter('archive-url', $echo_forgetting);
@@ -8941,7 +8942,7 @@ final class Template
                 $pos = $this->get_param_key($par);
             }
         }
-        if (mb_strpos($par, 'url') !== false && $this->wikiname() === 'cite web' && $this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
+        if (mb_strpos($par, 'url') !== false && $this->wikiname() === 'cite web' && $this->blank(array_diff(self::URL_TYPES_FOR_REMOVAL, [$par]))) {
             // An unreliable bad-10.1093 fallback-DOI should not block a replacement supported by
             // explicit URL-independent evidence.  Comment placeholders do not count as evidence.
             $bad_doi = bad_10_1093_doi($this->get('doi'));
