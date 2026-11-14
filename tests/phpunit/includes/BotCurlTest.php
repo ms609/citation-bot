@@ -273,6 +273,74 @@ final class BotCurlTest extends testBaseClass {
         $this->assertNotSame('', $transfer['error']);
     }
 
+    public function testOversizeCurlLogRedactsQueryAndUserInfo(): void {
+        $message = bot_curl_size_limit_message(
+            1024,
+            4096,
+            32,
+            'src/includes/api/APIdoi.php:123 lookup_doi',
+            'https://alice:password@api.example.org/path/10.1234?api_key=secret&doi=10.1234#token'
+        );
+        $this->assertStringContainsString('limit of 1024 bytes', $message);
+        $this->assertStringContainsString('advertised=4096, downloaded=32', $message);
+        $this->assertStringContainsString('APIdoi.php:123 lookup_doi', $message);
+        $this->assertStringContainsString(
+            'https://api.example.org/path/10.1234?api_key=REDACTED&doi=REDACTED',
+            $message
+        );
+        $this->assertStringNotContainsString('password', $message);
+        $this->assertStringNotContainsString('secret', $message);
+        $this->assertStringNotContainsString('#token', $message);
+    }
+
+    public function testOversizeCurlLogHandlesMissingUrlAndLongQuery(): void {
+        $this->assertSame('(unavailable)', bot_curl_loggable_url(''));
+        $this->assertSame('(non-HTTP URL)', bot_curl_loggable_url('file:///tmp/private'));
+        $this->assertSame('(non-HTTP URL)', bot_curl_loggable_url('mailto:user@example.org'));
+        $this->assertSame('(non-HTTP URL)', bot_curl_loggable_url('ftp://example.org/private'));
+        $this->assertSame('(unavailable)', bot_curl_loggable_url('https:/missing-host'));
+        $url = 'https://example.org/' . str_repeat('x', 2000) .
+            '?foo=some-value&bar=more';
+        $this->assertLessThanOrEqual(1024, mb_strlen(bot_curl_loggable_url($url), '8bit'));
+        $this->assertStringNotContainsString('some-value', bot_curl_loggable_url($url));
+    }
+
+    public function testCurlLimitRecordsFirstOversizeProgressEvent(): void {
+        $ch = bot_curl_init(1.0, [], 1000);
+        $this->assertSame(0, curl_limit_page_size($ch, 0, 0, 0, 0));
+        // Content-Length alone must not abort a small transfer.
+        $this->assertSame(0, curl_limit_page_size($ch, 1001, 1000, 0, 0));
+        // Unknown (chunked) totals are bounded by downloaded bytes.
+        $this->assertSame(1, curl_limit_page_size($ch, 0, 1001, 0, 0));
+        $context = bot_curl_size_limit_log_context()[$ch];
+        $this->assertSame(['advertised' => 0, 'downloaded' => 1001], $context['oversize']);
+        // Extra progress updates do not overwrite the original size event.
+        $this->assertSame(1, curl_limit_page_size($ch, 0, 1500, 0, 0));
+        $this->assertSame($context, bot_curl_size_limit_log_context()[$ch]);
+    }
+
+    public function testCurlCallerIsAttributedForDirectAndWrappedExec(): void {
+        new TestPage();
+        $ch = bot_curl_init(1.0, [
+            CURLOPT_URL => 'file:///not-allowed-by-citation-bot',
+        ], 1024);
+
+        bot_curl_exec_withFalse($ch);
+        $direct = bot_curl_size_limit_log_context()[$ch];
+        $this->assertStringContainsString('BotCurlTest.php:', $direct['caller']);
+        $this->assertStringContainsString(__FUNCTION__, $direct['caller']);
+
+        bot_curl_size_limit_log_context()[$ch] = [
+            'caller' => 'old transfer',
+            'oversize' => ['advertised' => 1000, 'downloaded' => 2000],
+        ];
+        bot_curl_exec($ch);
+        $wrapped = bot_curl_size_limit_log_context()[$ch];
+        $this->assertStringContainsString('BotCurlTest.php:', $wrapped['caller']);
+        $this->assertStringContainsString(__FUNCTION__, $wrapped['caller']);
+        $this->assertNull($wrapped['oversize']);
+    }
+
     public function testGateAwareProgressCallbackPreservesResponseLimit(): void {
         $ch = bot_curl_init(1.0, [], 1000);
         $this->assertNotFalse($ch);
