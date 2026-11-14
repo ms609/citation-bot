@@ -6259,56 +6259,7 @@ final class Template
                             }
                         }
                         if (
-                            in_array(
-                                mb_strtolower($this->get('work')),
-                                [
-                                    'local',
-                                    'editorial',
-                                    'international',
-                                    'national',
-                                    'communication',
-                                    'letter to the editor',
-                                    'review',
-                                    'coronavirus',
-                                    'race & reckoning',
-                                    'politics',
-                                    'opinion',
-                                    'opinions',
-                                    'investigations',
-                                    'tech',
-                                    'technology',
-                                    'world',
-                                    'sports',
-                                    'world',
-                                    'arts & entertainment',
-                                    'arts',
-                                    'entertainment',
-                                    'u.s.',
-                                    'n.y.',
-                                    'business',
-                                    'science',
-                                    'health',
-                                    'books',
-                                    'style',
-                                    'food',
-                                    'travel',
-                                    'real estate',
-                                    'magazine',
-                                    'economy',
-                                    'markets',
-                                    'life & arts',
-                                    'uk news',
-                                    'world news',
-                                    'health news',
-                                    'lifestyle',
-                                    'photos',
-                                    'education',
-                                    'arts',
-                                    'life',
-                                    'puzzles',
-                                ],
-                                true
-                            ) &&
+                            in_array(mb_strtolower($this->get('work')), DEPARTMENTS, true) &&
                             $this->blank('department')
                         ) {
                             $this->rename('work', 'department');
