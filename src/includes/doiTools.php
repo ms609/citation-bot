@@ -590,11 +590,9 @@ function is_hdl_works(string $hdl): string|null|false {
     if ($headers_test === false) { // most likely bad
         return null; // @codeCoverageIgnore
     }
-    if (interpret_doi_header($headers_test, $hdl) === null) {
-        return null; // @codeCoverageIgnore
-    }
-    if (interpret_doi_header($headers_test, $hdl) === false) {
-        return false;
+    $result = interpret_doi_header($headers_test, $hdl);
+    if ($result !== true) {
+        return $result;
     }
     return get_loc_from_hdl_header($headers_test);
 }
