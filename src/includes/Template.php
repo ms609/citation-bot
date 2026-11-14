@@ -2305,7 +2305,7 @@ final class Template
                     return false;
                 } // TITLE_LINK_ALIASES within the title
                 $value = sanitize_string($value);
-                foreach (ALL_URL_TYPES as $existing) {
+                foreach ([...ALL_URL_TYPES, 'entryurl'] as $existing) {
                     if (citation_urls_equivalent($value, $this->get($existing))) {
                         return false;
                     }

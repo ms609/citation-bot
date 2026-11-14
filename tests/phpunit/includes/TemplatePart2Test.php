@@ -571,6 +571,20 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testAddUrlDoesNotDuplicateAnEntryUrl(): void {
+        $entry_url = 'https://example.com/Entry';
+        foreach (['entry-url', 'entryurl'] as $alias) {
+            $template = $this->make_citation('{{cite encyclopedia|title=Example|' . $alias . '=' . $entry_url . '}}');
+            $this->assertFalse($template->add_if_new('url', 'https://EXAMPLE.com/Entry'));
+            $this->assertNull($template->get2('url'));
+
+            $distinct_url = 'https://example.com/entry';
+            $this->assertTrue($template->add_if_new('url', $distinct_url));
+            $this->assertSame($distinct_url, $template->get2('url'));
+            $this->assertSame($entry_url, $template->get2($alias));
+        }
+    }
+
     public function testAddDuplicateArchive(): void {
         $text = '{{Cite book | archiveurl=XXX}}';
         $template = $this->make_citation($text);
