@@ -349,7 +349,6 @@ const PUBLISHERS_ARE_WORKS = [
     'nationaljournal.com',
     'nba.com',
     'new york daily news',
-    'new york daily news',
     'new york times magazine',
     'new york times.com',
     'new york times',
@@ -13253,7 +13252,6 @@ const AVOIDED_LINKS = [
     'S2CID_(identifier)',
     'Social_Science_Research_Network',
     'Website',
-    'Zentralblatt_MATH',
     'Zentralblatt_MATH',
 ];
 
