@@ -9,6 +9,38 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
 
+    public function testRxivParameterFilteringRejectsUnknownServer(): void {
+        $template = $this->make_citation('{{cite journal|title=Preprint|issue=7}}');
+        $method = new \ReflectionMethod(Template::class, 'remove_disallowed_rxiv_parameters');
+        try {
+            $method->invoke($template, 'unknown');
+            $this->fail('An unsupported preprint server must be rejected');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertSame('Unsupported preprint server: unknown', $e->getMessage());
+        }
+        $this->assertSame('7', $template->get('issue'));
+    }
+
+    public function testPreprintConversionSharesServerAwareParameterFiltering(): void {
+        foreach ([
+            ['bioRxiv', '10.1101/2020.01.01.123456', 'cite biorxiv', 'biorxiv'],
+            ['medRxiv', '10.1101/2020.01.01.12345678', 'cite medrxiv', 'medrxiv'],
+        ] as [$journal, $doi, $expected_name, $id_field]) {
+            $template = $this->make_citation(
+                '{{cite journal|title=Preprint|journal=' . $journal . '|doi=' . $doi .
+                '|last1=Smith|editor1-last=Jones|quote=Preserve|issue=9|volume=2}}'
+            );
+            $template->tidy_parameter('journal');
+            $this->assertSame($expected_name, $template->wikiname());
+            $this->assertSame('Smith', $template->get2('last1'));
+            $this->assertSame('Jones', $template->get2('editor1-last'));
+            $this->assertSame('Preserve', $template->get2('quote'));
+            $this->assertNull($template->get2('issue'));
+            $this->assertNull($template->get2('volume'));
+            $this->assertNotNull($template->get2($id_field));
+        }
+    }
+
     public function testPublisherKeepsFullNameWhenShortenedNameIsRejected(): void {
         $template = $this->make_citation('{{cite book|title=Example}}');
         $this->assertTrue($template->add_if_new('publisher', 'Page Publishing'));

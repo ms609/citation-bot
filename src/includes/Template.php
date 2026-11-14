@@ -81,6 +81,43 @@ final class Template
     /** @var array<string>|null */
     private ?array $cookie_absent_initial_author_params = null;
 
+    /**
+     * Remove unsupported bioRxiv/medRxiv fields, preserving author/editor
+     * aliases and the internal placeholder fields in both conversion paths.
+     * Field removal is deferred until after the scan to preserve iteration.
+     */
+    private function remove_disallowed_rxiv_parameters(string $server): void {
+        $allowed = match ($server) {
+            'biorxiv' => CITE_BIORXIV_ALLOWED_PARAMS,
+            'medrxiv' => CITE_MEDRXIV_ALLOWED_PARAMS,
+            default => throw new \InvalidArgumentException('Unsupported preprint server: ' . $server),
+        };
+        $params_to_remove = [];
+        foreach ($this->param as $p) {
+            $param_name = $p->param;
+            $is_allowed = in_array(mb_strtolower($param_name), $allowed, true);
+            if (!$is_allowed && (
+                preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $param_name) ||
+                preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $param_name) ||
+                preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
+                preg_match('~^editor\d*$~i', $param_name) ||
+                preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
+                mb_stripos($param_name, 'CITATION_BOT') !== false ||
+                mb_stripos($param_name, 'DUPLICATE') !== false
+            )) {
+                $is_allowed = true;
+            }
+            if (!$is_allowed) {
+                $params_to_remove[] = $param_name;
+            }
+        }
+        foreach ($params_to_remove as $param_name) {
+            $this->forget($param_name);
+        }
+    }
+
     public function __construct() {
         // Done in parse_text() and in variable initialization
     }
@@ -5681,34 +5718,7 @@ final class Template
                             $this->change_name_to('cite bioRxiv', true, true);
                             $this->rename('doi', 'biorxiv', rxiv_citation_id($doi_value, 'biorxiv'));
 
-                            // Remove parameters not allowed in cite bioRxiv
-                            $params_to_remove = [];
-                            foreach ($this->param as $p) {
-                                $param_name = mb_strtolower($p->param);
-                                $keep = in_array($param_name, CITE_BIORXIV_ALLOWED_PARAMS, true);
-
-                                if (!$keep && (
-                                    preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $p->param) ||
-                                    preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $p->param) ||
-                                    preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $p->param) ||
-                                    preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $p->param) ||
-                                    preg_match('~^editor\d*$~i', $p->param) ||
-                                    preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $p->param) ||
-                                    preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $p->param) ||
-                                    mb_stripos($p->param, 'CITATION_BOT') !== false ||
-                                    mb_stripos($p->param, 'DUPLICATE') !== false
-                                )) {
-                                    $keep = true;
-                                }
-
-                                if (!$keep) {
-                                    $params_to_remove[] = $p->param;
-                                }
-                            }
-
-                            foreach ($params_to_remove as $param_name) {
-                                $this->forget($param_name);
-                            }
+                            $this->remove_disallowed_rxiv_parameters('biorxiv');
 
                             report_modification('Converted cite journal to cite bioRxiv');
                             return;
@@ -5726,34 +5736,7 @@ final class Template
                             $this->change_name_to('cite medRxiv', true, true);
                             $this->rename('doi', 'medrxiv', rxiv_citation_id($doi_value, 'medrxiv'));
 
-                            // Remove parameters not allowed in cite medRxiv
-                            $params_to_remove = [];
-                            foreach ($this->param as $p) {
-                                $param_name = mb_strtolower($p->param);
-                                $keep = in_array($param_name, CITE_MEDRXIV_ALLOWED_PARAMS, true);
-
-                                if (!$keep && (
-                                    preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $p->param) ||
-                                    preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $p->param) ||
-                                    preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $p->param) ||
-                                    preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $p->param) ||
-                                    preg_match('~^editor\d*$~i', $p->param) ||
-                                    preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $p->param) ||
-                                    preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $p->param) ||
-                                    mb_stripos($p->param, 'CITATION_BOT') !== false ||
-                                    mb_stripos($p->param, 'DUPLICATE') !== false
-                                )) {
-                                    $keep = true;
-                                }
-
-                                if (!$keep) {
-                                    $params_to_remove[] = $p->param;
-                                }
-                            }
-
-                            foreach ($params_to_remove as $param_name) {
-                                $this->forget($param_name);
-                            }
+                            $this->remove_disallowed_rxiv_parameters('medrxiv');
 
                             report_modification('Converted cite journal to cite medRxiv');
                             return;
@@ -7604,70 +7587,11 @@ final class Template
                 $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
             }
 
-            // Final cleanup for cite biorxiv - ensure only allowed parameters are present
+            // Final cleanup for cite bioRxiv/medRxiv using server-specific allowlists.
             if ($this->wikiname() === 'cite biorxiv') {
-                $params_to_remove = [];
-                foreach ($this->param as $p) {
-                    $param_name = $p->param;
-                    $param_name_lower = mb_strtolower($param_name);
-                    $is_allowed = in_array($param_name_lower, CITE_BIORXIV_ALLOWED_PARAMS, true);
-
-                    // Allow author and editor parameters even if not in the explicit allowed list
-                    if (!$is_allowed && (
-                        preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $param_name) ||
-                        preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $param_name) ||
-                        preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
-                        preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
-                        preg_match('~^editor\d*$~i', $param_name) ||
-                        preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
-                        preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
-                        mb_stripos($param_name, 'CITATION_BOT') !== false ||
-                        mb_stripos($param_name, 'DUPLICATE') !== false
-                    )) {
-                        $is_allowed = true;
-                    }
-
-                    if (!$is_allowed) {
-                        $params_to_remove[] = $param_name;
-                    }
-                }
-
-                foreach ($params_to_remove as $param_name) {
-                    $this->forget($param_name);
-                }
-            }
-
-            // Final cleanup for cite medRxiv - ensure only allowed parameters are present
-            if ($this->wikiname() === 'cite medrxiv') {
-                $params_to_remove = [];
-                foreach ($this->param as $p) {
-                    $param_name = $p->param;
-                    $param_name_lower = mb_strtolower($param_name);
-                    $is_allowed = in_array($param_name_lower, CITE_MEDRXIV_ALLOWED_PARAMS, true);
-
-                    // Allow author and editor parameters even if not in the explicit allowed list
-                    if (!$is_allowed && (
-                        preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $param_name) ||
-                        preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $param_name) ||
-                        preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
-                        preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
-                        preg_match('~^editor\d*$~i', $param_name) ||
-                        preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
-                        preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
-                        mb_stripos($param_name, 'CITATION_BOT') !== false ||
-                        mb_stripos($param_name, 'DUPLICATE') !== false
-                    )) {
-                        $is_allowed = true;
-                    }
-
-                    if (!$is_allowed) {
-                        $params_to_remove[] = $param_name;
-                    }
-                }
-
-                foreach ($params_to_remove as $param_name) {
-                    $this->forget($param_name);
-                }
+                $this->remove_disallowed_rxiv_parameters('biorxiv');
+            } elseif ($this->wikiname() === 'cite medrxiv') {
+                $this->remove_disallowed_rxiv_parameters('medrxiv');
             }
 
             // Final cleanup for cite arxiv - remove parameters not supported by the template
