@@ -362,6 +362,20 @@ Secondly, even when blocked, a user can run the bot on their own User: pages, bu
 
 **Note:** In this mode all citation expansion runs normally, but the bot will fail when it attempts to write the results back to Wikipedia.  Use this only for debugging purposes.
 
+## Retraction Watch warnings
+
+Citation Bot checks the local Retraction Watch CSV for DOI and PMID matches
+and reports notices in the web and CLI output. The CSV supplies all status
+information. The accompanying index only locates rows in that snapshot.
+Citation Bot continues normally when the snapshot is unavailable.
+
+The default snapshot directory is `/data/project/citations/retraction-watch`.
+For a different location, set `RETRACTION_WATCH_DIRECTORY` in both the web
+service and refresh job environments. To seed the first snapshot, run
+`php tools/update_retraction_watch.php` as the tool account, then load the
+daily job with `toolforge jobs load toolforge.yaml --job refresh-retraction-watch`.
+A failed refresh leaves the last validated snapshot in place.
+
 ## Submitting issues
 
 Where issues require consensus on Wikipedia policy, they are discussed on the [Citation Bot Talk Page](https://en.wikipedia.org/wiki/User_talk:Citation_bot). Most other issues should also be discussed there.  The issues on GitHub are primarily for the developers' internal use.
