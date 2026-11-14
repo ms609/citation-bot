@@ -9,6 +9,14 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
 
+    public function testRxivParameterFilteringRejectsUnknownServer(): void {
+        $template = $this->make_citation('{{cite journal|title=Preprint|issue=7}}');
+        $method = new \ReflectionMethod(Template::class, 'remove_disallowed_rxiv_parameters');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unsupported preprint server: unknown');
+        $method->invoke($template, 'unknown');
+    }
+
     public function testPreprintConversionSharesServerAwareParameterFiltering(): void {
         foreach ([
             ['bioRxiv', '10.1101/2020.01.01.123456', 'cite biorxiv', 'biorxiv'],

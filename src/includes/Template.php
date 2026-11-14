@@ -90,6 +90,7 @@ final class Template
         $allowed = match ($server) {
             'biorxiv' => CITE_BIORXIV_ALLOWED_PARAMS,
             'medrxiv' => CITE_MEDRXIV_ALLOWED_PARAMS,
+            default => throw new \InvalidArgumentException('Unsupported preprint server: ' . $server),
         };
         $params_to_remove = [];
         foreach ($this->param as $p) {
