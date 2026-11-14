@@ -121,11 +121,8 @@ function decode_name_entities(string $name): string {
         }
         $name = $decoded;
     }
-    return str_replace(
-        ['<', '>', '[', ']', '{', '}', '|', "''"],
-        ['&#60;', '&#62;', '&#91;', '&#93;', '&#123;', '&#125;', '&#124;', '&#0039;&#0039;'],
-        $name
-    );
+    $name = strtr($name, WIKITEXT_DELIMITER_ENTITIES);
+    return str_replace("''", '&#0039;&#0039;', $name);
 }
 
 function format_surname(string $surname): string {

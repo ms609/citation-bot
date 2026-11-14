@@ -80,6 +80,10 @@ const BAD_AGENT_PUBS = ['United States Department of Health and Human Services',
 const NO_LANGS = ['n', 'no', 'live', 'alive', 'কার্যকর', 'hayır', 'não', 'nao', 'false'];
 const YES_LANGS = ['y', 'yes', 'dead', 'si', 'sì', 'ja', 'evet', 'ei tööta', 'sim', 'ano', 'true'];
 const PDF_LINKS = ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]', '[[pdf]]'];
+const WIKITEXT_DELIMITER_ENTITIES = [
+    '<' => '&#60;', '>' => '&#62;', '[' => '&#91;', ']' => '&#93;',
+    '{' => '&#123;', '}' => '&#125;', '|' => '&#124;',
+];
 const DEPARTMENTS = ['local', 'editorial', 'international', 'national', 'communication', 'letter to the editor',
         'review', 'coronavirus', 'race & reckoning', 'politics', 'opinion', 'opinions', 'investigations', 'tech',
         'technology', 'world', 'sports', 'arts & entertainment', 'arts', 'entertainment', 'u.s.', 'n.y.',
