@@ -86,7 +86,7 @@ final class Template
      * aliases and the internal placeholder fields in both conversion paths.
      * Field removal is deferred until after the scan to preserve iteration.
      */
-    private function remove_disallowed_rxiv_parameters(string $server): void {ssssss
+    private function remove_disallowed_rxiv_parameters(string $server): void {
         $allowed = match ($server) {
             'biorxiv' => CITE_BIORXIV_ALLOWED_PARAMS,
             'medrxiv' => CITE_MEDRXIV_ALLOWED_PARAMS,
