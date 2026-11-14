@@ -85,11 +85,11 @@ final class SemanticScholarOfflineTest extends testBaseClass {
                 throw new RuntimeException('Deliberate offline transport failure');
             };
             $scenarios = [
-                [$throw_transport_error, $transport_warning],
-                [static fn (): bool => false, $transport_warning],
-                [static fn (): string => '', 'No response from semanticscholar.'],
+                [$throw_transport_error, $transport_warning, [$transport_warning]],
+                [static fn (): bool => false, $transport_warning, []],
+                [static fn (): string => '', 'No response from semanticscholar.', []],
             ];
-            foreach ($scenarios as [$transport, $warning]) {
+            foreach ($scenarios as [$transport, $warning, $optional_warnings]) {
                 /** @psalm-suppress UnusedFunctionCall */
                 uopz_set_return('bot_curl_exec_withFalse', $transport, true);
                 try {
@@ -98,6 +98,14 @@ final class SemanticScholarOfflineTest extends testBaseClass {
 
                     $this->assertSame('', ConvertS2CID_DOI('123456'));
                     $this->assertSame([$warning], $warnings->exchangeArray([]));
+
+                    $this->assertNull(get_semanticscholar_license('123456'));
+                    $this->assertSame($optional_warnings, $warnings->exchangeArray([]));
+
+                    $template = $this->make_citation('{{cite journal|title=Example|doi=10.1000/offline}}');
+                    get_semanticscholar_url($template, '10.1000/offline');
+                    $this->assertNull($template->get2('url'));
+                    $this->assertSame($optional_warnings, $warnings->exchangeArray([]));
                 } finally {
                     /** @psalm-suppress UnusedFunctionCall */
                     uopz_unset_return('bot_curl_exec_withFalse');

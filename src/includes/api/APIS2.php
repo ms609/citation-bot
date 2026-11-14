@@ -52,7 +52,7 @@ function parse_semanticscholar_legacy_url_response(string $response): ?string {
     return $json->url;
 }
 
-function semanticscholar_request(CurlHandle $ch, bool $warn_on_empty = false): string {
+function semanticscholar_request(CurlHandle $ch, bool $warn_on_no_response = false): string {
     try {
         $response = bot_curl_exec_withFalse($ch);
     } catch (Throwable $e) {
@@ -63,10 +63,12 @@ function semanticscholar_request(CurlHandle $ch, bool $warn_on_empty = false): s
 
     if ($response === false) {
         bot_debug_log('Semantic Scholar cURL error #' . curl_errno($ch) . ': ' . curl_error($ch));
-        report_warning("Semantic Scholar request failed; continuing without this metadata.");
+        if ($warn_on_no_response) {
+            report_warning("Semantic Scholar request failed; continuing without this metadata.");
+        }
         return '';
     }
-    if ($response === '' && $warn_on_empty) {
+    if ($response === '' && $warn_on_no_response) {
         report_warning("No response from semanticscholar.");
     }
     return (string) $response;
