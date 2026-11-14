@@ -25,6 +25,9 @@ const BIG_RUN_RECOVERY_CSRF_COOKIE = 'citation_bot_big_run_recovery_csrf';
 const BIG_RUN_RECOVERY_CSRF_TTL = 600;
 
 function big_run_recovery_valid_deploy_token(string $token): bool {
+    if ($token === str_repeat('0123456789abcdef', 4)) {
+        return false; /* The example token */
+    }
     return preg_match('~\A[a-f0-9]{64}\z~D', $token) === 1;
 }
 

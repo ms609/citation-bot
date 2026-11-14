@@ -269,6 +269,47 @@ final class OfflineEndpointTest extends TestCase {
         unlink($state);
     }
 
+    public function testConfiguredExampleDeployTokenIsRejectedWithoutResettingState(): void {
+        $state = self::$root . '/citation-bot-rate-limit/big-run.json';
+        $config = self::$root . '/env.php';
+        $before = '{"tokens":10,"updated":0,"entries":{}}';
+        $example_token = str_repeat('0123456789abcdef', 4);
+        $reset_fields = ['action' => 'reset', 'confirm_reset' => 'yes'];
+        $this->assertNotFalse(file_put_contents($state, $before));
+        try {
+            $this->assertNotFalse(file_put_contents(
+                $config,
+                "<?php\nputenv('DEPLOY_TOKEN=" . $example_token . "');\n",
+            ));
+            $headers = ['X-Deploy-Token: ' . $example_token];
+            $deploy = $this->request('/tools/gitpull.php', [], $headers);
+            $this->assertSame(503, $deploy['status']);
+            $this->assertStringContainsString('DEPLOY_TOKEN is missing or invalid', $deploy['body']);
+
+            $reset = $this->request('/tools/reset_big_run_state.php', $reset_fields, $headers);
+            $this->assertSame(503, $reset['status']);
+            $this->assertStringContainsString('DEPLOY_TOKEN is missing or invalid', $reset['body']);
+            $this->assertSame($before, file_get_contents($state));
+            $this->assertSame([], glob($state . '.recovery-*'));
+
+            $this->assertNotFalse(file_put_contents($config, "<?php\n"));
+            $valid_headers = ['X-Deploy-Token: ' . str_repeat('a', 64)];
+            $reset = $this->request('/tools/reset_big_run_state.php', $reset_fields, $valid_headers);
+            $this->assertSame(200, $reset['status']);
+            $this->assertStringContainsString('Big-run state reset succeeded', $reset['body']);
+            $backups = glob($state . '.recovery-*');
+            $this->assertIsArray($backups);
+            $this->assertCount(1, $backups);
+            $this->assertSame($before, file_get_contents($backups[0]));
+        } finally {
+            file_put_contents($config, "<?php\n");
+            foreach (glob($state . '.recovery-*') ?: [] as $backup) {
+                unlink($backup);
+            }
+            unlink($state);
+        }
+    }
+
     public function testDisallowedHostReturnsBadRequestBeforeHandlingEndpoint(): void {
         $response = $this->request('/tools/authenticate.php', null, ['Host: unexpected.example']);
         $this->assertSame(400, $response['status']);
