@@ -52,14 +52,26 @@ function parse_semanticscholar_legacy_url_response(string $response): ?string {
     return $json->url;
 }
 
-function semanticscholar_request(CurlHandle $ch): string {
+function semanticscholar_request(CurlHandle $ch, bool $warn_on_no_response = false): string {
     try {
-        return bot_curl_exec($ch);
+        $response = bot_curl_exec_withFalse($ch);
     } catch (Throwable $e) {
         bot_debug_log('Semantic Scholar request failed: ' . $e::class . ': ' . $e->getMessage());
         report_warning("Semantic Scholar request failed; continuing without this metadata.");
         return '';
     }
+
+    if ($response === false) {
+        bot_debug_log('Semantic Scholar cURL error #' . curl_errno($ch) . ': ' . curl_error($ch));
+        if ($warn_on_no_response) {
+            report_warning("Semantic Scholar request failed; continuing without this metadata.");
+        }
+        return '';
+    }
+    if ($response === '' && $warn_on_no_response) {
+        report_warning("No response from semanticscholar.");
+    }
+    return (string) $response;
 }
 
 function getS2CID(string $url): string {
@@ -69,10 +81,9 @@ function getS2CID(string $url): string {
     }
     $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' . urlencode(urldecode($url)) . '?fields=corpusId';
     curl_setopt($ch, CURLOPT_URL, $url);
-    $response = semanticscholar_request($ch);
-    if (!$response) {
-        report_warning("No response from semanticscholar.");    // @codeCoverageIgnore
-        return '';                                              // @codeCoverageIgnore
+    $response = semanticscholar_request($ch, true);
+    if ($response === '') {
+        return '';
     }
     $corpus_id = parse_semanticscholar_corpus_response($response);
     unset($response);
@@ -91,10 +102,9 @@ function ConvertS2CID_DOI(string $s2cid): string {
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=externalIds';
     curl_setopt($ch, CURLOPT_URL, $url);
-    $response = semanticscholar_request($ch);
-    if (!$response) {
-        report_warning("No response from semanticscholar.");  // @codeCoverageIgnore
-        return '';                                            // @codeCoverageIgnore
+    $response = semanticscholar_request($ch, true);
+    if ($response === '') {
+        return '';
     }
     $doi = parse_semanticscholar_doi_response($response);
     unset($response);

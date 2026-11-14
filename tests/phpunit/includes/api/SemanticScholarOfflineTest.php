@@ -21,12 +21,12 @@ final class SemanticScholarOfflineTest extends testBaseClass {
             $this->markTestSkipped('Offline transport fixture requires uopz');
         }
         /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('semanticscholar_request', static fn (): string => $body, true);
+        uopz_set_return('bot_curl_exec_withFalse', static fn (): string => $body, true);
         try {
             $assertions();
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('semanticscholar_request');
+            uopz_unset_return('bot_curl_exec_withFalse');
         }
     }
 
@@ -70,21 +70,50 @@ final class SemanticScholarOfflineTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testScholarTransportThrowableFailsClosedWithoutHttp(): void {
+    public function testScholarLookupWarnsOnceForTransportFailuresAndEmptyResponses(): void {
         if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
             $this->markTestSkipped('Offline transport fixture requires uopz');
         }
+        $warnings = new ArrayObject();
         /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('bot_curl_exec', static function (): string {
-            throw new RuntimeException('Deliberate offline transport failure');
+        uopz_set_return('report_warning', static function (string $warning) use ($warnings): void {
+            $warnings->append($warning);
         }, true);
-        $handle = bot_curl_init(0.5, HEADER_S2, 1024);
-        $this->assertInstanceOf(CurlHandle::class, $handle);
         try {
-            $this->assertSame('', semanticscholar_request($handle));
+            $transport_warning = 'Semantic Scholar request failed; continuing without this metadata.';
+            $throw_transport_error = static function (): never {
+                throw new RuntimeException('Deliberate offline transport failure');
+            };
+            $scenarios = [
+                [$throw_transport_error, $transport_warning, [$transport_warning]],
+                [static fn (): bool => false, $transport_warning, []],
+                [static fn (): string => '', 'No response from semanticscholar.', []],
+            ];
+            foreach ($scenarios as [$transport, $warning, $optional_warnings]) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_set_return('bot_curl_exec_withFalse', $transport, true);
+                try {
+                    $this->assertSame('', getS2CID('https://example.test/paper'));
+                    $this->assertSame([$warning], $warnings->exchangeArray([]));
+
+                    $this->assertSame('', ConvertS2CID_DOI('123456'));
+                    $this->assertSame([$warning], $warnings->exchangeArray([]));
+
+                    $this->assertNull(get_semanticscholar_license('123456'));
+                    $this->assertSame($optional_warnings, $warnings->exchangeArray([]));
+
+                    $template = $this->make_citation('{{cite journal|title=Example|doi=10.1000/offline}}');
+                    get_semanticscholar_url($template, '10.1000/offline');
+                    $this->assertNull($template->get2('url'));
+                    $this->assertSame($optional_warnings, $warnings->exchangeArray([]));
+                } finally {
+                    /** @psalm-suppress UnusedFunctionCall */
+                    uopz_unset_return('bot_curl_exec_withFalse');
+                }
+            }
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('bot_curl_exec');
+            uopz_unset_return('report_warning');
         }
     }
 
