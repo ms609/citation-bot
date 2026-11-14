@@ -164,12 +164,17 @@ function bot_curl_size_limit_log_context(): WeakMap {
  */
 function bot_curl_loggable_url(string $url): string {
     $parts = parse_url($url);
-    if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+    if ($parts === false || !isset($parts['scheme'])) {
         return '(unavailable)';
     }
     $scheme = mb_strtolower($parts['scheme']);
     if (!in_array($scheme, ['http', 'https'], true)) {
         return '(non-HTTP URL)';
+    }
+    // HTTP(S) URLs without a host are malformed, but a valid non-HTTP URL
+    // (such as file:///tmp/test) need not contain one.
+    if (!isset($parts['host'])) {
+        return '(unavailable)';
     }
 
     $safe = $scheme . '://' . $parts['host'];

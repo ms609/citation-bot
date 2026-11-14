@@ -296,6 +296,9 @@ final class BotCurlTest extends testBaseClass {
     public function testOversizeCurlLogHandlesMissingUrlAndLongQuery(): void {
         $this->assertSame('(unavailable)', bot_curl_loggable_url(''));
         $this->assertSame('(non-HTTP URL)', bot_curl_loggable_url('file:///tmp/private'));
+        $this->assertSame('(non-HTTP URL)', bot_curl_loggable_url('mailto:user@example.org'));
+        $this->assertSame('(non-HTTP URL)', bot_curl_loggable_url('ftp://example.org/private'));
+        $this->assertSame('(unavailable)', bot_curl_loggable_url('https:/missing-host'));
         $url = 'https://example.org/' . str_repeat('x', 2000) .
             '?foo=some-value&bar=more';
         $this->assertLessThanOrEqual(1024, mb_strlen(bot_curl_loggable_url($url), '8bit'));
