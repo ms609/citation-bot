@@ -309,6 +309,123 @@ final class Template
         }
     }
 
+    /**
+     * Convert an Oxford Who's Who entry while its original citation fields are intact.
+     * @param array<string, object> &$crossref_records Shared by citations on the current page.
+     */
+    public function convert_whos_who_doi(array &$crossref_records = []): void {
+        $source = $this->wikiname();
+        if (
+            WIKI_BASE !== 'en' ||
+            mb_stripos($this->name, '#invoke:') !== false ||
+            !in_array($source, ['citation', 'cite web', 'cite journal', 'cite encyclopedia', 'cite encyclopaedia'], true)
+        ) {
+            return;
+        }
+        $url = $this->get('url');
+        $resolver_doi = '';
+        if (preg_match('~\Ahttps?://(?:dx\.)?doi\.org/(10\.1093/ww/9780199540884\.013\.u?[0-9]+)\z~i', $url, $match) === 1) {
+            $resolver_doi = $match[1];
+        }
+        $doi = $this->get('doi') ?: $resolver_doi;
+        if (preg_match('~\A10\.1093/ww/9780199540884\.013\.u?([0-9]+)\z~i', $doi, $match) !== 1) {
+            return;
+        }
+        $id = 'U' . $match[1];
+        $modern_url = preg_match('~\Ahttps://www\.ukwhoswho\.com/view/10\.1093/ww/[0-9]{13}\.001\.0001/' .
+            'ww-9780199540884-e-' . $match[1] . '\z~i', $url) === 1;
+        $container_fields = ['encyclopedia', 'encyclopaedia', 'website', 'work'];
+        $supported = [
+            'doi', 'title', 'date', 'year', 'volume', 'edition', 'access-date', 'accessdate',
+            'mode', 'ref', 'postscript', 'quote', 'language', 'url', ...$container_fields,
+            mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), ...FLATTENED_AUTHOR_PARAMETERS,
+        ];
+        $seen = [];
+        foreach ($this->param as $parameter) {
+            $name = $parameter->param;
+            if (isset($seen[$name]) || !in_array($name, $supported, true) || str_i_same($parameter->val, 'unset')) {
+                return;
+            }
+            $seen[$name] = true;
+        }
+        if (
+            $url !== '' && !$modern_url && !str_i_same($resolver_doi, $doi) &&
+            preg_match('~\Ahttps?://www\.ukwhoswho\.com/view/article/oupww/whoswho/' . $id . '\z~i', $url) !== 1
+        ) {
+            return;
+        }
+
+        $cache_key = mb_strtolower($doi);
+        if (!isset($crossref_records[$cache_key])) {
+            try {
+                $crossref_records[$cache_key] = query_crossref_newapi($doi);
+            } catch (Throwable) {
+                $crossref_records[$cache_key] = new stdClass();
+            }
+            if (get_object_vars($crossref_records[$cache_key]) === []) {
+                report_warning("Could not verify Who's Who metadata from Crossref for DOI " . echoable($doi));
+            }
+        }
+        $record = $crossref_records[$cache_key];
+        if (
+            !isset($record->DOI) || !is_string($record->DOI) || !str_i_same($record->DOI, $doi) ||
+            ($record->type ?? '') !== 'reference-entry' ||
+            !is_array($record->title ?? null) || count($record->title) !== 1 || !is_string($record->title[0] ?? null) ||
+            !is_array($record->{'container-title'} ?? null) || count($record->{'container-title'}) !== 1 ||
+            !is_string($record->{'container-title'}[0] ?? null)
+        ) {
+            return;
+        }
+        $title = mb_trim(html_entity_decode($record->title[0], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $container = mb_strtolower(straighten_quotes(mb_trim($record->{'container-title'}[0]), true));
+        if (
+            $title === '' || preg_match('~[\[\]{}|<>\x00-\x1f\x7f]~', $title) === 1 ||
+            !in_array($container, ["who's who", 'who was who'], true)
+        ) {
+            return;
+        }
+        $existing_title = $this->get_without_comments_and_placeholders('title');
+        if ($this->has('title')) {
+            // Oxford can append lifespan dates and postnominals to the name in Crossref.
+            $name_only = safe_preg_replace('~,\s*\([0-9]{4}\b.*\z~u', '', $title);
+            if ($existing_title === '' ||
+                (!titles_are_similar($existing_title, $title) && !titles_are_similar($existing_title, $name_only))) {
+                return;
+            }
+        }
+        foreach ($container_fields as $name) {
+            $value = $this->get($name);
+            if ($value !== '' && !str_i_same(straighten_quotes($value, true), $container)) {
+                return;
+            }
+        }
+
+        if (!$this->has('title')) {
+            $this->set('title', $title);
+        }
+        if (!$this->has('doi')) {
+            $this->set('doi', $doi);
+        }
+        $this->set('id', $id);
+        if ($container === 'who was who') {
+            $this->set('type', 'was');
+        }
+        if ($source === 'citation' && !$this->has('mode')) {
+            $this->set('mode', 'cs2');
+        }
+        if ($modern_url) {
+            $this->rename('url', 'entry-url');
+        }
+        foreach ($this->param as $key => $parameter) {
+            if ($parameter->param === 'url' || in_array($parameter->param, $container_fields, true)) {
+                // Access dates still belong to the entry URL generated by the wrapper.
+                unset($this->param[$key]);
+            }
+        }
+        // The wrapper renders the entry URL and container from id and type.
+        $this->name = safe_preg_replace('~\S(?:.*\S)?~su', "Who's Who", $this->name);
+    }
+
     public function prepare_cookie_absent_citation(): void {
         if (!in_array($this->wikiname(), [...TEMPLATES_WE_PROCESS, ...TEMPLATES_WE_SLIGHTLY_PROCESS, ...TEMPLATES_WE_BARELY_PROCESS, ...TEMPLATES_WE_CHAPTER_URL, 'cite magazine', 'cite periodical'], true)) {
             return;

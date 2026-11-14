@@ -415,10 +415,13 @@ class Page {
         $our_templates_slight = [];
         /** @var array<Template> $our_templates_conferences */
         $our_templates_conferences = [];
+        $whos_who_records = [];
         // Tag standalone {{doi}} and {{doi-inline}} templates with free-DOI access
         foreach ($all_templates as $this_template) {
             if (in_array($this_template->wikiname(), ['doi', 'doi-inline'], true)) {
                 $this_template->set_free_doi_access();
+            } else {
+                $this_template->convert_whos_who_doi($whos_who_records);
             }
         }
         report_phase('Remedial work to prepare citations');
