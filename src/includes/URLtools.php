@@ -1021,6 +1021,19 @@ function clean_existing_urls(Template $template, string $param): void {
     }
 }
 
+/**
+ * An unchanged secondary URL may still need its first identifier lookup.
+ * For example, |contribution-url= can yield |mr= without URL normalization.
+ * A plain |url= only needs this lookup after its value changes; the full
+ * citation processing pipeline handles its initial identifier discovery.
+ */
+function url_cleanup_needs_identifier_scan(string $param, string $before, string $after, string $primary_url): bool {
+    if ($before !== $after) {
+        return true;
+    }
+    return $param !== 'url' && $before !== $primary_url;
+}
+
 function clean_existing_urls_INSIDE(Template $template, string $param): void {
     if (preg_match('~^(?:web\.|www\.).+$~', $template->get($param), $matches) && mb_stripos($template->get($param), 'citation') === false) {
         $template->set($param, 'http://' . $matches[0]);
@@ -1421,9 +1434,8 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         // Comment out because "never used" $param = 'chapter-url';
         return;
     }
-    $the_new_url = $template->get('url');
-    if ($the_original_url !== $the_new_url) {
-        $template->get_identifiers_from_url();
+    if (url_cleanup_needs_identifier_scan($param, $the_original_url, $template->get($param), $template->get('url'))) {
+        $template->scan_identifiers_from_url_if_needed();
     }
     if (mb_stripos($template->get('url'), 'cinemaexpress.com') !== false) {
         foreach (WORK_ALIASES as $worky) {
