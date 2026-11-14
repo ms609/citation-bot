@@ -83,6 +83,8 @@ The Citation Bot has two main user-facing interfaces with different performance 
 
 **Note**: Both interfaces perform core citation expansion effectively. The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
 
+On English Wikipedia, titled `cite web` references to individual GBIF species, Plants of the World Online, or IPNI records can become `Cite GBIF` or `Cite taxon` citations. The original record URL and supported citation fields are carried over.
+
 ## Big-run gate (interactive-capacity reservation)
 
 Web processing of more than 4 runnable pages is admission-controlled so

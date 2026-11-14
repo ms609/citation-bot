@@ -426,9 +426,11 @@ class Page {
             set_time_limit(120);
             $this_template->prepare_rxiv();
             if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS, true)) {
-                $our_templates[] = $this_template;
                 $this_template->correct_param_mistakes();
-                $this_template->prepare();
+                if (!$this_template->convert_taxon_url()) {
+                    $our_templates[] = $this_template;
+                    $this_template->prepare();
+                }
             } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
                 $our_templates_slight[] = $this_template;
                 $this_template->correct_param_mistakes();

@@ -507,6 +507,61 @@ final class Template
         $this->cookie_absent_initial_author_params = null;
     }
 
+    /** Wrap a cite web that already identifies a supported taxon record. */
+    public function convert_taxon_url(): bool {
+        if (
+            WIKI_BASE !== 'en' || $this->wikiname() !== 'cite web' ||
+            mb_stripos($this->name, '#invoke:') !== false
+        ) {
+            return false;
+        }
+        $title = mb_strtolower($this->get_without_comments_and_placeholders('title'));
+        if ($title === '' || in_array($title, ALWAYS_BAD_TITLES, true) ||
+            in_array($title, ['validate user', 'join ancestry', 'join ancestry.com', 'ancestry - sign up'], true)) {
+            return false;
+        }
+        $url = $this->get('url');
+        if (preg_match('~\A(?i:https?://(?:www\.)?gbif\.org)/species/([1-9][0-9]*)/?\z~', $url, $match) === 1) {
+            $wrapper = 'Cite GBIF';
+            $database = '';
+        } elseif (preg_match('~\A(?i:https?://powo\.science\.kew\.org)/taxon/urn:lsid:ipni\.org:names:([1-9][0-9]*-[0-9]+)/?\z~', $url, $match) === 1) {
+            $wrapper = 'Cite taxon';
+            $database = 'POWO';
+        } elseif (preg_match('~\A(?i:https?://(?:www\.)?ipni\.org)/n/([1-9][0-9]*-[0-9]+)/?\z~', $url, $match) === 1) {
+            $wrapper = 'Cite taxon';
+            $database = 'IPNI';
+        } else {
+            return false;
+        }
+
+        $supported = [
+            'url', 'title', 'website', 'work', 'publisher', 'date', 'year', 'language', 'lang',
+            'access-date', 'accessdate', 'archive-url', 'archiveurl', 'archive-date', 'archivedate',
+            'url-status', 'url-access', 'format', 'mode', 'ref', 'postscript', 'quote', ...FLATTENED_AUTHOR_PARAMETERS,
+        ];
+        $seen = [];
+        foreach ($this->param as $parameter) {
+            $name = $parameter->param;
+            if (isset($seen[$name]) || !in_array($name, $supported, true) || str_i_same($parameter->val, 'unset')) {
+                return false;
+            }
+            $seen[$name] = true;
+        }
+        if (isset($seen['work'], $seen['website']) || isset($seen['lang'], $seen['language'])) {
+            return false;
+        }
+        // Use the wrapper's parameter names so its defaults cannot create duplicate aliases.
+        $this->rename('work', 'website');
+        $this->rename('lang', 'language');
+        $this->set('id', $match[1]);
+        if ($database !== '') {
+            $this->set('1', $database);
+        }
+        // Both wrappers accept the original URL and title, including their formatting.
+        $this->name = safe_preg_replace('~\S(?:.*\S)?~su', $wrapper, $this->name);
+        return true;
+    }
+
     public function prepare(): void {
         set_time_limit(120);
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
