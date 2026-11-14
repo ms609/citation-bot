@@ -3109,6 +3109,23 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('format'));
     }
 
+    public function testForgetUrlPreservesArchiveMetadataWhenAnEntryUrlRemains(): void {
+        $entry_url = 'https://example.com/entry';
+        $archive_url = 'https://web.archive.org/web/20240101000000/https://example.com/entry';
+        foreach (['entry-url', 'entryurl'] as $alias) {
+            $template = $this->make_citation(
+                '{{cite encyclopedia|url=https://example.com|' . $alias . '=' . $entry_url .
+                '|access-date=2024-01-01|archive-url=' . $archive_url . '|archive-date=2024-01-01}}'
+            );
+            $template->forget('url');
+            $this->assertNull($template->get2('url'));
+            $this->assertSame($entry_url, $template->get2($alias));
+            $this->assertSame('2024-01-01', $template->get2('access-date'));
+            $this->assertSame($archive_url, $template->get2('archive-url'));
+            $this->assertSame('2024-01-01', $template->get2('archive-date'));
+        }
+    }
+
     public function testBad1093UrlFallbackRequiresPublisher(): void {
         $text = '{{cite web |url=https://example.com |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |via=hose |title=Harness title}}';
         $template = $this->make_citation($text);
