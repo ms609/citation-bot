@@ -74,15 +74,18 @@ final class SemanticScholarOfflineTest extends testBaseClass {
         if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
             $this->markTestSkipped('Offline transport fixture requires uopz');
         }
-        $warnings = [];
+        $warnings = new ArrayObject();
         /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('report_warning', static function (string $warning) use (&$warnings): void {
-            $warnings[] = $warning;
+        uopz_set_return('report_warning', static function (string $warning) use ($warnings): void {
+            $warnings->append($warning);
         }, true);
         try {
             $transport_warning = 'Semantic Scholar request failed; continuing without this metadata.';
+            $throw_transport_error = static function (): never {
+                throw new RuntimeException('Deliberate offline transport failure');
+            };
             $scenarios = [
-                [static fn (): string => throw new RuntimeException('Deliberate offline transport failure'), $transport_warning],
+                [$throw_transport_error, $transport_warning],
                 [static fn (): bool => false, $transport_warning],
                 [static fn (): string => '', 'No response from semanticscholar.'],
             ];
@@ -90,13 +93,11 @@ final class SemanticScholarOfflineTest extends testBaseClass {
                 /** @psalm-suppress UnusedFunctionCall */
                 uopz_set_return('bot_curl_exec_withFalse', $transport, true);
                 try {
-                    $warnings = [];
                     $this->assertSame('', getS2CID('https://example.test/paper'));
-                    $this->assertSame([$warning], $warnings);
+                    $this->assertSame([$warning], $warnings->exchangeArray([]));
 
-                    $warnings = [];
                     $this->assertSame('', ConvertS2CID_DOI('123456'));
-                    $this->assertSame([$warning], $warnings);
+                    $this->assertSame([$warning], $warnings->exchangeArray([]));
                 } finally {
                     /** @psalm-suppress UnusedFunctionCall */
                     uopz_unset_return('bot_curl_exec_withFalse');
