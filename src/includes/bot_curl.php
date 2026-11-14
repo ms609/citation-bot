@@ -149,6 +149,62 @@ function bot_curl_get_max_response_bytes(CurlHandle $ch): int {
     return bot_curl_response_limits()[$ch] ?? BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES;
 }
 
+/** @return WeakMap<CurlHandle, array{caller: string, oversize: null|array{advertised: int, downloaded: int}}> */
+function bot_curl_size_limit_log_context(): WeakMap {
+    static $context = null;
+    if ($context === null) {
+        $context = new WeakMap();
+    }
+    return $context;
+}
+
+/**
+ * Show a useful destination without exposing credentials, query values,
+ * or fragments (which may contain API tokens or private user data).
+ */
+function bot_curl_loggable_url(string $url): string {
+    $parts = parse_url($url);
+    if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+        return '(unavailable)';
+    }
+    $scheme = mb_strtolower($parts['scheme']);
+    if (!in_array($scheme, ['http', 'https'], true)) {
+        return '(non-HTTP URL)';
+    }
+
+    $safe = $scheme . '://' . $parts['host'];
+    if (isset($parts['port'])) {
+        $safe .= ':' . $parts['port'];
+    }
+    $safe .= $parts['path'] ?? '';
+    if (isset($parts['query'])) {
+        $keys = [];
+        foreach (explode('&', $parts['query']) as $parameter) {
+            if (count($keys) === 10) {
+                $keys[] = '...';
+                break;
+            }
+            $key = explode('=', $parameter, 2)[0];
+            $keys[] = rawurlencode(mb_substr(rawurldecode($key), 0, 40, '8bit')) . '=REDACTED';
+        }
+        $safe .= '?' . implode('&', $keys);
+    }
+    // Keep log lines bounded even for malformed or attacker-controlled URLs.
+    return mb_substr(str_replace(["\r", "\n"], ['\\r', '\\n'], $safe), 0, 1024, '8bit');
+}
+
+function bot_curl_size_limit_message(
+    int $limit,
+    int $advertised,
+    int $downloaded,
+    string $caller,
+    string $url
+): string {
+    return 'cURL response exceeded configured limit of ' . $limit . ' bytes' .
+        ' (advertised=' . $advertised . ', downloaded=' . $downloaded . ')' .
+        '; caller=' . $caller . '; url=' . bot_curl_loggable_url($url);
+}
+
 /**
  * Handles in this map are the only cURL handles allowed to relax HTTPS
  * certificate checks.  Keeping the exception explicit prevents an ordinary
@@ -250,9 +306,19 @@ function bot_curl_apply_security_options(CurlHandle $ch): void {
 
 function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0): int {
     $max_bytes = bot_curl_get_max_response_bytes($_ch);
+    // The second progress value is bytes downloaded; the first is the
+    // server-advertised total, which may be unknown or inaccurate.
     if ($down > $max_bytes) {
-         bot_debug_log("cURL response exceeded configured limit of " . $max_bytes . " bytes");
-         return 1;
+        $context = bot_curl_size_limit_log_context()[$_ch] ?? [
+            'caller' => '(unknown)', 'oversize' => null,
+        ];
+        if ($context['oversize'] === null) {
+            $context['oversize'] = [
+                'advertised' => $_DE, 'downloaded' => $down,
+            ];
+            bot_curl_size_limit_log_context()[$_ch] = $context;
+        }
+        return 1;
     }
     return 0;
 }
@@ -393,6 +459,24 @@ function bot_curl_progress_with_gate_heartbeat(
 }
 
 function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
+    // Capture the real caller before entering libcurl; a progress callback's
+    // stack cannot identify the PHP code that initiated this transfer.
+    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+    $index = ($trace[1]['function'] ?? '') === 'bot_curl_exec' ? 1 : 0;
+    $site = $trace[$index] ?? [];
+    $owner = $trace[$index + 1] ?? [];
+    $file = $site['file'] ?? '(unknown)';
+    $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
+    if (str_starts_with($file, $root)) {
+        $file = substr($file, strlen($root));
+    }
+    $function = ($owner['class'] ?? '') . ($owner['type'] ?? '') .
+        ($owner['function'] ?? '{main}');
+    bot_curl_size_limit_log_context()[$ch] = [
+        'caller' => $file . ':' . ($site['line'] ?? 0) . ' ' . $function,
+        'oversize' => null,
+    ];
+
     bot_curl_gate_heartbeat();
     if (bot_curl_is_legacy_tls_probe($ch)) {
         /*
@@ -431,6 +515,18 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
     bot_curl_apply_security_options($ch);
 
     $result = @curl_exec($ch);  // phpcs:ignore
+    $size_context = bot_curl_size_limit_log_context()[$ch];
+    if ($size_context['oversize'] !== null) {
+        // The effective URL is reliable after the transfer (also after a
+        // redirect or progress-callback abort), unlike during a callback.
+        bot_debug_log(bot_curl_size_limit_message(
+            bot_curl_get_max_response_bytes($ch),
+            $size_context['oversize']['advertised'],
+            $size_context['oversize']['downloaded'],
+            $size_context['caller'],
+            (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL)
+        ));
+    }
     bot_curl_gate_heartbeat();
     bot_curl_transfer_results()[$ch] = [
         'ok' => $result !== false,
