@@ -973,7 +973,7 @@ JSON;
     }
 
     public function testImportedAuthorRespectsFirstSurnameAliasesSetAfterParsing(): void {
-        foreach (['author-surname1', 'author1-surname'] as $alias) {
+        foreach (['author-surname1', 'author1-surname', 'author-last', 'author-last1', 'author1-last'] as $alias) {
             $template = $this->make_citation('{{cite journal|title=Example}}');
             $this->assertTrue($template->set($alias, 'Smith'));
             $this->assertFalse($template->add_if_new('author', 'Jane Jones', literal_author: true));
