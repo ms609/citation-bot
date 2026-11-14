@@ -8,7 +8,7 @@ final class ArchiveScanLimitsTest extends testBaseClass {
     public function testEncodingScanIncludesMetaAtBoundaryButNotAfterIt(): void {
         $this->assertSame(256 * 1024, ARCHIVE_ENCODING_SCAN_MAX_BYTES);
         $tag = '<meta charset="EUC-KR">';
-        $body = str_repeat('x', ARCHIVE_ENCODING_SCAN_MAX_BYTES - strlen($tag)) .
+        $body = str_repeat('x', ARCHIVE_ENCODING_SCAN_MAX_BYTES - mb_strlen($tag, '8bit')) .
             $tag . '<meta charset="BIG5">';
 
         $this->assertSame(['EUC-KR'], archive_candidate_encodings($body));
@@ -46,7 +46,7 @@ final class ArchiveScanLimitsTest extends testBaseClass {
             '<title>Too late</title></head>';
         $window = archive_title_scan_window($response);
 
-        $this->assertSame(ARCHIVE_TITLE_SCAN_MAX_BYTES, strlen($window));
+        $this->assertSame(ARCHIVE_TITLE_SCAN_MAX_BYTES, mb_strlen($window, '8bit'));
         $this->assertStringNotContainsString('Too late', $window);
     }
 
