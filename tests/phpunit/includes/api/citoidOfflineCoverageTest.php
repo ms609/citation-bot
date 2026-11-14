@@ -145,7 +145,7 @@ final class citoidOfflineCoverageTest extends testBaseClass {
 
     /** Test title rejection without relying on an external Zotero server. */
     public function testUnusableTitlesCannotCreateMetadata(): void {
-        foreach (['Not Found', 'Newstream', '404', '/404', '%%%%%%', '�' . str_repeat('�', 8)] as $title) {
+        foreach (['Not Found', 'Newstream', '404', '/404', '%%%%%%', '�' . str_repeat('�', 8), 'Please verify', 'Please verify you are a human'] as $title) {
             $citation = '{{cite web|id=}}';
             $template = $this->make_citation($citation);
             Zotero::process_zotero_response(
@@ -156,6 +156,15 @@ final class citoidOfflineCoverageTest extends testBaseClass {
             );
             $this->assertSame($citation, $template->parsed_text());
         }
+    }
+
+    /** Bot-challenge page titles must never become |title=, even outside Citoid. */
+    public function testPleaseVerifyTitleIsNotAdded(): void {
+        $template = $this->make_citation('{{cite web|url=http://example.com/page}}');
+        $this->assertFalse($template->add_if_new('title', 'Please verify'));
+        $this->assertNull($template->get2('title'));
+        $this->assertContains('please verify', BAD_TITLES);
+        $this->assertContains('Please verify', ZOTERO_BAD_TITLES);
     }
 
     /** Verify response canonicalization without copying tainted raw bytes to a citation. */
