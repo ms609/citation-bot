@@ -972,6 +972,16 @@ JSON;
         $this->assertSame($text, str_replace([' page=546 ', '|s2cid=4106096 '], [' p=546 ', ''], $expanded->parsed_text()));
     }
 
+    public function testImportedAuthorRespectsFirstSurnameAliasesSetAfterParsing(): void {
+        foreach (['author-surname1', 'author1-surname', 'author-last', 'author-last1', 'author1-last'] as $alias) {
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+            $this->assertTrue($template->set($alias, 'Smith'));
+            $this->assertFalse($template->add_if_new('author', 'Jane Jones', literal_author: true));
+            $this->assertNull($template->get2('author'));
+            $this->assertSame('Smith', $template->get2($alias));
+        }
+    }
+
     public function testLastVersusAuthor(): void {
         $text = "{{cite journal|pmid=12858711 }}";
         $expanded = $this->process_citation($text);
