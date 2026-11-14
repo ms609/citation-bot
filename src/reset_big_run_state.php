@@ -7,6 +7,7 @@ declare(strict_types=1);
 // public-request hardening intentionally mirror gitpull.php.
 /** @psalm-suppress MissingFile */
 require_once dirname(__DIR__) . '/env.php';
+require_once __DIR__ . '/includes/DeployToken.php';
 require_once __DIR__ . '/includes/PublicConfig.php';
 require_once __DIR__ . '/includes/RequestRateLimit.php';
 
@@ -23,13 +24,6 @@ send_configured_cors_header(
 
 const BIG_RUN_RECOVERY_CSRF_COOKIE = 'citation_bot_big_run_recovery_csrf';
 const BIG_RUN_RECOVERY_CSRF_TTL = 600;
-
-function big_run_recovery_valid_deploy_token(string $token): bool {
-    if ($token === str_repeat('0123456789abcdef', 4)) {
-        return false; /* The example token */
-    }
-    return preg_match('~\A[a-f0-9]{64}\z~D', $token) === 1;
-}
 
 function big_run_recovery_new_browser_nonce(): string {
     return bin2hex(random_bytes(32));
@@ -138,7 +132,7 @@ function big_run_recovery_response(string $message, int $status, bool $browser_s
 }
 
 $deployToken = (string) @getenv('DEPLOY_TOKEN');
-if (!big_run_recovery_valid_deploy_token($deployToken)) {
+if (!citation_bot_valid_deploy_token($deployToken)) {
     big_run_recovery_http_page(
         'Error: DEPLOY_TOKEN is missing or invalid.',
         false,
@@ -222,7 +216,7 @@ unset(
 
 $tokenMatches =
     is_string($tokenIn) &&
-    big_run_recovery_valid_deploy_token($tokenIn) &&
+    citation_bot_valid_deploy_token($tokenIn) &&
     hash_equals($deployToken, $tokenIn);
 unset($deployToken, $tokenIn, $headerToken);
 

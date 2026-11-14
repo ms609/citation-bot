@@ -269,6 +269,28 @@ final class OfflineEndpointTest extends TestCase {
         unlink($state);
     }
 
+    public function testBothEndpointsRejectMalformedDeployTokensWithoutChangingState(): void {
+        $state = self::$root . '/citation-bot-rate-limit/big-run.json';
+        $config = self::$root . '/env.php';
+        $before = '{"tokens":10,"updated":0,"entries":{}}';
+        foreach (['', 'abc', str_repeat('A', 64), str_repeat('g', 64), str_repeat('0', 63)] as $invalid) {
+            $this->assertNotFalse(file_put_contents($state, $before));
+            try {
+                $this->assertNotFalse(file_put_contents($config, "<?php\nputenv('DEPLOY_TOKEN=" . $invalid . "');\n"));
+                $headers = ['X-Deploy-Token: ' . str_repeat('a', 64)];
+                foreach (['/tools/gitpull.php', '/tools/reset_big_run_state.php'] as $endpoint) {
+                    $response = $this->request($endpoint, ['action' => 'reset', 'confirm_reset' => 'yes'], $headers);
+                    $this->assertSame(503, $response['status'], $endpoint);
+                    $this->assertStringContainsString('DEPLOY_TOKEN is missing or invalid', $response['body']);
+                }
+                $this->assertSame($before, file_get_contents($state));
+            } finally {
+                file_put_contents($config, "<?php\n");
+                unlink($state);
+            }
+        }
+    }
+
     public function testConfiguredExampleDeployTokenIsRejectedWithoutResettingState(): void {
         $state = self::$root . '/citation-bot-rate-limit/big-run.json';
         $config = self::$root . '/env.php';
