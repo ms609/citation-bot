@@ -4763,6 +4763,7 @@ final class Template
                     }
                     return;
 
+                case 'eprint':
                 case 'arxiv':
                     if ($this->blank($param)) {
                         return;
@@ -5491,24 +5492,6 @@ final class Template
                     }
                     $this->set($param, safe_preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
                     return; // Don't want 'Edition ed.'
-
-                case 'eprint':
-                    if ($this->blank($param)) {
-                        return;
-                    }
-                    $value = $this->get_without_comments_and_placeholders($param);
-                    if ($value === '') {
-                        return; // Preserve comment/placeholder-only values that intentionally block additions
-                    }
-                    if (!arxiv_id_valid($value)) {
-                        report_forget("Removing malformed arXiv identifier: " . echoable($value));
-                        $this->forget($param);
-                        return;
-                    }
-                    if ($this->wikiname() === 'cite web') {
-                        $this->change_name_to('cite arxiv');
-                    }
-                    return;
 
                 case 'encyclopedia':
                 case 'encyclopaedia':
