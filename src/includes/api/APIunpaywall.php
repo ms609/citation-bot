@@ -128,7 +128,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 return 'proquest'; // @codeCoverageIgnore
             } // Rubbish
             if (mb_stripos($oa_url, 'repository.upenn.edu') !== false) {
-                return 'epository.upenn.edu';
+                return 'repository.upenn.edu';
             } // All links broken right now
             if ($template->get('url')) {
                 if ($template->get('url') !== $oa_url) {

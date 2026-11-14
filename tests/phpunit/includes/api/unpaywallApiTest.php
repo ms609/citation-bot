@@ -68,6 +68,11 @@ final class unpaywallApiTest extends testBaseClass {
             'missing evidence' => [200, '{"best_oa_location":{"url":"https://example.test"}}', 'nothing'],
             'missing URL' => [200, '{"best_oa_location":{"evidence":"fixture"}}', 'nothing'],
             'empty URL fallback' => [200, '{"best_oa_location":{"evidence":"fixture","url":""}}', 'nothing'],
+            'Penn repository' => [
+                200,
+                '{"best_oa_location":{"evidence":"fixture","url":"https://repository.upenn.edu/example"}}',
+                'repository.upenn.edu',
+            ],
             'Cochrane' => [
                 200, '{"journal_name":"Cochrane Database of Systematic Reviews","best_oa_location":{"evidence":"fixture"}}',
                 'unreliable',
