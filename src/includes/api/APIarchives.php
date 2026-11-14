@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once dirname(__DIR__) . '/bot_curl.php'; // @codeCoverageIgnore
+
 const ARCHIVE_FETCH_MAX_REDIRECTS = 5;
 const ARCHIVE_TITLE_SCAN_MAX_BYTES = 4 * 1024 * 1024;
 const ARCHIVE_ASCII_WHITESPACE = " \t\n\r\0\x0B\x0C";
@@ -101,16 +103,7 @@ function fetch_archive_page(CurlHandle $ch, string $url): string {
 }
 
 function archive_throttle_delay(float $now, float $last, float $minimum_interval = 1.0): int {
-    if ($last <= 0.0 || $minimum_interval <= 0.0) {
-        return 0;
-    }
-
-    $remaining = $minimum_interval - ($now - $last);
-    if ($remaining <= 0.0) {
-        return 0;
-    }
-
-    return min((int) ceil($remaining * 1000000), (int) ceil($minimum_interval * 1000000));
+    return bot_curl_throttle_delay($now, $last, $minimum_interval);
 }
 
 function throttle_archive(): void {

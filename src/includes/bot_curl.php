@@ -332,6 +332,30 @@ function bot_curl_init_legacy_tls_probe(float $time, array $ops, int $max_bytes)
     return $ch;
 }
 
+/** Return the remaining time between HTTP requests in microseconds. */
+function bot_curl_throttle_delay(
+    float $now_seconds,
+    float $last_seconds,
+    float $minimum_interval_seconds
+): int {
+    if ($last_seconds <= 0.0 || $minimum_interval_seconds <= 0.0) {
+        return 0;
+    }
+
+    $remaining_seconds =
+        $minimum_interval_seconds -
+        ($now_seconds - $last_seconds);
+
+    if ($remaining_seconds <= 0.0) {
+        return 0;
+    }
+
+    return min(
+        (int) ceil($remaining_seconds * 1_000_000),
+        (int) ceil($minimum_interval_seconds * 1_000_000)
+    );
+}
+
 function bot_curl_exec(CurlHandle $ch): string {
     $result = bot_curl_exec_withFalse($ch);
     return $result === false ? '' : (string) $result;
