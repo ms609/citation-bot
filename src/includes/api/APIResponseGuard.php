@@ -107,6 +107,25 @@ final class ExternalApiResponseGuard {
         return is_array($decoded) ? $decoded : null;
     }
 
+    /** Decode XML without network access or parser warnings. */
+    public static function decodeXml(string $response): ?SimpleXMLElement {
+        if ($response === '') {
+            return null;
+        }
+
+        try {
+            $xml = @simplexml_load_string(
+                $response,
+                SimpleXMLElement::class,
+                LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
+            );
+        } catch (Throwable) {
+            return null;
+        }
+
+        return $xml === false ? null : $xml;
+    }
+
     /**
      * Execute parsing/processing code at an external API trust boundary.
      *

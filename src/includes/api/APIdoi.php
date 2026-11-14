@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/APIResponseGuard.php'; // @codeCoverageIgnore
+
 const BAD_DOIS_FROM_CROSSREF = ['10.1355/9789812306319'];
 const NO_CHAPTER_ADD = ['citation', 'cite web', 'cite news', 'cite magazine', 'cite press release', 'cite podcast', 'cite newsgroup', 'cite journal'];
 
@@ -264,19 +266,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
 }
 
 function parse_crossref_xml_response(string $raw_xml): ?SimpleXMLElement {
-    if ($raw_xml === '') {
-        return null;
-    }
-    try {
-        $xml = @simplexml_load_string(
-            $raw_xml,
-            SimpleXMLElement::class,
-            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
-        );
-    } catch (Throwable) {
-        return null;
-    }
-    return $xml === false ? null : $xml;
+    return ExternalApiResponseGuard::decodeXml($raw_xml);
 }
 
 function query_crossref(string $doi): ?SimpleXMLElement {

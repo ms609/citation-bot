@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/APIResponseGuard.php'; // @codeCoverageIgnore
+
 /**
  * @param array<string> $pmids
  * @param array<Template> &$templates
@@ -242,19 +244,8 @@ function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
 }
 
 function parse_entrez_xml_response(string $output): ?SimpleXMLElement {
-    if ($output === '') {
-        return null;
-    }
-    try {
-        $xml = @simplexml_load_string(
-            $output,
-            SimpleXMLElement::class,
-            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
-        );
-    } catch (Throwable) {
-        return null;
-    }
-    if ($xml === false || !in_array($xml->getName(), ['eSummaryResult', 'eSearchResult'], true)) {
+    $xml = ExternalApiResponseGuard::decodeXml($output);
+    if ($xml === null || !in_array($xml->getName(), ['eSummaryResult', 'eSearchResult'], true)) {
         return null;
     }
     return $xml;

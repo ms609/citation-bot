@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/APIResponseGuard.php'; // @codeCoverageIgnore
+
 function clean_google_books(Template $template): void {
     if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // TODO - support other countries
         return;
@@ -204,16 +206,8 @@ function parse_google_books_xml_response(string $data): ?SimpleXMLElement {
         'http://www.w3.org/2005/Atom',
         str_replace(":", "___", $data)
     );
-    try {
-        $xml = @simplexml_load_string(
-            $simplified_xml,
-            SimpleXMLElement::class,
-            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
-        );
-    } catch (Throwable) {
-        return null;
-    }
-    if ($xml === false || $xml->getName() !== 'entry') {
+    $xml = ExternalApiResponseGuard::decodeXml($simplified_xml);
+    if ($xml === null || $xml->getName() !== 'entry') {
         return null;
     }
     return $xml;
