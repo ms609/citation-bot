@@ -576,17 +576,7 @@ class Page {
             }
 
             // Record any modifications that have been made:
-            $template_mods = $this_template->modifications();
-            foreach (array_keys($template_mods) as $key) {
-                if (!isset($this->modifications[$key])) {
-                    $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
-                    report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
-                } elseif (is_array($this->modifications[$key]) && is_array($template_mods[$key])) {
-                    $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
-                } else {
-                    $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
-                }
-            }
+            $this->merge_template_modifications($this_template->modifications());
         }
         $log_bad_chapter = false;
         foreach ($all_templates as $this_template) {
@@ -606,17 +596,7 @@ class Page {
             // Tidy first, as for $our_templates above, so that what the final pass changes is recorded too
             $this_template->final_tidy();
             // Record any modifications that have been made:
-            $template_mods = $this_template->modifications();
-            foreach (array_keys($template_mods) as $key) {
-                if (!isset($this->modifications[$key])) {
-                    $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
-                    report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
-                } elseif (is_array($this->modifications[$key]) && is_array($template_mods[$key])) {
-                    $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
-                } else {
-                    $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
-                }
-            }
+            $this->merge_template_modifications($this_template->modifications());
         }
         set_time_limit(120);
 
@@ -626,17 +606,7 @@ class Page {
                 !in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true) &&
                 !in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) {
                 // Only record modifications for templates not already processed above
-                $template_mods = $this_template->modifications();
-                foreach (array_keys($template_mods) as $key) {
-                    if (!isset($this->modifications[$key])) {
-                        $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
-                        report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
-                    } elseif (is_array($this->modifications[$key]) && is_array($template_mods[$key])) {
-                        $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
-                    } else {
-                        $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
-                    }
-                }
+                $this->merge_template_modifications($this_template->modifications());
             }
         }
 
@@ -707,6 +677,20 @@ class Page {
         $normalized_start = safe_preg_replace('~\|\s*[\w-]+\s*=\s*(?=\||\}\})~u', '', $normalized_start);
         return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $normalized_text)),
                                     str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $normalized_start))) !== 0;
+    }
+
+    /** @param array<bool|array<string>> $template_mods */
+    private function merge_template_modifications(array $template_mods): void {
+        foreach (array_keys($template_mods) as $key) {
+            if (!isset($this->modifications[$key])) {
+                $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
+                report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
+            } elseif (is_array($this->modifications[$key]) && is_array($template_mods[$key])) {
+                $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
+            } else {
+                $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
+            }
+        }
     }
 
     public function edit_summary(string $edit_summary_end = ''): string {
