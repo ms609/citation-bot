@@ -351,6 +351,22 @@ function should_url2chapter(Template $template, bool $force): bool {
     return false;
 }
 
+/** Restore the original author fields after conference metadata expansion.
+ *
+ * The order is significant: restore the six author forms first and coauthors
+ * last, as in both original restoration paths. The caller remains responsible
+ * for deciding whether imported numbered authors supersede the placeholders.
+ */
+function conference_restore_author_placeholders(Template $template): void {
+    foreach (['first', 'last', 'first1', 'last1', 'author1', 'author'] as $field) {
+        $placeholder = 'CITATION_BOT_PLACEHOLDER_' . $field;
+        if ($template->has($placeholder)) {
+            $template->rename($placeholder, $field);
+        }
+    }
+    $template->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+}
+
 function handleConferencePretendingToBeAJournal(Template $template, string $rawtext): void {
     $the_chapter = '';
     $the_issue = '';
@@ -761,25 +777,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
                 $template->initial_author_params_set([]);
                 $bad_data = true;
             } else {
-                if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_first', 'first');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_last')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_last', 'last');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_first1')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_last1')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_last1', 'last1');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_author1')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_author1', 'author1');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_author')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
-                }
-                $template->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+                conference_restore_author_placeholders($template);
             }
         }
         if ($bad_data) {
@@ -885,25 +883,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
                     $template->forget('CITATION_BOT_PLACEHOLDER_coauthors');
                 } else {
                     $template->initial_author_params_set($initial_author_params_save);
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_first', 'first');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_last')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_last', 'last');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_first1')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_last1')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_last1', 'last1');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_author1')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_author1', 'author1');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_author')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
-                    }
-                    $template->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+                    conference_restore_author_placeholders($template);
                 }
             }
         }
