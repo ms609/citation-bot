@@ -6,6 +6,22 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 final class UrlToolsTest extends testBaseClass {
 
+    public function testProxyProviderCreditsPreserveOriginalPrecedence(): void {
+        foreach (['gale', 'proquest'] as $provider) {
+            foreach (['Library access', 'Library via ' . $provider, 'Unrelated provider'] as $via) {
+                $citation = $this->make_citation('{{cite web|title=Example|via=' . $via . '}}');
+                citation_bot_cleanup_proxy_via($citation, $provider);
+                $this->assertNull($citation->get2('via'), $provider . ': ' . $via);
+            }
+            $citation = $this->make_citation('{{cite web|title=Example|via=' . $provider . ' archive}}');
+            citation_bot_cleanup_proxy_via($citation, $provider);
+            $this->assertSame($provider . ' archive', $citation->get2('via'));
+        }
+        $citation = $this->make_citation('{{cite web|title=Example}}');
+        citation_bot_cleanup_proxy_via($citation, 'gale');
+        $this->assertNull($citation->get2('via'));
+    }
+
     public function testOxfordVerifiedDoiPreservesExistingAndBrokenDoiPolicy(): void {
         $doi = '10.1093/acrefore/9780190201098.013.1357';
         $blank = $this->make_citation('{{cite web|title=Example}}');
