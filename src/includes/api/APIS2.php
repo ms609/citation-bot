@@ -52,7 +52,19 @@ function parse_semanticscholar_legacy_url_response(string $response): ?string {
     return $json->url;
 }
 
-function semanticscholar_request(CurlHandle $ch, bool $warn_on_no_response = false): string {
+/**
+ * Execute a Semantic Scholar request through one lazily initialized cURL handle.
+ * Each call sets its own URL; parsing and warning policy remain with callers.
+ *
+ * @param non-empty-string $url
+ */
+function semanticscholar_request(string $url, bool $warn_on_no_response = false): string {
+    static $ch = null;
+    if ($ch === null) {
+        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
+    }
+    curl_setopt($ch, CURLOPT_URL, $url);
+
     try {
         $response = bot_curl_exec_withFalse($ch);
     } catch (Throwable $e) {
@@ -74,35 +86,9 @@ function semanticscholar_request(CurlHandle $ch, bool $warn_on_no_response = fal
     return (string) $response;
 }
 
-/**
- * Reuse one Semantic Scholar handle across the four API endpoints.
- * Every request resets CURLOPT_URL; timeout, headers and response-size policy
- * are identical for all callers. The handle is lazy and request-local.
- */
-function semanticscholar_new_handle(): CurlHandle {
-    static $ch = null;
-    if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
-    }
-    return $ch;
-}
-
-/**
- * Set only this handle's URL; leave per-call warning policy to the caller.
- * The existing request helper distinguishes transport failures from valid
- * empty responses, so do not turn a failed curl_setopt into a new error path.
- *
- * @param non-empty-string $url
- */
-function semanticscholar_request_url(CurlHandle $ch, string $url, bool $warn_on_no_response = false): string {
-    curl_setopt($ch, CURLOPT_URL, $url);
-    return semanticscholar_request($ch, $warn_on_no_response);
-}
-
 function getS2CID(string $url): string {
-    $ch = semanticscholar_new_handle();
     $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' . urlencode(urldecode($url)) . '?fields=corpusId';
-    $response = semanticscholar_request_url($ch, $url, true);
+    $response = semanticscholar_request($url, true);
     if ($response === '') {
         return '';
     }
@@ -116,10 +102,9 @@ function getS2CID(string $url): string {
 }
 
 function ConvertS2CID_DOI(string $s2cid): string {
-    $ch = semanticscholar_new_handle();
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=externalIds';
-    $response = semanticscholar_request_url($ch, $url, true);
+    $response = semanticscholar_request($url, true);
     if ($response === '') {
         return '';
     }
@@ -139,10 +124,9 @@ function ConvertS2CID_DOI(string $s2cid): string {
 
 /** https://api.semanticscholar.org/graph/v1/swagger.json */
 function get_semanticscholar_license(string $s2cid): ?bool {
-    $ch = semanticscholar_new_handle();
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=isOpenAccess';
-    $response = semanticscholar_request_url($ch, $url);
+    $response = semanticscholar_request($url);
     if ($response === '') {
         return null; // @codeCoverageIgnore
     }
@@ -177,7 +161,6 @@ function get_doi_from_semanticscholar(Template $template): void {
 }
 
 function get_semanticscholar_url(Template $template, string $doi): void {
-    $ch = semanticscholar_new_handle();
     set_time_limit(120);
     if ($template->has('pmc') || ($template->has('doi') && $template->get('doi-access') === 'free') || ($template->has('jstor') && $template->get('jstor-access') === 'free')) {
         return;
@@ -186,7 +169,7 @@ function get_semanticscholar_url(Template $template, string $doi): void {
         return;
     }
     $url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
-    $response = semanticscholar_request_url($ch, $url);
+    $response = semanticscholar_request($url);
     if ($response) {
         $open_access_url = parse_semanticscholar_legacy_url_response($response);
         unset($response);

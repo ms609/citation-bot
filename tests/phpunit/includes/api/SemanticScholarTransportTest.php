@@ -13,23 +13,31 @@ final class SemanticScholarTransportTest extends testBaseClass {
             $this->markTestSkipped('Offline transport fixture requires uopz');
         }
 
-        // Prepare a real configured handle before mocking bot_curl_init.
-        // Direct cURL initialization would bypass the project's security policy.
+        // Create the configured handle before mocking the initializer.
         $fixture_handle = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
         $calls = [];
+        $observed_handles = [];
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('bot_curl_init', static function (float $seconds, array $headers, int $bytes) use (&$calls, $fixture_handle): CurlHandle {
             $calls[] = [$seconds, $headers, $bytes];
             return $fixture_handle;
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec_withFalse', static function (CurlHandle $handle) use (&$observed_handles): string {
+            $observed_handles[] = $handle;
+            return '';
+        }, true);
         try {
-            $one = semanticscholar_new_handle();
-            $two = semanticscholar_new_handle();
-            $this->assertSame($one, $two, 'The four callers must share one CurlHandle');
-            $this->assertSame([
-                [0.5, HEADER_S2, 4 * 1024 * 1024],
-            ], $calls);
+            $this->assertSame('', semanticscholar_request('https://api.semanticscholar.org/graph/v1/paper/CorpusID:123'));
+            $this->assertSame('', semanticscholar_request('https://api.semanticscholar.org/v1/paper/10.1000/test'));
+            $this->assertSame([[0.5, HEADER_S2, 4 * 1024 * 1024]], $calls);
+            $this->assertCount(2, $observed_handles);
+            foreach ($observed_handles as $handle) {
+                $this->assertSame($fixture_handle, $handle);
+            }
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec_withFalse');
             /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('bot_curl_init');
         }
@@ -61,10 +69,15 @@ final class SemanticScholarTransportTest extends testBaseClass {
             get_semanticscholar_url($template, '10.1000/offline');
 
             $this->assertCount(4, $handles);
-            $expected_handle = semanticscholar_new_handle();
+            $expected_handle = null;
             foreach ($handles as $handle) {
-                $this->assertSame($expected_handle, $handle);
+                if ($expected_handle === null) {
+                    $expected_handle = $handle;
+                } else {
+                    $this->assertSame($expected_handle, $handle);
+                }
             }
+            $this->assertInstanceOf(CurlHandle::class, $expected_handle);
             // Corpus/DOI lookups warn on empty bodies; license/legacy URL
             // lookups deliberately do not. Sharing a handle must not change this.
             $this->assertSame([
@@ -79,12 +92,11 @@ final class SemanticScholarTransportTest extends testBaseClass {
         }
     }
 
-    public function testRequestUrlPreservesBodyAndOptionalEmptyResponseWarnings(): void {
+    public function testRequestPreservesBodyAndOptionalEmptyResponseWarnings(): void {
         if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
             $this->markTestSkipped('Offline transport fixture requires uopz');
         }
 
-        $handle = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
         $warnings = new ArrayObject();
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('report_warning', static function (string $message) use ($warnings): void {
@@ -95,15 +107,15 @@ final class SemanticScholarTransportTest extends testBaseClass {
             uopz_set_return('bot_curl_exec_withFalse', static fn (): string => '{"corpusId":42}', true);
             $this->assertSame(
                 '{"corpusId":42}',
-                semanticscholar_request_url($handle, 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:42?fields=corpusId', true)
+                semanticscholar_request('https://api.semanticscholar.org/graph/v1/paper/CorpusID:42?fields=corpusId', true)
             );
             $this->assertSame([], $warnings->exchangeArray([]));
 
             /** @psalm-suppress UnusedFunctionCall */
             uopz_set_return('bot_curl_exec_withFalse', static fn (): string => '', true);
-            $this->assertSame('', semanticscholar_request_url($handle, 'https://api.semanticscholar.org/v1/paper/10.1000/offline'));
+            $this->assertSame('', semanticscholar_request('https://api.semanticscholar.org/v1/paper/10.1000/offline'));
             $this->assertSame([], $warnings->exchangeArray([]));
-            $this->assertSame('', semanticscholar_request_url($handle, 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:42', true));
+            $this->assertSame('', semanticscholar_request('https://api.semanticscholar.org/graph/v1/paper/CorpusID:42', true));
             $this->assertSame(['No response from semanticscholar.'], $warnings->exchangeArray([]));
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
