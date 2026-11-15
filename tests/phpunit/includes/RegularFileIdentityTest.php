@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/src/includes/RegularFileIdentity.php';
 
-final class RegularFileIdentityTest extends \PHPUnit\Framework\TestCase {
+final class RegularFileIdentityTest extends PHPUnit\Framework\TestCase {
     public function testMatchingRegularFileIsAccepted(): void {
         $path = tempnam(sys_get_temp_dir(), 'citation-bot-identity-');
         $this->assertNotFalse($path);
