@@ -1828,10 +1828,7 @@ function big_run_heartbeat_status(
     }
 
     $lock_result = big_run_acquire_state_lock($base_directory, 3);
-    if ($lock_result['status'] === 'open_failed') {
-        return 'retry';
-    }
-    if ($lock_result['status'] === 'busy') {
+    if ($lock_result['status'] !== 'locked') {
         return 'retry';
     }
 

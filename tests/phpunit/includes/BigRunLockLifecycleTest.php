@@ -38,6 +38,7 @@ final class BigRunLockLifecycleTest extends PHPUnit\Framework\TestCase {
 
     public function testAcquisitionBusyAndReleaseCloseTheExpectedDescriptors(): void {
         $base = $this->newBase();
+        $streams_before_acquisition = count(get_resources('stream'));
         $first = big_run_acquire_state_lock($base);
         $this->assertSame('locked', $first['status']);
         if ($first['status'] !== 'locked') {
@@ -48,17 +49,25 @@ final class BigRunLockLifecycleTest extends PHPUnit\Framework\TestCase {
         try {
             // The contender must close its own descriptor on failure, but
             // must not release the descriptor owned by the first request.
+            $streams_before_contention = count(get_resources('stream'));
             $this->assertSame(['status' => 'busy'], big_run_acquire_state_lock($base, 2));
+            $this->assertSame(
+                $streams_before_contention,
+                count(get_resources('stream')),
+                'A busy contender must close its own stream descriptor'
+            );
             $this->assertIsResource($handle);
         } finally {
             big_run_release_state_lock($handle);
         }
         $this->assertFalse(is_resource($handle));
+        $this->assertSame($streams_before_acquisition, count(get_resources('stream')));
         $second = big_run_acquire_state_lock($base);
         if ($second['status'] !== 'locked') {
             $this->fail('The lock must be available after release');
         }
         big_run_release_state_lock($second['handle']);
+        $this->assertSame($streams_before_acquisition, count(get_resources('stream')));
     }
 
     public function testUnavailableLockAndSymlinkBothFailClosed(): void {
