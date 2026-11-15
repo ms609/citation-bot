@@ -91,6 +91,8 @@ function semanticscholar_new_handle(): CurlHandle {
  * Set only this handle's URL; leave per-call warning policy to the caller.
  * The existing request helper distinguishes transport failures from valid
  * empty responses, so do not turn a failed curl_setopt into a new error path.
+ *
+ * @param non-empty-string $url
  */
 function semanticscholar_request_url(CurlHandle $ch, string $url, bool $warn_on_no_response = false): string {
     curl_setopt($ch, CURLOPT_URL, $url);

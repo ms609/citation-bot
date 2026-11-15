@@ -13,15 +13,14 @@ final class SemanticScholarTransportTest extends testBaseClass {
             $this->markTestSkipped('Offline transport fixture requires uopz');
         }
 
+        // Prepare a real configured handle before mocking bot_curl_init.
+        // Direct cURL initialization would bypass the project's security policy.
+        $fixture_handle = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
         $calls = [];
         /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('bot_curl_init', static function (float $seconds, array $headers, int $bytes) use (&$calls): CurlHandle {
+        uopz_set_return('bot_curl_init', static function (float $seconds, array $headers, int $bytes) use (&$calls, $fixture_handle): CurlHandle {
             $calls[] = [$seconds, $headers, $bytes];
-            $handle = curl_init();
-            if ($handle === false) {
-                throw new RuntimeException('Unable to create an offline cURL handle');
-            }
-            return $handle;
+            return $fixture_handle;
         }, true);
         try {
             $one = semanticscholar_new_handle();
@@ -62,9 +61,9 @@ final class SemanticScholarTransportTest extends testBaseClass {
             get_semanticscholar_url($template, '10.1000/offline');
 
             $this->assertCount(4, $handles);
-            $this->assertSame($handles[0], semanticscholar_new_handle());
+            $expected_handle = semanticscholar_new_handle();
             foreach ($handles as $handle) {
-                $this->assertSame($handles[0], $handle);
+                $this->assertSame($expected_handle, $handle);
             }
             // Corpus/DOI lookups warn on empty bodies; license/legacy URL
             // lookups deliberately do not. Sharing a handle must not change this.
@@ -85,10 +84,7 @@ final class SemanticScholarTransportTest extends testBaseClass {
             $this->markTestSkipped('Offline transport fixture requires uopz');
         }
 
-        $handle = curl_init();
-        if ($handle === false) {
-            $this->fail('Unable to create an offline cURL handle');
-        }
+        $handle = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
         $warnings = new ArrayObject();
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('report_warning', static function (string $message) use ($warnings): void {
