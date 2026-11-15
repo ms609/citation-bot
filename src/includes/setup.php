@@ -76,6 +76,9 @@ if ($git_pull_in_progress) {
 }
 unset($git_pull_lock, $git_pull_in_progress, $git_pull_lock_handle, $held_stat, $path_stat, $safe_lock, $owner);
 
+// Load the shared helper only after the self-contained deployment read gate.
+require_once __DIR__ . '/RegularFileIdentity.php';
+
 /**
  * Keep runtime logs in the Citation Bot repository root, one level above the
  * src/ web tree.
@@ -131,14 +134,7 @@ function bot_debug_log_open_handle() {
     clearstatcache(true, $path);
     $held_stat = @fstat($handle);
     $path_stat = @lstat($path);
-    if (
-        !is_array($held_stat) ||
-        !is_array($path_stat) ||
-        (($held_stat['mode'] & 0170000) !== 0100000) ||
-        (($path_stat['mode'] & 0170000) !== 0100000) ||
-        $held_stat['dev'] !== $path_stat['dev'] ||
-        $held_stat['ino'] !== $path_stat['ino']
-    ) {
+    if (!citation_bot_regular_file_identity_matches($held_stat, $path_stat)) {
         @fclose($handle);
         return false;
     }

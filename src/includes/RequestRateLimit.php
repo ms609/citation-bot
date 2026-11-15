@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/RegularFileIdentity.php';
+
 const REQUEST_RATE_LIMIT_STATE_DIRECTORY = 'citation-bot-rate-limit';
 
 const GADGET_API_RATE_LIMIT_CAPACITY = 40;
@@ -489,14 +491,7 @@ function big_run_open_lock_handle(string $base_directory) {
     clearstatcache(true, $lock_path);
     $held_stat = @fstat($handle);
     $path_stat = @lstat($lock_path);
-    if (
-        !is_array($held_stat) ||
-        !is_array($path_stat) ||
-        (($held_stat['mode'] & 0170000) !== 0100000) ||
-        (($path_stat['mode'] & 0170000) !== 0100000) ||
-        $held_stat['dev'] !== $path_stat['dev'] ||
-        $held_stat['ino'] !== $path_stat['ino']
-    ) {
+    if (!citation_bot_regular_file_identity_matches($held_stat, $path_stat)) {
         @fclose($handle);
         return false;
     }
@@ -1950,14 +1945,7 @@ function request_rate_limit_open_state_handle(string $state_directory, string $b
     clearstatcache(true, $state_path);
     $held_stat = @fstat($handle);
     $path_stat = @lstat($state_path);
-    if (
-        !is_array($held_stat) ||
-        !is_array($path_stat) ||
-        (($held_stat['mode'] & 0170000) !== 0100000) ||
-        (($path_stat['mode'] & 0170000) !== 0100000) ||
-        $held_stat['dev'] !== $path_stat['dev'] ||
-        $held_stat['ino'] !== $path_stat['ino']
-    ) {
+    if (!citation_bot_regular_file_identity_matches($held_stat, $path_stat)) {
         @fclose($handle);
         return false;
     }
