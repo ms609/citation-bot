@@ -64,10 +64,10 @@ final class RegularFileIdentityTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse(citation_bot_regular_file_identity_matches($file, false));
         $this->assertFalse(citation_bot_regular_file_identity_matches([], $file));
         $this->assertFalse(citation_bot_regular_file_identity_matches($file, ['mode' => 0100600]));
-        $this->assertFalse(citation_bot_regular_file_identity_matches($file, [...$file, 'ino' => 43]));
-        $this->assertFalse(citation_bot_regular_file_identity_matches($file, [...$file, 'dev' => 18]));
+        $this->assertFalse(citation_bot_regular_file_identity_matches($file, array_replace($file, ['ino' => 43])));
+        $this->assertFalse(citation_bot_regular_file_identity_matches($file, array_replace($file, ['dev' => 18])));
         foreach ([0040000, 0120000, 0010000, 0140000, 0060000] as $non_regular_mode) {
-            $non_regular = [...$file, 'mode' => $non_regular_mode | 0600];
+            $non_regular = array_replace($file, ['mode' => $non_regular_mode | 0600]);
             $this->assertFalse(citation_bot_regular_file_identity_matches($file, $non_regular));
             $this->assertFalse(citation_bot_regular_file_identity_matches($non_regular, $file));
         }
