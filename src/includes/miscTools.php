@@ -812,38 +812,26 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
                     $template->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
                 }
             }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_title')) {
-                if ($template->has('title')) {
-                    $newer = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('title')));
-                    $older = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('CITATION_BOT_PLACEHOLDER_title')));
-                    if ($newer !== $older && mb_strpos($older, $newer) === 0) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost sub-title
-                    } elseif (str_replace(" ", '', $template->get('title')) === str_replace([" ", "'"], '', $template->get('CITATION_BOT_PLACEHOLDER_title'))) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost italics
-                    } elseif ($template->get('title') === $template->get('CITATION_BOT_PLACEHOLDER_title')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
-                    } else {
-                        $move_and_forget('CITATION_BOT_PLACEHOLDER_title');
-                    }
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
+            // Restore title, then chapter, using the same conflict rules.
+            foreach (['title', 'chapter'] as $field) {
+                $placeholder = 'CITATION_BOT_PLACEHOLDER_' . $field;
+                if (!$template->has($placeholder)) {
+                    continue;
                 }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_chapter')) {
-                if ($template->has('chapter')) {
-                    $newer = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('chapter')));
-                    $older = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('CITATION_BOT_PLACEHOLDER_chapter')));
-                    if ($newer !== $older && mb_strpos($older, $newer) === 0) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost sub-chapter
-                    } elseif (str_replace(" ", '', $template->get('chapter')) === str_replace([" ", "'"], '', $template->get('CITATION_BOT_PLACEHOLDER_chapter'))) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost italics
-                    } elseif ($template->get('chapter') === $template->get('CITATION_BOT_PLACEHOLDER_chapter')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
-                    } else {
-                        $move_and_forget('CITATION_BOT_PLACEHOLDER_chapter');
-                    }
+                if (!$template->has($field)) {
+                    $template->rename($placeholder, $field);
+                    continue;
+                }
+                $newer = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get($field)));
+                $older = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get($placeholder)));
+                if ($newer !== $older && mb_strpos($older, $newer) === 0) {
+                    $template->rename($placeholder, $field); // New title/chapter lost its subtitle
+                } elseif (str_replace(" ", '', $template->get($field)) === str_replace([" ", "'"], '', $template->get($placeholder))) {
+                    $template->rename($placeholder, $field); // New title/chapter lost italics
+                } elseif ($template->get($field) === $template->get($placeholder)) {
+                    $template->rename($placeholder, $field);
                 } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
+                    $move_and_forget($placeholder);
                 }
             }
             if ($template->has('CITATION_BOT_PLACEHOLDER_issue')) {
