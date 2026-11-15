@@ -513,6 +513,47 @@ function big_run_try_lock($handle, int $attempts = 1, int $sleep_microseconds = 
     return false;
 }
 
+/**
+ * Open and acquire the shared bulk admission state mutex.
+ *
+ * Distinguish an unsafe/unavailable lock file from a busy mutex so callers
+ * can keep their existing failure reasons and retry delays. Contended and
+ * failed acquisitions close their descriptors before returning. The caller
+ * must release a successfully acquired descriptor in a finally block.
+ *
+ * @return array{status: 'open_failed'|'busy'}|array{status: 'locked', handle: resource}
+ * @phpstan-impure
+ */
+function big_run_acquire_state_lock(string $base_directory, int $attempts = 1): array {
+    $handle = big_run_open_lock_handle($base_directory);
+    if ($handle === false) {
+        return ['status' => 'open_failed'];
+    }
+
+    $locked = false;
+    try {
+        $locked = big_run_try_lock($handle, $attempts);
+        if (!$locked) {
+            return ['status' => 'busy'];
+        }
+        return ['status' => 'locked', 'handle' => $handle];
+    } finally {
+        // Acquired descriptors remain open for the caller's critical section.
+        if (!$locked) {
+            fclose($handle);
+        }
+    }
+}
+
+/** @param resource $handle */
+function big_run_release_state_lock($handle): void {
+    try {
+        @flock($handle, LOCK_UN);
+    } finally {
+        fclose($handle);
+    }
+}
+
 /** Classify a run by page count into the small or large size tier. */
 function big_run_tier(int $page_count): string {
     return $page_count >= BIG_RUN_LARGE_THRESHOLD ? 'large' : 'small';
@@ -886,8 +927,8 @@ function big_run_recovery_check(
     }
 
     $state_path = big_run_state_path($base_directory);
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory, $lock_attempts);
+    if ($lock_result['status'] === 'open_failed') {
         return [
             'ok' => false,
             'reason' => 'lock_open_failed',
@@ -896,20 +937,18 @@ function big_run_recovery_check(
             'tokens' => null,
         ];
     }
+    if ($lock_result['status'] === 'busy') {
+        return [
+            'ok' => false,
+            'reason' => 'lock_busy',
+            'state_path' => $state_path,
+            'lease_entries' => null,
+            'tokens' => null,
+        ];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle, $lock_attempts);
-        if (!$locked) {
-            return [
-                'ok' => false,
-                'reason' => 'lock_busy',
-                'state_path' => $state_path,
-                'lease_entries' => null,
-                'tokens' => null,
-            ];
-        }
-
         $now = big_run_resolve_now($now);
         big_run_clear_last_state_invalid_reason();
         [$tokens, , $entries, $valid] = big_run_read_state_file($state_path, $now);
@@ -931,10 +970,7 @@ function big_run_recovery_check(
             'tokens' => $tokens,
         ];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -987,8 +1023,8 @@ function big_run_recovery_reset(
     }
 
     $state_path = big_run_state_path($base_directory);
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory, $lock_attempts);
+    if ($lock_result['status'] === 'open_failed') {
         return [
             'ok' => false,
             'reason' => 'lock_open_failed',
@@ -996,20 +1032,18 @@ function big_run_recovery_reset(
             'backup_path' => null,
         ];
     }
+    if ($lock_result['status'] === 'busy') {
+        return [
+            'ok' => false,
+            'reason' => 'lock_busy',
+            'state_path' => $state_path,
+            'backup_path' => null,
+        ];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     $backup_path = null;
     try {
-        $locked = big_run_try_lock($lock_handle, $lock_attempts);
-        if (!$locked) {
-            return [
-                'ok' => false,
-                'reason' => 'lock_busy',
-                'state_path' => $state_path,
-                'backup_path' => null,
-            ];
-        }
-
         if (is_link($state_path)) {
             return [
                 'ok' => false,
@@ -1088,10 +1122,7 @@ function big_run_recovery_reset(
             'backup_path' => $backup_path,
         ];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1166,20 +1197,18 @@ function big_run_try_acquire(
         return [false, 2, null, 'retry_later', 0];
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory);
+    if ($lock_result['status'] === 'open_failed') {
         big_run_log_failure('unable to open lock file');
         return [false, 2, null, 'retry_later', 0];
     }
+    if ($lock_result['status'] === 'busy') {
+        big_run_log('deferred', ['reason' => 'retry_later', 'phase' => 'admission']);
+        return [false, 1, null, 'retry_later', 0];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle);
-        if (!$locked) {
-            big_run_log('deferred', ['reason' => 'retry_later', 'phase' => 'admission']);
-            return [false, 1, null, 'retry_later', 0];
-        }
-
         $now = big_run_resolve_now($now);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1263,10 +1292,7 @@ function big_run_try_acquire(
         ]);
         return [false, $retry_after, null, $reason, $active_count];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1284,19 +1310,17 @@ function big_run_try_acquire_discovery(?string $base_directory = null, ?float $n
         return [false, 2, null, 'retry_later', 0];
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory);
+    if ($lock_result['status'] === 'open_failed') {
         big_run_log_failure('unable to open lock file');
         return [false, 2, null, 'retry_later', 0];
     }
+    if ($lock_result['status'] === 'busy') {
+        return [false, 1, null, 'retry_later', 0];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle);
-        if (!$locked) {
-            return [false, 1, null, 'retry_later', 0];
-        }
-
         $now = big_run_resolve_now($now);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1343,10 +1367,7 @@ function big_run_try_acquire_discovery(?string $base_directory = null, ?float $n
         ]);
         return [true, null, $entry_id, null, $active_count + 1];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1363,19 +1384,17 @@ function big_run_try_acquire_probe(?string $base_directory = null, ?float $now =
         return [false, 2, null, 'retry_later', 0];
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory);
+    if ($lock_result['status'] === 'open_failed') {
         big_run_log_failure('unable to open lock file');
         return [false, 2, null, 'retry_later', 0];
     }
+    if ($lock_result['status'] === 'busy') {
+        return [false, 1, null, 'retry_later', 0];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle);
-        if (!$locked) {
-            return [false, 1, null, 'retry_later', 0];
-        }
-
         $now = big_run_resolve_now($now);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1421,10 +1440,7 @@ function big_run_try_acquire_probe(?string $base_directory = null, ?float $now =
         ]);
         return [true, null, $entry_id, null, $active_count];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1445,19 +1461,17 @@ function big_run_try_promote_probe_to_discovery(
         return [false, 2, null, 'retry_later', 0];
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory);
+    if ($lock_result['status'] === 'open_failed') {
         big_run_log_failure('unable to open lock file');
         return [false, 2, null, 'retry_later', 0];
     }
+    if ($lock_result['status'] === 'busy') {
+        return [false, 1, null, 'retry_later', 0];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle);
-        if (!$locked) {
-            return [false, 1, null, 'retry_later', 0];
-        }
-
         $now = big_run_resolve_now($now);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1505,10 +1519,7 @@ function big_run_try_promote_probe_to_discovery(
         ]);
         return [true, null, $entry_id, null, $active_count + 1];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1530,19 +1541,17 @@ function big_run_try_mark_discovery_large(
         return [false, 2, null, 'retry_later', 0];
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory);
+    if ($lock_result['status'] === 'open_failed') {
         big_run_log_failure('unable to open lock file');
         return [false, 2, null, 'retry_later', 0];
     }
+    if ($lock_result['status'] === 'busy') {
+        return [false, 1, null, 'retry_later', 0];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle);
-        if (!$locked) {
-            return [false, 1, null, 'retry_later', 0];
-        }
-
         $now = big_run_resolve_now($now);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1587,10 +1596,7 @@ function big_run_try_mark_discovery_large(
         ]);
         return [true, null, $entry_id, null, $active_count];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1617,19 +1623,17 @@ function big_run_try_promote(
         return [false, 2, null, 'retry_later', 0];
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory);
+    if ($lock_result['status'] === 'open_failed') {
         big_run_log_failure('unable to open lock file');
         return [false, 2, null, 'retry_later', 0];
     }
+    if ($lock_result['status'] === 'busy') {
+        return [false, 1, null, 'retry_later', 0];
+    }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle);
-        if (!$locked) {
-            return [false, 1, null, 'retry_later', 0];
-        }
-
         $now = big_run_resolve_now($now);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1718,10 +1722,7 @@ function big_run_try_promote(
         ]);
         return [true, null, $entry_id, null, $active_count];
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1735,19 +1736,17 @@ function big_run_release(string $entry_id, ?string $base_directory = null): void
         return;
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory, 50);
+    if ($lock_result['status'] === 'open_failed') {
+        return;
+    }
+    if ($lock_result['status'] === 'busy') {
+        big_run_log_failure('unable to acquire state lock for release', 'best_effort_release');
         return;
     }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle, 50);
-        if (!$locked) {
-            big_run_log_failure('unable to acquire state lock for release', 'best_effort_release');
-            return;
-        }
-
         $now = microtime(true);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1763,10 +1762,7 @@ function big_run_release(string $entry_id, ?string $base_directory = null): void
             }
         }
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
@@ -1831,18 +1827,16 @@ function big_run_heartbeat_status(
         return 'retry';
     }
 
-    $lock_handle = big_run_open_lock_handle($base_directory);
-    if ($lock_handle === false) {
+    $lock_result = big_run_acquire_state_lock($base_directory, 3);
+    if ($lock_result['status'] === 'open_failed') {
+        return 'retry';
+    }
+    if ($lock_result['status'] === 'busy') {
         return 'retry';
     }
 
-    $locked = false;
+    $lock_handle = $lock_result['handle'];
     try {
-        $locked = big_run_try_lock($lock_handle, 3);
-        if (!$locked) {
-            return 'retry';
-        }
-
         $now = big_run_resolve_now($now);
         $state_path = big_run_state_path($base_directory);
         [$tokens, $updated, $entries, $state_valid] = big_run_read_state_file($state_path, $now);
@@ -1860,10 +1854,7 @@ function big_run_heartbeat_status(
         }
         return 'ok';
     } finally {
-        if ($locked) {
-            @flock($lock_handle, LOCK_UN);
-        }
-        fclose($lock_handle);
+        big_run_release_state_lock($lock_handle);
     }
 }
 
