@@ -1477,53 +1477,29 @@ final class Zotero {
             if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
                 $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
             }
-            if (preg_match('~\s(original-date: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(Google-Books-ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(ISSN: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(Page Version ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(number-of-pages: [ivx]+, \d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(RSLID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(QID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(National Archives Identifier: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(Catalog Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(BMCR ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(PubAg AGID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(IP-\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
-            }
-            if (preg_match('~\s(Accession Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+            // Table-drive unambiguous, unused Zotero extra-field removals.
+            // Keep the original pattern order (including both number-of-pages rules).
+            foreach ([
+                '~\s(original-date: \S+)\s~i',
+                '~\s(Google-Books-ID: \S+)\s~i',
+                '~\s(ISSN: \S+)\s~i',
+                '~\s(Page Version ID: \S+)\s~i',
+                '~\s(Citation Key: \S+)\s~i',
+                '~\s(number-of-pages: [ivx]+, \d+)\s~i',
+                '~\s(number-of-pages: \S+)\s~i',
+                '~\s(Version: \S+)\s~i',
+                '~\s(RSLID: \S+)\s~i',
+                '~\s(QID: \S+)\s~i',
+                '~\s(National Archives Identifier: \S+)\s~i',
+                '~\s(Catalog Number: \S+)\s~i',
+                '~\s(BMCR ID: \S+)\s~i',
+                '~\s(PubAg AGID: \S+)\s~i',
+                '~\s(IP-\d+)\s~i',
+                '~\s(Accession Number: \S+)\s~i',
+            ] as $unused_pattern) {
+                if (preg_match($unused_pattern, ' ' . $result->extra . ' ', $matches)) {
+                    $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
+                }
             }
             if (preg_match('~\sADS Bibcode: (\d{4}\S{15})\s~i', ' ' . $result->extra . ' ', $matches)) {
                 $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
