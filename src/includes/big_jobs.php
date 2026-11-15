@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/RegularFileIdentity.php';
+
 // Per-user >=50-page runs use a permanent guard inode to serialize lease
 // acquisition, stale takeover, heartbeat, kill requests, and shutdown cleanup.
 
@@ -106,14 +108,7 @@ function big_jobs_open_guard() {
     clearstatcache(true, $guard_name);
     $held_stat = @fstat($guard);
     $path_stat = @lstat($guard_name);
-    if (
-        !is_array($held_stat) ||
-        !is_array($path_stat) ||
-        (($held_stat['mode'] & 0170000) !== 0100000) ||
-        (($path_stat['mode'] & 0170000) !== 0100000) ||
-        $held_stat['dev'] !== $path_stat['dev'] ||
-        $held_stat['ino'] !== $path_stat['ino']
-    ) {
+    if (!citation_bot_regular_file_identity_matches($held_stat, $path_stat)) {
         @fclose($guard);
         return false;
     }
@@ -134,12 +129,7 @@ function big_jobs_open_guard() {
 function big_jobs_owns_path($lock_file, string $path): bool {
     $held_stat = @fstat($lock_file);
     $current_stat = @lstat($path);
-    return is_array($held_stat) &&
-        is_array($current_stat) &&
-        (($held_stat['mode'] & 0170000) === 0100000) &&
-        (($current_stat['mode'] & 0170000) === 0100000) &&
-        $held_stat['dev'] === $current_stat['dev'] &&
-        $held_stat['ino'] === $current_stat['ino'];
+    return citation_bot_regular_file_identity_matches($held_stat, $current_stat);
 }
 
 /** @return resource|null */

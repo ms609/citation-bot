@@ -6,6 +6,7 @@ require_once dirname(__DIR__) . '/constants.php'; // @codeCoverageIgnoreStart
 require_once dirname(__DIR__) . '/Template.php';
 require_once dirname(__DIR__) . '/URLtools.php';
 require_once dirname(__DIR__) . '/miscTools.php'; // @codeCoverageIgnoreEnd
+require_once dirname(__DIR__) . '/RegularFileIdentity.php';
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
@@ -307,14 +308,11 @@ final class Zotero {
         if ($open_file === false || $named_file === false) {
             return false;
         }
-        if (($open_file['mode'] & 0170000) !== 0100000 ||
-            ($named_file['mode'] & 0170000) !== 0100000 ||
+        if (!citation_bot_regular_file_identity_matches($open_file, $named_file) ||
             // Keep production validation consistent with offline mutex tools.
             ($open_file['mode'] & 0022) !== 0 ||
             ($named_file['mode'] & 0022) !== 0 ||
-            $open_file['nlink'] !== 1 ||
-            $open_file['dev'] !== $named_file['dev'] ||
-            $open_file['ino'] !== $named_file['ino']) {
+            $open_file['nlink'] !== 1) {
             return false;
         }
         return !function_exists('posix_geteuid') || $open_file['uid'] === posix_geteuid();
