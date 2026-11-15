@@ -74,14 +74,32 @@ function semanticscholar_request(CurlHandle $ch, bool $warn_on_no_response = fal
     return (string) $response;
 }
 
+/**
+ * Build a new Semantic Scholar handle with the common transport policy.
+ * Keep a separate lazy handle in each caller: handles are not shared across
+ * the corpus ID, DOI, access-license, and legacy URL endpoints.
+ */
+function semanticscholar_new_handle(): CurlHandle {
+    return bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
+}
+
+/**
+ * Set only this handle's URL; leave per-call warning policy to the caller.
+ * The existing request helper distinguishes transport failures from valid
+ * empty responses, so do not turn a failed curl_setopt into a new error path.
+ */
+function semanticscholar_request_url(CurlHandle $ch, string $url, bool $warn_on_no_response = false): string {
+    curl_setopt($ch, CURLOPT_URL, $url);
+    return semanticscholar_request($ch, $warn_on_no_response);
+}
+
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
+        $ch = semanticscholar_new_handle();
     }
     $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' . urlencode(urldecode($url)) . '?fields=corpusId';
-    curl_setopt($ch, CURLOPT_URL, $url);
-    $response = semanticscholar_request($ch, true);
+    $response = semanticscholar_request_url($ch, $url, true);
     if ($response === '') {
         return '';
     }
@@ -97,12 +115,11 @@ function getS2CID(string $url): string {
 function ConvertS2CID_DOI(string $s2cid): string {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
+        $ch = semanticscholar_new_handle();
     }
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=externalIds';
-    curl_setopt($ch, CURLOPT_URL, $url);
-    $response = semanticscholar_request($ch, true);
+    $response = semanticscholar_request_url($ch, $url, true);
     if ($response === '') {
         return '';
     }
@@ -124,12 +141,11 @@ function ConvertS2CID_DOI(string $s2cid): string {
 function get_semanticscholar_license(string $s2cid): ?bool {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
+        $ch = semanticscholar_new_handle();
     }
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=isOpenAccess';
-    curl_setopt($ch, CURLOPT_URL, $url);
-    $response = semanticscholar_request($ch);
+    $response = semanticscholar_request_url($ch, $url);
     if ($response === '') {
         return null; // @codeCoverageIgnore
     }
@@ -166,7 +182,7 @@ function get_doi_from_semanticscholar(Template $template): void {
 function get_semanticscholar_url(Template $template, string $doi): void {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
+        $ch = semanticscholar_new_handle();
     }
     set_time_limit(120);
     if ($template->has('pmc') || ($template->has('doi') && $template->get('doi-access') === 'free') || ($template->has('jstor') && $template->get('jstor-access') === 'free')) {
@@ -176,8 +192,7 @@ function get_semanticscholar_url(Template $template, string $doi): void {
         return;
     }
     $url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
-    curl_setopt($ch, CURLOPT_URL, $url);
-    $response = semanticscholar_request($ch);
+    $response = semanticscholar_request_url($ch, $url);
     if ($response) {
         $open_access_url = parse_semanticscholar_legacy_url_response($response);
         unset($response);
