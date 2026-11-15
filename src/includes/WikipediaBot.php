@@ -855,6 +855,38 @@ final class WikipediaBot {
         return $target;
     }
 
+    /**
+     * Bounded read retries shared by anonymous and signed queries.
+     * Each dispatch must recreate its own request, including OAuth signing.
+     * @param callable(): string $dispatch
+     */
+    private static function retry_query_api_read(callable $dispatch, string $retry_label): string {
+        for ($attempt = 0; $attempt < 4; $attempt++) {
+            if ($attempt > 0) {
+                // Three waits between four attempts, not after exhaustion.
+                $delay = min(20, (int) (5 * (2 ** ($attempt - 1))));
+                sleep($delay);
+            }
+            $data = $dispatch();
+            if ($data === '') {
+                if ($attempt < 3) {
+                    continue;
+                }
+                return '';
+            }
+            $decoded = @json_decode($data);
+            if (self::fetch_response_is_retryable($decoded)) {
+                bot_debug_log($retry_label . ($decoded->error->code ?? 'unknown'));
+                continue;
+            }
+            if (self::ret_okay($decoded)) {
+                return $data;
+            }
+            return '';
+        }
+        return '';
+    }
+
     /** @param array<string> $params */
     private static function query_api(array $params): string {
         try {
@@ -862,20 +894,13 @@ final class WikipediaBot {
             if (!isset($params['maxlag'])) {
                 $params['maxlag'] = '5';
             }
-            // Retry up to 3 times on retryable errors (maxlag, ratelimited, readonly, db locked)
-            for ($attempt = 0; $attempt < 4; $attempt++) {
-                if ($attempt > 0) {
-                    // Bounded backoff: 5s, 10s, 20s
-                    $delay = min(20, (int) (5 * (2 ** ($attempt - 1))));
-                    sleep($delay);
-                }
+            return self::retry_query_api_read(static function () use ($params): string {
                 // @phpstan-ignore-next-line – API_ROOT is non-empty-string
                 curl_setopt_array(self::$ch_logout, [
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => http_build_query($params),
-                CURLOPT_URL => API_ROOT,
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => http_build_query($params),
+                    CURLOPT_URL => API_ROOT,
                 ]);
-
                 $data = bot_curl_exec_withFalse(self::$ch_logout);
                 if ($data === false) {
                     $errnoInt = curl_errno(self::$ch_logout);
@@ -883,25 +908,8 @@ final class WikipediaBot {
                     report_warning('Curl error #' . $errnoInt . ' on a Wikipedia API query: ' . $errorStr);
                     $data = '';
                 }
-                $data = (string) $data;
-                if ($data === '') {
-                    if ($attempt < 3) {
-                        continue;
-                    }
-                    return '';
-                }
-                $decoded = @json_decode($data);
-                if (self::fetch_response_is_retryable($decoded)) {
-                    bot_debug_log('Retrying query_api after retryable error: ' . ($decoded->error->code ?? 'unknown'));
-                    continue;
-                }
-                if (self::ret_okay($decoded)) {
-                    return $data;
-                }
-                // Non-retryable error – return empty to let caller handle
-                return '';
-            }
-            return '';
+                return (string) $data;
+            }, 'Retrying query_api after retryable error: ');
         } catch (Throwable $E) {
             bot_debug_log('Wikipedia read API failure: ' . $E::class . ': ' . $E->getMessage());
             report_warning("Wikipedia read API request failed; continuing.\n");
@@ -922,11 +930,7 @@ final class WikipediaBot {
             if (!isset($params['maxlag'])) {
                 $params['maxlag'] = '5';
             }
-            for ($attempt = 0; $attempt < 4; $attempt++) {
-                if ($attempt > 0) {
-                    $delay = min(20, (int) (5 * (2 ** ($attempt - 1))));
-                    sleep($delay);
-                }
+            return self::retry_query_api_read(function () use ($params): string {
                 $token = $this->bot_token;
                 $consumer = $this->bot_consumer;
                 if (defined('EDIT_AS_USER')) {
@@ -950,24 +954,8 @@ final class WikipediaBot {
                     report_warning('Curl error #' . $errnoInt . ' on authenticated query: ' . $errorStr);
                     $data = '';
                 }
-                $data = (string) $data;
-                if ($data === '') {
-                    if ($attempt < 3) {
-                        continue;
-                    }
-                    return '';
-                }
-                $decoded = @json_decode($data);
-                if (self::fetch_response_is_retryable($decoded)) {
-                    bot_debug_log('Retrying authenticated query after retryable error: ' . ($decoded->error->code ?? 'unknown'));
-                    continue;
-                }
-                if (self::ret_okay($decoded)) {
-                    return $data;
-                }
-                return '';
-            }
-            return '';
+                return (string) $data;
+            }, 'Retrying authenticated query after retryable error: ');
         } catch (Throwable $E) {
             bot_debug_log('Authenticated query failure: ' . $E::class . ': ' . $E->getMessage());
             report_warning("Authenticated query failed; continuing.\n");
