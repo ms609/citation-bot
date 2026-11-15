@@ -118,6 +118,18 @@ final class Template
         }
     }
 
+    /**
+     * Return an existing identifier's visible value, or null for an absent,
+     * blank, or comment-only value. Callers keep their field-specific rules.
+     */
+    private function identifier_tidy_value(string $param): ?string {
+        if ($this->blank($param)) {
+            return null;
+        }
+        $value = $this->get_without_comments_and_placeholders($param);
+        return $value === '' ? null : $value;
+    }
+
     public function __construct() {
         // Done in parse_text() and in variable initialization
     }
@@ -5460,12 +5472,9 @@ final class Template
                     return;
 
                 case 'oclc':
-                    if ($this->blank($param)) {
+                    $value = $this->identifier_tidy_value($param);
+                    if ($value === null) {
                         return;
-                    }
-                    $value = $this->get_without_comments_and_placeholders($param);
-                    if ($value === '') {
-                        return; // Preserve comment/placeholder-only values that intentionally block additions
                     }
                     if (preg_match('~^oclc\s*[:#]?\s*(\S+)$~i', $value, $matches) === 1 && oclc_valid($matches[1])) {
                         $this->set($param, $matches[1]); // Label typed in front of the number
@@ -5478,12 +5487,9 @@ final class Template
                     return;
 
                 case 's2cid':
-                    if ($this->blank($param)) {
+                    $value = $this->identifier_tidy_value($param);
+                    if ($value === null) {
                         return;
-                    }
-                    $value = $this->get_without_comments_and_placeholders($param);
-                    if ($value === '') {
-                        return; // Preserve comment/placeholder-only values that intentionally block additions
                     }
                     if (preg_match('~^(?:s2cid|corpusid)\s*[:#]?\s*(\d+)$~i', $value, $matches) === 1) {
                         $this->set($param, $matches[1]); // Label typed in front of the number
@@ -5496,12 +5502,9 @@ final class Template
                     return;
 
                 case 'ssrn':
-                    if ($this->blank($param)) {
+                    $value = $this->identifier_tidy_value($param);
+                    if ($value === null) {
                         return;
-                    }
-                    $value = $this->get_without_comments_and_placeholders($param);
-                    if ($value === '') {
-                        return; // Preserve comment/placeholder-only values that intentionally block additions
                     }
                     if (preg_match('~^ssrn\s*[:#]?\s*(\d+)$~i', $value, $matches) === 1) {
                         $this->set($param, $matches[1]); // Label typed in front of the number
@@ -5979,12 +5982,9 @@ final class Template
                     if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
                         $this->set($param, $matches[1]);
                     }
-                    if ($this->blank($param)) {
+                    $value = $this->identifier_tidy_value($param);
+                    if ($value === null) {
                         return;
-                    }
-                    $value = $this->get_without_comments_and_placeholders($param);
-                    if ($value === '') {
-                        return; // Preserve comment/placeholder-only values that intentionally block additions
                     }
                     if (!pmc_valid($value)) {
                         report_forget("Removing malformed PMC identifier: " . echoable($value));
