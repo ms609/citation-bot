@@ -711,6 +711,9 @@ final class Template
 
             $this->tidy();
             // Fix up URLs hiding in identifiers
+            // Do not silently deduplicate HDL: the URL extractor mutates this
+            // template, and a second HDL pass can retry a failed extraction.
+            // Remove it only after comparing output AND edit summaries.
             foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr', 'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl', 'medrxiv'] as $possible) {
                 if ($this->has($possible)) {
                     $url = $this->get($possible);
