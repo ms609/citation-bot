@@ -9,6 +9,25 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
 
+    public function testExactTemplateNameAliases(): void {
+        foreach ([
+            'cite work' => 'cite book',
+            'cite chapter' => 'cite book',
+            'cite newspaper' => 'cite news',
+            'cite website' => 'cite web',
+            'cite manual' => 'cite book',
+            'cite paper' => 'cite journal',
+            'cite contribution' => 'cite encyclopedia',
+            'cite periodical' => 'cite magazine',
+            'cite' => 'citation',
+        ] as $alias => $canonical) {
+            $template = $this->make_citation('{{' . $alias . '|title=Example}}');
+            $this->assertSame($canonical, $template->wikiname(), $alias);
+        }
+        $mixed = $this->make_citation('{{CiTe_WeBsItE|title=Example}}');
+        $this->assertSame('cite web', $mixed->wikiname());
+    }
+
     public function testSharedIdentifierOpeningGuardPreservesCommentOnlyValues(): void {
         $template = $this->make_citation(
             '{{cite web|title=Example|oclc=<!-- -->|s2cid=S2CID: 12345|ssrn=<!-- -->|pmc=PMC54321}}'

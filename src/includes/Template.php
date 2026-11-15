@@ -4562,34 +4562,19 @@ final class Template
         $name = mb_trim(mb_strtolower(str_replace('_', ' ', $this->name)));
         $name = mb_trim(str_replace('#invoke:', '', $name));
         $name = str_replace('|', ' ', $name);
-        // Treat the same since alias
-        if ($name === 'cite work') {
-            $name = 'cite book';
-        }
-        if ($name === 'cite chapter') {
-            $name = 'cite book';
-        }
-        if ($name === 'cite newspaper') {
-            $name = 'cite news';
-        }
-        if ($name === 'cite website') {
-            $name = 'cite web';
-        }
-        if ($name === 'cite manual') {
-            $name = 'cite book';
-        }
-        if ($name === 'cite paper') {
-            $name = 'cite journal';
-        }
-        if ($name === 'cite contribution') {
-            $name = 'cite encyclopedia';
-        }
-        if ($name === 'cite periodical') {
-            $name = 'cite magazine';
-        }
-        if ($name === 'cite') {
-            $name = 'citation';
-        }
+        // Exact-name aliases only; leave locale mappings and special cases below.
+        $aliases = [
+            'cite work' => 'cite book',
+            'cite chapter' => 'cite book',
+            'cite newspaper' => 'cite news',
+            'cite website' => 'cite web',
+            'cite manual' => 'cite book',
+            'cite paper' => 'cite journal',
+            'cite contribution' => 'cite encyclopedia',
+            'cite periodical' => 'cite magazine',
+            'cite' => 'citation',
+        ];
+        $name = $aliases[$name] ?? $name;
         if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // Do not map on english wiki's
             foreach (ALL_TEMPLATES_MAP as $map_array) {
                 foreach ($map_array as $map_in => $map_out) {
