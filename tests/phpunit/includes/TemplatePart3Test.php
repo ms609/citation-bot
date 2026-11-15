@@ -9,6 +9,18 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
 
+    public function testSharedIdentifierOpeningGuardPreservesCommentOnlyValues(): void {
+        $template = $this->make_citation(
+            '{{cite web|title=Example|oclc=<!-- -->|s2cid=S2CID: 12345|ssrn=<!-- -->|pmc=PMC54321}}'
+        );
+        $method = new \ReflectionMethod(Template::class, 'identifier_tidy_value');
+        $this->assertNull($method->invoke($template, 'oclc'));
+        $this->assertNull($method->invoke($template, 'ssrn'));
+        $this->assertNull($method->invoke($template, 'missing'));
+        $this->assertSame('S2CID: 12345', $method->invoke($template, 's2cid'));
+        $this->assertSame('PMC54321', $method->invoke($template, 'pmc'));
+    }
+
     public function testRxivParameterFilteringRejectsUnknownServer(): void {
         $template = $this->make_citation('{{cite journal|title=Preprint|issue=7}}');
         $method = new \ReflectionMethod(Template::class, 'remove_disallowed_rxiv_parameters');
