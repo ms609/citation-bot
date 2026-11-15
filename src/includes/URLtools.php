@@ -5,6 +5,20 @@
 declare(strict_types=1);
 
 /**
+ * Clear an unrelated via= after removing a Gale or ProQuest proxy.
+ * Both original checks were ordered: library credits are removed even when
+ * the provider name is also present; a provider-only credit is retained.
+ */
+function citation_bot_cleanup_proxy_via(Template $template, string $provider): void {
+    if ($template->has('via') && (
+        mb_stripos($template->get('via'), 'library') !== false ||
+        mb_stripos($template->get('via'), $provider) === false
+    )) {
+        $template->forget('via');
+    }
+}
+
+/**
  * @param array<Template> &$templates
  *
  * @performance Sends web requests to check if URLs match DOIs (takes 1-3 seconds per check).
@@ -1074,73 +1088,38 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
             if ($path !== $matches[1]) {
                 $template->set($param, 'https://go.galegroup.com' . $path);
                 report_info("Remove proxy from Gale URL");
-                if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                    $template->forget('via');
-                }
-                if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
-                    $template->forget('via');
-                }
+                citation_bot_cleanup_proxy_via($template, 'gale');
             }
         } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~i", $template->get($param), $matches)) {
             $template->set($param, 'https://go.galegroup.com/' . $matches[1]);
             report_info("Remove proxy from Gale URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
-            }
-            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
-                $template->forget('via');
-            }
+            citation_bot_cleanup_proxy_via($template, 'gale');
         } elseif (preg_match("~^(?:http.+url=|)https?://link.galegroup.com(%2fps.+)$~i", $template->get($param), $matches)) {
             $path = decode_wrapped_citation_url($matches[1]);
             if ($path !== $matches[1]) {
                 $template->set($param, 'https://link.galegroup.com' . $path);
                 report_info("Remove proxy from Gale URL");
-                if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                    $template->forget('via');
-                }
-                if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
-                    $template->forget('via');
-                }
+                citation_bot_cleanup_proxy_via($template, 'gale');
             }
         } elseif (preg_match("~^http.+url=https?://link\.galegroup\.com/(.+)$~", $template->get($param), $matches)) {
             $template->set($param, 'https://link.galegroup.com/' . $matches[1]);
             report_info("Remove proxy from Gale URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
-            }
-            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
-                $template->forget('via');
-            }
+            citation_bot_cleanup_proxy_via($template, 'gale');
         }
     }
     if (mb_stripos($template->get($param), 'proquest') !== false) {
         if (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)(?:search|www).proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $template->get($param), $matches)) {
             $template->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
             report_info("Remove proxy from ProQuest URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
-            }
-            if ($template->has('via') && mb_stripos($template->get('via'), 'proquest') === false) {
-                $template->forget('via');
-            }
+            citation_bot_cleanup_proxy_via($template, 'proquest');
         } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)(?:www|search).proquest.+scoolaid\.net(|/[^/]+)+/docview/(.+)$~", $template->get($param), $matches)) {
             $template->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
             report_info("Remove proxy from ProQuest URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
-            }
-            if ($template->has('via') && mb_stripos($template->get('via'), 'proquest') === false) {
-                $template->forget('via');
-            }
+            citation_bot_cleanup_proxy_via($template, 'proquest');
         } elseif (preg_match("~^http.+/login/?\?url=https://www\.proquest\.com/docview/(.+)$~", $template->get($param), $matches)) {
             $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
             report_info("Remove proxy from ProQuest URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
-            }
-            if ($template->has('via') && mb_stripos($template->get('via'), 'proquest') === false) {
-                $template->forget('via');
-            }
+            citation_bot_cleanup_proxy_via($template, 'proquest');
         }
         $changed = false;
         if (preg_match("~^https?://(?:|search|www).proquest.com/(.+)/docview/(.+)$~", $template->get($param), $matches)) {
