@@ -363,7 +363,6 @@ const DOI_FREE_PREFIX = [
     '10.1017/S15574660',
     '10.1021/acsbiomedchemau.',
     '10.1021/acscentsci.',
-    '10.1021/acs.chas.',
     '10.1021/acsengineeringau.',
     '10.1021/acsenvironau.',
     '10.1021/acsmaterialsau.',
