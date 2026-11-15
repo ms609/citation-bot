@@ -25,6 +25,11 @@ final class Template
     public const array REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su']; // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
     public const bool TREAT_IDENTICAL_SEPARATELY = false; // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
     private const array URL_TYPES_FOR_REMOVAL = [...ALL_URL_TYPES, 'entryurl'];
+    // Exact PressReader aliases shared by publisher and work-field cleanup.
+    // The bare "pressreader" publisher exception remains publisher-specific.
+    private const array PRESSREADER_HOST_ALIASES = [
+        'www.pressreader.com', 'pressreader.com', 'pressreader.com (archived)', 'www.pressreader.com/',
+    ];
     private const array BOOK_PERIODICAL_FIELDS_WITHOUT_MAPPING = [
         'magazine', 'newspaper',
         'script-journal', 'script-magazine', 'script-newspaper', 'script-periodical', 'script-website', 'script-work',
@@ -6377,7 +6382,7 @@ final class Template
                         }
                     }
 
-                    if ($publisher === 'www.pressreader.com' || $publisher === 'pressreader.com' || $publisher === 'pressreader.com (archived)' || $publisher === 'pressreader' || $publisher === 'www.pressreader.com/') {
+                    if ($publisher === 'pressreader' || in_array($publisher, self::PRESSREADER_HOST_ALIASES, true)) {
                         if ($this->blank('via')) {
                             $this->set($param, '[[PressReader]]');
                             $this->rename($param, 'via');
@@ -6821,7 +6826,7 @@ final class Template
                         return;
                     }
 
-                    if (mb_strtolower($the_param) === 'www.pressreader.com' || mb_strtolower($the_param) === 'pressreader.com' || mb_strtolower($the_param) === 'pressreader.com (archived)' || mb_strtolower($the_param) === 'www.pressreader.com/') {
+                    if (in_array(mb_strtolower($the_param), self::PRESSREADER_HOST_ALIASES, true)) {
                         if ($this->blank('via')) {
                             $this->set($param, 'PressReader');
                             $this->rename($param, 'via');
@@ -7277,7 +7282,7 @@ final class Template
                         $this->rename($param, 'via');
                         return;
                     }
-                    if (mb_strtolower($the_param) === 'www.pressreader.com' || mb_strtolower($the_param) === 'pressreader.com' || mb_strtolower($the_param) === 'pressreader.com (archived)' || mb_strtolower($the_param) === 'www.pressreader.com/') {
+                    if (in_array(mb_strtolower($the_param), self::PRESSREADER_HOST_ALIASES, true)) {
                         if ($this->blank('via')) {
                             $this->set($param, 'PressReader');
                             $this->rename($param, 'via');
