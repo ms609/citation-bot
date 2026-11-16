@@ -504,7 +504,7 @@ final class nameToolsTest extends testBaseClass {
     /** Tests format_author with SSRN-reconstructed multi-word surname */
     public function testFormatAuthorSrrnMultiPartSurname(): void {
         $result = format_author("van der Waals, Johannes");
-        $this->assertSame('Van Der Waals, Johannes', $result);
+        $this->assertSame('van der Waals, Johannes', $result);
     }
 
     public function testInstitutionalAuthorAcronymsKeepTheirSourceCase(): void {
