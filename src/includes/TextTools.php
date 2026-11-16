@@ -1023,7 +1023,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         // When there are lots of periods, then they probably mark abbreviations, not sentence ends
         // We should therefore capitalize after each punctuation character.
         // The abbreviations "s. str." and "s. l." (sensu stricto, sensu lato) and "str." (street) do not end a sentence
-        $new_case = safe_preg_replace_callback("~(?<![\s(\[]s)(?<![\s(\[.]str)(?<![\s(\[]s\. l)(?<![\s(\[]s\.l)[?.:!/]\s+[a-z]~u", // Capitalize after punctuation
+        $new_case = safe_preg_replace_callback("~(?<![\\s(\\[]s)(?<![\\s(\\[.]str)(?<![\\s(\\[]s\\. l)(?<![\\s(\\[]s\\.l)(?<!\\bsp\\. nov)(?<!\\bgen\\. nov)(?<!\\bsubsp\\. nov)(?<!\\bn\\.sp)[?.:!/]\\s+[a-z]~u", // Capitalize after punctuation, but not after taxonomic abbreviations
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
@@ -1115,13 +1115,36 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     // This should be capitalized
     $new_case = str_replace(['(new Series)', '(new series)'], ['(New Series)', '(New Series)'], $new_case);
 
-    // Catch some specific epithets, which should be lowercase
+    // Italicize only a plausible genus, optionally followed by a lowercase species
+    // epithet. Never consume the preceding article/preposition ("of Barus" is not a taxon).
+    // Ambiguous all-title-cased binomials are deliberately left untouched.
     $new_case = safe_preg_replace_callback(
-        "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui", // Species names to lowercase
+        '~(?<![\p{L}\p{M}\x27])(?P<taxon>\p{Lu}[\p{Ll}\p{M}\-]+(?:\s+\p{Ll}[\p{Ll}\p{M}\-]+){0,2})\s+(?P<nova>(?i:(?:subsp\.?|sp\.?|gen\.?)\s*nov\.?|nov\.?\s*(?:sp\.?|gen\.?)|n\.?\s*sp\.?))(?=\W|$)~u',
         static function (array $matches): string {
-            return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);
+            $taxon = $matches['taxon'];
+            $parts = preg_split('~\s+~u', $taxon);
+            if ($parts === false || count($parts) > 3) {
+                return $matches[0];
+            }
+            // The matched genus must already have a genuine capital: a blanket
+            // case-insensitive match would select "of Barus" or "from Peru".
+            if (preg_match('~^\p{Lu}~u', $parts[0]) !== 1) {
+                return $matches[0];
+            }
+            return "''" . $taxon . "'' " . mb_strtolower($matches['nova']);
         },
         $new_case);
+
+    // Existing italic markup is not recognized by the genus matcher above.
+    // Keep the markup but restore lowercase taxonomic abbreviations after
+    // title case has capitalized the word following a period.
+    $new_case = safe_preg_replace_callback(
+        "~(''\p{Lu}[\p{L}\p{M}-]*(?:\s+\p{Ll}[\p{Ll}\p{M}-]*){0,2}'')\s+(?P<nova>(?i:(?:subsp\.?|sp\.?|gen\.?)\s*nov\.?|nov\.?\s*(?:sp\.?|gen\.?)|n\.?\s*sp\.?))(?=\W|$)~u",
+        static function (array $matches): string {
+            return $matches[1] . ' ' . mb_strtolower($matches['nova']);
+        },
+        $new_case
+    );
 
     // "des" at end is "Des" for Design not german "The"
     if (mb_substr($new_case, -4, 4) === ' des') {
