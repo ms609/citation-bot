@@ -15,6 +15,20 @@ const DEV_USERS = [
 ];
 
 /**
+ * Operators permitted to use linked-pages on a page outside User: namespace.
+ * This is intentionally broader than DEV_USERS; do not grant a higher page limit.
+ */
+const LINKED_PAGES_ALLOWED_USERS = [
+    'Headbomb',
+    'AManWithNoPlan',
+    'Redalert2fan',
+];
+
+function linked_pages_may_reference_non_user_page(string $username): bool {
+    return in_array($username, LINKED_PAGES_ALLOWED_USERS, true);
+}
+
+/**
  * Only on webpage
  */
 
