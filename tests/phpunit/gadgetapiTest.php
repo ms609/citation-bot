@@ -132,7 +132,7 @@ final class gadgetapiTest extends testBaseClass {
         unset($_REQUEST);
         // Output checking time
         $json = json_decode($json_text);
-        $this->assertSame('{{cite journal|last1=Leyser Da Costa Gouveia |first1=Tiago |last2=Maganas |first2=Dimitrios |last3=Neese |first3=Frank |title=Restricted Open-Shell Hartree–Fock Method for a General Configuration State Function Featuring Arbitrarily Complex Spin-Couplings |journal=The Journal of Physical Chemistry A |date=2024 |volume=128 |issue=25 |pages=5041–5053 |doi=10.1021/acs.jpca.4c00688 |pmid=<!-- --> |arxiv=<!-- --> |pmc=<!-- --> |url=<!-- --> }}', $json->expandedtext);
+        $this->assertSame('{{cite journal|last1=Leyser da Costa Gouveia |first1=Tiago |last2=Maganas |first2=Dimitrios |last3=Neese |first3=Frank |title=Restricted Open-Shell Hartree–Fock Method for a General Configuration State Function Featuring Arbitrarily Complex Spin-Couplings |journal=The Journal of Physical Chemistry A |date=2024 |volume=128 |issue=25 |pages=5041–5053 |doi=10.1021/acs.jpca.4c00688 |pmid=<!-- --> |arxiv=<!-- --> |pmc=<!-- --> |url=<!-- --> }}', $json->expandedtext);
         $this->assertSame('Something Nice | Add: pages, issue, volume, date, journal, title, authors 1-3. | [[:en:WP:UCB|Use this tool]]. [[:en:WP:DBUG|Report bugs]]. | #UCB_Gadget ', $json->editsummary);
     }
 

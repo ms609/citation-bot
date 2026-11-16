@@ -166,6 +166,42 @@ const SURNAME_APOSTROPHE_CASE_EXCEPTIONS = [
     "o'neill" => "O'Neill",
 ];
 
+/**
+ * Surname particles ("van der Waals", "de la Cruz") whose lower case is kept when the source already wrote them that way.
+ * They are NOT lower cased on their own: the same words are capitalised in many real surnames ("Van Dyke", "Le Guin").
+ * Lower case, as compared inside keep_surname_particle_case().  "von", "und" and "de la" are always lower cased by format_surname_2().
+ * Extend as further names are reported.
+ */
+const SURNAME_PARTICLES_KEPT_IN_LOWER_CASE = [
+    'af', 'al', 'av', 'bin', 'da', 'dal', 'dalla', 'das', 'de', 'degli', 'dei', 'del', 'della', 'delle',
+    'den', 'der', 'des', 'di', 'do', 'dos', 'du', 'el', 'ibn', 'la', 'le', 'te', 'ten', 'ter', 'van',
+    'vom', 'zu', 'zum', 'zur',
+];
+
+/**
+ * Put back the lower case that the source gave to surname particles, after everything was title cased.
+ * Only a name that also contains a capital is trusted: an all lower case source says nothing about its particles.
+ * A particle that ends the name is not a particle ("Le Van"), so it is left as formatted.
+ */
+function keep_surname_particle_case(string $source, string $formatted): string {
+    if ($source === mb_strtolower($source)) {
+        return $formatted;
+    }
+    // Keep the separators, so that the original spacing survives
+    $source_parts = preg_split('~(\s+)~u', $source, -1, PREG_SPLIT_DELIM_CAPTURE);
+    $formatted_parts = preg_split('~(\s+)~u', $formatted, -1, PREG_SPLIT_DELIM_CAPTURE);
+    if ($source_parts === false || $formatted_parts === false || count($source_parts) !== count($formatted_parts)) {
+        return $formatted;
+    }
+    $last_word = count($source_parts) - 1; // Words are at even positions, separators at odd positions
+    foreach ($source_parts as $position => $word) {
+        if ($position % 2 === 0 && $position < $last_word && in_array($word, SURNAME_PARTICLES_KEPT_IN_LOWER_CASE, true)) {
+            $formatted_parts[$position] = $word;
+        }
+    }
+    return implode('', $formatted_parts);
+}
+
 function format_surname(string $surname): string {
     $surname = decode_name_entities($surname);
     $surname = mb_trim(normalize_unicode_nfc($surname));
@@ -206,6 +242,7 @@ function format_surname(string $surname): string {
 
 function format_surname_2(string $surname): string {
     $ret = str_replace(" - ", "-", $surname);
+    $source = $ret;
     $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*)*)~u",
         static function (array $matches): string {
             if ($matches[2] === '') {
@@ -221,6 +258,7 @@ function format_surname_2(string $surname): string {
         $ret = normalize_unicode_nfc($formatted);
     }
     $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
+    $ret = keep_surname_particle_case($source, $ret);
     return safe_preg_replace_callback('~;\w~',
         static function (array $matches): string {
             return mb_strtolower($matches[0]);

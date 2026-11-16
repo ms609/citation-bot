@@ -574,6 +574,61 @@ final class NameToolsEdgeCaseTest extends testBaseClass {
         ];
     }
 
+    #[DataProvider('surnameParticleProvider')]
+    public function testFormatSurnameKeepsLowerCaseParticlesFromTheSource(
+        string $input,
+        string $expected
+    ): void {
+        $this->assertSame($expected, format_surname($input));
+        $this->assertSame($expected, format_surname($expected), 'formatting is idempotent');
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function surnameParticleProvider(): array {
+        return [
+            'Dutch particles written in lower case are kept' => ['van der Waals', 'van der Waals'],
+            'single Dutch particle' => ['van Gogh', 'van Gogh'],
+            'article particles' => ['ter Haar', 'ter Haar'],
+            'den particle' => ['den Hollander', 'den Hollander'],
+            'Romance particle' => ['de Vries', 'de Vries'],
+            'Italian particle' => ['della Rovere', 'della Rovere'],
+            'Arabic particle' => ['al Sabah', 'al Sabah'],
+            'capitalised first particle is not touched' => ['Van der Waals', 'Van der Waals'],
+            'capitalised particles are not touched' => ['Van Dyke', 'Van Dyke'],
+            'capitalised French article is not touched' => ['Le Guin', 'Le Guin'],
+            'upper case source has no particle evidence' => ['VAN DER WAALS', 'Van Der Waals'],
+            'lower case source has no particle evidence' => ['van der waals', 'Van Der Waals'],
+            'upper case name after lower case particles' => ['van der WAALS', 'van der Waals'],
+            'particle ending the name is a surname' => ['Le van', 'Le Van'],
+            'lone particle is a surname' => ['Van', 'Van'],
+            'particle after a capitalised word' => ['Smith van der Berg', 'Smith van der Berg'],
+            'hyphenated surname after particles' => ['van der Waals-Smith', 'van der Waals-Smith'],
+            'always lower cased von still works' => ['VON TRAPP', 'von Trapp'],
+            'always lower cased de la still works' => ['De La Cruz', 'de la Cruz'],
+            'particle inside a word is not a particle' => ['Vandenberg', 'Vandenberg'],
+            'word that merely starts like a particle' => ['derby Smith', 'Derby Smith'],
+            'Mc prefix is unaffected' => ['MCDONALD', 'McDonald'],
+        ];
+    }
+
+    public function testFormatSurnameKeepsParticleCaseWithOddSpacing(): void {
+        $this->assertSame("van  der\tWaals", format_surname("van  der\tWaals"));
+    }
+
+    public function testFormatSurnameParticleCaseSurvivesMalformedUtf8(): void {
+        $this->assertIsString(format_surname("van\xFF der Waals"));
+        $this->assertIsString(format_surname_2("van der Wa\xFFals"));
+    }
+
+    public function testKeepSurnameParticleCaseLeavesTheFormattedNameWhenItCannotBeAligned(): void {
+        // Malformed UTF-8 cannot be split into words
+        $this->assertSame("Van Der Wa\xFF", keep_surname_particle_case("van der Wa\xFF", "Van Der Wa\xFF"));
+        // Different numbers of words cannot be matched up
+        $this->assertSame('Van Waals', keep_surname_particle_case('van der Waals', 'Van Waals'));
+    }
+
     #[DataProvider('noisyInitialProvider')]
     public function testFormatInitialsIgnoresCommonSeparatorNoise(
         string $input,
