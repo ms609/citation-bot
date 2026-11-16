@@ -972,6 +972,19 @@ final class Template
     }
 
     /**
+     * True when a proposed series is already represented by the title or journal.
+     * Keep these two checks coupled so they cannot diverge during later cleanup.
+     */
+    private function series_matches_title_or_journal(string $value): bool {
+        foreach (['journal', 'title'] as $field) {
+            if ($this->has($field) && str_equivalent($this->get($field), $value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Adds a parameter to a template if the parameter and its equivalents are blank.
      * $api (string) specifies the API route by which a parameter was found; this will log the
      * parameter so it is not used to trigger a new search via the same API.
@@ -1862,10 +1875,7 @@ final class Template
             case 'series':
                 if ($this->blank($param_name)) {
                     $value = wikify_external_text($value);
-                    if ($this->has('journal') && str_equivalent($this->get('journal'), $value)) {
-                        return false;
-                    }
-                    if ($this->has('title') && str_equivalent($this->get('title'), $value)) {
+                    if ($this->series_matches_title_or_journal($value)) {
                         return false;
                     }
                     if ($value === 'A Penguin book') {
@@ -4609,6 +4619,23 @@ final class Template
         );
     }
 
+    /**
+     * Reconcile article/chapter and book-title fields without losing either.
+     * Extracted without changing the ordering or decisions of tidy_parameter().
+     */
+    private function reconcile_book_title(): void {
+        if ($this->wikiname() === 'cite book') {
+            if ($this->blank('title')) {
+                $this->rename('book-title', 'title');
+            } elseif ($this->blank(CHAPTER_ALIASES)) {
+                $this->rename('title', 'chapter');
+                $this->rename('book-title', 'title');
+            } elseif (titles_are_similar($this->get('title'), $this->get('book-title'))) {
+                $this->forget('book-title');
+            }
+        }
+    }
+
     public function tidy_parameter(string $param): void {
         set_time_limit(120);
         // Note: Parameters are treated in alphabetical order, except where one
@@ -6500,16 +6527,7 @@ final class Template
                     return;
 
                 case 'book-title':
-                    if ($this->wikiname() === 'cite book') {
-                        if ($this->blank('title')) {
-                            $this->rename('book-title', 'title');
-                        } elseif ($this->blank(CHAPTER_ALIASES)) {
-                            $this->rename('title', 'chapter');
-                            $this->rename('book-title', 'title');
-                        } elseif (titles_are_similar($this->get('title'), $this->get('book-title'))) {
-                            $this->forget('book-title');
-                        }
-                    }
+                    $this->reconcile_book_title();
                     return;
 
                 case 'title':
