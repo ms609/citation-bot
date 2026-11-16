@@ -190,18 +190,44 @@ final class WikipediaBot {
     }
 
     /**
-     * Bind write requests to an authenticated account and the exact submitted bytes.
-     * @return array{assert: string, md5: string}
+     * Repair malformed UTF-8, normalize to NFC, and hash exactly the submitted bytes.
+     * Invalid byte sequences become U+FFFD; existing valid text is preserved.
+     *
+     * @return array{text: string, assert: string, md5: string}|null
      */
-    public static function edit_safety_parameters(string $text, bool $as_user): array {
-        return ['assert' => $as_user ? 'user' : 'bot', 'md5' => md5($text)];
+    public static function edit_safety_parameters(string $text, bool $as_user): ?array {
+        if (!mb_check_encoding($text, 'UTF-8')) {
+            // Do not use the ambient mbstring substitute setting: it may be "none".
+            // Restore it even if scrubbing unexpectedly fails.
+            $previous_substitute = mb_substitute_character();
+            try {
+                mb_substitute_character(0xFFFD);
+                $text = mb_scrub($text, 'UTF-8');
+            } finally {
+                mb_substitute_character($previous_substitute);
+            }
+        }
+        $normalized = \Normalizer::normalize($text, \Normalizer::FORM_C);
+        if ($normalized === false) {
+            return null;
+        }
+        return [
+            'text' => $normalized,
+            'assert' => $as_user ? 'user' : 'bot',
+            'md5' => md5($normalized),
+        ];
     }
 
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
         $this->last_write_skipped = false;
         $this->last_written_revision = null;
-        if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false) {
+        $edit_payload = self::edit_safety_parameters($text, defined('EDIT_AS_USER'));
+        if ($edit_payload === null) {
+            report_warning('Unable to NFC-normalize Wikipedia edit text.');
+            return false;
+        }
+        if (mb_stripos($edit_payload['text'], "CITATION_BOT_PLACEHOLDER") !== false) {
             report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));
             return false;
         }
@@ -251,8 +277,7 @@ final class WikipediaBot {
         $submit_vars = [
             "action" => "edit",
             "title" => $page,
-            "text" => $text,
-            ...self::edit_safety_parameters($text, defined('EDIT_AS_USER')),
+            ...$edit_payload,
             "summary" => $editSummary,
             "notminor" => "1",
             "bot" => "1",
@@ -978,6 +1003,11 @@ final class WikipediaBot {
      * Unlike write_page(), this permits creation and is tolerant of missing pages.
      */
     public function write_statistics_page(string $title, string $text, string $summary, bool $create_only = false): bool {
+        $edit_payload = self::edit_safety_parameters($text, defined('EDIT_AS_USER'));
+        if ($edit_payload === null) {
+            report_warning('Unable to NFC-normalize statistics edit text.');
+            return false;
+        }
         // Reuse the authenticated write path but without requiring lastrevid/start timestamp
         $response = $this->fetch([
             'action' => 'query',
@@ -1035,8 +1065,7 @@ final class WikipediaBot {
         $vars = [
             'action' => 'edit',
             'title' => $title,
-            'text' => $text,
-            ...self::edit_safety_parameters($text, defined('EDIT_AS_USER')),
+            ...$edit_payload,
             'summary' => $summary,
             'notminor' => '1',
             'bot' => '1',

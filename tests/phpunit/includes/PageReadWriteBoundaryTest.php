@@ -182,6 +182,8 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
                     'action' => 'edit',
                     'title' => 'Example',
                     'text' => 'Updated citation',
+                    'assert' => 'bot',
+                    'md5' => md5('Updated citation'),
                     'summary' => 'Fix citation',
                     'notminor' => '1',
                     'bot' => '1',
@@ -254,7 +256,8 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
                 return;
             }
             $this->assertCount(2, $requests);
-            $edit = ['action' => 'edit', 'title' => $title, 'text' => 'Statistics', 'summary' => 'Update statistics',
+            $edit = ['action' => 'edit', 'title' => $title, 'text' => 'Statistics',
+                'assert' => 'bot', 'md5' => md5('Statistics'), 'summary' => 'Update statistics',
                 'notminor' => '1', 'bot' => '1', 'watchlist' => 'nochange', 'token' => 'fixture'];
             if ($existing) {
                 $edit['basetimestamp'] = '2026-10-25T12:00:00Z';
