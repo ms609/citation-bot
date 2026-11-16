@@ -61,7 +61,9 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    $journal_acronym_held = [];
     if ($use_title_case) {
+        $title = protect_journal_acronyms($title, $journal_acronym_held);
         $title = title_case($title);
     }
     $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
@@ -149,6 +151,9 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
     $title = mb_trim($title, " \t\n\r\0\x0B\u{00A0}");
+    if ($use_title_case) {
+        $title = restore_journal_acronyms($title, $journal_acronym_held);
+    }
 
     $num_replace = count($replacement);
     for ($i = 0; $i < $num_replace; $i++) {
@@ -177,6 +182,33 @@ function wikify_italic_tags(string $text): string {
         },
         $text
     );
+}
+
+/**
+ * Preserve explicit uppercase acronyms in mixed-case periodical names only.
+ * Do not freeze all-uppercase source titles, which still need normal title casing.
+ *
+ * @param array<string, string> $held
+ */
+function protect_journal_acronyms(string $text, array &$held): string {
+    $letters = safe_preg_replace('~[^\p{L}]~u', '', $text);
+    if ($letters === '' || $letters === mb_strtoupper($letters)) {
+        return $text;
+    }
+    return safe_preg_replace_callback('~(?<![\p{L}\p{N}])([A-Z]{2,10})(?![\p{L}\p{N}])~u',
+        static function (array $matches) use (&$held): string {
+            if (in_array($matches[1], JOURNAL_ACRONYM_NON_ACRONYMS, true)) {
+                return $matches[0];
+            }
+            $placeholder = 'CITATIONBOTJOURNALACRONYM' . count($held) . 'TOKEN';
+            $held[$placeholder] = $matches[1];
+            return $placeholder;
+        }, $text);
+}
+
+/** @param array<string, string> $held */
+function restore_journal_acronyms(string $text, array $held): string {
+    return $held === [] ? $text : str_ireplace(array_keys($held), array_values($held), $text);
 }
 
 function restore_italics (string $text): string {
