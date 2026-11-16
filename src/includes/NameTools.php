@@ -394,8 +394,55 @@ function format_author(string $author): string {
     return mb_trim($full_name);
 }
 
+/**
+ * Recognize only unambiguous, initial-based author lists. A comma may
+ * separate authors (Smith J, Jones K) or surname and initials (Smith, J.).
+ * Ambiguous prose and legacy inputs must still use the existing parser.
+ *
+ * @return list<string>|null Individual names, or null when not unambiguous.
+ */
+function split_explicit_initial_author_list(string $authors): ?array {
+    $normalized = preg_replace('~\s*(?:\band\b|&)\s*~iu', ',', $authors);
+    if ($normalized === null) {
+        return null; // Invalid UTF-8: retain the existing best-effort fallback.
+    }
+    $parts = preg_split('~\s*[,;]\s*~u', mb_trim($normalized), -1, PREG_SPLIT_NO_EMPTY);
+    if ($parts === false || count($parts) < 2) {
+        return null;
+    }
+    $surname = '[\p{L}][\p{L}\p{M}\x{0027}\x{2019}-]*';
+    $surnames = $surname . '(?:\s+' . $surname . '){0,2}';
+    $initials = '(?:\p{Lu}\.?\s*){1,4}';
+    $complete = '~\A(?:' . $surnames . '\s+' . $initials .
+        '|(?:\p{Lu}\.?\s+){1,4}' . $surnames . ')\z~u';
+    $name_only = '~\A' . $surnames . '\z~u';
+    $initials_only = '~\A' . $initials . '\z~u';
+    $names = [];
+    $count = count($parts);
+    for ($i = 0; $i < $count;) {
+        if (preg_match($complete, $parts[$i]) === 1) {
+            $names[] = $parts[$i];
+            $i++;
+        } elseif ($i + 1 < $count &&
+            preg_match($name_only, $parts[$i]) === 1 &&
+            preg_match($initials_only, $parts[$i + 1]) === 1
+        ) {
+            $names[] = $parts[$i] . ', ' . $parts[$i + 1];
+            $i += 2;
+        } else {
+            return null;
+        }
+    }
+    return count($names) >= 2 ? $names : null;
+}
+
 function format_multiple_authors(string $authors): string {
     $authors = html_entity_decode($authors, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+
+    $names = split_explicit_initial_author_list($authors);
+    if ($names !== null) {
+        return implode('; ', array_map('format_author', $names));
+    }
 
     $return = [];
     ## Split the citation into an author by author account
