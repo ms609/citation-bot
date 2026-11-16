@@ -269,7 +269,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             // populated here: adding editors alone cannot expand a DOI-only
             // citation if DOI content negotiation also failed.
             if (str_starts_with($doi, '10.1117/12.')) {
-                $spie_json = query_crossref_newapi($doi);
+                $spie_json = query_crossref_newapi($doi, true);
                 if (($spie_json->type ?? '') === 'proceedings-article') {
                     // Crossref's REST response is an object; the shared DOI
                     // parser accepts associative arrays. Map proceedings
@@ -340,8 +340,11 @@ function add_spie_crossref_json_editors(Template $template, string $doi, object 
             continue; // Organization or nameless record, not a personal editor.
         }
         $editors[] = ['family' => $family, 'given' => $given];
-        if (count($editors) === 30) {
-            break;
+        // Never add a partial editor list that appears complete in a citation.
+        if (count($editors) > 30) {
+            report_warning('Skipping SPIE editors for DOI ' . echoable($doi) .
+                ': Crossref REST lists more than 30 named editors');
+            return;
         }
     }
     if ($editors === []) {
@@ -863,7 +866,7 @@ function should_skip_crossref_issue_as_volume_match(string $doi, string $crossre
 /**
  * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addition to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
  */
-function query_crossref_newapi(string $doi): object {
+function query_crossref_newapi(string $doi, bool $spie_fallback = false): object {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
@@ -874,13 +877,17 @@ function query_crossref_newapi(string $doi): object {
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $result = parse_crossref_newapi_response($json);
-    // SPIE volume editor metadata is absent from many OpenURL responses.
-    // Retry a single transient REST failure, not permanent 4xx or bad metadata.
-    if ($result === null && str_starts_with($doi, '10.1117/12.')) {
+    // Only retry when REST is the fallback/sole metadata source. Ordinary
+    // OpenURL-successful DOI lookups should not pay for an extra REST request.
+    if ($result === null && $spie_fallback && str_starts_with($doi, '10.1117/12.')) {
         $transfer = bot_curl_last_transfer($ch);
         $http_status = $transfer['http_code'];
-        if ($transfer['errno'] !== 0 || $http_status === 429 || $http_status >= 500) {
-            usleep(500000);
+        // DNS/connection failures during an outage should not be retried for
+        // every citation. Timeouts, empty replies, receive errors and HTTP
+        // 429/5xx can be transient; give those one short retry.
+        if (in_array($transfer['errno'], [28, 52, 56], true) ||
+            $http_status === 429 || $http_status >= 500) {
+            usleep(100000);
             $json = bot_curl_exec($ch);
             $result = parse_crossref_newapi_response($json);
         }
@@ -896,7 +903,11 @@ function query_crossref_newapi(string $doi): object {
         HandleCache::$cache_active[$doi] = true;
         HandleCache::check_memory_use();
     } else {
-        sleep(2);  // @codeCoverageIgnore
+        // This extra fallback must not add the generic two-second failure
+        // sleep to every SPIE DOI during a Crossref outage.
+        if (!$spie_fallback) {
+            sleep(2); // @codeCoverageIgnore
+        }
         return new stdClass(); // @codeCoverageIgnore
     }
 

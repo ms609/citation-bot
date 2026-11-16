@@ -583,6 +583,134 @@ final class DoiTest extends testBaseClass {
         }
     }
 
+    /** The series rule must work when REST confirms proceedings without an OpenURL volume title. */
+    public function testSpieSeriesFromRestTypeWithoutOpenUrlVolumeTitle(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.2078768';
+        $openurl = new SimpleXMLElement(
+            '<query><article_title>Example SPIE paper</article_title><year>2015</year></query>'
+        );
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => $openurl,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'container-title' => ['SPIE Proceedings'],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $this->assertSame('Proceedings of SPIE', $template->get2('series'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieOverThirtyNamedEditorsNeverWritesPartialList(): void {
+        $doi = '10.1117/12.2078768';
+        $editors = [];
+        for ($i = 1; $i <= 31; ++$i) {
+            $editors[] = (object) ['given' => 'Alex', 'family' => 'Smith'];
+        }
+        $record = (object) ['type' => 'proceedings-article', 'editor' => $editors];
+        foreach ([false, true] as $withExistingEditor) {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+            if ($withExistingEditor) {
+                $this->assertTrue($template->add_if_new('editor-last1', 'Smith', 'crossref'));
+            }
+            $before = $template->parsed_text();
+            add_spie_crossref_json_editors($template, $doi, $record);
+            $this->assertSame($before, $template->parsed_text());
+            $this->assertNull($template->get2('editor-last2'));
+        }
+    }
+
+    public function testSpieThirtyNamedEditorsAndOrganizationsAreAccepted(): void {
+        $doi = '10.1117/12.2078768';
+        $editors = [(object) ['name' => 'SPIE']];
+        for ($i = 1; $i <= 30; ++$i) {
+            $editors[] = (object) ['given' => 'Alex', 'family' => 'Smith'];
+        }
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        add_spie_crossref_json_editors($template, $doi, (object) [
+            'type' => 'proceedings-article',
+            'editor' => $editors,
+        ]);
+        $this->assertSame('Smith', $template->get2('editor-last1'));
+        $this->assertSame('Smith', $template->get2('editor-last30'));
+        $this->assertNull($template->get2('editor-last31'));
+    }
+
+    public function testSpieRestRetriesOnlyFallbackAndSkipsOutageSleeps(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub cURL responses');
+        }
+
+        $requests = 0;
+        $sleepCalls = [];
+        $shortSleeps = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', static function () use (&$requests): string {
+            ++$requests;
+            return '';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_last_transfer', [
+            'ok' => false, 'errno' => 0, 'error' => '', 'http_code' => 503,
+        ]);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('sleep', static function (int $seconds) use (&$sleepCalls): int {
+            $sleepCalls[] = $seconds;
+            return 0;
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('usleep', static function (int $microseconds) use (&$shortSleeps): void {
+            $shortSleeps[] = $microseconds;
+        }, true);
+
+        try {
+            // A normal lookup should retain its old one-request behavior.
+            $normal = query_crossref_newapi('10.1117/12.2078768');
+            $this->assertSame([], get_object_vars($normal));
+            $this->assertSame(1, $requests);
+            $this->assertSame([2], $sleepCalls);
+            $this->assertSame([], $shortSleeps);
+
+            // REST-only fallback retries a transient 503, without a 2-second sleep.
+            $fallback = query_crossref_newapi('10.1117/12.2078768', true);
+            $this->assertSame([], get_object_vars($fallback));
+            $this->assertSame(3, $requests);
+            $this->assertSame([2], $sleepCalls);
+            $this->assertSame([100000], $shortSleeps);
+
+            // A DNS outage should not trigger a futile second request.
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return('bot_curl_last_transfer', [
+                'ok' => false, 'errno' => 6, 'error' => 'DNS failure', 'http_code' => 0,
+            ]);
+            $fallback = query_crossref_newapi('10.1117/12.703370', true);
+            $this->assertSame([], get_object_vars($fallback));
+            $this->assertSame(4, $requests);
+            $this->assertSame([2], $sleepCalls);
+            $this->assertSame([100000], $shortSleeps);
+        } finally {
+            foreach (['usleep', 'sleep', 'bot_curl_last_transfer', 'bot_curl_exec'] as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
     /**
      * Exercise the normal, unforced DOI-only code path, with the comment-only
      * PMID/PMC fields used in the report. OpenURL and DOI content negotiation
