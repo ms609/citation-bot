@@ -552,12 +552,49 @@ function spie_dblp_search_diagnostics(string $data): string {
         ($sample === [] ? '' : ', first=' . implode('; ', $sample));
 }
 
-/** @return array<int, object> */
-function query_spie_dblp_volume_editors(string $title, string $volume, string $year): array {
+/**
+ * Describe a direct DBLP XML rejection without logging article/editor names.
+ * Bounded flags identify which identity field or editor list did not match.
+ */
+function spie_dblp_direct_response_diagnostics(
+    string $xml, string $key, string $title, string $volume, string $year
+): string {
+    $document = ExternalApiResponseGuard::decodeXml($xml);
+    if ($document === null) {
+        return 'invalid-XML';
+    }
+    if (!isset($document->proceedings)) {
+        return 'missing-proceedings';
+    }
+    $publication = $document->proceedings;
+    $actual_title = mb_strtolower(mb_trim((string) $publication->title));
+    $expected_title = mb_strtolower(mb_trim($title));
+    $title_matches = $actual_title === $expected_title ||
+        str_starts_with($actual_title, $expected_title . ',');
+    $series = mb_strtolower(mb_trim((string) $publication->series));
+    return 'key=' . ((string) $publication['key'] === $key ? 'match' : 'mismatch') .
+        '/title=' . ($title_matches ? 'match' : 'mismatch') .
+        '/volume=' . ((string) $publication->volume === $volume ? 'match' : 'mismatch') .
+        '/year=' . ((string) $publication->year === $year ? 'match' : 'mismatch') .
+        '/series=' . (in_array($series, ['spie proceedings', 'proceedings of spie'], true)
+            ? 'match' : 'mismatch') .
+        '/editors=' . (string) count($publication->editor);
+}
+
+/**
+ * Optionally return bounded HTTP, parsing and identity diagnostics for tests.
+ * Diagnostics are retained alongside cached results, including empty results.
+ * @return array<int, object>
+ */
+function query_spie_dblp_volume_editors(
+    string $title, string $volume, string $year, ?string &$diagnostic = null
+): array {
     static $ch = null;
     static $cache = [];
+    static $cache_diagnostics = [];
     $key = $title . "\0" . $volume . "\0" . $year;
     if (isset($cache[$key])) {
+        $diagnostic = $cache_diagnostics[$key] ?? 'cached without diagnostics';
         return $cache[$key];
     }
     if ($ch === null) {
@@ -582,12 +619,12 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
             $editors = parse_spie_dblp_direct_volume_xml($xml, $direct_key, $title, $volume, $year);
             if ($editors !== []) {
                 $cache[$key] = $editors;
+                $diagnostic = 'direct:HTTP 200/cURL 0/verified-editors=' . (string) count($editors);
+                $cache_diagnostics[$key] = $diagnostic;
                 return $editors;
             }
         }
-        $direct_xml = ExternalApiResponseGuard::decodeXml($xml);
-        $reason = $direct_xml === null ? 'invalid-XML' :
-            (!isset($direct_xml->proceedings) ? 'missing-proceedings' : 'identity-or-editors-mismatch');
+        $reason = spie_dblp_direct_response_diagnostics($xml, $direct_key, $title, $volume, $year);
         $diagnostics[] = 'direct:HTTP ' . (string) $transfer['http_code'] .
             '/cURL ' . (string) $transfer['errno'] . '/bytes ' . (string) mb_strlen($xml, '8bit') .
             '/reason=' . $reason;
@@ -595,8 +632,10 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
         // immediately querying another endpoint on the same host twice.
         if ($transfer['errno'] !== 0 || $transfer['http_code'] >= 500 ||
             $transfer['http_code'] === 429) {
+            $diagnostic = implode(' | ', $diagnostics);
+            $cache_diagnostics[$key] = $diagnostic;
             report_warning('DBLP SPIE editor lookup unavailable for volume ' .
-                echoable($volume) . ' (' . echoable(implode(' | ', $diagnostics)) . ')');
+                echoable($volume) . ' (' . echoable($diagnostic) . ')');
             $cache[$key] = [];
             return [];
         }
@@ -621,6 +660,9 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
             $editors = parse_spie_dblp_volume_editors($data, $title, $volume, $year);
             if ($editors !== []) {
                 $cache[$key] = $editors;
+                $diagnostics[] = 'search:HTTP 200/cURL 0/verified-editors=' . (string) count($editors);
+                $diagnostic = implode(' | ', $diagnostics);
+                $cache_diagnostics[$key] = $diagnostic;
                 return $editors;
             }
         }
@@ -632,8 +674,10 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
             break;
         }
     }
+    $diagnostic = implode(' | ', $diagnostics);
+    $cache_diagnostics[$key] = $diagnostic;
     report_warning('DBLP SPIE editor lookup found no verified editors for volume ' .
-        echoable($volume) . ' (' . echoable(implode(' | ', $diagnostics)) . ')');
+        echoable($volume) . ' (' . echoable($diagnostic) . ')');
     $cache[$key] = [];
     return [];
 }

@@ -1122,15 +1122,38 @@ final class DoiTest extends testBaseClass {
             '{"result":{"hits":{"@total":"0"}}}'));
     }
 
+    public function testSpieDblpDirectResponseDiagnosticsIdentifyRejections(): void {
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $xml = '<dblp><proceedings key="conf/sswmc/2007">' .
+            '<editor>Private Editor Name</editor><title>' . $title . '</title>' .
+            '<series>SPIE Proceedings</series><volume>6505</volume><year>2007</year>' .
+            '</proceedings></dblp>';
+        $diagnostic = spie_dblp_direct_response_diagnostics(
+            $xml, 'conf/sswmc/2007', $title, '6505', '2007');
+        $this->assertSame('key=match/title=match/volume=match/year=match/series=match/editors=1',
+            $diagnostic);
+        $this->assertStringNotContainsString('Private Editor Name', $diagnostic);
+        $this->assertStringContainsString('key=mismatch', spie_dblp_direct_response_diagnostics(
+            $xml, 'conf/other/2007', $title, '6505', '2007'));
+        $this->assertStringContainsString('volume=mismatch', spie_dblp_direct_response_diagnostics(
+            $xml, 'conf/sswmc/2007', $title, '6506', '2007'));
+        $this->assertSame('invalid-XML', spie_dblp_direct_response_diagnostics(
+            '<broken', 'conf/sswmc/2007', $title, '6505', '2007'));
+        $this->assertSame('missing-proceedings', spie_dblp_direct_response_diagnostics(
+            '<dblp/>', 'conf/sswmc/2007', $title, '6505', '2007'));
+    }
+
     /**
      * Required live integration test: catches a valid empty search result,
      * a blocked request, or a response-shape change that offline mocks miss.
      */
     public function testSpieDblpVolume6505LiveReturnsEditors(): void {
         $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
-        $editors = query_spie_dblp_volume_editors($title, '6505', '2007');
+        $diagnostic = null;
+        $editors = query_spie_dblp_volume_editors($title, '6505', '2007', $diagnostic);
         $this->assertCount(2, $editors,
-            'DBLP returned no verified editors for SPIE volume 6505; inspect the API warning and response');
+            'DBLP volume 6505 returned no verified editors. HTTP/search/validation diagnostics: ' .
+            echoable($diagnostic ?? 'unavailable'));
         $this->assertSame('Delp III', $editors[0]->family);
         $this->assertSame('Edward J.', $editors[0]->given);
         $this->assertSame('Wong', $editors[1]->family);
