@@ -38,11 +38,14 @@ final class ProtectedExtensionTagsTest extends testBaseClass {
         $this->assertSame(1, mb_substr_count($page->parsed_text(), 'pages=44–55'));
     }
 
-    public function testOpeningTagsHaveCorrectBoundaries(): void {
-        $this->assertSame(0, preg_match(SourceCode::REGEXP[0], '<sourceful>{{cite web}}</sourceful>'));
-        $this->assertSame(0, preg_match(Chemistry::REGEXP[0], '<center>{{cite web}}</center>'));
-        $this->assertSame(0, preg_match(Mathematics::REGEXP[0], '<mathjax>{{cite web}}</mathjax>'));
-        $this->assertSame(1, preg_match(Mathematics::REGEXP[0], '<math new="x" chem class="y">{{cite web}}</math>'));
-        $this->assertSame(1, preg_match(Chemistry::REGEXP[0], '<ce style="inline">{{cite web}}</ce>'));
+        $this->assertRegexResult(0, SourceCode::REGEXP[0], '<sourceful>{{cite web}}</sourceful>');
+        $this->assertRegexResult(0, Chemistry::REGEXP[0], '<center>{{cite web}}</center>');
+        $this->assertRegexResult(0, Mathematics::REGEXP[0], '<mathjax>{{cite web}}</mathjax>');
+        $this->assertRegexResult(1, Mathematics::REGEXP[0], '<math new="x" chem class="y">{{cite web}}</math>');
+        $this->assertRegexResult(1, Chemistry::REGEXP[0], '<ce style="inline">{{cite web}}</ce>');
+    }
+
+    private function assertRegexResult(int $expected, string $pattern, string $subject): void {
+        $this->assertSame($expected, preg_match($pattern, $subject));
     }
 }
