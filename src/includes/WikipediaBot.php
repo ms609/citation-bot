@@ -268,7 +268,7 @@ final class WikipediaBot {
         }
 
         if (HTML_OUTPUT) {
-            report_inline("\n <span style='reddish'>Written to <a href='"   // @codeCoverageIgnore
+            report_inline("\n <span class='reddish'>Written to <a href='"   // @codeCoverageIgnore
                 . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"  // @codeCoverageIgnore
                 . echoable($myPage->title) . '</a></span>');                // @codeCoverageIgnore
         } else {
