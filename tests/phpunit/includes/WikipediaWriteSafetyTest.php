@@ -20,6 +20,6 @@ final class WikipediaWriteSafetyTest extends testBaseClass {
         $text = "{{cite web|title=Zürich|url=https://example.org}}
 ";
         $this->assertSame(md5($text), WikipediaBot::edit_safety_parameters($text, false)['md5']);
-        $this->assertNotSame(md5(rtrim($text)), WikipediaBot::edit_safety_parameters($text, false)['md5']);
+        $this->assertNotSame(md5(mb_rtrim($text)), WikipediaBot::edit_safety_parameters($text, false)['md5']);
     }
 }
