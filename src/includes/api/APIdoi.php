@@ -182,9 +182,10 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (
                 $series_title === '' &&
                 str_starts_with($doi, '10.1117/12.') &&
-                $doi_type === 'proceedings-article' &&
-                isset($crossRefNewAPI->{'container-title'}[0]) &&
-                $crossRefNewAPI->{'container-title'}[0] === 'SPIE Proceedings'
+                // Crossref's container-title may be the volume name rather than
+                // "SPIE Proceedings". The volume title in OpenURL is sufficient
+                // corroboration even if the REST lookup is unavailable.
+                ($doi_type === 'proceedings-article' || mb_trim((string) $crossRef->volume_title) !== '')
             ) {
                 $series_title = 'Proceedings of SPIE';
             }
@@ -225,34 +226,8 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                 }
             }
-            // The OpenURL XML often omits the volume editors that Crossref's JSON record carries (SPIE proceedings, for example)
-            if (
-                $doi_type === 'proceedings-article' &&
-                str_starts_with($doi, '10.1117/12.') &&
-                $template->blank(['editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1']) &&
-                isset($crossRefNewAPI->editor) &&
-                is_array($crossRefNewAPI->editor)
-            ) {
-                $json_ed_i = 0;
-                foreach ($crossRefNewAPI->editor as $json_editor) {
-                    if (!is_object($json_editor)) {
-                        continue;
-                    }
-                    $json_family = (isset($json_editor->family) && is_string($json_editor->family)) ? mb_trim($json_editor->family) : '';
-                    $json_given = (isset($json_editor->given) && is_string($json_editor->given)) ? mb_trim($json_editor->given) : '';
-                    if ($json_family === '') {
-                        continue; // Organizations and nameless entries are not personal editors
-                    }
-                    ++$json_ed_i;
-                    if ($json_ed_i > 30) { // Same cap as the XML path: more would clutter the wikitext
-                        break;
-                    }
-                    $template->add_if_new('editor-last' . (string) $json_ed_i, format_surname($json_family), 'crossref');
-                    if ($json_given !== '') {
-                        $template->add_if_new('editor-first' . (string) $json_ed_i, format_forename($json_given), 'crossref');
-                    }
-                }
-            }
+            // Editor metadata is more complete in Crossref REST than in OpenURL.
+            add_spie_crossref_json_editors($template, $doi, $crossRefNewAPI);
             $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
             $template->add_if_new('journal', $journal_title); // add_if_new will format the title
             $crossref_volume = (string) $crossRef->volume;
@@ -288,9 +263,49 @@ function expand_by_doi(Template $template, bool $force = false): void {
         } else {
             report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
             expand_doi_with_dx($template, $doi);
+            // The REST record can still contain SPIE volume editors when the
+            // legacy OpenURL service has no usable XML response.
+            if (str_starts_with($doi, '10.1117/12.')) {
+                $spie_json = query_crossref_newapi($doi);
+                if (($spie_json->type ?? '') === 'proceedings-article') {
+                    $template->add_if_new('series', 'Proceedings of SPIE', 'crossref');
+                    add_spie_crossref_json_editors($template, $doi, $spie_json);
+                }
+            }
         }
     }
     return;
+}
+
+/** Add only named SPIE proceedings volume editors; preserve existing editors. */
+function add_spie_crossref_json_editors(Template $template, string $doi, object $record): void {
+    if (
+        !str_starts_with($doi, '10.1117/12.') ||
+        ($record->type ?? '') !== 'proceedings-article' ||
+        !$template->blank(FIRST_EDITOR_ALIASES) ||
+        !isset($record->editor) ||
+        !is_array($record->editor)
+    ) {
+        return;
+    }
+    $editor_index = 0;
+    foreach ($record->editor as $editor) {
+        if (!is_object($editor)) {
+            continue;
+        }
+        $family = is_string($editor->family ?? null) ? mb_trim($editor->family) : '';
+        $given = is_string($editor->given ?? null) ? mb_trim($editor->given) : '';
+        if ($family === '') {
+            continue; // Organization or nameless record, not a personal editor.
+        }
+        if (++$editor_index > 30) {
+            break;
+        }
+        $template->add_if_new('editor-last' . (string) $editor_index, format_surname($family), 'crossref');
+        if ($given !== '') {
+            $template->add_if_new('editor-first' . (string) $editor_index, format_forename($given), 'crossref');
+        }
+    }
 }
 
 function parse_crossref_xml_response(string $raw_xml): ?SimpleXMLElement {
