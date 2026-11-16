@@ -671,17 +671,119 @@ final class DoiTest extends testBaseClass {
         }
     }
 
+    public function testSpieCompletesMatchingOpenUrlEditorsWithoutOverwritingThem(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.2078768';
+        $openurl = new SimpleXMLElement(
+            '<query><article_title>Example SPIE paper</article_title>' .
+            '<volume_title>Laser 3D Manufacturing II</volume_title>' .
+            '<contributors><contributor contributor_role="editor">' .
+            '<surname>Helvajian</surname><given_name>Henry</given_name>' .
+            '</contributor></contributors></query>'
+        );
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'editor' => [
+                (object) ['family' => 'Helvajian', 'given' => 'Henry'],
+                (object) ['family' => 'Piqué', 'given' => 'Alberto'],
+                (object) ['family' => 'Wegener', 'given' => 'Martin'],
+                (object) ['family' => 'Gu', 'given' => 'Bo'],
+            ],
+        ];
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => $openurl,
+            'query_crossref_newapi' => $rest,
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Henry', $template->get2('editor-first1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2'));
+            $this->assertSame('Wegener', $template->get2('editor-last3'));
+            $this->assertSame('Gu', $template->get2('editor-last4'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieConflictingOpenUrlEditorDoesNotGetMixedWithRest(): void {
+        $doi = '10.1117/12.2078768';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        $this->assertTrue($template->add_if_new('editor-last1', 'Other', 'crossref'));
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'editor' => [
+                (object) ['family' => 'Helvajian', 'given' => 'Henry'],
+                (object) ['family' => 'Piqué', 'given' => 'Alberto'],
+            ],
+        ];
+        add_spie_crossref_json_editors($template, $doi, $rest);
+        $this->assertSame('Other', $template->get2('editor-last1'));
+        $this->assertNull($template->get2('editor-last2'));
+    }
+
+    public function testSpieWithNullRestEditorsDoesNotInventEditors(): void {
+        $doi = '10.1117/12.703370';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        add_spie_crossref_json_editors($template, $doi, (object) [
+            'type' => 'proceedings-article',
+            'editor' => null,
+        ]);
+        $this->assertNull($template->get2('editor-last1'));
+    }
+
     public function testCrossRefAddEditorsSpieProceedingsLive(): void {
-        // The unit tests above check the code deterministically.  This is live test.
-        $text = "{{Cite journal | doi = 10.1117/12.2078768|pmid=<!-- -->|pmc=<!-- -->}}";
-        $template = $this->process_citation($text);
-        $this->assertSame('cite book', $template->wikiname());
-        $this->assertSame('Proceedings of SPIE', $template->get2('series'));
-        $this->assertSame('Helvajian', $template->get2('editor-last1'));
-        $this->assertSame('Henry', $template->get2('editor-first1'));
-        $this->assertSame('Piqué', $template->get2('editor-last2'));
-        $this->assertSame('Gu', $template->get2('editor-last4'));
-        $this->assertNull($template->get2('editor-last5'));
+        // Exercise *live REST metadata* independently of the less reliable
+        // OpenURL and DOI content-negotiation services.
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to isolate the live Crossref REST test');
+        }
+        $doi = '10.1117/12.2078768';
+        $record = query_crossref_newapi($doi);
+        if (($record->type ?? '') === '') {
+            $this->markTestSkipped('Crossref REST was unreachable for the live test');
+        }
+        $this->assertSame('proceedings-article', $record->type);
+        $this->assertIsArray($record->editor ?? null);
+        $this->assertCount(4, $record->editor);
+
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => null,
+            'expand_doi_with_dx' => null,
+            'query_crossref_newapi' => $record,
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $this->assertSame('Proceedings of SPIE', $template->get2('series'));
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Henry', $template->get2('editor-first1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2'));
+            $this->assertSame('Wegener', $template->get2('editor-last3'));
+            $this->assertSame('Gu', $template->get2('editor-last4'));
+            $this->assertNull($template->get2('editor-last5'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
     }
 
     public function testBlankTypeFromDX1(): void {

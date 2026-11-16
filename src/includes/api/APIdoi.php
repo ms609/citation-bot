@@ -277,18 +277,20 @@ function expand_by_doi(Template $template, bool $force = false): void {
     return;
 }
 
-/** Add only named SPIE proceedings volume editors; preserve existing editors. */
+/** Add named SPIE proceedings editors, completing only a matching existing list. */
 function add_spie_crossref_json_editors(Template $template, string $doi, object $record): void {
     if (
         !str_starts_with($doi, '10.1117/12.') ||
         ($record->type ?? '') !== 'proceedings-article' ||
-        !$template->blank(FIRST_EDITOR_ALIASES) ||
         !isset($record->editor) ||
-        !is_array($record->editor)
+        !is_array($record->editor) ||
+        $template->had_initial_editor()
     ) {
         return;
     }
-    $editor_index = 0;
+
+    /** @var array<int, array{family: string, given: string}> $editors */
+    $editors = [];
     foreach ($record->editor as $editor) {
         if (!is_object($editor)) {
             continue;
@@ -298,12 +300,51 @@ function add_spie_crossref_json_editors(Template $template, string $doi, object 
         if ($family === '') {
             continue; // Organization or nameless record, not a personal editor.
         }
-        if (++$editor_index > 30) {
+        $editors[] = ['family' => $family, 'given' => $given];
+        if (count($editors) === 30) {
             break;
         }
-        $template->add_if_new('editor-last' . (string) $editor_index, format_surname($family), 'crossref');
-        if ($given !== '') {
-            $template->add_if_new('editor-first' . (string) $editor_index, format_forename($given), 'crossref');
+    }
+    if ($editors === []) {
+        return;
+    }
+
+    // Named/literal or unnumbered editors cannot be aligned safely with REST.
+    if (!$template->blank(['editors', 'veditors', 'editor', 'editor1', 'editor-last', 'editor-first'])) {
+        return;
+    }
+    // OpenURL can have just the first volume editor. Only extend a *matching*
+    // numbered list, and never interleave editors from disagreeing sources.
+    // Check all numbered fields before making any changes (no partial writes).
+    for ($index = 1; $index <= 30; ++$index) {
+        $number = (string) $index;
+        if (!$template->blank(['editor' . $number, 'editor' . $number . '-surname', 'editor-surname' . $number,
+                               'editor' . $number . '-given', 'editor-given' . $number])) {
+            return;
+        }
+        $existing_last = $template->get_without_comments_and_placeholders('editor-last' . $number);
+        $existing_last_alt = $template->get_without_comments_and_placeholders('editor' . $number . '-last');
+        $existing_first = $template->get_without_comments_and_placeholders('editor-first' . $number);
+        $existing_first_alt = $template->get_without_comments_and_placeholders('editor' . $number . '-first');
+        foreach ([$existing_last, $existing_last_alt] as $last) {
+            if ($last !== '' && (!isset($editors[$index - 1]) ||
+                !str_equivalent($last, $editors[$index - 1]['family']))) {
+                return;
+            }
+        }
+        foreach ([$existing_first, $existing_first_alt] as $first) {
+            if ($first !== '' && (!isset($editors[$index - 1]) ||
+                $editors[$index - 1]['given'] === '' ||
+                !str_equivalent($first, $editors[$index - 1]['given']))) {
+                return;
+            }
+        }
+    }
+    foreach ($editors as $index => $editor) {
+        $number = (string) ($index + 1);
+        $template->add_if_new('editor-last' . $number, format_surname($editor['family']), 'crossref');
+        if ($editor['given'] !== '') {
+            $template->add_if_new('editor-first' . $number, format_forename($editor['given']), 'crossref');
         }
     }
 }
@@ -794,6 +835,22 @@ function query_crossref_newapi(string $doi): object {
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $result = parse_crossref_newapi_response($json);
+    // SPIE volume editor metadata is absent from many OpenURL responses.
+    // Retry a single transient REST failure, not permanent 4xx or bad metadata.
+    if ($result === null && str_starts_with($doi, '10.1117/12.')) {
+        $transfer = bot_curl_last_transfer($ch);
+        $http_status = $transfer['http_code'];
+        if ($transfer['errno'] !== 0 || $http_status === 429 || $http_status >= 500) {
+            usleep(500000);
+            $json = bot_curl_exec($ch);
+            $result = parse_crossref_newapi_response($json);
+        }
+        if ($result === null) {
+            $transfer = bot_curl_last_transfer($ch);
+            report_warning('Crossref REST SPIE metadata unavailable for DOI ' . echoable($doi) .
+                ' (HTTP ' . (string) $transfer['http_code'] . ', cURL ' . (string) $transfer['errno'] . ')');
+        }
+    }
     unset($json);
 
     if ($result !== null) {
