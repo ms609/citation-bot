@@ -17,6 +17,8 @@ final class JournalAcronymProtectionTest extends testBaseClass {
             'ACM and TOG' => ['ACM transactions on graphics (TOG)', 'ACM Transactions on Graphics (TOG)'],
             'AJR prefix' => ['AJR. American journal of roentgenology', 'AJR. American Journal of Roentgenology'],
             'IEEE' => ['IEEE transactions on computers', 'IEEE Transactions on Computers'],
+            'IFAC canonical spelling' => ['IFAC-PapersOnLine', 'IFAC-PapersOnLine'],
+            'IFAC normalized mixed case' => ['IFAC-Papersonline', 'IFAC-PapersOnLine'],
             'ordinary lower words' => ['Journal of research in physics', 'Journal of Research in Physics'],
             'all uppercase is not locked' => ['MOLECULAR AND CELLULAR BIOLOGY', 'Molecular and Cellular Biology'],
         ];
