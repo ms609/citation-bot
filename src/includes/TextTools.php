@@ -854,7 +854,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
  * from turning the following word into a new sentence.
  *
  * @param string $text Article title to protect.
- * @param array<string, string> $held Saved title-case terms keyed by placeholder.
+ * @param array<string, string> &$held Saved title-case terms keyed by placeholder.
  */
 function protect_article_title_case(string $text, array &$held): string {
     static $pattern = null;
