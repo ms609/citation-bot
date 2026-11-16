@@ -373,6 +373,8 @@ class Page {
         $preformated = $this->extract_object('Preformated');
         /** @var array<SyntaxHighlight> $syntaxhighlights */
         $syntaxhighlights = $this->extract_object('SyntaxHighlight');
+        /** @var array<SourceCode> $sourcecode */
+        $sourcecode = $this->extract_object('SourceCode');
         set_time_limit(120);
         [$allow_bots, $cs1_optout] = $this->bot_directives();
         if (!$allow_bots) {
@@ -639,6 +641,8 @@ class Page {
         unset($preformated);
         $this->replace_object($syntaxhighlights);
         unset($syntaxhighlights);
+        $this->replace_object($sourcecode);
+        unset($sourcecode);
         $this->replace_object($musicality);
         unset($musicality);
         $this->replace_object($mathematics);
@@ -1106,7 +1110,8 @@ class Page {
         if ($shield_protected) {
             $text = remove_comments($text);
             foreach ([...Nowiki::REGEXP, ...Chemistry::REGEXP, ...Mathematics::REGEXP,
-                ...Musicscores::REGEXP, ...Preformated::REGEXP, ...SyntaxHighlight::REGEXP] as $pattern) {
+                ...Musicscores::REGEXP, ...Preformated::REGEXP, ...SyntaxHighlight::REGEXP,
+                ...SourceCode::REGEXP] as $pattern) {
                 $text = safe_preg_replace($pattern, ' ', $text);
             }
         }

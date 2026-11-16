@@ -88,7 +88,8 @@ final class generate_templateTest extends testBaseClass {
     /** @return array<string, array{string, string}> */
     public static function invalidIdentifiers(): array {
         return [
-            'missing' => ['', 'Exactly one parameters must be passed'],
+            'missing' => ['', 'Exactly one parameter must be passed'],
+            'multiple' => ['doi=10.1000%2F1234&pmid=12345', 'Exactly one parameter must be passed'],
             'array' => ['doi%5B%5D=123', 'Invalid parameter type'],
             'invalid UTF-8' => ['doi=%FFabc', 'Invalid UTF-8'],
             'too short' => ['jstor=1', 'Unset parameter'],
