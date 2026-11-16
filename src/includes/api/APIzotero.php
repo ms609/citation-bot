@@ -863,8 +863,8 @@ final class Zotero {
             if (in_array($template->get('url-status'), BAD_URL_STATUS, true)) {
                 return;
             }
-            $access = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
-            $archive = strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
+            $access = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date'), false));
+            $archive = strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date'), false));
             if ($access !== false && $archive !== false) {
                 $access_date = min($access, $archive);
             } else {
@@ -1625,7 +1625,7 @@ final class Zotero {
         if (!$has_access_date && isset($result->date)) {
             // The existing public entry point also uses 0 for an absent access date.
             foreach (['access-date', 'accessdate', 'archive-date', 'archivedate'] as $param) {
-                if (strtotime(tidy_date($template->get($param))) === 0) {
+                if (strtotime(tidy_date($template->get($param), false)) === 0) {
                     $has_access_date = true;
                     break;
                 }

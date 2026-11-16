@@ -1245,21 +1245,24 @@ function localized_citation_date(string $date): ?string {
 }
 
 /**
- * Wrapper to change all pre-1900 dates to just years
+ * Normalize publication dates; old calendar dates are reduced to years.
+ * Future cover dates are valid. For event dates (such as access or archive),
+ * pass false to enforce the previous three-day future tolerance.
  */
-function tidy_date(string $string): string {
+function tidy_date(string $string, bool $allow_future = true): string {
     $string = tidy_date_inside($string);
     if ($string === '') {
         return $string;
     }
-    $time = strtotime($string);
+    // A bare four-digit year is a calendar year, not a 24-hour time (20:27).
+    $time = preg_match('~^\d{4}$~', $string) === 1
+        ? strtotime($string . '-01-01')
+        : strtotime($string);
     if ($time === false) {
         return $string;
     }
-    // Check for future dates (more than 3 days ahead)
-    $three_days_future = time() + 259200; // 3 days in seconds
-    if ($time > $three_days_future) {
-        report_warning("Rejected future date: " . echoable($string) . ". Dates cannot be in the future.");
+    if (!$allow_future && $time > time() + 259200) {
+        report_warning("Rejected future event date: " . echoable($string));
         return '';
     }
     $old = strtotime('1 January 1900');
