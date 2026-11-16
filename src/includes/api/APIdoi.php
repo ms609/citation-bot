@@ -421,8 +421,10 @@ function parse_spie_dblp_volume_editors(string $json, string $title, string $vol
         if (!is_array($info) || ($info['type'] ?? null) !== 'Editorship' ||
             (string) ($info['volume'] ?? '') !== $volume ||
             ($year !== '' && (string) ($info['year'] ?? '') !== $year) ||
-            !is_string($info['series'] ?? null) ||
-            !in_array(mb_strtolower(mb_trim($info['series'])),
+            // DBLP's publication-search response often uses "venue", rather
+            // than the "series" key used by the normalized test fixture.
+            !is_string($info['series'] ?? $info['venue'] ?? null) ||
+            !in_array(mb_strtolower(mb_trim($info['series'] ?? $info['venue'])),
                 ['spie proceedings', 'proceedings of spie'], true) ||
             !is_string($info['title'] ?? null)) {
             continue;
@@ -497,9 +499,20 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
     $url = 'https://dblp.org/search/publ/api?q=' . rawurlencode($title) . '&h=10&format=json';
     curl_setopt($ch, CURLOPT_URL, $url);
     $data = bot_curl_exec($ch);
-    $cache[$key] = is_string($data)
-        ? parse_spie_dblp_volume_editors($data, $title, $volume, $year)
-        : [];
+    // bot_curl_exec() always returns a string; an empty string parses to [].
+    $cache[$key] = parse_spie_dblp_volume_editors($data, $title, $volume, $year);
+    if ($cache[$key] === []) {
+        $transfer = bot_curl_last_transfer($ch);
+        $http_status = (int) ($transfer['http_code'] ?? 0);
+        if ($http_status !== 200) {
+            report_warning('DBLP SPIE editor lookup failed for volume ' . echoable($volume) .
+                ' (HTTP ' . (string) $http_status . ', cURL ' . (string) ($transfer['errno'] ?? 0) . ')');
+        } elseif (!is_array(json_decode($data, true))) {
+            report_warning('DBLP SPIE editor lookup returned malformed/non-JSON data for volume ' . echoable($volume));
+        } else {
+            report_warning('DBLP SPIE editor lookup returned no verified editorship for volume ' . echoable($volume));
+        }
+    }
     return $cache[$key];
 }
 

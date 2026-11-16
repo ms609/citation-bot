@@ -996,6 +996,15 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('Delp III', $editors[0]->family);
         $this->assertSame('Edward J.', $editors[0]->given);
         $this->assertSame('Wong', $editors[1]->family);
+        // The alternate "venue" key occurs in the live publication-search API.
+        $venue_record = $record;
+        unset($venue_record['series']);
+        $venue_record['venue'] = 'SPIE Proceedings';
+        $this->assertCount(2, parse_spie_dblp_volume_editors(
+            $make([['info' => $venue_record]]), $title, '6505', '2007'));
+        // Zero hits are valid metadata absence; never silently invent editors.
+        $this->assertSame([], parse_spie_dblp_volume_editors(
+            $make([]), $title, '6505', '2007'));
         foreach ([
             ['volume' => '6506'], ['year' => '2008'], ['series' => 'Other Proceedings'],
             ['type' => 'Conference and Workshop Papers'], ['title' => 'Unrelated Volume'],
@@ -1032,10 +1041,10 @@ final class DoiTest extends testBaseClass {
         }
         $doi = '10.1117/12.2078768';
         $record = query_crossref_newapi($doi);
-        if (($record->type ?? '') === '') {
-            $this->markTestSkipped('Crossref REST was unreachable for the live test');
-        }
-        $this->assertSame('proceedings-article', $record->type);
+        // Empty metadata cannot distinguish a transport outage from a parser
+        // regression. Required integration tests must fail, never skip.
+        $this->assertSame('proceedings-article', $record->type ?? null,
+            'Crossref returned no usable proceedings metadata for ' . $doi);
         $this->assertIsArray($record->editor ?? null);
         $this->assertCount(4, $record->editor);
 
@@ -1065,6 +1074,21 @@ final class DoiTest extends testBaseClass {
                 uopz_unset_return($name);
             }
         }
+    }
+
+    /**
+     * Required live integration test: catches a valid empty search result,
+     * a blocked request, or a response-shape change that offline mocks miss.
+     */
+    public function testSpieDblpVolume6505LiveReturnsEditors(): void {
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $editors = query_spie_dblp_volume_editors($title, '6505', '2007');
+        $this->assertCount(2, $editors,
+            'DBLP returned no verified editors for SPIE volume 6505; inspect the API warning and response');
+        $this->assertSame('Delp III', $editors[0]->family);
+        $this->assertSame('Edward J.', $editors[0]->given);
+        $this->assertSame('Wong', $editors[1]->family);
+        $this->assertSame('Ping Wah', $editors[1]->given);
     }
 
     public function testBlankTypeFromDX1(): void {

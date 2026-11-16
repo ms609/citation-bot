@@ -73,6 +73,7 @@ final class Template
         'adsabs' => [],
         'arxiv' => [],
         'crossref' => [],
+        'dblp' => [],
         'dx' => [],
         'entrez' => [],
         'jstor' => [],
