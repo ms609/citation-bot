@@ -53,7 +53,7 @@ if ($dev_user_run) {
 
 $effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
 $discovery_entry_id = gate_big_run_probe('webform_linked', $api->get_the_user());
-if (!in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan', 'Redalert2fan'], true) && !WikipediaBot::title_is_in_user_namespace($page_name)) { // Do not let people run willy-nilly
+if (!linked_pages_may_reference_non_user_page($api->get_the_user()) && !WikipediaBot::title_is_in_user_namespace($page_name)) { // Do not let people run willy-nilly
     report_warning('API only intended for User generated pages for fixing specific issues ');
     release_big_run_lease($discovery_entry_id);
     bot_html_footer();

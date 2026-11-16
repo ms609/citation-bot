@@ -1516,8 +1516,8 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('42', clean_volume('42'));
     }
 
-    public function testCleanVolumeParenthesisReturnsEmpty(): void {
-        $this->assertSame('', clean_volume('5(2)'));
+    public function testCleanVolumeParenthesizedIssueRetainsVolume(): void {
+        $this->assertSame('5', clean_volume('5(2)'));
     }
 
     public function testCleanVolumeNovemberReturnsEmpty(): void {

@@ -92,6 +92,11 @@ function clean_up_first_names(string $value): string {
 const MAC_SURNAMES_WITHOUT_INNER_CAPITAL = [
     'macaluso', 'macario', 'macaulay', 'macchi', 'macedo', 'macek', 'macias', 'macías', 'maciel',
     'mackey', 'mackie', 'macklin', 'macomber', 'macready', 'macron', 'macura',
+    // Attested Polish, Filipino, Italian, and other non-Gaelic spellings.
+    'macabenta', 'macalalad', 'macalinao', 'macalintal', 'macapagal', 'macaraeg',
+    'macaraig', 'macaspac', 'macatangay', 'maceda', 'macera', 'maciej',
+    'maciejak', 'maciejczyk', 'maciejewski', 'maciejowski', 'mackiewicz', 'macri',
+    'macrini', 'macrì', 'macuga',
 ];
 
 /** These letters give casing rules for dotted and dotless I in Turkic names. */
@@ -125,6 +130,42 @@ function decode_name_entities(string $name): string {
     return str_replace("''", '&#0039;&#0039;', $name);
 }
 
+/**
+ * Full-name spellings for apostrophe prefixes whose case cannot be inferred from
+ * a one-letter prefix.  Keys use ASCII apostrophes and Unicode lowercase.
+ * Exact matching avoids changing unrelated French/Italian surname particles.
+ */
+const SURNAME_APOSTROPHE_CASE_EXCEPTIONS = [
+    "d'agostino" => "D'Agostino",
+    "d'alembert" => "d'Alembert",
+    "d'alessandro" => "D'Alessandro",
+    "d'alessio" => "D'Alessio",
+    "d'amato" => "D'Amato",
+    "d'amico" => "D'Amico",
+    "d'andrea" => "D'Andrea",
+    "d'angelo" => "D'Angelo",
+    "d'annunzio" => "D'Annunzio",
+    "d'antoni" => "D'Antoni",
+    "d'arc" => "d'Arc",
+    "d'artagnan" => "d'Artagnan",
+    "d'avila" => "D'Avila",
+    "d'elia" => "D'Elia",
+    "d'esposito" => "D'Esposito",
+    "d'onofrio" => "D'Onofrio",
+    "d'urso" => "D'Urso",
+    "l'amour" => "L'Amour",
+    "l'amoureux" => "L'Amoureux",
+    "l'archevêque" => "L'Archevêque",
+    "l'ecuyer" => "L'Ecuyer",
+    "l'estrange" => "L'Estrange",
+    "l'hermite" => "l'Hermite",
+    "l'heureux" => "L'Heureux",
+    "l'hôpital" => "L'Hôpital",
+    "o'brien" => "O'Brien",
+    "o'connor" => "O'Connor",
+    "o'neill" => "O'Neill",
+];
+
 function format_surname(string $surname): string {
     $surname = decode_name_entities($surname);
     $surname = mb_trim(normalize_unicode_nfc($surname));
@@ -136,6 +177,11 @@ function format_surname(string $surname): string {
     }
     if ($surname === '') {
         return '';
+    }
+    $surname_case_key = mb_strtolower(str_replace('’', "'", $surname));
+    if (isset(SURNAME_APOSTROPHE_CASE_EXCEPTIONS[$surname_case_key])) {
+        $canonical = SURNAME_APOSTROPHE_CASE_EXCEPTIONS[$surname_case_key];
+        return str_contains($surname, '’') ? str_replace("'", '’', $canonical) : $canonical;
     }
     if (preg_match('~^\S\.?$~u', $surname)) {
         return mb_strtoupper($surname); // Just a single initial, with or without period
@@ -394,8 +440,64 @@ function format_author(string $author): string {
     return mb_trim($full_name);
 }
 
+/**
+ * Recognize only unambiguous, initial-based author lists. A comma may
+ * separate authors (Smith J, Jones K) or surname and initials (Smith, J.).
+ * Ambiguous prose and legacy inputs must still use the existing parser.
+ *
+ * @return list<string>|null Individual names, or null when not unambiguous.
+ */
+function split_explicit_initial_author_list(string $authors): ?array {
+    $normalized = preg_replace('~\s*(?:\band\b|&)\s*~iu', ',', $authors);
+    if ($normalized === null) {
+        return null; // Invalid UTF-8: retain the existing best-effort fallback.
+    }
+    $parts = preg_split('~\s*[,;]\s*~u', mb_trim($normalized), -1, PREG_SPLIT_NO_EMPTY);
+    if ($parts === false || count($parts) < 2) {
+        return null;
+    }
+    $surname = '[\p{L}][\p{L}\p{M}\x{0027}\x{2019}-]*';
+    $surnames = $surname . '(?:\s+' . $surname . '){0,2}';
+    $initials = '(?:\p{Lu}\.?\s*){1,4}';
+    $complete = '~\A(?:' . $surnames . '\s+' . $initials .
+        '|(?:\p{Lu}\.?\s+){1,4}' . $surnames . ')\z~u';
+    $name_only = '~\A' . $surnames . '\z~u';
+    $initials_only = '~\A' . $initials . '\z~u';
+    $names = [];
+    $count = count($parts);
+    for ($i = 0; $i < $count;) {
+        if (preg_match($complete, $parts[$i]) === 1) {
+            $names[] = $parts[$i];
+            $i++;
+        } elseif ($i + 1 < $count &&
+            preg_match($name_only, $parts[$i]) === 1 &&
+            preg_match($initials_only, $parts[$i + 1]) === 1
+        ) {
+            $names[] = $parts[$i] . ', ' . $parts[$i + 1];
+            $i += 2;
+        } else {
+            return null;
+        }
+    }
+    return count($names) >= 2 ? $names : null;
+}
+
 function format_multiple_authors(string $authors): string {
     $authors = html_entity_decode($authors, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+
+    $names = split_explicit_initial_author_list($authors);
+    if ($names !== null) {
+        $formatted_names = array_map('format_author', $names);
+        foreach ($formatted_names as &$formatted_name) {
+            // format_author() can discard the period on an explicit single-letter
+            // forename ("Smith, J." or "J. Smith"). Restore it for this list only.
+            if (preg_match('~(?:,\s*|\s)\p{Lu}$~u', $formatted_name) === 1) {
+                $formatted_name .= '.';
+            }
+        }
+        unset($formatted_name);
+        return implode('; ', $formatted_names);
+    }
 
     $return = [];
     ## Split the citation into an author by author account
