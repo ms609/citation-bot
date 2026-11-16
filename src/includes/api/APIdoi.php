@@ -264,10 +264,49 @@ function expand_by_doi(Template $template, bool $force = false): void {
             report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
             expand_doi_with_dx($template, $doi);
             // The REST record can still contain SPIE volume editors when the
-            // legacy OpenURL service has no usable XML response.
+            // legacy OpenURL service has no usable XML response. It also has
+            // article metadata (title, authors, date, etc.) which must be
+            // populated here: adding editors alone cannot expand a DOI-only
+            // citation if DOI content negotiation also failed.
             if (str_starts_with($doi, '10.1117/12.')) {
                 $spie_json = query_crossref_newapi($doi);
                 if (($spie_json->type ?? '') === 'proceedings-article') {
+                    // Crossref's REST response is an object; the shared DOI
+                    // parser accepts associative arrays. Map proceedings
+                    // paper metadata to its book/chapter representation, as
+                    // the OpenURL branch does (do not cite the paper as the
+                    // title of the entire proceedings volume).
+                    $spie_record_json = json_encode($spie_json);
+                    $spie_record = is_string($spie_record_json)
+                        ? json_decode($spie_record_json, true)
+                        : null;
+                    if (is_array($spie_record)) {
+                        $spie_record['type'] = 'book-chapter';
+                        // Some records name both a generic series and the
+                        // actual volume; use only the volume as book title.
+                        $volume_title = '';
+                        $containers = $spie_record['container-title'] ?? [];
+                        if (is_array($containers)) {
+                            foreach ($containers as $candidate) {
+                                if (is_string($candidate) && mb_trim($candidate) !== '' &&
+                                    !in_array(mb_strtolower(mb_trim($candidate)), [
+                                        'spie proceedings', 'proceedings of spie',
+                                        'proceedings of spie - the international society for optical engineering',
+                                    ], true)) {
+                                    $volume_title = $candidate;
+                                }
+                            }
+                        }
+                        if ($volume_title === '') {
+                            unset($spie_record['container-title']);
+                        } else {
+                            $spie_record['container-title'] = [$volume_title];
+                        }
+                        // The dedicated helper validates editor alignment and
+                        // skips corporate entries; do not use generic parsing.
+                        unset($spie_record['editor']);
+                        process_doi_json($template, $doi, $spie_record);
+                    }
                     $template->add_if_new('series', 'Proceedings of SPIE', 'crossref');
                     add_spie_crossref_json_editors($template, $doi, $spie_json);
                 }

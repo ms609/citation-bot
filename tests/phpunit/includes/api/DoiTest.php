@@ -583,6 +583,117 @@ final class DoiTest extends testBaseClass {
         }
     }
 
+    /**
+     * Exercise the normal, unforced DOI-only code path, with the comment-only
+     * PMID/PMC fields used in the report. OpenURL and DOI content negotiation
+     * are deliberately unavailable: Crossref REST must still add metadata.
+     */
+    public function testSpieDoiOnlyCitationUsesRestWhenOpenUrlAndDxUnavailable(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub the DOI services');
+        }
+
+        $doi = '10.1117/12.2078768';
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'title' => ['Evaluation of laser ultrasonic testing for inspection of metal additive manufacturing'],
+            'container-title' => ['SPIE Proceedings', 'Laser 3D Manufacturing II'],
+            'volume' => '9353',
+            'issued' => (object) ['date-parts' => [[2015]]],
+            'author' => [
+                (object) ['given' => 'Sarah', 'family' => 'Everton'],
+            ],
+            'editor' => [
+                (object) ['given' => 'Henry', 'family' => 'Helvajian'],
+                (object) ['given' => 'Alberto', 'family' => 'Piqué'],
+                (object) ['given' => 'Martin', 'family' => 'Wegener'],
+                (object) ['given' => 'Bo', 'family' => 'Gu'],
+            ],
+        ];
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => null,
+            'expand_doi_with_dx' => null,
+            'query_crossref_newapi' => $rest,
+        ];
+        foreach ($stubs as $name => $return) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $return);
+        }
+        try {
+            $template = $this->make_citation(
+                '{{Cite journal | doi = ' . $doi . ' |pmid=<!-- -->|pmc=<!-- -->}}'
+            );
+            $original = $template->parsed_text();
+            expand_by_doi($template); // No force=true: match the real bot.
+            $template->final_tidy();
+            $this->assertNotSame($original, $template->parsed_text());
+            $this->assertSame('Laser 3D Manufacturing II', $template->get('title'));
+            $this->assertStringContainsString('laser ultrasonic testing', mb_strtolower($template->get('chapter')));
+            $this->assertSame('9353', $template->get('volume'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('Everton', $template->get2('last1'));
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2'));
+            $this->assertSame('Gu', $template->get2('editor-last4'));
+            $this->assertSame('', $template->get_without_comments_and_placeholders('pmid'));
+            $this->assertSame('', $template->get_without_comments_and_placeholders('pmc'));
+            $this->assertNotSame('', $template->get('doi'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieDoiOnlyWithoutRestEditorsStillGetsBibliography(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub the DOI services');
+        }
+
+        $doi = '10.1117/12.703370';
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'title' => ['Digital imaging sensor identification (further study)'],
+            'container-title' => ['Security, Steganography, and Watermarking of Multimedia Contents IX'],
+            'volume' => '6505',
+            'issued' => (object) ['date-parts' => [[2007]]],
+            'author' => [(object) ['given' => 'Mo', 'family' => 'Chen']],
+            // Deliberately no editors: they must never be invented.
+        ];
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => null,
+            'expand_doi_with_dx' => null,
+            'query_crossref_newapi' => $rest,
+        ];
+        foreach ($stubs as $name => $return) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $return);
+        }
+        try {
+            $template = $this->make_citation(
+                '{{cite journal | doi = ' . $doi . ' |pmid=<!-- -->|pmc=<!-- -->}}'
+            );
+            $original = $template->parsed_text();
+            expand_by_doi($template);
+            $template->final_tidy();
+            $this->assertNotSame($original, $template->parsed_text());
+            $this->assertStringContainsString('Security, Steganography', $template->get('title'));
+            $this->assertStringContainsString('digital imaging sensor identification', mb_strtolower($template->get('chapter')));
+            $this->assertSame('Chen', $template->get2('last1'));
+            $this->assertSame('6505', $template->get('volume'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertNull($template->get2('editor-last1'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
     public function testSpieProceedingsEditorsFromCrossrefJson(): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub Crossref');
