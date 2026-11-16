@@ -2195,8 +2195,14 @@ function logable_doi(string $doi): string {
 }
 
 function clean_volume(string $volume): string {
-    if (mb_strpos($volume, "(") !== false) {
-        return '';
+    $volume = mb_trim($volume);
+    if (mb_strpos($volume, '(') !== false) {
+        // "12 (3)" names volume 12 and issue 3. Keep the known volume.
+        // Only discard unfamiliar parenthesized text rather than guessing at it.
+        if (preg_match('~^((?:(?:volumes?|vols?)\.?\s*)?\d+(?:[-–]\d+)?)\s*\(\s*\d+\s*\)\s*$~iD', $volume, $matches) !== 1) {
+            return '';
+        }
+        $volume = $matches[1];
     }
     // A single letter is a legitimate volume ("A", "B"), but strtotime() reads it as a military time zone
     // The same goes for a letter followed by a number ("T5", "A-1"): a time-zone letter with an offset
@@ -2209,7 +2215,11 @@ function clean_volume(string $volume): string {
     if (mb_stripos($volume, "nostradamus") !== false) {
         return '';
     }
-    return mb_trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
-     'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
-     'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
+    // Remove recognized labels only at the beginning and only at word/digit
+    // boundaries. In particular, "Volumen 4" must not become "n 4".
+    return mb_trim(safe_preg_replace(
+        '~^(?:(?:volumes?|vols?|issues?|iss|numbers?|num|nos?|nr)\.?(?=\s|\d|$)\s*|[°№]\s*)+~i',
+        '',
+        $volume
+    ));
 }
