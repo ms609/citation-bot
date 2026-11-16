@@ -86,6 +86,7 @@ class Page {
     private int $lastrevid = 0;
     private bool $page_error = false;
     private bool $cs2_mode = false;
+    private string $explicit_citation_mode = '';
     private const int CS2_INFERENCE_MINIMUM = 5; // Citation templates, all CS2, needed to infer cs2 mode without {{cs1 config}}
     private static bool $told_fast = false;
     protected static string $last_title = '';
@@ -352,6 +353,7 @@ class Page {
         set_time_limit(120);
         $this->page_error = false;
         $this->cs2_mode = false;
+        $this->explicit_citation_mode = '';
         $this->announce_page();
         if ($this->text === '') {
             report_warning("No text retrieved.\n");
@@ -407,6 +409,7 @@ class Page {
         Template::$name_list_style = $this->name_list_style;
         Template::$page_display_authors = $this->page_display_authors;
         foreach ($all_templates as $this_template) {
+            $this_template->set_page_citation_mode($this->explicit_citation_mode);
             if ($this_template->wikiname() === 'void') {
                 $this_template->block_modifications();
             }
@@ -1203,6 +1206,7 @@ class Page {
                 }
             }
         }
+        $this->explicit_citation_mode = $explicit_mode;
         $this->cs2_mode = $explicit_mode === 'cs2' ||
             ($explicit_mode === '' && !$has_cs1 && $cs2_count >= self::CS2_INFERENCE_MINIMUM);
     }

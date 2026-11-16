@@ -1163,6 +1163,45 @@ JSON;
         $this->assertSame($text, $prepared->parsed_text());
     }
 
+    public function testExplicitLocalCs2PreservesPostscriptDot(): void {
+        $text = '{{cite journal|mode=cs2|postscript=.}}';
+        $prepared = $this->prepare_citation($text);
+        $prepared->final_tidy();
+        $this->assertSame($text, $prepared->parsed_text());
+    }
+
+    public function testExplicitLocalCs1DropsRedundantPostscriptDot(): void {
+        $text = '{{cite journal|mode=cs1|postscript=.}}';
+        $prepared = $this->prepare_citation($text);
+        $prepared->final_tidy();
+        $this->assertSame('{{cite journal|mode=cs1}}', $prepared->parsed_text());
+    }
+
+    /** @return array<string, array{string, ?string}> */
+    public static function individualPostscriptCases(): array {
+        return [
+            'local CS2 with trimmed and uppercase mode' => ['{{cite journal|mode= CS2 |postscript=.}}', '.'],
+            'local CS1 with uppercase mode' => ['{{cite journal|mode=CS1|postscript=.}}', null],
+            'invalid local mode defaults to CS1' => ['{{cite journal|mode=cs22|postscript=.}}', null],
+            'blank local mode defaults to CS1' => ['{{cite journal|mode=|postscript=.}}', null],
+            'citation retains dot without mode' => ['{{citation|postscript=.}}', '.'],
+            'citation retains dot with local CS1' => ['{{citation|mode=cs1|postscript=.}}', '.'],
+            'CS1 retains explicit none' => ['{{cite journal|postscript=none}}', 'none'],
+            'CS2 retains explicit none' => ['{{cite journal|mode=cs2|postscript=none}}', 'none'],
+            'CS1 retains semicolon' => ['{{cite journal|postscript=;}}', ';'],
+            'CS2 retains question mark' => ['{{cite journal|mode=cs2|postscript=?}}', '?'],
+            'CS1 drops empty postscript' => ['{{cite journal|postscript=}}', null],
+            'CS2 drops empty postscript' => ['{{cite journal|mode=cs2|postscript=}}', null],
+        ];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('individualPostscriptCases')]
+    public function testIndividualPostscriptEdgeCases(string $text, ?string $expected): void {
+        $prepared = $this->prepare_citation($text);
+        $prepared->final_tidy();
+        $this->assertSame($expected, $prepared->get2('postscript'), $text);
+    }
+
     public function testChangeParameters1(): void {
         // publicationplace
         $text = '{{citation|publicationplace=Home}}';

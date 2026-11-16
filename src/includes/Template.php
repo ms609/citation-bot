@@ -46,6 +46,7 @@ final class Template
     public ?string $conflicting_journal_doi = null;
     private string $example_param = '';
     private string $name = '';
+    private string $page_citation_mode = '';
     /** @var array<int, Parameter> */
     private array $param = [];
     /** @var array<string> */
@@ -137,6 +138,11 @@ final class Template
 
     public function __construct() {
         // Done in parse_text() and in variable initialization
+    }
+
+    /** Only the explicit {{CS1 config|mode=...}} value, not inferred page style. */
+    public function set_page_citation_mode(string $mode): void {
+        $this->page_citation_mode = $mode;
     }
 
     public function parse_text(string $text): void {
@@ -7207,7 +7213,11 @@ final class Template
                     return;
 
                 case 'postscript':
-                    if ($this->wikiname() !== 'citation' && $this->get('mode') !== 'cs2' && $this->get($param) === '.') {
+                    // In CS2, the default has no final period. An explicit dot is significant,
+                    // including when CS2 is selected by an article-wide {{CS1 config}}.
+                    $local_mode = mb_strtolower(mb_trim($this->get('mode')));
+                    $effective_mode = in_array($local_mode, ['cs1', 'cs2'], true) ? $local_mode : $this->page_citation_mode;
+                    if ($this->wikiname() !== 'citation' && $effective_mode !== 'cs2' && $this->get($param) === '.') {
                         $this->forget($param); // Default action does not need specified
                     }
                     if ($this->wikiname() !== 'citation' && $this->blank($param)) {
