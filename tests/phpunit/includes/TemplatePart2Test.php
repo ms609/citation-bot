@@ -899,10 +899,10 @@ final class TemplatePart2Test extends testBaseClass {
     public function testIDconvert13(): void {
         $text = '{{cite journal|id=<small>{{MR|396410}}</small>}}';
         $page = $this->process_page($text);
-        $this->assertSame('{{cite journal|mr=396410 }}', $page->parsed_text());
+        $this->assertSame('{{cite journal|mr=396410}}', $page->parsed_text());
         $text = '{{cite journal|id=<small> </small>{{MR|396410}}}}';
         $page = $this->process_page($text);
-        $this->assertSame('{{cite journal|mr=396410 }}', $page->parsed_text());
+        $this->assertSame('{{cite journal|mr=396410}}', $page->parsed_text());
     }
 
     public function testIDconvert14(): void {

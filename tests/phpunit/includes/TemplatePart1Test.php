@@ -1103,7 +1103,7 @@ JSON;
     public function testId2Param5(): void {
         $text = '{{cite book|pages=1-2|id={{arxiv|zzzz|1234567}}}}{{cite book|pages=1-3|id={{arxiv|zzzz|1234567}}}}'; // Two of the same sub-template, but in different templates
         $expanded = $this->process_page($text);
-        $this->assertSame('{{cite book|pages=1–2|arxiv=zzzz/1234567 }}{{cite book|pages=1–3|arxiv=zzzz/1234567 }}', $expanded->parsed_text());
+        $this->assertSame('{{cite book|pages=1–2|arxiv=zzzz/1234567}}{{cite book|pages=1–3|arxiv=zzzz/1234567}}', $expanded->parsed_text());
     }
 
     public function testArxivSubtemplatesRejectArchiveWithNewStyleId(): void {

@@ -845,7 +845,7 @@ final class pageTest extends testBaseClass {
     public function testPMIDwithComment(): void { /* Make sure we do not get PMID out of alignment */
         $this->sleep_pubmed();
         $text_inn = '{{cite journal|pmid=24432}}{{cite journal|pmid=<!-- -->}}{{cite journal|pmid=34232}}';
-        $text_out = '{{cite journal|last1=Fung |first1=K. P. |last2=Ng |first2=M. H. |title=Purification of human diploid fibroblast interferon by immobilized neuraminidase |journal=Archives of Virology |date=1978 |volume=56 |issue=1–2 |pages=1–6 |doi=10.1007/BF01317278 |pmid=24432}}{{cite journal|pmid=<!-- -->}}{{cite journal|title=Oral epidemiology |journal=South African Medical Journal = Suid-Afrikaanse Tydskrif vir Geneeskunde |date=1978 |volume=54 |issue=21 |pages=843–844 |pmid=34232}}';
+        $text_out = '{{cite journal|last1=Fung|first1=K. P.|last2=Ng|first2=M. H.|title=Purification of human diploid fibroblast interferon by immobilized neuraminidase|journal=Archives of Virology|date=1978|volume=56|issue=1–2|pages=1–6|doi=10.1007/BF01317278|pmid=24432}}{{cite journal|pmid=<!-- -->}}{{cite journal|title=Oral epidemiology|journal=South African Medical Journal = Suid-Afrikaanse Tydskrif vir Geneeskunde|date=1978|volume=54|issue=21|pages=843–844|pmid=34232}}';
         $page = $this->process_page($text_inn);
         $result = $page->parsed_text();
         if (!str_contains($result, 'Fung') || !str_contains($result, 'Oral epidemiology')) {
