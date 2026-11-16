@@ -130,6 +130,42 @@ function decode_name_entities(string $name): string {
     return str_replace("''", '&#0039;&#0039;', $name);
 }
 
+/**
+ * Full-name spellings for apostrophe prefixes whose case cannot be inferred from
+ * a one-letter prefix.  Keys use ASCII apostrophes and Unicode lowercase.
+ * Exact matching avoids changing unrelated French/Italian surname particles.
+ */
+const SURNAME_APOSTROPHE_CASE_EXCEPTIONS = [
+    "d'agostino" => "D'Agostino",
+    "d'alembert" => "d'Alembert",
+    "d'alessandro" => "D'Alessandro",
+    "d'alessio" => "D'Alessio",
+    "d'amato" => "D'Amato",
+    "d'amico" => "D'Amico",
+    "d'andrea" => "D'Andrea",
+    "d'angelo" => "D'Angelo",
+    "d'annunzio" => "D'Annunzio",
+    "d'antoni" => "D'Antoni",
+    "d'arc" => "d'Arc",
+    "d'artagnan" => "d'Artagnan",
+    "d'avila" => "D'Avila",
+    "d'elia" => "D'Elia",
+    "d'esposito" => "D'Esposito",
+    "d'onofrio" => "D'Onofrio",
+    "d'urso" => "D'Urso",
+    "l'amour" => "L'Amour",
+    "l'amoureux" => "L'Amoureux",
+    "l'archevêque" => "L'Archevêque",
+    "l'ecuyer" => "L'Ecuyer",
+    "l'estrange" => "L'Estrange",
+    "l'hermite" => "l'Hermite",
+    "l'heureux" => "L'Heureux",
+    "l'hôpital" => "L'Hôpital",
+    "o'brien" => "O'Brien",
+    "o'connor" => "O'Connor",
+    "o'neill" => "O'Neill",
+];
+
 function format_surname(string $surname): string {
     $surname = decode_name_entities($surname);
     $surname = mb_trim(normalize_unicode_nfc($surname));
@@ -141,6 +177,11 @@ function format_surname(string $surname): string {
     }
     if ($surname === '') {
         return '';
+    }
+    $surname_case_key = mb_strtolower(str_replace('’', "'", $surname));
+    if (isset(SURNAME_APOSTROPHE_CASE_EXCEPTIONS[$surname_case_key])) {
+        $canonical = SURNAME_APOSTROPHE_CASE_EXCEPTIONS[$surname_case_key];
+        return str_contains($surname, '’') ? str_replace("'", '’', $canonical) : $canonical;
     }
     if (preg_match('~^\S\.?$~u', $surname)) {
         return mb_strtoupper($surname); // Just a single initial, with or without period
