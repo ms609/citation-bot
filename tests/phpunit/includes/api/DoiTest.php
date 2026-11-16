@@ -1116,7 +1116,7 @@ final class DoiTest extends testBaseClass {
         $this->assertStringContainsString('total=15', $summary);
         $this->assertStringContainsString('volume=6506', $summary);
         $this->assertStringNotContainsString('private title', $summary);
-        $this->assertLessThan(400, strlen($summary));
+        $this->assertLessThan(400, mb_strlen($summary, '8bit'));
         $this->assertSame('invalid JSON', spie_dblp_search_diagnostics('<html>'));
         $this->assertStringContainsString('hits=0', spie_dblp_search_diagnostics(
             '{"result":{"hits":{"@total":"0"}}}'));

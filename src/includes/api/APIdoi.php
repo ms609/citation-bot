@@ -581,22 +581,24 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
         if ($transfer['http_code'] === 200 && $transfer['errno'] === 0) {
             $editors = parse_spie_dblp_direct_volume_xml($xml, $direct_key, $title, $volume, $year);
             if ($editors !== []) {
-                return $cache[$key] = $editors;
+                $cache[$key] = $editors;
+                return $editors;
             }
         }
         $direct_xml = ExternalApiResponseGuard::decodeXml($xml);
         $reason = $direct_xml === null ? 'invalid-XML' :
             (!isset($direct_xml->proceedings) ? 'missing-proceedings' : 'identity-or-editors-mismatch');
         $diagnostics[] = 'direct:HTTP ' . (string) $transfer['http_code'] .
-            '/cURL ' . (string) $transfer['errno'] . '/bytes ' . (string) strlen($xml) .
+            '/cURL ' . (string) $transfer['errno'] . '/bytes ' . (string) mb_strlen($xml, '8bit') .
             '/reason=' . $reason;
         // A transport failure or server outage is unlikely to be fixed by
         // immediately querying another endpoint on the same host twice.
         if ($transfer['errno'] !== 0 || $transfer['http_code'] >= 500 ||
             $transfer['http_code'] === 429) {
             report_warning('DBLP SPIE editor lookup unavailable for volume ' .
-                echoable($volume) . ' (' . implode(' | ', $diagnostics) . ')');
-            return $cache[$key] = [];
+                echoable($volume) . ' (' . echoable(implode(' | ', $diagnostics)) . ')');
+            $cache[$key] = [];
+            return [];
         }
     }
 
@@ -618,11 +620,12 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
         if ($transfer['http_code'] === 200 && $transfer['errno'] === 0) {
             $editors = parse_spie_dblp_volume_editors($data, $title, $volume, $year);
             if ($editors !== []) {
-                return $cache[$key] = $editors;
+                $cache[$key] = $editors;
+                return $editors;
             }
         }
         $diagnostics[] = 'search:HTTP ' . (string) $transfer['http_code'] .
-            '/cURL ' . (string) $transfer['errno'] . '/bytes ' . (string) strlen($data) .
+            '/cURL ' . (string) $transfer['errno'] . '/bytes ' . (string) mb_strlen($data, '8bit') .
             '/' . spie_dblp_search_diagnostics($data);
         if ($transfer['errno'] !== 0 || $transfer['http_code'] >= 500 ||
             $transfer['http_code'] === 429) {
@@ -630,8 +633,9 @@ function query_spie_dblp_volume_editors(string $title, string $volume, string $y
         }
     }
     report_warning('DBLP SPIE editor lookup found no verified editors for volume ' .
-        echoable($volume) . ' (' . implode(' | ', $diagnostics) . ')');
-    return $cache[$key] = [];
+        echoable($volume) . ' (' . echoable(implode(' | ', $diagnostics)) . ')');
+    $cache[$key] = [];
+    return [];
 }
 
 /** Supplement missing SPIE editors from a verified DBLP volume record. */
