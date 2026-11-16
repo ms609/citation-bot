@@ -201,9 +201,13 @@ final class WikipediaBot {
             // Restore it even if scrubbing unexpectedly fails.
             $previous_substitute = mb_substitute_character();
             try {
+                // Intentionally configure the global mbstring substitution mode.
+                /** @psalm-suppress UnusedFunctionCall */
                 mb_substitute_character(0xFFFD);
                 $text = mb_scrub($text, 'UTF-8');
             } finally {
+                // Restore the global mode even when scrubbing fails.
+                /** @psalm-suppress UnusedFunctionCall */
                 mb_substitute_character($previous_substitute);
             }
         }

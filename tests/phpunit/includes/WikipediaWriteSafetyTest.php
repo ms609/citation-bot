@@ -29,8 +29,8 @@ final class WikipediaWriteSafetyTest extends testBaseClass {
     public function testNfcNormalizationUsesTheExactSubmittedBytes(): void {
         $decomposed = "Cafe\u{0301} Zu\u{0308}rich\n";
         $normalized = "Café Zürich\n";
-        $params = WikipediaBot::edit_safety_parameters($decomposed, false);
-        $this->assertNotNull($params);
+        $params = WikipediaBot::edit_safety_parameters($decomposed, false)
+            ?? throw new \UnexpectedValueException('Normalization unexpectedly failed');
         $this->assertSame($normalized, $params['text']);
         $this->assertSame(md5($normalized), $params['md5']);
         $this->assertNotSame(md5($decomposed), $params['md5']);
@@ -46,9 +46,11 @@ final class WikipediaWriteSafetyTest extends testBaseClass {
         $normalized = "Café\u{FFFD}(";
         $previous_substitute = mb_substitute_character();
         try {
+            // Verify that repair ignores the pre-existing mbstring setting.
+            /** @psalm-suppress UnusedFunctionCall */
             mb_substitute_character('none'); // Ensure the repair ignores the ambient setting.
-            $params = WikipediaBot::edit_safety_parameters($input, false);
-            $this->assertNotNull($params);
+            $params = WikipediaBot::edit_safety_parameters($input, false)
+                ?? throw new \UnexpectedValueException('Repair unexpectedly failed');
             $this->assertSame($normalized, $params['text']);
             $this->assertSame(md5($normalized), $params['md5']);
             $this->assertTrue(mb_check_encoding($params['text'], 'UTF-8'));
@@ -58,6 +60,8 @@ final class WikipediaWriteSafetyTest extends testBaseClass {
             $this->assertSame($normalized, $decoded['text']);
             $this->assertSame(md5($decoded['text']), $decoded['md5']);
         } finally {
+            // Restore the caller's mbstring configuration after the test.
+            /** @psalm-suppress UnusedFunctionCall */
             mb_substitute_character($previous_substitute);
         }
     }
