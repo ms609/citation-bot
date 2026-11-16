@@ -87,7 +87,14 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
         }
     }
     $title = safe_preg_replace('~[\*]$~', '', $title);
+    $article_case_held = [];
+    if (!$use_title_case) {
+        $title = protect_article_title_case($title, $article_case_held);
+    }
     $title = title_capitalization($title, true);
+    if (!$use_title_case) {
+        $title = restore_article_title_case($title, $article_case_held);
+    }
 
     $htmlBraces = ["&lt;", "&gt;"];
     $angleBraces = ["<", ">"];
@@ -840,6 +847,42 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
 }
 
 // ============================================= Capitalization functions ======================================
+
+/**
+ * Replace only known case-sensitive terms before title_capitalization() applies
+ * journal-style punctuation rules.  A placeholder keeps the period in "et al."
+ * from turning the following word into a new sentence.
+ *
+ * @param string $text Article title to protect.
+ * @param array<string, string> &$held Saved title-case terms keyed by placeholder.
+ */
+function protect_article_title_case(string $text, array &$held): string {
+    static $pattern = null;
+    if ($pattern === null) {
+        $terms = array_keys(ARTICLE_TITLE_CASE_EXCEPTIONS);
+        usort($terms, static fn (string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a));
+        $alternatives = array_map(static fn (string $term): string => preg_quote($term, '~'), $terms);
+        $pattern = '~(?<![\p{L}\p{N}_])(?:' . implode('|', $alternatives) . ')(?![\p{L}\p{N}_])~iu';
+    }
+    return safe_preg_replace_callback($pattern, static function (array $matches) use (&$held): string {
+        $key = mb_strtolower($matches[0]);
+        // "MPH" can be an academic degree, whereas "mph" is a unit.
+        if (in_array($key, ARTICLE_CASE_AMBIGUOUS_UNITS, true) && $matches[0] === mb_strtoupper($matches[0])) {
+            return $matches[0];
+        }
+        $placeholder = 'CITATIONBOTARTICLECASE' . count($held) . 'TOKEN';
+        $held[$placeholder] = ARTICLE_TITLE_CASE_EXCEPTIONS[$key];
+        return $placeholder;
+    }, $text);
+}
+
+/**
+ * @param string $text Article title with placeholders.
+ * @param array<string, string> $held Saved title-case terms keyed by placeholder.
+ */
+function restore_article_title_case(string $text, array $held): string {
+    return $held === [] ? $text : str_ireplace(array_keys($held), array_values($held), $text);
+}
 
 /**
  * Converts to title case, unless obviously a url
