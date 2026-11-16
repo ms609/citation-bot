@@ -1459,8 +1459,15 @@ function tidy_date_inside(string $string): string {
         return tidy_date_inside($matches[1]);
     }
 
+    // A leading four-digit year is YYYY.MM.DD, not a substring matching DD.MM.YY.
+    if (preg_match('~^(\d{4})\.(\d{1,2})\.(\d{1,2})$~D', $string, $matches) === 1) {
+        return tidy_date_inside(sprintf('%04d-%02d-%02d',
+            (int) $matches[1], (int) $matches[2], (int) $matches[3]));
+    }
+
     // Dates with dots -- convert to slashes and try again.
-    if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
+    // Do not take DD.MM.YY out of the tail of a longer numeric component.
+    if (preg_match('~(?<![0-9.])(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
         if (intval($matches[3]) < ((int) date("y") + 2)) {
             $matches[3] = (int) $matches[3] + 2000;
         }
