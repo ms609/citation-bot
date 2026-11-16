@@ -27,16 +27,44 @@ final class ZoteroFutureDateTest extends testBaseClass {
         }
     }
 
-    public function testTodayAndPastDatesRemainUsable(): void {
+    public function testExistingNearTodayDateSafeguardIsPreserved(): void {
+        // Template::add_if_new('date') already rejects dates within 14 days
+        // of now. Zotero should not bypass that unrelated safeguard.
         foreach ([
             date('Y-m-d'),
             date('Y-m-d', strtotime('yesterday')),
-            date('F Y'),
+            date('Y-m-d', strtotime('-7 days')),
+        ] as $source) {
+            $template = $this->expand($source, true);
+            $this->assertNull($template->get2('date'), $source);
+            $this->assertSame('Offline future-date title', $template->get2('title'), $source);
+        }
+    }
+
+    public function testOlderPastDatesAndCurrentYearRemainUsable(): void {
+        foreach ([
+            date('Y-m-d', strtotime('-30 days')),
+            date('F Y', strtotime('-3 months')),
             date('Y'),
         ] as $source) {
             $template = $this->expand($source, true);
             $this->assertNotNull($template->get2('date'), $source);
             $this->assertSame('Offline future-date title', $template->get2('title'), $source);
+        }
+    }
+
+    public function testMissingAccessTimestampStillHonorsExistingEventDates(): void {
+        $url = 'https://example.test/zotero-future-date';
+        $response = json_encode([[
+            'itemType' => 'webpage',
+            'title' => 'Should not import',
+            'date' => '2021-01-01',
+        ]], JSON_THROW_ON_ERROR);
+        foreach (['access-date', 'accessdate', 'archive-date', 'archivedate'] as $param) {
+            $template = $this->make_citation('{{cite web|url=' . $url . '|' . $param . '=2020-01-01}}');
+            Zotero::process_zotero_response($response, $template, $url, 0);
+            $this->assertNull($template->get2('title'), $param);
+            $this->assertNull($template->get2('date'), $param);
         }
     }
 

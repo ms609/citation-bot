@@ -1637,13 +1637,25 @@ final class Zotero {
                 }
             }
         }
+        // Some callers pass zero even when the template has an access/archive
+        // date. Recover the earliest valid event date for the stale-URL check.
         $has_access_date = $access_date !== 0;
         if (!$has_access_date && isset($result->date)) {
-            // The existing public entry point also uses 0 for an absent access date.
             foreach (['access-date', 'accessdate', 'archive-date', 'archivedate'] as $param) {
-                if (strtotime(tidy_date($template->get($param), false)) === 0) {
+                $event_date = tidy_date($template->get($param), false);
+                if ($event_date === '') {
+                    continue;
+                }
+                // A year-only date must not be read as a time of day.
+                $event_time = preg_match('~^[0-9]{4}$~D', $event_date) === 1
+                    ? strtotime($event_date . '-01-01')
+                    : strtotime($event_date);
+                if ($event_time === false) {
+                    continue;
+                }
+                if (!$has_access_date || $event_time < $access_date) {
+                    $access_date = $event_time;
                     $has_access_date = true;
-                    break;
                 }
             }
         }
