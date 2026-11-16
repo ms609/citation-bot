@@ -560,7 +560,7 @@ final class DoiTest extends testBaseClass {
             'query_crossref' => $record,
             // The legacy OpenURL volume title remains useful if REST is down.
             'query_crossref_newapi' => new stdClass(),
-            'query_spie_dblp_volume_editors' => [],
+            'query_spie_openalex_volume_editors' => [],
         ];
         foreach ($stubs as $name => $value) {
             /** @psalm-suppress UnusedFunctionCall */
@@ -789,15 +789,15 @@ final class DoiTest extends testBaseClass {
             'volume' => '6505',
             'issued' => (object) ['date-parts' => [[2007]]],
             'author' => [(object) ['given' => 'Mo', 'family' => 'Chen']],
-            // Crossref has no editors; DBLP's verified editorship supplies them.
+            // Crossref has no editors; a verified OpenAlex volume work supplies them.
         ];
         $stubs = [
             'doi_works' => true,
             'query_crossref' => null,
             'expand_doi_with_dx' => null,
             'query_crossref_newapi' => $rest,
-            'query_spie_dblp_volume_editors' => [
-                (object) ['given' => 'Edward J.', 'family' => 'Delp III'],
+            'query_spie_openalex_volume_editors' => [
+                (object) ['given' => 'Edward J.', 'family' => 'Delp'],
                 (object) ['given' => 'Ping Wah', 'family' => 'Wong'],
             ],
         ];
@@ -818,7 +818,7 @@ final class DoiTest extends testBaseClass {
             $this->assertSame('Chen', $template->get2('last1'));
             $this->assertSame('6505', $template->get('volume'));
             $this->assertSame('Proceedings of SPIE', $template->get('series'));
-            $this->assertSame('Delp III', $template->get2('editor-last1'));
+            $this->assertSame('Delp', $template->get2('editor-last1'));
             $this->assertSame('Wong', $template->get2('editor-last2'));
         } finally {
             foreach (array_keys($stubs) as $name) {
@@ -978,49 +978,48 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($template->get2('editor-last2'));
     }
 
-    public function testSpieDblpProceedingsEditorValidation(): void {
-        $record = [
-            'type' => 'Editorship',
-            'title' => 'Security, Steganography, and Watermarking of Multimedia Contents IX, San Jose, CA, USA',
-            'series' => 'SPIE Proceedings', 'volume' => '6505', 'year' => '2007',
-            'authors' => ['author' => [
-                ['text' => 'Edward J. Delp III'], ['text' => 'Ping Wah Wong'],
-            ]],
-        ];
+    public function testSpieOpenAlexProceedingsVolumeValidation(): void {
         $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
-        $make = static fn (array $hits): string => json_encode([
-            'result' => ['hits' => ['hit' => $hits]]], JSON_THROW_ON_ERROR);
-        $good = $make([['info' => $record]]);
-        $editors = parse_spie_dblp_volume_editors($good, $title, '6505', '2007');
+        // Minimal recorded fields from OpenAlex work W3127359347.
+        $record = [
+            'id' => 'https://openalex.org/W3127359347',
+            'title' => $title, 'type' => 'conference-paper', 'doi' => null,
+            'publication_year' => 2007, 'biblio' => ['volume' => '6505'],
+            'primary_location' => ['source' => ['type' => 'conference']],
+            'is_authors_truncated' => false,
+            'authorships' => [
+                ['raw_author_name' => 'Edward J. Delp'],
+                ['raw_author_name' => 'Ping Wah Wong'],
+            ],
+        ];
+        $encode = static fn (array $records): string => json_encode(
+            ['results' => $records], JSON_THROW_ON_ERROR);
+        $parse = static fn (string $data): array => parse_spie_openalex_volume_editors(
+            $data, $title, '6505', '2007');
+        $editors = $parse($encode([$record]));
         $this->assertCount(2, $editors);
-        $this->assertSame('Delp III', $editors[0]->family);
+        $this->assertSame('Delp', $editors[0]->family);
         $this->assertSame('Edward J.', $editors[0]->given);
         $this->assertSame('Wong', $editors[1]->family);
-        // The alternate "venue" key occurs in the live publication-search API.
-        $venue_record = $record;
-        unset($venue_record['series']);
-        $venue_record['venue'] = 'SPIE Proceedings';
-        $this->assertCount(2, parse_spie_dblp_volume_editors(
-            $make([['info' => $venue_record]]), $title, '6505', '2007'));
-        // Zero hits are valid metadata absence; never silently invent editors.
-        $this->assertSame([], parse_spie_dblp_volume_editors(
-            $make([]), $title, '6505', '2007'));
+        $this->assertSame('Ping Wah', $editors[1]->given);
+        // Both singleton and search-result API envelopes are accepted.
+        $this->assertCount(2, $parse(json_encode($record, JSON_THROW_ON_ERROR)));
         foreach ([
-            ['volume' => '6506'], ['year' => '2008'], ['series' => 'Other Proceedings'],
-            ['type' => 'Conference and Workshop Papers'], ['title' => 'Unrelated Volume'],
-        ] as $change) {
-            $bad = array_replace($record, $change);
-            $this->assertSame([], parse_spie_dblp_volume_editors(
-                $make([['info' => $bad]]), $title, '6505', '2007'));
+            ['title' => 'Digital imaging sensor identification'],
+            ['publication_year' => 2008],
+            ['biblio' => ['volume' => '6506']],
+            ['type' => 'book-chapter'],
+            ['doi' => 'https://doi.org/10.1117/12.703370'],
+            ['primary_location' => ['source' => ['type' => 'journal']]],
+            ['is_authors_truncated' => true],
+            ['authorships' => [['raw_author_name' => 'SingleName']]],
+        ] as $changes) {
+            $this->assertSame([], $parse($encode([array_replace($record, $changes)])));
         }
-        // Duplicate editorship search results are ambiguous.
-        $this->assertSame([], parse_spie_dblp_volume_editors(
-            $make([['info' => $record], ['info' => $record]]), $title, '6505', '2007'));
-        $this->assertSame([], parse_spie_dblp_volume_editors('{bad json', $title, '6505', '2007'));
-        $bad_name = $record;
-        $bad_name['authors']['author'] = [['text' => 'SingleName']];
-        $this->assertSame([], parse_spie_dblp_volume_editors(
-            $make([['info' => $bad_name]]), $title, '6505', '2007'));
+        $this->assertSame([], $parse($encode([$record, $record])));
+        $this->assertSame([], $parse($encode([])));
+        $this->assertSame([], $parse('<html>'));
+        $this->assertSame([], $parse('{"results":null}'));
     }
 
     public function testSpieWithNullRestEditorsDoesNotInventEditors(): void {
@@ -1076,85 +1075,18 @@ final class DoiTest extends testBaseClass {
         }
     }
 
-    /** The direct volume export must pass the same strict validation as search. */
-    public function testSpieDblpDirectVolumeXmlValidation(): void {
-        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' .
-            '<dblp><proceedings key="conf/sswmc/2007">' .
-            '<editor>Edward J. Delp III</editor><editor>Ping Wah Wong</editor>' .
-            '<title>' . $title . ', San Jose, CA, USA, January 28, 2007</title>' .
-            '<series>SPIE Proceedings</series><volume>6505</volume><year>2007</year>' .
-            '</proceedings></dblp>';
-        $parse = static fn (string $data, string $key = 'conf/sswmc/2007'): array =>
-            parse_spie_dblp_direct_volume_xml($data, $key, $title, '6505', '2007');
-        $editors = $parse($xml);
-        $this->assertCount(2, $editors);
-        $this->assertSame('Delp III', $editors[0]->family);
-        $this->assertSame('Edward J.', $editors[0]->given);
-        $this->assertSame('Wong', $editors[1]->family);
-        $this->assertSame('Ping Wah', $editors[1]->given);
-        $this->assertSame([], $parse($xml, 'conf/other/2007'));
-        foreach ([
-            '<volume>6505</volume>' => '<volume>6506</volume>',
-            '<year>2007</year>' => '<year>2008</year>',
-            '<series>SPIE Proceedings</series>' => '<series>Unknown</series>',
-            '<title>' . $title => '<title>Unrelated',
-        ] as $from => $to) {
-            $this->assertSame([], $parse(str_replace($from, $to, $xml)));
-        }
-        $this->assertSame([], $parse('<broken'));
-        $this->assertSame([], $parse(str_replace(
-            ['<editor>Edward J. Delp III</editor>', '<editor>Ping Wah Wong</editor>'], '', $xml)));
-    }
-
-    public function testSpieDblpSearchDiagnosticsAreBounded(): void {
-        $json = json_encode(['result' => ['hits' => ['@total' => '15', 'hit' => [[
-            'info' => ['type' => 'Editorship', 'volume' => '6506', 'year' => '2008',
-                'series' => 'Other', 'title' => str_repeat('private title', 50)],
-        ]]]]], JSON_THROW_ON_ERROR);
-        $summary = spie_dblp_search_diagnostics($json);
-        $this->assertStringContainsString('total=15', $summary);
-        $this->assertStringContainsString('volume=6506', $summary);
-        $this->assertStringNotContainsString('private title', $summary);
-        $this->assertLessThan(400, mb_strlen($summary, '8bit'));
-        $this->assertSame('invalid JSON', spie_dblp_search_diagnostics('<html>'));
-        $this->assertStringContainsString('hits=0', spie_dblp_search_diagnostics(
-            '{"result":{"hits":{"@total":"0"}}}'));
-    }
-
-    public function testSpieDblpDirectResponseDiagnosticsIdentifyRejections(): void {
-        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
-        $xml = '<dblp><proceedings key="conf/sswmc/2007">' .
-            '<editor>Private Editor Name</editor><title>' . $title . '</title>' .
-            '<series>SPIE Proceedings</series><volume>6505</volume><year>2007</year>' .
-            '</proceedings></dblp>';
-        $diagnostic = spie_dblp_direct_response_diagnostics(
-            $xml, 'conf/sswmc/2007', $title, '6505', '2007');
-        $this->assertSame('key=match/title=match/volume=match/year=match/series=match/editors=1',
-            $diagnostic);
-        $this->assertStringNotContainsString('Private Editor Name', $diagnostic);
-        $this->assertStringContainsString('key=mismatch', spie_dblp_direct_response_diagnostics(
-            $xml, 'conf/other/2007', $title, '6505', '2007'));
-        $this->assertStringContainsString('volume=mismatch', spie_dblp_direct_response_diagnostics(
-            $xml, 'conf/sswmc/2007', $title, '6506', '2007'));
-        $this->assertSame('invalid-XML', spie_dblp_direct_response_diagnostics(
-            '<broken', 'conf/sswmc/2007', $title, '6505', '2007'));
-        $this->assertSame('missing-proceedings', spie_dblp_direct_response_diagnostics(
-            '<dblp/>', 'conf/sswmc/2007', $title, '6505', '2007'));
-    }
-
     /**
-     * Required live integration test: catches a valid empty search result,
-     * a blocked request, or a response-shape change that offline mocks miss.
+     * Required live test: OpenAlex must return the verified 2007 volume.
+     * A failed API call is a test failure, not a skipped test.
      */
-    public function testSpieDblpVolume6505LiveReturnsEditors(): void {
+    public function testSpieOpenAlexVolume6505LiveReturnsEditors(): void {
         $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
         $diagnostic = null;
-        $editors = query_spie_dblp_volume_editors($title, '6505', '2007', $diagnostic);
-        $this->assertCount(2, $editors,
-            'DBLP volume 6505 returned no verified editors. HTTP/search/validation diagnostics: ' .
+        $editors = query_spie_openalex_volume_editors($title, '6505', '2007', $diagnostic);
+        $this->assertCount(2, $editors, 'OpenAlex volume 6505 returned no verified editors: ' .
             echoable($diagnostic ?? 'unavailable'));
-        $this->assertSame('Delp III', $editors[0]->family);
+        // OpenAlex has "Edward J. Delp" without the suffix III; do not invent it.
+        $this->assertSame('Delp', $editors[0]->family);
         $this->assertSame('Edward J.', $editors[0]->given);
         $this->assertSame('Wong', $editors[1]->family);
         $this->assertSame('Ping Wah', $editors[1]->given);

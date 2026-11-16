@@ -266,7 +266,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (isset($crossRefNewAPI->{"article-number"})) {
                 $template->add_if_new("article-number", (string) $crossRefNewAPI->{"article-number"});
             }
-            add_spie_dblp_editor_fallback($template, $doi, $crossRefNewAPI);
+            add_spie_openalex_editor_fallback($template, $doi, $crossRefNewAPI);
         } else {
             report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
             expand_doi_with_dx($template, $doi);
@@ -316,7 +316,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                     $template->add_if_new('series', 'Proceedings of SPIE', 'crossref');
                     add_spie_crossref_json_editors($template, $doi, $spie_json);
-                    add_spie_dblp_editor_fallback($template, $doi, $spie_json);
+                    add_spie_openalex_editor_fallback($template, $doi, $spie_json);
                 }
             }
         }
@@ -392,89 +392,75 @@ function add_spie_crossref_json_editors(Template $template, string $doi, object 
     }
     foreach ($editors as $index => $editor) {
         $number = (string) ($index + 1);
-        $last = $source === 'dblp' ? $editor['family'] : format_surname($editor['family']);
+        $last = $source === 'openalex' ? $editor['family'] : format_surname($editor['family']);
         $template->add_if_new('editor-last' . $number, $last, $source);
         if ($editor['given'] !== '') {
-            $template->add_if_new('editor-first' . $number, ($source === 'dblp' ? $editor['given'] : format_forename($editor['given'])), $source);
+            $template->add_if_new('editor-first' . $number, ($source === 'openalex' ? $editor['given'] : format_forename($editor['given'])), $source);
         }
     }
 }
 
 /**
- * Parse DBLP publication search JSON, accepting only the editorship of the
- * exact SPIE proceedings volume. Never infer editors from article authors.
+ * OpenAlex authorships lack explicit editor roles. Import people only from a
+ * unique, exact proceedings-volume record; never from a DOI-bearing paper.
  * @return array<int, object>
  */
-function parse_spie_dblp_volume_editors(string $json, string $title, string $volume, string $year): array {
-    $result = json_decode($json, true);
-    $hits = $result['result']['hits']['hit'] ?? null;
-    if (!is_array($hits)) {
+function parse_spie_openalex_volume_editors(string $json, string $title, string $volume, string $year): array {
+    $data = json_decode($json, true);
+    if (!is_array($data)) {
         return [];
     }
-    if (isset($hits['info'])) {
-        $hits = [$hits];
+    $records = array_key_exists('results', $data) ? $data['results'] :
+        (isset($data['id']) ? [$data] : null);
+    if (!is_array($records)) {
+        return [];
     }
+    $normalize = static function (string $value): string {
+        $normalized = preg_replace('~\s+~u', ' ', mb_strtolower(mb_trim($value)));
+        return is_string($normalized) ? $normalized : '';
+    };
     $found = null;
-    $expected_title = mb_strtolower(mb_trim($title));
-    foreach ($hits as $hit) {
-        $info = is_array($hit) ? ($hit['info'] ?? null) : null;
-        if (!is_array($info) || ($info['type'] ?? null) !== 'Editorship' ||
-            (string) ($info['volume'] ?? '') !== $volume ||
-            ($year !== '' && (string) ($info['year'] ?? '') !== $year) ||
-            // DBLP's publication-search response often uses "venue", rather
-            // than the "series" key used by the normalized test fixture.
-            !is_string($info['series'] ?? $info['venue'] ?? null) ||
-            !in_array(mb_strtolower(mb_trim($info['series'] ?? $info['venue'])),
-                ['spie proceedings', 'proceedings of spie'], true) ||
-            !is_string($info['title'] ?? null)) {
+    foreach ($records as $record) {
+        if (!is_array($record) || !is_string($record['title'] ?? null) ||
+            $normalize($record['title']) !== $normalize($title) ||
+            (string) ($record['publication_year'] ?? '') !== $year ||
+            (string) ($record['biblio']['volume'] ?? '') !== $volume ||
+            ($record['type'] ?? null) !== 'conference-paper' ||
+            ($record['doi'] ?? null) !== null ||
+            ($record['primary_location']['source']['type'] ?? null) !== 'conference' ||
+            ($record['is_authors_truncated'] ?? false) === true ||
+            !is_array($record['authorships'] ?? null)) {
             continue;
         }
-        $record_title = mb_strtolower(mb_trim($info['title']));
-        // DBLP adds event location/date to some proceedings titles.
-        if ($record_title !== $expected_title &&
-            !str_starts_with($record_title, $expected_title . ',')) {
-            continue;
-        }
-        $names = $info['authors']['author'] ?? $info['editors']['editor'] ?? null;
-        if (!is_array($names)) {
+        $authorships = $record['authorships'];
+        if ($authorships === [] || count($authorships) > 30) {
             return [];
         }
-        if (isset($names['text']) || isset($names['@pid'])) {
-            $names = [$names];
-        }
         $editors = [];
-        foreach ($names as $person) {
-            $name = is_array($person) ? ($person['text'] ?? null) : $person;
+        foreach ($authorships as $entry) {
+            if (!is_array($entry)) {
+                return [];
+            }
+            $name = $entry['raw_author_name'] ?? $entry['author']['display_name'] ?? null;
             if (!is_string($name)) {
                 return [];
             }
-            // DBLP sometimes appends a four-digit homonym identifier.
-            $name = preg_replace('~\s+\d{4}$~u', '', mb_trim($name));
-            if (!is_string($name)) {
-                return [];
-            }
-            $parts = preg_split('~\s+~u', $name);
+            $parts = preg_split('~\s+~u', mb_trim($name));
             if (!is_array($parts) || count($parts) < 2) {
                 return [];
             }
             $family = array_pop($parts);
             if (preg_match('~^(?:Jr\.?|Sr\.?|II|III|IV|V)$~i', $family)) {
-                $suffix = $family;
-                $family = array_pop($parts) . ' ' . $suffix;
+                $family = array_pop($parts) . ' ' . $family;
             }
-            // Compound surname particles cannot safely be split by whitespace.
             if ($parts === [] || in_array(mb_strtolower((string) end($parts)),
                 ['van', 'von', 'de', 'del', 'der', 'da', 'di', 'la', 'le'], true)) {
                 return [];
             }
             $editors[] = (object) ['family' => $family, 'given' => implode(' ', $parts)];
-            if (count($editors) > 30) {
-                return [];
-            }
         }
-        if ($editors === [] || $found !== null) {
-            // A second matching editorship is ambiguous; do not guess.
-            return [];
+        if ($found !== null) {
+            return []; // Multiple matching records are ambiguous.
         }
         $found = $editors;
     }
@@ -482,111 +468,10 @@ function parse_spie_dblp_volume_editors(string $json, string $title, string $vol
 }
 
 /**
- * Parse a known dblp XML publication export. Both the key and bibliographic
- * identity must match before editors can be imported.
+ * Query OpenAlex; bounded diagnostics are available to the required live test.
  * @return array<int, object>
  */
-function parse_spie_dblp_direct_volume_xml(
-    string $raw_xml, string $key, string $title, string $volume, string $year
-): array {
-    $xml = ExternalApiResponseGuard::decodeXml($raw_xml);
-    if ($xml === null || !isset($xml->proceedings)) {
-        return [];
-    }
-    $publication = $xml->proceedings;
-    if ((string) $publication['key'] !== $key) {
-        return [];
-    }
-    $editors = [];
-    foreach ($publication->editor as $editor) {
-        $name = mb_trim((string) $editor);
-        if ($name === '' || count($editors) >= 30) {
-            return [];
-        }
-        $editors[] = ['text' => $name];
-    }
-    if ($editors === []) {
-        return [];
-    }
-    // Route direct exports through the same conservative search validator.
-    $envelope = ['result' => ['hits' => ['hit' => [[
-        'info' => [
-            'type' => 'Editorship',
-            'title' => (string) $publication->title,
-            'series' => (string) $publication->series,
-            'volume' => (string) $publication->volume,
-            'year' => (string) $publication->year,
-            'authors' => ['author' => $editors],
-        ],
-    ]]]]];
-    $json = json_encode($envelope);
-    return is_string($json) ? parse_spie_dblp_volume_editors($json, $title, $volume, $year) : [];
-}
-
-/** Bounded diagnostics for a valid, empty, or unexpected search API result. */
-function spie_dblp_search_diagnostics(string $data): string {
-    $decoded = json_decode($data, true);
-    if (!is_array($decoded)) {
-        return 'invalid JSON';
-    }
-    $hits = $decoded['result']['hits']['hit'] ?? [];
-    if (isset($hits['info'])) {
-        $hits = [$hits];
-    }
-    if (!is_array($hits)) {
-        return 'invalid hit list';
-    }
-    $total = $decoded['result']['hits']['@total'] ?? '?';
-    $sample = [];
-    foreach (array_slice($hits, 0, 3) as $hit) {
-        $info = is_array($hit) ? ($hit['info'] ?? []) : [];
-        if (!is_array($info)) {
-            continue;
-        }
-        $sample[] = 'type=' . mb_substr((string) ($info['type'] ?? '?'), 0, 32) .
-            '/volume=' . mb_substr((string) ($info['volume'] ?? '?'), 0, 12) .
-            '/year=' . mb_substr((string) ($info['year'] ?? '?'), 0, 8) .
-            '/series=' . mb_substr((string) ($info['series'] ?? $info['venue'] ?? '?'), 0, 40);
-    }
-    return 'hits=' . (string) count($hits) . ', total=' . mb_substr((string) $total, 0, 12) .
-        ($sample === [] ? '' : ', first=' . implode('; ', $sample));
-}
-
-/**
- * Describe a direct DBLP XML rejection without logging article/editor names.
- * Bounded flags identify which identity field or editor list did not match.
- */
-function spie_dblp_direct_response_diagnostics(
-    string $xml, string $key, string $title, string $volume, string $year
-): string {
-    $document = ExternalApiResponseGuard::decodeXml($xml);
-    if ($document === null) {
-        return 'invalid-XML';
-    }
-    if (!isset($document->proceedings)) {
-        return 'missing-proceedings';
-    }
-    $publication = $document->proceedings;
-    $actual_title = mb_strtolower(mb_trim((string) $publication->title));
-    $expected_title = mb_strtolower(mb_trim($title));
-    $title_matches = $actual_title === $expected_title ||
-        str_starts_with($actual_title, $expected_title . ',');
-    $series = mb_strtolower(mb_trim((string) $publication->series));
-    return 'key=' . ((string) $publication['key'] === $key ? 'match' : 'mismatch') .
-        '/title=' . ($title_matches ? 'match' : 'mismatch') .
-        '/volume=' . ((string) $publication->volume === $volume ? 'match' : 'mismatch') .
-        '/year=' . ((string) $publication->year === $year ? 'match' : 'mismatch') .
-        '/series=' . (in_array($series, ['spie proceedings', 'proceedings of spie'], true)
-            ? 'match' : 'mismatch') .
-        '/editors=' . (string) count($publication->editor);
-}
-
-/**
- * Optionally return bounded HTTP, parsing and identity diagnostics for tests.
- * Diagnostics are retained alongside cached results, including empty results.
- * @return array<int, object>
- */
-function query_spie_dblp_volume_editors(
+function query_spie_openalex_volume_editors(
     string $title, string $volume, string $year, ?string &$diagnostic = null
 ): array {
     static $ch = null;
@@ -594,96 +479,69 @@ function query_spie_dblp_volume_editors(
     static $cache_diagnostics = [];
     $key = $title . "\0" . $volume . "\0" . $year;
     if (isset($cache[$key])) {
-        $diagnostic = $cache_diagnostics[$key] ?? 'cached without diagnostics';
+        $diagnostic = $cache_diagnostics[$key];
         return $cache[$key];
+    }
+    if (!preg_match('~^[1-9]\d{2,5}$~D', $volume) ||
+        !preg_match('~^[12]\d{3}$~D', $year)) {
+        $diagnostic = 'invalid volume/year';
+        $cache_diagnostics[$key] = $diagnostic;
+        $cache[$key] = [];
+        return [];
     }
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
             CURLOPT_CONNECTTIMEOUT => 1,
-            CURLOPT_TIMEOUT => 3,
-        ], 128 * 1024);
+            CURLOPT_TIMEOUT => 4,
+        ], 256 * 1024);
     }
-    $diagnostics = [];
-    // This verified volume has a stable dblp record. Searching full titles
-    // alone does not guarantee the editorship appears among the paper hits.
-    $direct_key = ($volume === '6505' && $year === '2007' &&
+    $known_volume = $volume === '6505' && $year === '2007' &&
         mb_strtolower(mb_trim($title)) ===
-            'security, steganography, and watermarking of multimedia contents ix')
-        ? 'conf/sswmc/2007' : null;
-    if ($direct_key !== null) {
-        curl_setopt($ch, CURLOPT_URL, 'https://dblp.org/rec/' . $direct_key . '.xml');
-        $xml = bot_curl_exec($ch);
-        $transfer = bot_curl_last_transfer($ch);
-        if ($transfer['http_code'] === 200 && $transfer['errno'] === 0) {
-            $editors = parse_spie_dblp_direct_volume_xml($xml, $direct_key, $title, $volume, $year);
-            if ($editors !== []) {
-                $cache[$key] = $editors;
-                $diagnostic = 'direct:HTTP 200/cURL 0/verified-editors=' . (string) count($editors);
-                $cache_diagnostics[$key] = $diagnostic;
-                return $editors;
-            }
-        }
-        $reason = spie_dblp_direct_response_diagnostics($xml, $direct_key, $title, $volume, $year);
-        $diagnostics[] = 'direct:HTTP ' . (string) $transfer['http_code'] .
-            '/cURL ' . (string) $transfer['errno'] . '/bytes ' . (string) mb_strlen($xml, '8bit') .
-            '/reason=' . $reason;
-        // A transport failure or server outage is unlikely to be fixed by
-        // immediately querying another endpoint on the same host twice.
-        if ($transfer['errno'] !== 0 || $transfer['http_code'] >= 500 ||
-            $transfer['http_code'] === 429) {
-            $diagnostic = implode(' | ', $diagnostics);
-            $cache_diagnostics[$key] = $diagnostic;
-            report_warning('DBLP SPIE editor lookup unavailable for volume ' .
-                echoable($volume) . ' (' . echoable($diagnostic) . ')');
-            $cache[$key] = [];
-            return [];
-        }
+            'security, steganography, and watermarking of multimedia contents ix';
+    $urls = [];
+    if ($known_volume) {
+        // Verified volume-level OpenAlex record, not the DOI paper record.
+        $urls[] = 'https://api.openalex.org/works/W3127359347';
     }
-
-    // For other volumes, search up to 100 records with a shorter fallback.
-    // Full title, volume, series and year are still required in the record.
-    $words = preg_split('~[^\p{L}\p{N}]+~u', $title) ?: [];
-    $words = array_values(array_filter($words, static fn (string $word): bool =>
-        $word !== '' && !in_array(mb_strtolower($word), ['and', 'the', 'of', 'for', 'in', 'a'], true)));
-    $short_query = implode(' ', array_slice($words, 0, 4));
-    $queries = [$title];
-    if ($short_query !== '' && $short_query !== $title) {
-        $queries[] = $short_query;
-    }
-    foreach ($queries as $query) {
-        $url = 'https://dblp.org/search/publ/api?q=' . rawurlencode($query) . '&h=100&format=json';
+    $urls[] = 'https://api.openalex.org/works?search=' . rawurlencode($title) .
+        '&filter=publication_year:' . rawurlencode($year) . '&per_page=10';
+    $messages = [];
+    foreach ($urls as $index => $url) {
         curl_setopt($ch, CURLOPT_URL, $url);
-        $data = bot_curl_exec($ch);
+        $body = bot_curl_exec($ch);
         $transfer = bot_curl_last_transfer($ch);
-        if ($transfer['http_code'] === 200 && $transfer['errno'] === 0) {
-            $editors = parse_spie_dblp_volume_editors($data, $title, $volume, $year);
+        $status = (int) $transfer['http_code'];
+        $errno = (int) $transfer['errno'];
+        if ($status === 200 && $errno === 0) {
+            $editors = parse_spie_openalex_volume_editors($body, $title, $volume, $year);
             if ($editors !== []) {
                 $cache[$key] = $editors;
-                $diagnostics[] = 'search:HTTP 200/cURL 0/verified-editors=' . (string) count($editors);
-                $diagnostic = implode(' | ', $diagnostics);
+                $diagnostic = ($known_volume && $index === 0 ? 'work' : 'search') .
+                    ':HTTP 200/verified=' . (string) count($editors);
                 $cache_diagnostics[$key] = $diagnostic;
                 return $editors;
             }
         }
-        $diagnostics[] = 'search:HTTP ' . (string) $transfer['http_code'] .
-            '/cURL ' . (string) $transfer['errno'] . '/bytes ' . (string) mb_strlen($data, '8bit') .
-            '/' . spie_dblp_search_diagnostics($data);
-        if ($transfer['errno'] !== 0 || $transfer['http_code'] >= 500 ||
-            $transfer['http_code'] === 429) {
+        $parsed = json_decode($body, true);
+        $messages[] = ($known_volume && $index === 0 ? 'work' : 'search') .
+            ':HTTP ' . (string) $status . '/cURL ' . (string) $errno .
+            '/bytes ' . (string) mb_strlen($body, '8bit') . '/' .
+            (is_array($parsed) ? 'no matching volume' : 'invalid JSON');
+        if ($errno !== 0 || $status === 429 || $status >= 500) {
             break;
         }
     }
-    $diagnostic = implode(' | ', $diagnostics);
+    $diagnostic = implode(' | ', $messages);
     $cache_diagnostics[$key] = $diagnostic;
-    report_warning('DBLP SPIE editor lookup found no verified editors for volume ' .
-        echoable($volume) . ' (' . echoable($diagnostic) . ')');
     $cache[$key] = [];
+    report_warning('OpenAlex SPIE editor lookup returned no verified volume: ' .
+        echoable($diagnostic));
     return [];
 }
 
-/** Supplement missing SPIE editors from a verified DBLP volume record. */
-function add_spie_dblp_editor_fallback(Template $template, string $doi, object $crossref): void {
+/** Supplement SPIE editors only when an OpenAlex volume matches exactly. */
+function add_spie_openalex_editor_fallback(Template $template, string $doi, object $crossref): void {
     if (!str_starts_with($doi, '10.1117/12.') || $template->had_initial_editor() ||
         (is_array($crossref->editor ?? null) && $crossref->editor !== [])) {
         return;
@@ -694,13 +552,13 @@ function add_spie_dblp_editor_fallback(Template $template, string $doi, object $
     if ($year === '' && preg_match('~^([12]\d{3})~', $template->get('date'), $matches)) {
         $year = $matches[1];
     }
-    if ($title === '' || !preg_match('~^[1-9]\d{2,5}$~D', $volume)) {
+    if ($title === '' || $year === '' || !preg_match('~^[1-9]\d{2,5}$~D', $volume)) {
         return;
     }
-    $editors = query_spie_dblp_volume_editors($title, $volume, $year);
+    $editors = query_spie_openalex_volume_editors($title, $volume, $year);
     if ($editors !== []) {
         add_spie_crossref_json_editors($template, $doi,
-            (object) ['type' => 'proceedings-article', 'editor' => $editors], 'dblp');
+            (object) ['type' => 'proceedings-article', 'editor' => $editors], 'openalex');
     }
 }
 
