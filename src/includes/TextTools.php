@@ -189,7 +189,7 @@ function wikify_italic_tags(string $text): string {
  * Do not freeze all-uppercase source titles, which still need normal title casing.
  *
  * @param string $text Periodical title to protect.
- * @param array<string, string> $held Saved acronyms keyed by placeholder.
+ * @param array<string, string> &$held Saved acronyms keyed by placeholder.
  */
 function protect_journal_acronyms(string $text, array &$held): string {
     $letters = safe_preg_replace('~[^\p{L}]~u', '', $text);
