@@ -61,6 +61,7 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    confligt
     if ($use_title_case) {
         $title = title_case($title);
     }
