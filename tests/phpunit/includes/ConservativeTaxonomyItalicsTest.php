@@ -20,6 +20,8 @@ final class ConservativeTaxonomyItalicsTest extends testBaseClass {
             'new genus' => ['Description of Barus gen. nov. from Peru', "Description of ''Barus'' gen. nov. from Peru"],
             'ordinary sentence' => ['Description of a new species from Peru', 'Description of a new species from Peru'],
             'already italicized' => ["Description of ''Barus'' sp. nov. from Peru", "Description of ''Barus'' sp. nov. from Peru"],
+            'old n.sp. form' => ['Description of Myotis alcathoe n.sp. from Peru', "Description of ''Myotis alcathoe'' n.sp. from Peru"],
+            'already italicized n.sp.' => ["Description of ''Myotis alcathoe'' n.sp. from Peru", "Description of ''Myotis alcathoe'' n.sp. from Peru"],
         ];
     }
 }
