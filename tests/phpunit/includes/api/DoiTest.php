@@ -1076,6 +1076,52 @@ final class DoiTest extends testBaseClass {
         }
     }
 
+    /** The direct volume export must pass the same strict validation as search. */
+    public function testSpieDblpDirectVolumeXmlValidation(): void {
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' .
+            '<dblp><proceedings key="conf/sswmc/2007">' .
+            '<editor>Edward J. Delp III</editor><editor>Ping Wah Wong</editor>' .
+            '<title>' . $title . ', San Jose, CA, USA, January 28, 2007</title>' .
+            '<series>SPIE Proceedings</series><volume>6505</volume><year>2007</year>' .
+            '</proceedings></dblp>';
+        $parse = static fn (string $data, string $key = 'conf/sswmc/2007'): array =>
+            parse_spie_dblp_direct_volume_xml($data, $key, $title, '6505', '2007');
+        $editors = $parse($xml);
+        $this->assertCount(2, $editors);
+        $this->assertSame('Delp III', $editors[0]->family);
+        $this->assertSame('Edward J.', $editors[0]->given);
+        $this->assertSame('Wong', $editors[1]->family);
+        $this->assertSame('Ping Wah', $editors[1]->given);
+        $this->assertSame([], $parse($xml, 'conf/other/2007'));
+        foreach ([
+            '<volume>6505</volume>' => '<volume>6506</volume>',
+            '<year>2007</year>' => '<year>2008</year>',
+            '<series>SPIE Proceedings</series>' => '<series>Unknown</series>',
+            '<title>' . $title => '<title>Unrelated',
+        ] as $from => $to) {
+            $this->assertSame([], $parse(str_replace($from, $to, $xml)));
+        }
+        $this->assertSame([], $parse('<broken'));
+        $this->assertSame([], $parse(str_replace(
+            ['<editor>Edward J. Delp III</editor>', '<editor>Ping Wah Wong</editor>'], '', $xml)));
+    }
+
+    public function testSpieDblpSearchDiagnosticsAreBounded(): void {
+        $json = json_encode(['result' => ['hits' => ['@total' => '15', 'hit' => [[
+            'info' => ['type' => 'Editorship', 'volume' => '6506', 'year' => '2008',
+                'series' => 'Other', 'title' => str_repeat('private title', 50)],
+        ]]]]], JSON_THROW_ON_ERROR);
+        $summary = spie_dblp_search_diagnostics($json);
+        $this->assertStringContainsString('total=15', $summary);
+        $this->assertStringContainsString('volume=6506', $summary);
+        $this->assertStringNotContainsString('private title', $summary);
+        $this->assertLessThan(400, strlen($summary));
+        $this->assertSame('invalid JSON', spie_dblp_search_diagnostics('<html>'));
+        $this->assertStringContainsString('hits=0', spie_dblp_search_diagnostics(
+            '{"result":{"hits":{"@total":"0"}}}'));
+    }
+
     /**
      * Required live integration test: catches a valid empty search result,
      * a blocked request, or a response-shape change that offline mocks miss.
