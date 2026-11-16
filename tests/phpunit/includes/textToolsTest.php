@@ -326,15 +326,15 @@ final class textToolsTest extends testBaseClass {
 
     public function testTidyDateFutureRejection1(): void {
         new TestPage(); // Fill page name with test name for debugging
-        // Test date 4 days in the future (should be rejected)
+        // Event dates more than three days ahead should be rejected.
         $future_date = date('Y-m-d', strtotime('+4 days'));
-        $this->assertSame('', tidy_date($future_date));
+        $this->assertSame('', tidy_date($future_date, false));
     }
 
     public function testTidyDateFutureRejection2(): void {
-        // Test date 1 year in the future (should be rejected)
+        // Access/archive event dates a year ahead should be rejected.
         $future_date = date('Y-m-d', strtotime('+1 year'));
-        $this->assertSame('', tidy_date($future_date));
+        $this->assertSame('', tidy_date($future_date, false));
     }
 
     public function testTidyDateFutureAcceptance2(): void {
@@ -355,11 +355,11 @@ final class textToolsTest extends testBaseClass {
     }
 
     public function testTidyDateMultipleFormats(): void {
-        // Test that various date formats are parsed correctly and future dates rejected
-        // Future dates (>3 days) should be rejected regardless of format
-        $this->assertSame('', tidy_date(date('j F Y', strtotime('+1 year'))));
-        $this->assertSame('', tidy_date(date('F j, Y', strtotime('+1 year'))));
-        $this->assertSame('', tidy_date(date('j M Y', strtotime('+1 year'))));
+        // Future publication dates are permitted in every recognized format.
+        $expected = date('Y-m-d', strtotime('+1 year'));
+        $this->assertSame($expected, tidy_date(date('j F Y', strtotime('+1 year'))));
+        $this->assertSame($expected, tidy_date(date('F j, Y', strtotime('+1 year'))));
+        $this->assertSame($expected, tidy_date(date('j M Y', strtotime('+1 year'))));
 
         // Past dates should be accepted and normalized to ISO format
         $this->assertSame('2020-01-15', tidy_date('15 January 2020'));  // UK format
