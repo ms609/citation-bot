@@ -672,12 +672,7 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testCrossRefAddEditorsSpieProceedingsLive(): void {
-        // The unit tests above check the code deterministically. Keep the
-        // external integration check opt-in: Crossref may be unavailable or
-        // change a record's optional editor fields between CI runs.
-        if (getenv('CITATION_BOT_LIVE_CROSSREF') !== '1') {
-            $this->markTestSkipped('Set CITATION_BOT_LIVE_CROSSREF=1 to check live SPIE metadata');
-        }
+        // The unit tests above check the code deterministically.  This is live test.
         $text = "{{Cite journal | doi = 10.1117/12.2078768|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertSame('cite book', $template->wikiname());
