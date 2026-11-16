@@ -122,8 +122,8 @@ final class SSRNTest extends testBaseClass {
         }
         // Comma-full patterns (in firstName already)
         $fulls = [
-            ["van der Waals, Johannes", "Van Der Waals, Johannes"],
-            ["van Gogh, Vincent", "Van Gogh, Vincent"],
+            ["van der Waals, Johannes", "van der Waals, Johannes"],
+            ["van Gogh, Vincent", "van Gogh, Vincent"],
             ["de la Cruz, Juan", "de la Cruz, Juan"],
             ["McDonald, Ronald", "McDonald, Ronald"],
             ["O'Brien, Patrick", "O'Brien, Patrick"],
@@ -215,8 +215,8 @@ final class SSRNTest extends testBaseClass {
             ['Conway Morris S.C.', 'Conway Morris, S. C.'],
             ['Doe, John', 'Doe, John'],
             ['Doe, John A.', 'Doe, John A'],
-            ['van der Waals, Johannes', 'Van Der Waals, Johannes'],
-            ['van Gogh, Vincent', 'Van Gogh, Vincent'],
+            ['van der Waals, Johannes', 'van der Waals, Johannes'],
+            ['van Gogh, Vincent', 'van Gogh, Vincent'],
             ['de la Cruz, Juan', 'de la Cruz, Juan'],
             ['McDonald, Ronald', 'McDonald, Ronald'],
             ["O'Brien, Patrick", "O'Brien, Patrick"],
