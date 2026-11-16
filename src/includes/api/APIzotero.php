@@ -1619,6 +1619,22 @@ final class Zotero {
             $source_date = mb_trim((string) $result->date);
             if (preg_match('~\A(?:1969-12-31|1970-01-01)(?:[T ](?:00:00(?::00)?|23:59:59)(?:\.0+)?(?:Z|[+-]\d{2}:?\d{2})?)?\z~i', $source_date) === 1) {
                 unset($result->date);
+            } else {
+                // Future publication dates from Zotero/Citoid are unreliable.
+                // Ignore only the date; keep the rest of the returned metadata.
+                // tidy_date() still allows future cover dates from other sources.
+                $localized_date = WIKI_BASE === 'en' ? localized_citation_date($source_date) : null;
+                $normalized_date = tidy_date($localized_date ?? $source_date);
+                // strtotime('2027') means 20:27, not the calendar year 2027.
+                $date_time = preg_match('~^[0-9]{4}$~D', $normalized_date) === 1
+                    ? strtotime($normalized_date . '-01-01')
+                    : strtotime($normalized_date);
+                // Compare to the start of today, not 'now', so today's date
+                // remains valid and tomorrow is rejected (no 3-day grace).
+                if ($date_time !== false && $date_time > strtotime('today')) {
+                    report_info('Ignoring future publication date from Zotero: ' . echoable($source_date));
+                    unset($result->date);
+                }
             }
         }
         $has_access_date = $access_date !== 0;
