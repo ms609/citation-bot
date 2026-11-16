@@ -189,6 +189,14 @@ final class WikipediaBot {
         // @codeCoverageIgnoreEnd
     }
 
+    /**
+     * Bind write requests to an authenticated account and the exact submitted bytes.
+     * @return array{assert: string, md5: string}
+     */
+    public static function edit_safety_parameters(string $text, bool $as_user): array {
+        return ['assert' => $as_user ? 'user' : 'bot', 'md5' => md5($text)];
+    }
+
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
         $this->last_write_skipped = false;
@@ -244,6 +252,7 @@ final class WikipediaBot {
             "action" => "edit",
             "title" => $page,
             "text" => $text,
+            ...self::edit_safety_parameters($text, defined('EDIT_AS_USER')),
             "summary" => $editSummary,
             "notminor" => "1",
             "bot" => "1",
@@ -1027,6 +1036,7 @@ final class WikipediaBot {
             'action' => 'edit',
             'title' => $title,
             'text' => $text,
+            ...self::edit_safety_parameters($text, defined('EDIT_AS_USER')),
             'summary' => $summary,
             'notminor' => '1',
             'bot' => '1',
