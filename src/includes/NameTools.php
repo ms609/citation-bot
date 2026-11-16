@@ -441,7 +441,16 @@ function format_multiple_authors(string $authors): string {
 
     $names = split_explicit_initial_author_list($authors);
     if ($names !== null) {
-        return implode('; ', array_map('format_author', $names));
+        $formatted_names = array_map('format_author', $names);
+        foreach ($formatted_names as &$formatted_name) {
+            // format_author() can discard the period on an explicit single-letter
+            // forename ("Smith, J." or "J. Smith"). Restore it for this list only.
+            if (preg_match('~(?:,\s*|\s)\p{Lu}$~u', $formatted_name) === 1) {
+                $formatted_name .= '.';
+            }
+        }
+        unset($formatted_name);
+        return implode('; ', $formatted_names);
     }
 
     $return = [];

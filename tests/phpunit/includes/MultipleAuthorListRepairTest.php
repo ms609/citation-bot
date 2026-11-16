@@ -21,6 +21,7 @@ final class MultipleAuthorListRepairTest extends testBaseClass {
 
     public function testInitialBeforeSurnameIsSupported(): void {
         $this->assertSame('Smith, J.; Jones, K.', format_multiple_authors('J. Smith and K. Jones'));
+        $this->assertSame('Smith, J.; Jones, K.', format_multiple_authors('J Smith and K Jones'));
     }
 
     public function testAmbiguousInputRetainsLegacyFallback(): void {
