@@ -92,6 +92,11 @@ function clean_up_first_names(string $value): string {
 const MAC_SURNAMES_WITHOUT_INNER_CAPITAL = [
     'macaluso', 'macario', 'macaulay', 'macchi', 'macedo', 'macek', 'macias', 'macías', 'maciel',
     'mackey', 'mackie', 'macklin', 'macomber', 'macready', 'macron', 'macura',
+    // Attested Polish, Filipino, Italian, and other non-Gaelic spellings.
+    'macabenta', 'macalalad', 'macalinao', 'macalintal', 'macapagal', 'macaraeg',
+    'macaraig', 'macaspac', 'macatangay', 'maceda', 'macera', 'maciej',
+    'maciejak', 'maciejczyk', 'maciejewski', 'maciejowski', 'mackiewicz', 'macri',
+    'macrini', 'macrì', 'macuga',
 ];
 
 /** These letters give casing rules for dotted and dotless I in Turkic names. */
