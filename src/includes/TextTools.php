@@ -929,7 +929,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         // When there are lots of periods, then they probably mark abbreviations, not sentence ends
         // We should therefore capitalize after each punctuation character.
         // The abbreviations "s. str." and "s. l." (sensu stricto, sensu lato) and "str." (street) do not end a sentence
-        $new_case = safe_preg_replace_callback("~(?<![\s(\[]s)(?<![\s(\[.]str)(?<![\s(\[]s\. l)(?<![\s(\[]s\.l)(?<!\bsp\. nov)(?<!\bgen\. nov)(?<!\bsubsp\. nov)[?.:!/]\s+[a-z]~u", // Capitalize after punctuation, but not after taxonomic abbreviations
+        $new_case = safe_preg_replace_callback("~(?<![\\s(\\[]s)(?<![\\s(\\[.]str)(?<![\\s(\\[]s\\. l)(?<![\\s(\\[]s\\.l)(?<!\\bsp\\. nov)(?<!\\bgen\\. nov)(?<!\\bsubsp\\. nov)(?<!\\bn\\.sp)[?.:!/]\\s+[a-z]~u", // Capitalize after punctuation, but not after taxonomic abbreviations
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
