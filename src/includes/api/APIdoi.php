@@ -225,6 +225,34 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                 }
             }
+            // The OpenURL XML often omits the volume editors that Crossref's JSON record carries (SPIE proceedings, for example)
+            if (
+                $doi_type === 'proceedings-article' &&
+                str_starts_with($doi, '10.1117/12.') &&
+                $template->blank(['editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1']) &&
+                isset($crossRefNewAPI->editor) &&
+                is_array($crossRefNewAPI->editor)
+            ) {
+                $json_ed_i = 0;
+                foreach ($crossRefNewAPI->editor as $json_editor) {
+                    if (!is_object($json_editor)) {
+                        continue;
+                    }
+                    $json_family = (isset($json_editor->family) && is_string($json_editor->family)) ? mb_trim($json_editor->family) : '';
+                    $json_given = (isset($json_editor->given) && is_string($json_editor->given)) ? mb_trim($json_editor->given) : '';
+                    if ($json_family === '') {
+                        continue; // Organizations and nameless entries are not personal editors
+                    }
+                    ++$json_ed_i;
+                    if ($json_ed_i > 30) { // Same cap as the XML path: more would clutter the wikitext
+                        break;
+                    }
+                    $template->add_if_new('editor-last' . (string) $json_ed_i, format_surname($json_family), 'crossref');
+                    if ($json_given !== '') {
+                        $template->add_if_new('editor-first' . (string) $json_ed_i, format_forename($json_given), 'crossref');
+                    }
+                }
+            }
             $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
             $template->add_if_new('journal', $journal_title); // add_if_new will format the title
             $crossref_volume = (string) $crossRef->volume;

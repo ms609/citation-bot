@@ -586,6 +586,68 @@ final class DoiTest extends testBaseClass {
         }
     }
 
+    public function testSpieProceedingsEditorsFromCrossrefJson(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.2078768';
+        $title = 'Laser 3D Manufacturing II';
+        $chapter = 'Evaluation of laser ultrasonic testing for inspection of metal additive manufacturing';
+        $record = new SimpleXMLElement(
+            '<query><article_title>' . $chapter . '</article_title>' .
+            '<volume_title>' . $title . '</volume_title><volume>9353</volume><year>2015</year></query>'
+        );
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'title' => [$chapter],
+                'container-title' => ['SPIE Proceedings', $title],
+                'editor' => [
+                    (object) ['given' => 'Henry', 'family' => 'Helvajian', 'sequence' => 'first'],
+                    (object) ['name' => 'SPIE', 'sequence' => 'additional'],
+                    (object) ['given' => 'Alberto', 'family' => 'Piqué', 'sequence' => 'additional'],
+                ],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $template->final_tidy();
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Henry', $template->get2('editor-first1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2')); // the organization entry is skipped
+            $this->assertSame('Alberto', $template->get2('editor-first2'));
+            $this->assertNull($template->get2('editor-last3'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testCrossRefAddEditorsSpieProceedingsLive(): void {
+        // Live Crossref: the JSON record lists four volume editors for 10.1117/12.2078768 (Laser 3D Manufacturing II)
+        $text = "{{Cite journal | doi = 10.1117/12.2078768|pmid=<!-- -->|pmc=<!-- -->}}";
+        $template = $this->process_citation($text);
+        $this->assertSame('cite book', $template->wikiname());
+        $this->assertSame('Proceedings of SPIE', $template->get2('series'));
+        $this->assertSame('Helvajian', $template->get2('editor-last1'));
+        $this->assertSame('Henry', $template->get2('editor-first1'));
+        $this->assertSame('Piqué', $template->get2('editor-last2'));
+        $this->assertSame('Gu', $template->get2('editor-last4'));
+        $this->assertNull($template->get2('editor-last5'));
+    }
+
     public function testBlankTypeFromDX1(): void {
         $text = "{{cite book| doi=10.14989/doctor.k19250 |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
