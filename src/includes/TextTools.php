@@ -853,14 +853,15 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
  * journal-style punctuation rules.  A placeholder keeps the period in "et al."
  * from turning the following word into a new sentence.
  *
- * @param array<string, string> $held
+ * @param string $text Article title to protect.
+ * @param array<string, string> $held Saved title-case terms keyed by placeholder.
  */
 function protect_article_title_case(string $text, array &$held): string {
     static $pattern = null;
     if ($pattern === null) {
         $terms = array_keys(ARTICLE_TITLE_CASE_EXCEPTIONS);
-        usort($terms, static fn(string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a));
-        $alternatives = array_map(static fn(string $term): string => preg_quote($term, '~'), $terms);
+        usort($terms, static fn (string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a));
+        $alternatives = array_map(static fn (string $term): string => preg_quote($term, '~'), $terms);
         $pattern = '~(?<![\p{L}\p{N}_])(?:' . implode('|', $alternatives) . ')(?![\p{L}\p{N}_])~iu';
     }
     return safe_preg_replace_callback($pattern, static function (array $matches) use (&$held): string {
@@ -875,7 +876,10 @@ function protect_article_title_case(string $text, array &$held): string {
     }, $text);
 }
 
-/** @param array<string, string> $held */
+/**
+ * @param string $text Article title with placeholders.
+ * @param array<string, string> $held Saved title-case terms keyed by placeholder.
+ */
 function restore_article_title_case(string $text, array $held): string {
     return $held === [] ? $text : str_ireplace(array_keys($held), array_values($held), $text);
 }
