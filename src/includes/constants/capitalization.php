@@ -2395,3 +2395,13 @@ const MAP_DIACRITICS = [
     'ʮ' => 'h',
     'ʯ' => 'h',
 ];
+
+/**
+ * Fully uppercase words in an otherwise mixed-case journal title that are too
+ * common to treat as acronyms (e.g. ALL CAPS headers from publishers).
+ */
+const JOURNAL_ACRONYM_NON_ACRONYMS = [
+    'A', 'AN', 'AND', 'AS', 'AT', 'BY', 'DE', 'DER', 'DIE', 'DO', 'DOS', 'DU',
+    'FOR', 'FROM', 'IN', 'IS', 'LA', 'LE', 'LES', 'OF', 'ON', 'OR', 'THE',
+    'TO', 'UN', 'UND', 'VAN', 'VON', 'WITH',
+];
