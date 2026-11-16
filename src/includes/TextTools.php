@@ -61,8 +61,9 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
-    conflict
+    $journal_acronym_held = [];
     if ($use_title_case) {
+        $title = protect_journal_acronyms($title, $journal_acronym_held);
         $title = title_case($title);
     }
     $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
@@ -88,7 +89,14 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
         }
     }
     $title = safe_preg_replace('~[\*]$~', '', $title);
+    $article_case_held = [];
+    if (!$use_title_case) {
+        $title = protect_article_title_case($title, $article_case_held);
+    }
     $title = title_capitalization($title, true);
+    if (!$use_title_case) {
+        $title = restore_article_title_case($title, $article_case_held);
+    }
 
     $htmlBraces = ["&lt;", "&gt;"];
     $angleBraces = ["<", ">"];
@@ -150,6 +158,9 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
     $title = mb_trim($title, " \t\n\r\0\x0B\u{00A0}");
+    if ($use_title_case) {
+        $title = restore_journal_acronyms($title, $journal_acronym_held);
+    }
 
     $num_replace = count($replacement);
     for ($i = 0; $i < $num_replace; $i++) {
@@ -178,6 +189,52 @@ function wikify_italic_tags(string $text): string {
         },
         $text
     );
+}
+
+/**
+ * Preserve explicit uppercase acronyms in mixed-case periodical names only.
+ * Do not freeze all-uppercase source titles, which still need normal title casing.
+ *
+ * @param string $text Periodical title to protect.
+ * @param array<string, string> &$held Saved acronyms keyed by placeholder.
+ */
+function protect_journal_acronyms(string $text, array &$held): string {
+    $letters = safe_preg_replace('~[^\p{L}]~u', '', $text);
+    if ($letters === '' || $letters === mb_strtoupper($letters)) {
+        return $text;
+    }
+    return safe_preg_replace_callback('~(?<![\p{L}\p{N}])([A-Z]{2,10})(?![\p{L}\p{N}])~u',
+        static function (array $matches) use (&$held): string {
+            if (in_array($matches[1], JOURNAL_ACRONYM_NON_ACRONYMS, true)) {
+                return $matches[0];
+            }
+            $placeholder = 'CITATIONBOTJOURNALACRONYM' . count($held) . 'TOKEN';
+            $held[$placeholder] = $matches[1];
+            return $placeholder;
+        }, $text);
+}
+
+/**
+ * Restore protected acronyms, then recover canonical spellings for complete
+ * journal names. While placeholders were present, title_capitalization() could
+ * not recognize entries such as IFAC-PapersOnLine in its exception table.
+ *
+ * @param string $text Periodical title with placeholders.
+ * @param array<string, string> $held Saved acronyms keyed by placeholder.
+ */
+function restore_journal_acronyms(string $text, array $held): string {
+    if ($held === []) {
+        return $text;
+    }
+    $text = str_ireplace(array_keys($held), array_values($held), $text);
+    // Match entire names only: do not rewrite journal-name fragments in prose.
+    $normalized = mb_strtolower(mb_trim($text));
+    foreach (UCFIRST_JOURNAL_ACRONYMS as $index => $variant) {
+        if ($normalized === mb_strtolower(mb_trim($variant))) {
+            return mb_trim(JOURNAL_ACRONYMS[$index]);
+        }
+    }
+    return $text;
 }
 
 function restore_italics (string $text): string {
@@ -841,6 +898,42 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
 }
 
 // ============================================= Capitalization functions ======================================
+
+/**
+ * Replace only known case-sensitive terms before title_capitalization() applies
+ * journal-style punctuation rules.  A placeholder keeps the period in "et al."
+ * from turning the following word into a new sentence.
+ *
+ * @param string $text Article title to protect.
+ * @param array<string, string> &$held Saved title-case terms keyed by placeholder.
+ */
+function protect_article_title_case(string $text, array &$held): string {
+    static $pattern = null;
+    if ($pattern === null) {
+        $terms = array_keys(ARTICLE_TITLE_CASE_EXCEPTIONS);
+        usort($terms, static fn (string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a));
+        $alternatives = array_map(static fn (string $term): string => preg_quote($term, '~'), $terms);
+        $pattern = '~(?<![\p{L}\p{N}_])(?:' . implode('|', $alternatives) . ')(?![\p{L}\p{N}_])~iu';
+    }
+    return safe_preg_replace_callback($pattern, static function (array $matches) use (&$held): string {
+        $key = mb_strtolower($matches[0]);
+        // "MPH" can be an academic degree, whereas "mph" is a unit.
+        if (in_array($key, ARTICLE_CASE_AMBIGUOUS_UNITS, true) && $matches[0] === mb_strtoupper($matches[0])) {
+            return $matches[0];
+        }
+        $placeholder = 'CITATIONBOTARTICLECASE' . count($held) . 'TOKEN';
+        $held[$placeholder] = ARTICLE_TITLE_CASE_EXCEPTIONS[$key];
+        return $placeholder;
+    }, $text);
+}
+
+/**
+ * @param string $text Article title with placeholders.
+ * @param array<string, string> $held Saved title-case terms keyed by placeholder.
+ */
+function restore_article_title_case(string $text, array $held): string {
+    return $held === [] ? $text : str_ireplace(array_keys($held), array_values($held), $text);
+}
 
 /**
  * Converts to title case, unless obviously a url
