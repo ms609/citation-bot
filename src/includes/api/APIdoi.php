@@ -35,7 +35,13 @@ function expand_by_doi(Template $template, bool $force = false): void {
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $template->add_if_new('jstor', mb_substr($doi, 8));
     }
-    if ($doi && ($force || $template->incomplete())) {
+    // On later passes the bibliography can be complete while SPIE volume editors
+    // are still missing. Revisit only that narrow case; otherwise preserve the
+    // usual incomplete-only DOI lookup policy.
+    $needs_spie_editors = str_starts_with($doi, '10.1117/12.') &&
+        ($template->has('chapter') || mb_strtolower($template->get('series')) === 'proceedings of spie') &&
+        $template->blank(['editors', 'veditors', 'editor', 'editor-last1', 'editor1-last', 'editor1']);
+    if ($doi && ($force || $template->incomplete() || $needs_spie_editors)) {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
             if (in_array(mb_strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
@@ -260,6 +266,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (isset($crossRefNewAPI->{"article-number"})) {
                 $template->add_if_new("article-number", (string) $crossRefNewAPI->{"article-number"});
             }
+            add_spie_dblp_editor_fallback($template, $doi, $crossRefNewAPI);
         } else {
             report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
             expand_doi_with_dx($template, $doi);
@@ -309,6 +316,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                     $template->add_if_new('series', 'Proceedings of SPIE', 'crossref');
                     add_spie_crossref_json_editors($template, $doi, $spie_json);
+                    add_spie_dblp_editor_fallback($template, $doi, $spie_json);
                 }
             }
         }
@@ -317,7 +325,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
 }
 
 /** Add named SPIE proceedings editors, completing only a matching existing list. */
-function add_spie_crossref_json_editors(Template $template, string $doi, object $record): void {
+function add_spie_crossref_json_editors(Template $template, string $doi, object $record, string $source = 'crossref'): void {
     if (
         !str_starts_with($doi, '10.1117/12.') ||
         ($record->type ?? '') !== 'proceedings-article' ||
@@ -384,10 +392,136 @@ function add_spie_crossref_json_editors(Template $template, string $doi, object 
     }
     foreach ($editors as $index => $editor) {
         $number = (string) ($index + 1);
-        $template->add_if_new('editor-last' . $number, format_surname($editor['family']), 'crossref');
+        $last = $source === 'dblp' ? $editor['family'] : format_surname($editor['family']);
+        $template->add_if_new('editor-last' . $number, $last, $source);
         if ($editor['given'] !== '') {
-            $template->add_if_new('editor-first' . $number, format_forename($editor['given']), 'crossref');
+            $template->add_if_new('editor-first' . $number, ($source === 'dblp' ? $editor['given'] : format_forename($editor['given'])), $source);
         }
+    }
+}
+
+/**
+ * Parse DBLP publication search JSON, accepting only the editorship of the
+ * exact SPIE proceedings volume. Never infer editors from article authors.
+ * @return array<int, object>
+ */
+function parse_spie_dblp_volume_editors(string $json, string $title, string $volume, string $year): array {
+    $result = json_decode($json, true);
+    $hits = $result['result']['hits']['hit'] ?? null;
+    if (!is_array($hits)) {
+        return [];
+    }
+    if (isset($hits['info'])) {
+        $hits = [$hits];
+    }
+    $found = null;
+    $expected_title = mb_strtolower(mb_trim($title));
+    foreach ($hits as $hit) {
+        $info = is_array($hit) ? ($hit['info'] ?? null) : null;
+        if (!is_array($info) || ($info['type'] ?? null) !== 'Editorship' ||
+            (string) ($info['volume'] ?? '') !== $volume ||
+            ($year !== '' && (string) ($info['year'] ?? '') !== $year) ||
+            !is_string($info['series'] ?? null) ||
+            !in_array(mb_strtolower(mb_trim($info['series'])),
+                ['spie proceedings', 'proceedings of spie'], true) ||
+            !is_string($info['title'] ?? null)) {
+            continue;
+        }
+        $record_title = mb_strtolower(mb_trim($info['title']));
+        // DBLP adds event location/date to some proceedings titles.
+        if ($record_title !== $expected_title &&
+            !str_starts_with($record_title, $expected_title . ',')) {
+            continue;
+        }
+        $names = $info['authors']['author'] ?? $info['editors']['editor'] ?? null;
+        if (!is_array($names)) {
+            return [];
+        }
+        if (isset($names['text']) || isset($names['@pid'])) {
+            $names = [$names];
+        }
+        $editors = [];
+        foreach ($names as $person) {
+            $name = is_array($person) ? ($person['text'] ?? null) : $person;
+            if (!is_string($name)) {
+                return [];
+            }
+            // DBLP sometimes appends a four-digit homonym identifier.
+            $name = preg_replace('~\s+\d{4}$~u', '', mb_trim($name));
+            if (!is_string($name)) {
+                return [];
+            }
+            $parts = preg_split('~\s+~u', $name);
+            if (!is_array($parts) || count($parts) < 2) {
+                return [];
+            }
+            $family = array_pop($parts);
+            if (preg_match('~^(?:Jr\.?|Sr\.?|II|III|IV|V)$~i', $family)) {
+                $suffix = $family;
+                $family = array_pop($parts) . ' ' . $suffix;
+            }
+            // Compound surname particles cannot safely be split by whitespace.
+            if ($parts === [] || in_array(mb_strtolower((string) end($parts)),
+                ['van', 'von', 'de', 'del', 'der', 'da', 'di', 'la', 'le'], true)) {
+                return [];
+            }
+            $editors[] = (object) ['family' => $family, 'given' => implode(' ', $parts)];
+            if (count($editors) > 30) {
+                return [];
+            }
+        }
+        if ($editors === [] || $found !== null) {
+            // A second matching editorship is ambiguous; do not guess.
+            return [];
+        }
+        $found = $editors;
+    }
+    return $found ?? [];
+}
+
+/** @return array<int, object> */
+function query_spie_dblp_volume_editors(string $title, string $volume, string $year): array {
+    static $ch = null;
+    static $cache = [];
+    $key = $title . "\0" . $volume . "\0" . $year;
+    if (isset($cache[$key])) {
+        return $cache[$key];
+    }
+    if ($ch === null) {
+        $ch = bot_curl_init(1.0, [
+            CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT => 3,
+        ], 128 * 1024);
+    }
+    $url = 'https://dblp.org/search/publ/api?q=' . rawurlencode($title) . '&h=10&format=json';
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $data = bot_curl_exec($ch);
+    $cache[$key] = is_string($data)
+        ? parse_spie_dblp_volume_editors($data, $title, $volume, $year)
+        : [];
+    return $cache[$key];
+}
+
+/** Supplement missing SPIE editors from a verified DBLP volume record. */
+function add_spie_dblp_editor_fallback(Template $template, string $doi, object $crossref): void {
+    if (!str_starts_with($doi, '10.1117/12.') || $template->had_initial_editor() ||
+        (is_array($crossref->editor ?? null) && $crossref->editor !== [])) {
+        return;
+    }
+    $title = $template->get_without_comments_and_placeholders('title');
+    $volume = $template->get_without_comments_and_placeholders('volume');
+    $year = $template->get_without_comments_and_placeholders('year');
+    if ($year === '' && preg_match('~^([12]\d{3})~', $template->get('date'), $matches)) {
+        $year = $matches[1];
+    }
+    if ($title === '' || !preg_match('~^[1-9]\d{2,5}$~D', $volume)) {
+        return;
+    }
+    $editors = query_spie_dblp_volume_editors($title, $volume, $year);
+    if ($editors !== []) {
+        add_spie_crossref_json_editors($template, $doi,
+            (object) ['type' => 'proceedings-article', 'editor' => $editors], 'dblp');
     }
 }
 

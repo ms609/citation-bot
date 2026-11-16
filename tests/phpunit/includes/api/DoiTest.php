@@ -560,6 +560,7 @@ final class DoiTest extends testBaseClass {
             'query_crossref' => $record,
             // The legacy OpenURL volume title remains useful if REST is down.
             'query_crossref_newapi' => new stdClass(),
+            'query_spie_dblp_volume_editors' => [],
         ];
         foreach ($stubs as $name => $value) {
             /** @psalm-suppress UnusedFunctionCall */
@@ -788,13 +789,17 @@ final class DoiTest extends testBaseClass {
             'volume' => '6505',
             'issued' => (object) ['date-parts' => [[2007]]],
             'author' => [(object) ['given' => 'Mo', 'family' => 'Chen']],
-            // Deliberately no editors: they must never be invented.
+            // Crossref has no editors; DBLP's verified editorship supplies them.
         ];
         $stubs = [
             'doi_works' => true,
             'query_crossref' => null,
             'expand_doi_with_dx' => null,
             'query_crossref_newapi' => $rest,
+            'query_spie_dblp_volume_editors' => [
+                (object) ['given' => 'Edward J.', 'family' => 'Delp III'],
+                (object) ['given' => 'Ping Wah', 'family' => 'Wong'],
+            ],
         ];
         foreach ($stubs as $name => $return) {
             /** @psalm-suppress UnusedFunctionCall */
@@ -813,7 +818,8 @@ final class DoiTest extends testBaseClass {
             $this->assertSame('Chen', $template->get2('last1'));
             $this->assertSame('6505', $template->get('volume'));
             $this->assertSame('Proceedings of SPIE', $template->get('series'));
-            $this->assertNull($template->get2('editor-last1'));
+            $this->assertSame('Delp III', $template->get2('editor-last1'));
+            $this->assertSame('Wong', $template->get2('editor-last2'));
         } finally {
             foreach (array_keys($stubs) as $name) {
                 /** @psalm-suppress UnusedFunctionCall */
@@ -970,6 +976,42 @@ final class DoiTest extends testBaseClass {
         add_spie_crossref_json_editors($template, $doi, $rest);
         $this->assertSame('Other', $template->get2('editor-last1'));
         $this->assertNull($template->get2('editor-last2'));
+    }
+
+    public function testSpieDblpProceedingsEditorValidation(): void {
+        $record = [
+            'type' => 'Editorship',
+            'title' => 'Security, Steganography, and Watermarking of Multimedia Contents IX, San Jose, CA, USA',
+            'series' => 'SPIE Proceedings', 'volume' => '6505', 'year' => '2007',
+            'authors' => ['author' => [
+                ['text' => 'Edward J. Delp III'], ['text' => 'Ping Wah Wong'],
+            ]],
+        ];
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $make = static fn (array $hits): string => json_encode([
+            'result' => ['hits' => ['hit' => $hits]]], JSON_THROW_ON_ERROR);
+        $good = $make([['info' => $record]]);
+        $editors = parse_spie_dblp_volume_editors($good, $title, '6505', '2007');
+        $this->assertCount(2, $editors);
+        $this->assertSame('Delp III', $editors[0]->family);
+        $this->assertSame('Edward J.', $editors[0]->given);
+        $this->assertSame('Wong', $editors[1]->family);
+        foreach ([
+            ['volume' => '6506'], ['year' => '2008'], ['series' => 'Other Proceedings'],
+            ['type' => 'Conference and Workshop Papers'], ['title' => 'Unrelated Volume'],
+        ] as $change) {
+            $bad = array_replace($record, $change);
+            $this->assertSame([], parse_spie_dblp_volume_editors(
+                $make([['info' => $bad]]), $title, '6505', '2007'));
+        }
+        // Duplicate editorship search results are ambiguous.
+        $this->assertSame([], parse_spie_dblp_volume_editors(
+            $make([['info' => $record], ['info' => $record]]), $title, '6505', '2007'));
+        $this->assertSame([], parse_spie_dblp_volume_editors('{bad json', $title, '6505', '2007'));
+        $bad_name = $record;
+        $bad_name['authors']['author'] = [['text' => 'SingleName']];
+        $this->assertSame([], parse_spie_dblp_volume_editors(
+            $make([['info' => $bad_name]]), $title, '6505', '2007'));
     }
 
     public function testSpieWithNullRestEditorsDoesNotInventEditors(): void {
