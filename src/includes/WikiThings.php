@@ -33,12 +33,13 @@ final class Nowiki extends WikiThings {
 
 final class Chemistry extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_CHEMISTRY %s # # #';
-    public const array REGEXP = ['~<chem(?:\s[^>]*)?>[\s\S]*?</chem\s*>~usi'];
+    // Both the <chem> and <ce> extension tags contain non-editable source markup.
+    public const array REGEXP = ['~<(chem|ce)(?:\s[^>]*)?>[\s\S]*?</\1\s*>~usi'];
 }
 
 final class Mathematics extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
-    public const array REGEXP = ['~<math(?:| chem)(?:| display=[\"\']inline[\"\']| display=[\"\']block[\"\']| chem class=[\"\'][^\s><\"\']+[\"\'])*\s*>[\s\S]*?</math\s*>~usi'];
+    public const array REGEXP = ['~<math(?:\s[^>]*)?>[\s\S]*?</math\s*>~usi'];
 }
 
 final class Musicscores extends WikiThings {
@@ -54,6 +55,11 @@ final class Preformated extends WikiThings {
 final class SyntaxHighlight extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SYNTAXHIGHLIGHT %s # # #';
     public const array REGEXP = ['~<syntaxhighlight[^>]*>[\s\S]*?</syntaxhighlight>~usi'];
+}
+
+final class SourceCode extends WikiThings {
+    public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SOURCE %s # # #';
+    public const array REGEXP = ['~<source(?:\s[^>]*)?>[\s\S]*?</source\s*>~usi'];
 }
 
 final class SingleBracket extends WikiThings {

@@ -20,7 +20,7 @@ function die_in_template(string $err, int $http_status): never {
 }
 
 if (count($_GET) !== 1) {
-    die_in_template('Exactly one parameters must be passed', 400);
+    die_in_template('Exactly one parameter must be passed', 400);
 }
 $param = array_keys($_GET)[0];
 $value = $_GET[$param];
