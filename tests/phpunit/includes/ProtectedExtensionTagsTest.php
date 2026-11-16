@@ -38,6 +38,7 @@ final class ProtectedExtensionTagsTest extends testBaseClass {
         $this->assertSame(1, mb_substr_count($page->parsed_text(), 'pages=44–55'));
     }
 
+    public function testOpeningTagsHaveCorrectBoundaries(): void {
         $this->assertRegexResult(0, SourceCode::REGEXP[0], '<sourceful>{{cite web}}</sourceful>');
         $this->assertRegexResult(0, Chemistry::REGEXP[0], '<center>{{cite web}}</center>');
         $this->assertRegexResult(0, Mathematics::REGEXP[0], '<mathjax>{{cite web}}</mathjax>');
