@@ -21,7 +21,7 @@ function spie_volume_editor_data(): array {
     $records = [];
     $path = __DIR__ . '/../data/spie_volume_editors.json';
     $raw = @file_get_contents($path);
-    if (!is_string($raw) || $raw === '' || strlen($raw) > 128 * 1024) {
+    if (!is_string($raw) || $raw === '' || mb_strlen($raw, '8bit') > 128 * 1024) {
         return $records;
     }
     $decoded = json_decode($raw, true);

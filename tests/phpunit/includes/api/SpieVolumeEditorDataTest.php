@@ -93,7 +93,7 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
             'expand_doi_with_dx' => null,
         ];
         foreach ($stubs as $name => $value) {
-            uopz_set_return($name, $value);
+            $this->assertTrue(uopz_set_return($name, $value));
         }
         try {
             $template = $this->volumeCitation('|series=Proceedings of SPIE');
@@ -102,7 +102,7 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
             $this->assertSame('Wong', $template->get2('editor-last2'));
         } finally {
             foreach (array_keys($stubs) as $name) {
-                uopz_unset_return($name);
+                $this->assertTrue(uopz_unset_return($name));
             }
         }
     }

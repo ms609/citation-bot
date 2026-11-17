@@ -577,7 +577,11 @@ final class DoiTest extends testBaseClass {
             $this->assertSame($chapter, $template->get('chapter'));
             $this->assertSame('Proceedings of SPIE', $template->get('series'));
             $this->assertSame('6505', $template->get('volume'));
-            $this->assertNull($template->get2('editor-last1'));
+            // The local, sourced roster enriches editors even without REST.
+            $this->assertSame('Delp III', $template->get2('editor-last1'));
+            $this->assertSame('Edward J.', $template->get2('editor-first1'));
+            $this->assertSame('Wong', $template->get2('editor-last2'));
+            $this->assertSame('Ping Wah', $template->get2('editor-first2'));
         } finally {
             foreach (array_keys($stubs) as $name) {
                 /** @psalm-suppress UnusedFunctionCall */

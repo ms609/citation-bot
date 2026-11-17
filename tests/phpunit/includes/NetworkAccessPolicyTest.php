@@ -19,6 +19,8 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
         'src/includes/RequestRateLimit.php' => ['$state_path' => 1],
         // $pages is restricted immediately beforehand to page_list.txt/page_list2.txt.
         'src/process_page.php' => ['$pages' => 1],
+        // $path is a fixed repository-local SPIE JSON file under __DIR__/../data.
+        'src/includes/api/APISpieVolumeEditors.php' => ['$path' => 1],
     ];
 
     /** @return array<int, string> */
