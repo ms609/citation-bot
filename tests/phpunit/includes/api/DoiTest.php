@@ -978,6 +978,319 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($template->get2('editor-last2'));
     }
 
+    public function testSpieEditorOnlyCandidateAcceptsLinkedSeries(): void {
+        $doi = '10.1117/12.703370';
+        $volume = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        foreach (['[[Proceedings of SPIE]]', 'Proceedings of SPIE', '[[Proceedings of SPIE|SPIE]]'] as $series) {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+                $volume . '|volume=6505|year=2007|series=' . $series . '}}');
+            $this->assertTrue(spie_editor_only_candidate($template, $doi), $series);
+            $this->assertFalse(spie_editor_only_candidate($template, '10.1234/not-spie'));
+        }
+        $unrelated = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+            $volume . '|volume=6505|year=2007|series=Other Series}}');
+        $this->assertFalse(spie_editor_only_candidate($unrelated, $doi));
+        $existing = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+            $volume . '|volume=6505|year=2007|series=Proceedings of SPIE|editor-last1=Existing}}');
+        $this->assertFalse(spie_editor_only_candidate($existing, $doi));
+    }
+
+    public function testSpieOpenAlexDoesNotQueryWhenAnyEditorIsSet(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz required to verify no external editor lookup');
+        }
+        $doi = '10.1117/12.703370';
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('query_spie_openalex_volume_editors',
+            static function (string $volume_title, string $volume, string $year) use (&$calls): array {
+                ++$calls;
+                return [(object) ['family' => 'Delp', 'given' => 'Edward J.'],
+                    (object) ['family' => 'Wong', 'given' => 'Ping Wah']];
+            }, true);
+        try {
+            foreach ([
+                'editor', 'editors', 'veditors', 'editor1', 'editor-last',
+                'editor-first', 'editor-last1', 'editor-first1',
+                'editor1-last', 'editor1-first', 'editor-last2',
+                'editor2-last', 'editor-surname3', 'editor3-given',
+                'editor-last30', 'editor99-last',
+            ] as $field) {
+                $citation = '{{cite book|doi=' . $doi . '|title=' . $title .
+                    '|volume=6505|year=2007|series=Proceedings of SPIE|' . $field . '=Existing}}';
+                $template = $this->make_citation($citation);
+                $this->assertTrue(spie_has_existing_editor($template), $field);
+                $this->assertFalse(spie_editor_only_candidate($template, $doi), $field);
+                add_spie_openalex_editor_fallback($template, $doi, (object) []);
+                $this->assertSame(0, $calls, 'OpenAlex was queried for ' . $field);
+            }
+            // The editor was added after construction, so the initial-editor
+            // flag alone cannot protect this path.
+            $template = $this->make_citation('{{cite book|doi=' . $doi .
+                '|title=' . $title . '|volume=6505|year=2007}}');
+            $this->assertTrue($template->add_if_new('editor-last2', 'Existing', 'crossref'));
+            $this->assertTrue(spie_has_existing_editor($template));
+            add_spie_openalex_editor_fallback($template, $doi, (object) []);
+            $this->assertSame(0, $calls);
+
+            // Without an editor, the same test stub must actually be called.
+            $empty = $this->make_citation('{{cite book|doi=' . $doi .
+                '|title=' . $title . '|volume=6505|year=2007}}');
+            $this->assertFalse(spie_has_existing_editor($empty));
+            add_spie_openalex_editor_fallback($empty, $doi, (object) []);
+            $this->assertSame(1, $calls);
+            $this->assertSame('Delp', $empty->get2('editor-last1'));
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('query_spie_openalex_volume_editors');
+        }
+    }
+
+    public function testSpieSeriesRequiresCrossrefCorroboration(): void {
+        $doi = '10.1117/12.703370';
+        $this->assertTrue(spie_rest_confirms_series($doi, (object) [
+            'type' => 'proceedings-article', 'container-title' => ['SPIE Proceedings'],
+        ]));
+        foreach ([
+            (object) ['type' => 'journal-article', 'container-title' => ['SPIE Proceedings']],
+            (object) ['type' => 'proceedings-article', 'container-title' => ['Unrelated Series']],
+            (object) ['type' => 'proceedings-article', 'container-title' => []],
+            (object) ['type' => 'proceedings-article'],
+        ] as $record) {
+            $this->assertFalse(spie_rest_confirms_series($doi, $record));
+        }
+        $this->assertFalse(spie_rest_confirms_series('10.1234/5678', (object) [
+            'type' => 'proceedings-article', 'container-title' => ['SPIE Proceedings'],
+        ]));
+    }
+
+    public function testSpieReconcilesDxPaperTitleOnlyWhenMatching(): void {
+        $doi = '10.1117/12.703370';
+        $paper = 'Digital imaging sensor identification (further study)';
+        $volume = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '|title=' . $paper . '}}');
+        spie_reconcile_dx_paper_title($template, $volume, $paper);
+        $this->assertSame($paper, $template->get2('chapter'));
+        $this->assertSame('', $template->get_without_comments_and_placeholders('title'));
+        $other = $this->make_citation('{{cite book|doi=' . $doi . '|title=Different title}}');
+        spie_reconcile_dx_paper_title($other, $volume, $paper);
+        $this->assertSame('Different title', $other->get2('title'));
+        $this->assertNull($other->get2('chapter'));
+    }
+
+    public function testSpieOpenAlexPersonNameForms(): void {
+        foreach ([
+            'Delp, Edward J.' => ['Delp', 'Edward J.'],
+            'Delp, Edward J., III' => ['Delp III', 'Edward J.'],
+            'Edward J. Delp III' => ['Delp III', 'Edward J.'],
+            'Gert-Jan van den Berg' => ['van den Berg', 'Gert-Jan'],
+            'Maria dos Santos' => ['dos Santos', 'Maria'],
+            'Abdul bin Rahman' => ['bin Rahman', 'Abdul'],
+            'Paul ter Haar' => ['ter Haar', 'Paul'],
+        ] as $raw => $expected) {
+            $person = spie_openalex_person_name($raw);
+            $this->assertNotNull($person, $raw);
+            $this->assertSame($expected, [$person->family, $person->given]);
+        }
+        foreach (['SingleName', 'Delp,', 'Null, Edward', 'Delp, Edward, Others',
+            'Gert-Jan ibn Musa', 'Delp, J.', 'Foo{{bar}} Baz'] as $bad) {
+            $this->assertNull(spie_openalex_person_name($bad), $bad);
+        }
+    }
+
+    public function testSpieOpenAlexOfflineTransportAndCache(): void {
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $record = [
+            'id' => 'https://openalex.org/W3127359347', 'title' => $title,
+            'type' => 'conference-paper', 'doi' => null,
+            'publication_year' => 2007, 'biblio' => ['volume' => '6505'],
+            'primary_location' => ['source' => ['type' => 'conference']],
+            'is_authors_truncated' => false,
+            'authorships' => [['raw_author_name' => 'Edward J. Delp'],
+                              ['raw_author_name' => 'Ping Wah Wong']],
+        ];
+        $success = json_encode(['results' => [$record]], JSON_THROW_ON_ERROR);
+        $responses = [
+            ['status' => 503, 'errno' => 0, 'body' => '', 'retry_after' => null],
+            ['status' => 200, 'errno' => 0, 'body' => $success, 'retry_after' => null],
+        ];
+        $seen = 0;
+        $delays = [];
+        $get = static function (string $url) use (&$seen, &$responses): array {
+            $this_response = $responses[$seen++];
+            // The general works-search API, not the old hard-coded work ID.
+            if (!str_contains($url, '/works?search=') || !str_contains($url, '&select=')) {
+                throw new RuntimeException('Unexpected OpenAlex request path');
+            }
+            return $this_response;
+        };
+        $pause = static function (int $seconds) use (&$delays): void {
+            $delays[] = $seconds;
+        };
+        $cache = [];
+        $lookup = spie_openalex_cached_lookup($title, '6505', '2007', $get, $cache, $pause);
+        $this->assertSame('ok', $lookup['state']);
+        $this->assertCount(2, $lookup['editors']);
+        $this->assertSame(2, $seen);
+        $this->assertSame([1], $delays);
+        $this->assertSame('ok', spie_openalex_cached_lookup(
+            $title, '6505', '2007', $get, $cache, $pause)['state']);
+        $this->assertSame(2, $seen, 'Successful lookups must be cached');
+
+        foreach ([401, 403, 404, 429, 500] as $status) {
+            $calls = 0;
+            $get = static function (string $url) use (&$calls, $status): array {
+                ++$calls;
+                return ['status' => $status, 'errno' => 0, 'body' => '',
+                        'retry_after' => $status === 429 ? 300 : null];
+            };
+            $cache = [];
+            $lookup = spie_openalex_cached_lookup($title, '6505', '2007', $get, $cache, $pause);
+            $permanent = in_array($status, [401, 403, 404], true);
+            $this->assertSame($permanent ? 'permanent' : 'transient', $lookup['state']);
+            $this->assertCount($permanent ? 1 : 0, $cache,
+                'Permanent errors must be suppressed; transient failures must not be cached');
+            $this->assertSame($status === 500 ? 2 : 1, $calls);
+            if ($permanent) {
+                $this->assertSame('permanent', spie_openalex_cached_lookup(
+                    $title, '6505', '2007', $get, $cache, $pause)['state']);
+                $this->assertSame(1, $calls, 'Permanent auth errors must not be repeated');
+            }
+        }
+        $oversized = static fn (string $url): array =>
+            ['status' => 200, 'errno' => 0, 'body' => str_repeat('x', 512 * 1024 + 1), 'retry_after' => null];
+        $this->assertSame('transient', spie_openalex_lookup_with_transport(
+            $title, '6505', '2007', $oversized, $pause)['state']);
+        $not_found = static fn (string $url): array =>
+            ['status' => 200, 'errno' => 0, 'body' => '{"results":[]}', 'retry_after' => null];
+        $cache = [];
+        $this->assertSame('no-match', spie_openalex_cached_lookup(
+            $title, '6505', '2007', $not_found, $cache, $pause)['state']);
+        $this->assertCount(1, $cache, 'Valid empty results may be negative-cached');
+        $this->assertSame('not-verified', spie_openalex_lookup_with_transport(
+            'Unverified volume', '6506', '2007', $not_found, $pause)['state']);
+        $invalid = static fn (string $url): array =>
+            ['status' => 200, 'errno' => 0, 'body' => '<html>bad JSON', 'retry_after' => null];
+        $cache = [];
+        $this->assertSame('transient', spie_openalex_cached_lookup(
+            $title, '6505', '2007', $invalid, $cache, $pause)['state']);
+        $this->assertSame([], $cache, 'Malformed 200 is not a valid negative result');
+    }
+
+    public function testSpieOpenAlexFallbackGuardsAndRejectedRoster(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz required for isolated OpenAlex fallback tests');
+        }
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $doi = '10.1117/12.703370';
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('query_spie_openalex_volume_editors', [
+            (object) ['family' => 'Delp', 'given' => 'Edward J.'],
+            (object) ['family' => 'Wong', 'given' => 'Ping Wah'],
+        ]);
+        try {
+            foreach ([
+                '{{cite book|doi=10.1234/other|title=' . $title . '|volume=6505|year=2007}}',
+                '{{cite book|doi=' . $doi . '|title=' . $title . '|volume=6506|year=2007}}',
+                '{{cite book|doi=' . $doi . '|title=' . $title . '|volume=6505}}',
+                '{{cite book|doi=' . $doi . '|title=' . $title . '|volume=6505|year=2007|editors=Existing}}',
+                '{{cite book|doi=' . $doi . '|title=' . $title . '|volume=6505|year=2007|editor1-last=Existing}}',
+            ] as $text) {
+                $template = $this->make_citation($text);
+                add_spie_openalex_editor_fallback($template, $template->get('doi'), (object) []);
+                $this->assertNull($template->get2('editor-last1'), $text);
+            }
+            $template = $this->make_citation('{{cite book|doi=' . $doi .
+                '|title=' . $title . '|volume=6505|year=2007}}');
+            add_spie_openalex_editor_fallback($template, $doi, (object) ['editor' => [(object) ['family' => 'Existing']]]);
+            $this->assertNull($template->get2('editor-last1'));
+            // Even a matching OpenURL editor #1 blocks the OpenAlex API.
+            $partial = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+                $title . '|volume=6505|year=2007}}');
+            $partial->add_if_new('editor-last1', 'Delp', 'crossref');
+            $partial->add_if_new('editor-first1', 'Edward J.', 'crossref');
+            add_spie_openalex_editor_fallback($partial, $doi, (object) []);
+            $this->assertSame('Delp', $partial->get2('editor-last1'));
+            $this->assertNull($partial->get2('editor-last2'));
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('query_spie_openalex_volume_editors');
+        }
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        add_spie_crossref_json_editors($template, $doi, (object) [
+            'type' => 'proceedings-article', 'editor' => [
+                (object) ['family' => 'Delp', 'given' => 'Edward'],
+                (object) ['family' => 'Null', 'given' => 'Other'],
+            ],
+        ]);
+        $this->assertNull($template->get2('editor-last1'), 'Do not write a partial editor list');
+    }
+
+    public function testSpieOpenAlexDoesNotCacheMalformedSuccessfulResponses(): void {
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        foreach (['{"error":"temporarily unavailable"}', '{"results":null}',
+                  '{"results":{}}', '{"results":"oops"}',
+                  '{"results":[{"error":"temporarily unavailable"}]}'] as $bad) {
+            $calls = 0;
+            $request = static function (string $url) use (&$calls, $bad): array {
+                ++$calls;
+                return ['status' => 200, 'errno' => 0, 'body' => $bad, 'retry_after' => null];
+            };
+            $cache = [];
+            $this->assertSame('transient', spie_openalex_cached_lookup(
+                $title, '6505', '2007', $request, $cache)['state']);
+            $this->assertSame([], $cache, $bad);
+            $this->assertSame('transient', spie_openalex_cached_lookup(
+                $title, '6505', '2007', $request, $cache)['state']);
+            $this->assertSame(2, $calls, 'Malformed 200 must not suppress future lookups');
+        }
+    }
+
+    public function testSpieOpenUrlSeriesCorroboration(): void {
+        $doi = '10.1117/12.703370';
+        $record = new SimpleXMLElement('<query><volume_title>Verified Proceedings</volume_title>' .
+            '<volume>6505</volume><year>2007</year></query>');
+        $this->assertTrue(spie_openurl_confirms_series($doi, $record));
+        foreach (['<volume>6505</volume>', '<year>2007</year>',
+                  '<volume_title>Verified Proceedings</volume_title>'] as $field) {
+            $bad = new SimpleXMLElement(str_replace($field, '', (string) $record->asXML()));
+            $this->assertFalse(spie_openurl_confirms_series($doi, $bad));
+        }
+        $journal = new SimpleXMLElement('<query><volume_title>Verified Proceedings</volume_title>' .
+            '<volume>6505</volume><year>2007</year><journal_title>Other</journal_title></query>');
+        $this->assertFalse(spie_openurl_confirms_series($doi, $journal));
+        $this->assertFalse(spie_openurl_confirms_series('10.1234/other', $record));
+    }
+
+    public function testSpieEditorListIsAtomicWhenLaterFieldIsRejected(): void {
+        $doi = '10.1117/12.703370';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        $initial = $template->parsed_text();
+        $this->assertFalse($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-first1' => 'Edward',
+            'editor-last2' => 'Null', 'editor-first2' => 'Jane',
+        ], 'openalex'));
+        $this->assertSame($initial, $template->parsed_text());
+        $this->assertTrue($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-first1' => 'Edward',
+            'editor-last2' => 'Wong', 'editor-first2' => 'Ping',
+        ], 'openalex'));
+        $this->assertSame('Delp', $template->get2('editor-last1'));
+        $this->assertSame('Wong', $template->get2('editor-last2'));
+    }
+
+    public function testSpieAnyEditorNumberBeyond99BlocksOpenAlex(): void {
+        $doi = '10.1117/12.703370';
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        foreach (['editor-last100', 'editor100-first', 'editor-surname120', 'editor150'] as $field) {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+                $title . '|volume=6505|year=2007|' . $field . '=Existing}}');
+            $this->assertTrue(spie_has_existing_editor($template), $field);
+            $this->assertFalse(spie_editor_only_candidate($template, $doi), $field);
+        }
+    }
+
     public function testSpieOpenAlexProceedingsVolumeValidation(): void {
         $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
         // Minimal recorded fields from OpenAlex work W3127359347.
@@ -1081,10 +1394,14 @@ final class DoiTest extends testBaseClass {
      */
     public function testSpieOpenAlexVolume6505LiveReturnsEditors(): void {
         $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
-        $diagnostic = null;
-        $editors = query_spie_openalex_volume_editors($title, '6505', '2007', $diagnostic);
-        $this->assertCount(2, $editors, 'OpenAlex volume 6505 returned no verified editors: ' .
-            echoable($diagnostic ?? 'unavailable'));
+        if (in_array((string) getenv('PHP_OPENALEX_APIKEY'), ['', 'xxxxx'], true)) {
+            if (in_array((string) getenv('GITHUB_EVENT_NAME'), ['push', 'schedule'], true)) {
+                $this->fail('Trusted CI must configure PHP_OPENALEX_APIKEY for the live OpenAlex search test');
+            }
+            $this->markTestSkipped('OpenAlex live search requires PHP_OPENALEX_APIKEY; offline tests are mandatory');
+        }
+        $editors = query_spie_openalex_volume_editors($title, '6505', '2007');
+        $this->assertCount(2, $editors, 'OpenAlex search returned no independently verified volume editors');
         // OpenAlex has "Edward J. Delp" without the suffix III; do not invent it.
         $this->assertSame('Delp', $editors[0]->family);
         $this->assertSame('Edward J.', $editors[0]->given);

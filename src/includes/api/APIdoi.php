@@ -35,13 +35,18 @@ function expand_by_doi(Template $template, bool $force = false): void {
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $template->add_if_new('jstor', mb_substr($doi, 8));
     }
-    // On later passes the bibliography can be complete while SPIE volume editors
-    // are still missing. Revisit only that narrow case; otherwise preserve the
-    // usual incomplete-only DOI lookup policy.
-    $needs_spie_editors = str_starts_with($doi, '10.1117/12.') &&
-        ($template->has('chapter') || mb_strtolower($template->get('series')) === 'proceedings of spie') &&
-        $template->blank(['editors', 'veditors', 'editor', 'editor-last1', 'editor1-last', 'editor1']);
-    if ($doi && ($force || $template->incomplete() || $needs_spie_editors)) {
+    // An otherwise complete citation needs editor-only enrichment, not
+    // a second DOI expansion that can change titles, dates, ISBNs and pages.
+    if ($doi && !$force && !$template->incomplete()) {
+        if (spie_editor_only_candidate($template, $doi)) {
+            // One REST request, and only editor fields may be changed.
+            $rest = query_crossref_newapi($doi, true);
+            add_spie_crossref_json_editors($template, $doi, $rest);
+            add_spie_openalex_editor_fallback($template, $doi, $rest);
+        }
+        return;
+    }
+    if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
             if (in_array(mb_strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
@@ -188,10 +193,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (
                 $series_title === '' &&
                 str_starts_with($doi, '10.1117/12.') &&
-                // Crossref's container-title may be the volume name rather than
-                // "SPIE Proceedings". The volume title in OpenURL is sufficient
-                // corroboration even if the REST lookup is unavailable.
-                ($doi_type === 'proceedings-article' || mb_trim((string) $crossRef->volume_title) !== '')
+                // Do not infer SPIE solely from this publisher DOI prefix.
+                (spie_rest_confirms_series($doi, $crossRefNewAPI) ||
+                 spie_openurl_confirms_series($doi, $crossRef))
             ) {
                 $series_title = 'Proceedings of SPIE';
             }
@@ -285,7 +289,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     // title of the entire proceedings volume).
                     $spie_record_json = json_encode($spie_json);
                     $spie_record = is_string($spie_record_json)
-                        ? json_decode($spie_record_json, true)
+                        ? ExternalApiResponseGuard::decodeAssocObject($spie_record_json)
                         : null;
                     if (is_array($spie_record)) {
                         $spie_record['type'] = 'book-chapter';
@@ -312,6 +316,11 @@ function expand_by_doi(Template $template, bool $force = false): void {
                         // The dedicated helper validates editor alignment and
                         // skips corporate entries; do not use generic parsing.
                         unset($spie_record['editor']);
+                        // DX may have filled title= with the paper title.
+                        $paper_title = $spie_record['title'][0] ?? null;
+                        if (is_string($paper_title)) {
+                            spie_reconcile_dx_paper_title($template, $volume_title, $paper_title);
+                        }
                         process_doi_json($template, $doi, $spie_record);
                     }
                     $template->add_if_new('series', 'Proceedings of SPIE', 'crossref');
@@ -346,6 +355,14 @@ function add_spie_crossref_json_editors(Template $template, string $doi, object 
         $given = is_string($editor->given ?? null) ? mb_trim($editor->given) : '';
         if ($family === '') {
             continue; // Organization or nameless record, not a personal editor.
+        }
+        $formatted_last = $source === 'openalex' ? $family : format_surname($family);
+        $formatted_first = $source === 'openalex' ? $given : format_forename($given);
+        if (in_array(mb_strtolower($formatted_last), REJECT_NEW, true) ||
+            ($formatted_first !== '' && in_array(mb_strtolower($formatted_first), REJECT_NEW, true)) ||
+            preg_match('~[{}<>|\[\]]~u', $formatted_last . $formatted_first)) {
+            // A rejected editor would otherwise leave a numbered-list gap.
+            return;
         }
         $editors[] = ['family' => $family, 'given' => $given];
         // Never add a partial editor list that appears complete in a citation.
@@ -390,159 +407,380 @@ function add_spie_crossref_json_editors(Template $template, string $doi, object 
             }
         }
     }
+    // The entire list must be accepted; a failed later surname must not
+    // leave an apparently complete but incorrectly numbered editor list.
+    $fields = [];
     foreach ($editors as $index => $editor) {
         $number = (string) ($index + 1);
-        $last = $source === 'openalex' ? $editor['family'] : format_surname($editor['family']);
-        $template->add_if_new('editor-last' . $number, $last, $source);
+        $fields['editor-last' . $number] = $source === 'openalex' ?
+            $editor['family'] : format_surname($editor['family']);
         if ($editor['given'] !== '') {
-            $template->add_if_new('editor-first' . $number, ($source === 'openalex' ? $editor['given'] : format_forename($editor['given'])), $source);
+            $fields['editor-first' . $number] = $source === 'openalex' ?
+                $editor['given'] : format_forename($editor['given']);
         }
+    }
+    $template->add_editor_fields_atomically($fields, $source);
+}
+
+/**
+ * Never make an editor-enrichment API request once any editor is populated.
+ * Include numbered CS1 aliases beyond editor #1, even when the editor was
+ * added after template construction (had_initial_editor() is then false).
+ */
+function spie_has_existing_editor(Template $template): bool {
+    if ($template->had_initial_editor()) {
+        return true;
+    }
+    return $template->has_any_editor_parameter();
+}
+
+/** True only for an already complete SPIE paper citation missing editors. */
+function spie_editor_only_candidate(Template $template, string $doi): bool {
+    if (!str_starts_with($doi, '10.1117/12.') || spie_has_existing_editor($template) ||
+        !$template->has('title') || !$template->has('volume')) {
+        return false;
+    }
+    $series = mb_trim($template->get_without_comments_and_placeholders('series'));
+    if (preg_match('~^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$~u', $series, $match)) {
+        $series = $match[1];
+    }
+    return $template->has('chapter') || in_array(mb_strtolower(mb_trim($series)),
+        ['spie proceedings', 'proceedings of spie'], true);
+}
+
+/**
+ * Distinguish a proceedings series from a paper or unrelated volume using
+ * Crossref's explicit proceedings type and SPIE container identity.
+ */
+function spie_rest_confirms_series(string $doi, object $rest): bool {
+    if (!str_starts_with($doi, '10.1117/12.') || ($rest->type ?? '') !== 'proceedings-article' ||
+        !is_array($rest->{'container-title'} ?? null)) {
+        return false;
+    }
+    foreach ($rest->{'container-title'} as $container) {
+        if (is_string($container) && in_array(mb_strtolower(mb_trim($container)),
+            ['spie proceedings', 'proceedings of spie'], true)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+/**
+ * OpenURL can independently corroborate a SPIE proceedings volume when
+ * Crossref REST is unavailable. A volume name alone is insufficient: require
+ * the DOI prefix, volume number and year, and reject journal records.
+ */
+function spie_openurl_confirms_series(string $doi, SimpleXMLElement $openurl): bool {
+    if (!str_starts_with($doi, '10.1117/12.') ||
+        mb_trim((string) $openurl->volume_title) === '' ||
+        mb_trim((string) $openurl->journal_title) !== '') {
+        return false;
+    }
+    return preg_match('~^[1-9]\d{2,5}$~D', mb_trim((string) $openurl->volume)) === 1 &&
+        preg_match('~^[12]\d{3}$~D', mb_trim((string) $openurl->year)) === 1;
+}
+
+/** When DX added the paper title, move only an identical title to chapter. */
+function spie_reconcile_dx_paper_title(Template $template, string $volume_title, string $paper_title): void {
+    if ($volume_title !== '' && $paper_title !== '' && $template->has('title') &&
+        $template->blank('chapter') && str_equivalent($template->get('title'), $paper_title)) {
+        $template->rename('title', 'chapter');
     }
 }
 
 /**
- * OpenAlex authorships lack explicit editor roles. Import people only from a
- * unique, exact proceedings-volume record; never from a DOI-bearing paper.
+ * Explicitly corroborated SPIE volume editors. OpenAlex authorships alone
+ * cannot establish an editorial role, even for an exact proceedings match.
+ * Add a volume here only after checking an independent editorial record.
+ */
+const SPIE_OPENALEX_VERIFIED_VOLUMES = [
+    '6505:2007' => [
+        'title' => 'Security, Steganography, and Watermarking of Multimedia Contents IX',
+        'names' => ['Edward J. Delp', 'Ping Wah Wong'],
+    ],
+];
+
+/** @return array{title: string, names: array<int, string>}|null */
+function spie_openalex_verified_volume(string $title, string $volume, string $year): ?array {
+    $record = SPIE_OPENALEX_VERIFIED_VOLUMES[$volume . ':' . $year] ?? null;
+    if ($record === null ||
+        mb_strtolower(mb_trim($record['title'])) !== mb_strtolower(mb_trim($title))) {
+        return null;
+    }
+    return $record;
+}
+
+/**
+ * Parse names conservatively: Surname, Given; optional suffixes; surname
+ * particles. Reject ambiguous forms rather than silently moving a particle.
+ * @return object{family: string, given: string}|null
+ */
+function spie_openalex_person_name(string $name): ?object {
+    $name = mb_trim($name);
+    if ($name === '' || preg_match('~[{}<>|\[\]\n\r\t]~u', $name)) {
+        return null;
+    }
+    $suffix = '';
+    if (preg_match('~(?:,|\s)\s*(Jr\.?|Sr\.?|II|III|IV|V)$~iu', $name, $match)) {
+        $suffix = $match[1];
+        $name = mb_trim(mb_substr($name, 0, -mb_strlen($match[0])));
+    }
+    if (mb_substr_count($name, ',') === 1) {
+        [$family, $given] = array_map('mb_trim', explode(',', $name, 2));
+    } elseif (mb_strpos($name, ',') === false) {
+        $parts = preg_split('~\s+~u', $name);
+        if (!is_array($parts) || count($parts) < 2) {
+            return null;
+        }
+        $family = (string) array_pop($parts);
+        $particles = ['van', 'von', 'de', 'del', 'der', 'da', 'di', 'la', 'le',
+            'den', 'dos', 'ter', 'bin', 'al', 'el', 'ten', 'du', 'des', 'st', 'st.'];
+        while (count($parts) > 1 && in_array(mb_strtolower((string) end($parts)), $particles, true)) {
+            $family = array_pop($parts) . ' ' . $family;
+        }
+        // Ambiguous particles must not be treated as forenames.
+        if (preg_match('~\b(?:ibn|binti|ap|af|zu|zur)\s*$~iu', implode(' ', $parts))) {
+            return null;
+        }
+        $given = implode(' ', $parts);
+    } else {
+        return null;
+    }
+    if ($suffix !== '') {
+        $family .= ' ' . $suffix;
+    }
+    if ($family === '' || $given === '' ||
+        preg_match('~^[A-Za-z]\.\z~u', $family) ||
+        preg_match('~^[A-Za-z]\.\z~u', $given) ||
+        in_array(mb_strtolower($family), REJECT_NEW, true) ||
+        in_array(mb_strtolower($given), REJECT_NEW, true)) {
+        return null;
+    }
+    return (object) ['family' => $family, 'given' => $given];
+}
+
+/**
+ * Parse only the independently corroborated volume's complete roster.
+ * Exclude DOI-bearing individual papers and duplicate volume candidates.
  * @return array<int, object>
  */
 function parse_spie_openalex_volume_editors(string $json, string $title, string $volume, string $year): array {
-    $data = json_decode($json, true);
-    if (!is_array($data)) {
+    $verified = spie_openalex_verified_volume($title, $volume, $year);
+    $decoded = ExternalApiResponseGuard::decodeAssocObject($json);
+    if ($verified === null || $decoded === null) {
         return [];
     }
-    $records = array_key_exists('results', $data) ? $data['results'] :
-        (isset($data['id']) ? [$data] : null);
+    $records = array_key_exists('results', $decoded) ? $decoded['results'] :
+        (isset($decoded['id']) ? [$decoded] : null);
     if (!is_array($records)) {
         return [];
     }
-    $normalize = static function (string $value): string {
-        $normalized = preg_replace('~\s+~u', ' ', mb_strtolower(mb_trim($value)));
+    $normalize = static function (string $text): string {
+        $normalized = preg_replace('~\s+~u', ' ', mb_strtolower(mb_trim($text)));
         return is_string($normalized) ? $normalized : '';
     };
-    $found = null;
+    $expected_names = array_map($normalize, $verified['names']);
+    sort($expected_names);
+    $matched = null;
     foreach ($records as $record) {
         if (!is_array($record) || !is_string($record['title'] ?? null) ||
-            $normalize($record['title']) !== $normalize($title) ||
+            $normalize($record['title']) !== $normalize($verified['title']) ||
             (string) ($record['publication_year'] ?? '') !== $year ||
             (string) ($record['biblio']['volume'] ?? '') !== $volume ||
-            ($record['type'] ?? null) !== 'conference-paper' ||
+            !in_array($record['type'] ?? null, ['conference-paper', 'book', 'proceedings'], true) ||
             ($record['doi'] ?? null) !== null ||
             ($record['primary_location']['source']['type'] ?? null) !== 'conference' ||
-            ($record['is_authors_truncated'] ?? false) === true ||
+            ($record['is_authors_truncated'] ?? false) !== false ||
             !is_array($record['authorships'] ?? null)) {
             continue;
         }
-        $authorships = $record['authorships'];
-        if ($authorships === [] || count($authorships) > 30) {
+        $names = [];
+        foreach ($record['authorships'] as $entry) {
+            $name = is_array($entry) ?
+                ($entry['raw_author_name'] ?? $entry['author']['display_name'] ?? null) : null;
+            if (!is_string($name) || spie_openalex_person_name($name) === null) {
+                return [];
+            }
+            $person = spie_openalex_person_name($name);
+            if ($person === null) {
+                return [];
+            }
+            $names[] = $normalize($person->given . ' ' . $person->family);
+        }
+        sort($names);
+        if ($names !== $expected_names || $matched !== null) {
+            // An unexpected or ambiguous roster must not be labeled editors.
             return [];
         }
-        $editors = [];
-        foreach ($authorships as $entry) {
-            if (!is_array($entry)) {
+        // Retain the independently verified editor order and spelling.
+        $matched = [];
+        foreach ($verified['names'] as $name) {
+            $person = spie_openalex_person_name($name);
+            if ($person === null) {
                 return [];
             }
-            $name = $entry['raw_author_name'] ?? $entry['author']['display_name'] ?? null;
-            if (!is_string($name)) {
-                return [];
-            }
-            $parts = preg_split('~\s+~u', mb_trim($name));
-            if (!is_array($parts) || count($parts) < 2) {
-                return [];
-            }
-            $family = array_pop($parts);
-            if (preg_match('~^(?:Jr\.?|Sr\.?|II|III|IV|V)$~i', $family)) {
-                $family = array_pop($parts) . ' ' . $family;
-            }
-            if ($parts === [] || in_array(mb_strtolower((string) end($parts)),
-                ['van', 'von', 'de', 'del', 'der', 'da', 'di', 'la', 'le'], true)) {
-                return [];
-            }
-            $editors[] = (object) ['family' => $family, 'given' => implode(' ', $parts)];
+            $matched[] = $person;
         }
-        if ($found !== null) {
-            return []; // Multiple matching records are ambiguous.
-        }
-        $found = $editors;
     }
-    return $found ?? [];
+    return $matched ?? [];
 }
 
 /**
- * Query OpenAlex; bounded diagnostics are available to the required live test.
- * @return array<int, object>
+ * One authenticated request. Never follow redirects with an API token.
+ * No URL, header, key, or response body is included in diagnostics.
+ * @return array{status: int, errno: int, body: string, retry_after: int|null}
  */
-function query_spie_openalex_volume_editors(
-    string $title, string $volume, string $year, ?string &$diagnostic = null
-): array {
+function spie_openalex_http_request(string $url, string $key): array {
     static $ch = null;
-    static $cache = [];
-    static $cache_diagnostics = [];
-    $key = $title . "\0" . $volume . "\0" . $year;
-    if (isset($cache[$key])) {
-        $diagnostic = $cache_diagnostics[$key];
-        return $cache[$key];
-    }
-    if (!preg_match('~^[1-9]\d{2,5}$~D', $volume) ||
-        !preg_match('~^[12]\d{3}$~D', $year)) {
-        $diagnostic = 'invalid volume/year';
-        $cache_diagnostics[$key] = $diagnostic;
-        $cache[$key] = [];
-        return [];
-    }
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
-            CURLOPT_CONNECTTIMEOUT => 1,
-            CURLOPT_TIMEOUT => 4,
-        ], 256 * 1024);
+            CURLOPT_CONNECTTIMEOUT => 2,
+            CURLOPT_TIMEOUT => 8,
+            CURLOPT_FOLLOWLOCATION => false,
+        ], 512 * 1024);
     }
-    $known_volume = $volume === '6505' && $year === '2007' &&
-        mb_strtolower(mb_trim($title)) ===
-            'security, steganography, and watermarking of multimedia contents ix';
-    $urls = [];
-    if ($known_volume) {
-        // Verified volume-level OpenAlex record, not the DOI paper record.
-        $urls[] = 'https://api.openalex.org/works/W3127359347';
-    }
-    $urls[] = 'https://api.openalex.org/works?search=' . rawurlencode($title) .
-        '&filter=publication_year:' . rawurlencode($year) . '&per_page=10';
-    $messages = [];
-    foreach ($urls as $index => $url) {
-        curl_setopt($ch, CURLOPT_URL, $url);
-        $body = bot_curl_exec($ch);
-        $transfer = bot_curl_last_transfer($ch);
-        $status = (int) $transfer['http_code'];
-        $errno = (int) $transfer['errno'];
-        if ($status === 200 && $errno === 0) {
-            $editors = parse_spie_openalex_volume_editors($body, $title, $volume, $year);
-            if ($editors !== []) {
-                $cache[$key] = $editors;
-                $diagnostic = ($known_volume && $index === 0 ? 'work' : 'search') .
-                    ':HTTP 200/verified=' . (string) count($editors);
-                $cache_diagnostics[$key] = $diagnostic;
-                return $editors;
-            }
+    $retry_after = null;
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $key,
+        'Accept: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function ($unused, string $line) use (&$retry_after): int {
+        if (preg_match('~^retry-after:\s*(\d+)\s*$~i', mb_trim($line), $match)) {
+            $retry_after = min(3600, (int) $match[1]);
         }
-        $parsed = json_decode($body, true);
-        $messages[] = ($known_volume && $index === 0 ? 'work' : 'search') .
-            ':HTTP ' . (string) $status . '/cURL ' . (string) $errno .
-            '/bytes ' . (string) mb_strlen($body, '8bit') . '/' .
-            (is_array($parsed) ? 'no matching volume' : 'invalid JSON');
-        if ($errno !== 0 || $status === 429 || $status >= 500) {
-            break;
-        }
-    }
-    $diagnostic = implode(' | ', $messages);
-    $cache_diagnostics[$key] = $diagnostic;
-    $cache[$key] = [];
-    report_warning('OpenAlex SPIE editor lookup returned no verified volume: ' .
-        echoable($diagnostic));
-    return [];
+        return mb_strlen($line, '8bit');
+    });
+    $body = bot_curl_exec($ch);
+    $transfer = bot_curl_last_transfer($ch);
+    return [
+        'status' => (int) $transfer['http_code'],
+        'errno' => (int) $transfer['errno'],
+        'body' => $body,
+        'retry_after' => $retry_after,
+    ];
 }
 
-/** Supplement SPIE editors only when an OpenAlex volume matches exactly. */
+/**
+ * Stateless authenticated-search core; inject a request and sleep callback
+ * in offline tests. Transient failures are never reported as absent volumes.
+ * @param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
+ * @param (callable(int): void)|null $pause
+ * @return array{state: string, editors: array<int, object>, diagnostic: string}
+ */
+function spie_openalex_lookup_with_transport(
+    string $title, string $volume, string $year, callable $request, ?callable $pause = null
+): array {
+    if (spie_openalex_verified_volume($title, $volume, $year) === null) {
+        return ['state' => 'not-verified', 'editors' => [], 'diagnostic' => 'volume not independently verified'];
+    }
+    $url = 'https://api.openalex.org/works?search=' . rawurlencode($title) .
+        '&filter=publication_year:' . rawurlencode($year) . '&per_page=10&select=' .
+        'id,title,publication_year,biblio,type,doi,primary_location,is_authors_truncated,authorships';
+    $pause ??= static function (int $seconds): void {
+        sleep($seconds);
+    };
+    for ($attempt = 0; $attempt < 2; ++$attempt) {
+        $response = $request($url);
+        $status = $response['status'];
+        $errno = $response['errno'];
+        $body = $response['body'];
+        $size = mb_strlen($body, '8bit');
+        $diagnostic = 'search:HTTP ' . (string) $status . '/cURL ' . (string) $errno .
+            '/bytes ' . (string) $size;
+        if ($size > 512 * 1024) {
+            return ['state' => 'transient', 'editors' => [], 'diagnostic' => $diagnostic . '/oversize'];
+        }
+        if ($status === 200 && $errno === 0) {
+            // Decode as objects first: associative JSON decoding turns both
+            // results:{} and results:[] into empty PHP arrays.
+            $decoded = ExternalApiResponseGuard::decodeObject($body);
+            if ($decoded === null || !is_array($decoded->results ?? null) ||
+                count($decoded->results) > 10) {
+                // An API error object or a changed response schema is not a
+                // well-formed empty result and must never be negative-cached.
+                return ['state' => 'transient', 'editors' => [],
+                    'diagnostic' => $diagnostic . '/invalid-envelope'];
+            }
+            // Selected search results must contain basic work identities. A
+            // schema error inside a 200 body is not a negative lookup.
+            foreach ($decoded->results as $record) {
+                if (!$record instanceof stdClass || !is_string($record->id ?? null) ||
+                    !property_exists($record, 'title') ||
+                    !property_exists($record, 'authorships')) {
+                    return ['state' => 'transient', 'editors' => [],
+                        'diagnostic' => $diagnostic . '/invalid-record'];
+                }
+            }
+            $editors = parse_spie_openalex_volume_editors($body, $title, $volume, $year);
+            $state = $editors === [] ? 'no-match' : 'ok';
+            return ['state' => $state, 'editors' => $editors, 'diagnostic' => $diagnostic . '/' . $state];
+        }
+        // A bounded retry handles a short rate limit or temporary outage.
+        // A daily-budget 429 (long Retry-After) must not block bot workers.
+        $retry_after = $response['retry_after'];
+        // Authorization and missing-endpoint errors cannot be cured by
+        // retries and should not hit the API again for this process.
+        if ($errno === 0 && in_array($status, [401, 403, 404], true)) {
+            return ['state' => 'permanent', 'editors' => [],
+                'diagnostic' => $diagnostic . '/permanent-error'];
+        }
+        $retryable = $errno !== 0 || $status === 429 || ($status >= 500 && $status <= 599);
+        if (!$retryable || $attempt > 0 || ($status === 429 && $retry_after !== null && $retry_after > 2)) {
+            return ['state' => 'transient', 'editors' => [], 'diagnostic' => $diagnostic . '/unavailable'];
+        }
+        $pause($retry_after !== null && $retry_after >= 1 ? min(2, $retry_after) : 1);
+    }
+    return ['state' => 'transient', 'editors' => [], 'diagnostic' => 'retry exhausted'];
+}
+
+/**
+ * Cache only successful lookups and well-formed negative responses; do not
+ * turn rate limits, timeouts, or oversized results into durable negatives.
+ * @param array<string, array{state: string, editors: array<int, object>, diagnostic: string}> $cache
+ * @param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
+ * @param (callable(int): void)|null $pause
+ * @return array{state: string, editors: array<int, object>, diagnostic: string}
+ */
+function spie_openalex_cached_lookup(
+    string $title, string $volume, string $year, callable $request, array &$cache, ?callable $pause = null
+): array {
+    $key = $title . "\0" . $volume . "\0" . $year;
+    if (isset($cache[$key])) {
+        return $cache[$key];
+    }
+    $result = spie_openalex_lookup_with_transport($title, $volume, $year, $request, $pause);
+    if (in_array($result['state'], ['ok', 'no-match', 'permanent'], true)) {
+        $cache[$key] = $result;
+    }
+    return $result;
+}
+
+/** @return array<int, object> */
+function query_spie_openalex_volume_editors(string $title, string $volume, string $year): array {
+    static $cache = [];
+    // OpenAlex permits casual keyless use, but production bots require a key
+    // for reliable quotas. No key means no external request.
+    $key = (string) getenv('PHP_OPENALEX_APIKEY');
+    if ($key === '' || $key === 'xxxxx' || spie_openalex_verified_volume($title, $volume, $year) === null) {
+        return [];
+    }
+    $response = spie_openalex_cached_lookup($title, $volume, $year,
+        static fn (string $url): array => spie_openalex_http_request($url, $key), $cache);
+    if ($response['state'] === 'transient' || $response['state'] === 'permanent') {
+        report_warning('OpenAlex SPIE editor lookup unavailable: ' . echoable($response['diagnostic']));
+    }
+    return $response['editors'];
+}
+
+/** Only fill verified volume editors; never overwrite the citation's editors. */
 function add_spie_openalex_editor_fallback(Template $template, string $doi, object $crossref): void {
-    if (!str_starts_with($doi, '10.1117/12.') || $template->had_initial_editor() ||
+    // This check MUST precede query_spie_openalex_volume_editors(): even a
+    // matching partial OpenURL editor list is not permission to call the API.
+    if (!str_starts_with($doi, '10.1117/12.') || spie_has_existing_editor($template) ||
         (is_array($crossref->editor ?? null) && $crossref->editor !== [])) {
         return;
     }
@@ -552,7 +790,8 @@ function add_spie_openalex_editor_fallback(Template $template, string $doi, obje
     if ($year === '' && preg_match('~^([12]\d{3})~', $template->get('date'), $matches)) {
         $year = $matches[1];
     }
-    if ($title === '' || $year === '' || !preg_match('~^[1-9]\d{2,5}$~D', $volume)) {
+    $verified = spie_openalex_verified_volume($title, $volume, $year);
+    if ($verified === null) {
         return;
     }
     $editors = query_spie_openalex_volume_editors($title, $volume, $year);

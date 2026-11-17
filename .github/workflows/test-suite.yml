@@ -155,6 +155,7 @@ jobs:
          PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
          PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
+         PHP_OPENALEX_APIKEY: ${{ secrets.PHP_OPENALEX_APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
       run: python3 .github/scripts/ci_test_watchdog.py --idle-seconds 1200 --max-seconds 4800 -- composer run test
@@ -246,6 +247,7 @@ jobs:
          PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
          PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
+         PHP_OPENALEX_APIKEY: ${{ secrets.PHP_OPENALEX_APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
       run: python3 .github/scripts/ci_test_watchdog.py --idle-seconds 1200 --max-seconds 4800 -- composer run test
