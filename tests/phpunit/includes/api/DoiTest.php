@@ -1005,6 +1005,9 @@ final class DoiTest extends testBaseClass {
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('query_spie_openalex_volume_editors',
             static function (string $volume_title, string $volume, string $year) use (&$calls): array {
+                if ($volume_title === '' || $volume !== '6505' || $year !== '2007') {
+                    throw new RuntimeException('Unexpected SPIE lookup arguments');
+                }
                 ++$calls;
                 return [(object) ['family' => 'Delp', 'given' => 'Edward J.'],
                     (object) ['family' => 'Wong', 'given' => 'Ping Wah']];
@@ -1141,6 +1144,9 @@ final class DoiTest extends testBaseClass {
         foreach ([401, 403, 404, 429, 500] as $status) {
             $calls = 0;
             $get = static function (string $url) use (&$calls, $status): array {
+                if (!str_contains($url, '/works?search=')) {
+                    throw new RuntimeException('Unexpected OpenAlex search URL');
+                }
                 ++$calls;
                 return ['status' => $status, 'errno' => 0, 'body' => '',
                         'retry_after' => $status === 429 ? 300 : null];
@@ -1158,20 +1164,33 @@ final class DoiTest extends testBaseClass {
                 $this->assertSame(1, $calls, 'Permanent auth errors must not be repeated');
             }
         }
-        $oversized = static fn (string $url): array =>
-            ['status' => 200, 'errno' => 0, 'body' => str_repeat('x', 512 * 1024 + 1), 'retry_after' => null];
+        $oversized = static function (string $url): array {
+            if (!str_contains($url, '/works?search=')) {
+                throw new RuntimeException('Unexpected OpenAlex search URL');
+            }
+            return ['status' => 200, 'errno' => 0, 'body' => str_repeat('x', 512 * 1024 + 1),
+                'retry_after' => null];
+        };
         $this->assertSame('transient', spie_openalex_lookup_with_transport(
             $title, '6505', '2007', $oversized, $pause)['state']);
-        $not_found = static fn (string $url): array =>
-            ['status' => 200, 'errno' => 0, 'body' => '{"results":[]}', 'retry_after' => null];
+        $not_found = static function (string $url): array {
+            if (!str_contains($url, '/works?search=')) {
+                throw new RuntimeException('Unexpected OpenAlex search URL');
+            }
+            return ['status' => 200, 'errno' => 0, 'body' => '{"results":[]}', 'retry_after' => null];
+        };
         $cache = [];
         $this->assertSame('no-match', spie_openalex_cached_lookup(
             $title, '6505', '2007', $not_found, $cache, $pause)['state']);
         $this->assertCount(1, $cache, 'Valid empty results may be negative-cached');
         $this->assertSame('not-verified', spie_openalex_lookup_with_transport(
             'Unverified volume', '6506', '2007', $not_found, $pause)['state']);
-        $invalid = static fn (string $url): array =>
-            ['status' => 200, 'errno' => 0, 'body' => '<html>bad JSON', 'retry_after' => null];
+        $invalid = static function (string $url): array {
+            if (!str_contains($url, '/works?search=')) {
+                throw new RuntimeException('Unexpected OpenAlex search URL');
+            }
+            return ['status' => 200, 'errno' => 0, 'body' => '<html>bad JSON', 'retry_after' => null];
+        };
         $cache = [];
         $this->assertSame('transient', spie_openalex_cached_lookup(
             $title, '6505', '2007', $invalid, $cache, $pause)['state']);
@@ -1234,6 +1253,9 @@ final class DoiTest extends testBaseClass {
                   '{"results":[{"error":"temporarily unavailable"}]}'] as $bad) {
             $calls = 0;
             $request = static function (string $url) use (&$calls, $bad): array {
+                if (!str_contains($url, '/works?search=')) {
+                    throw new RuntimeException('Unexpected OpenAlex search URL');
+                }
                 ++$calls;
                 return ['status' => 200, 'errno' => 0, 'body' => $bad, 'retry_after' => null];
             };

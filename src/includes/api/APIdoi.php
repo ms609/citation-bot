@@ -466,7 +466,6 @@ function spie_rest_confirms_series(string $doi, object $rest): bool {
     return false;
 }
 
-
 /**
  * OpenURL can independently corroborate a SPIE proceedings volume when
  * Crossref REST is unavailable. A volume name alone is insufficient: require
@@ -600,7 +599,7 @@ function parse_spie_openalex_volume_editors(string $json, string $title, string 
         foreach ($record['authorships'] as $entry) {
             $name = is_array($entry) ?
                 ($entry['raw_author_name'] ?? $entry['author']['display_name'] ?? null) : null;
-            if (!is_string($name) || spie_openalex_person_name($name) === null) {
+            if (!is_string($name)) {
                 return [];
             }
             $person = spie_openalex_person_name($name);
@@ -643,12 +642,16 @@ function spie_openalex_http_request(string $url, string $key): array {
         ], 512 * 1024);
     }
     $retry_after = null;
+    if ($url === '') {
+        return ['status' => 0, 'errno' => 0, 'body' => '', 'retry_after' => null];
+    }
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Authorization: Bearer ' . $key,
         'Accept: application/json',
     ]);
-    curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function ($unused, string $line) use (&$retry_after): int {
+    curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function ($handle, string $line) use (&$retry_after): int {
+        unset($handle); // cURL requires the handle parameter, but it is not used here.
         if (preg_match('~^retry-after:\s*(\d+)\s*$~i', mb_trim($line), $match)) {
             $retry_after = min(3600, (int) $match[1]);
         }
@@ -667,8 +670,13 @@ function spie_openalex_http_request(string $url, string $key): array {
 /**
  * Stateless authenticated-search core; inject a request and sleep callback
  * in offline tests. Transient failures are never reported as absent volumes.
- * @param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
- * @param (callable(int): void)|null $pause
+ * @param string $title Full proceedings title
+ * @param string $volume Proceedings volume number
+ * @param string $year Publication year
+ * @param callable $request Injectable HTTP transport
+ * @param callable|null $pause Injectable retry wait
+ * @phpstan-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
+ * @psalm-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
  * @return array{state: string, editors: array<int, object>, diagnostic: string}
  */
 function spie_openalex_lookup_with_transport(
@@ -683,7 +691,8 @@ function spie_openalex_lookup_with_transport(
     $pause ??= static function (int $seconds): void {
         sleep($seconds);
     };
-    for ($attempt = 0; $attempt < 2; ++$attempt) {
+    $attempt = 0;
+    while (true) {
         $response = $request($url);
         $status = $response['status'];
         $errno = $response['errno'];
@@ -732,17 +741,24 @@ function spie_openalex_lookup_with_transport(
         if (!$retryable || $attempt > 0 || ($status === 429 && $retry_after !== null && $retry_after > 2)) {
             return ['state' => 'transient', 'editors' => [], 'diagnostic' => $diagnostic . '/unavailable'];
         }
+        ++$attempt;
         $pause($retry_after !== null && $retry_after >= 1 ? min(2, $retry_after) : 1);
     }
-    return ['state' => 'transient', 'editors' => [], 'diagnostic' => 'retry exhausted'];
 }
 
 /**
  * Cache only successful lookups and well-formed negative responses; do not
  * turn rate limits, timeouts, or oversized results into durable negatives.
- * @param array<string, array{state: string, editors: array<int, object>, diagnostic: string}> $cache
- * @param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
- * @param (callable(int): void)|null $pause
+ * @param string $title Full proceedings title
+ * @param string $volume Proceedings volume number
+ * @param string $year Publication year
+ * @param callable $request Injectable HTTP transport
+ * @param array<string, mixed> $cache Per-process lookup cache
+ * @param callable|null $pause Injectable retry wait
+ * @phpstan-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
+ * @phpstan-param array<string, array{state: string, editors: array<int, object>, diagnostic: string}> $cache
+ * @psalm-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
+ * @psalm-param array<string, array{state: string, editors: array<int, object>, diagnostic: string}> $cache
  * @return array{state: string, editors: array<int, object>, diagnostic: string}
  */
 function spie_openalex_cached_lookup(
