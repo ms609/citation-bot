@@ -676,7 +676,6 @@ function spie_openalex_http_request(string $url, string $key): array {
  * @param callable $request Injectable HTTP transport
  * @param callable|null $pause Injectable retry wait
  * @phpstan-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
- * @psalm-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
  * @return array{state: string, editors: array<int, object>, diagnostic: string}
  */
 function spie_openalex_lookup_with_transport(
@@ -753,12 +752,10 @@ function spie_openalex_lookup_with_transport(
  * @param string $volume Proceedings volume number
  * @param string $year Publication year
  * @param callable $request Injectable HTTP transport
- * @param array<string, mixed> $cache Per-process lookup cache
+ * @param array<string, mixed> &$cache Per-process lookup cache
  * @param callable|null $pause Injectable retry wait
  * @phpstan-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
  * @phpstan-param array<string, array{state: string, editors: array<int, object>, diagnostic: string}> $cache
- * @psalm-param callable(string): array{status: int, errno: int, body: string, retry_after: int|null} $request
- * @psalm-param array<string, array{state: string, editors: array<int, object>, diagnostic: string}> $cache
  * @return array{state: string, editors: array<int, object>, diagnostic: string}
  */
 function spie_openalex_cached_lookup(
