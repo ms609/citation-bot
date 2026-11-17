@@ -1519,6 +1519,7 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('Smith', $template->get2('last1'));
         $this->assertSame('Jane', $template->get2('first1'));
     }
+
     public function testSpieAlternateEditorAliasesArePreserved(): void {
         $doi = '10.1117/12.2078768';
         $template = $this->make_citation('{{cite book|doi=' . $doi .
