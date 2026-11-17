@@ -35,6 +35,16 @@ function expand_by_doi(Template $template, bool $force = false): void {
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $template->add_if_new('jstor', mb_substr($doi, 8));
     }
+    // An otherwise complete citation needs editor-only enrichment, not
+    // a second DOI expansion that can change titles, dates, ISBNs and pages.
+    if ($doi && !$force && !$template->incomplete()) {
+        if (spie_editor_only_candidate($template, $doi)) {
+            // One REST request, and only editor fields may be changed.
+            $rest = query_crossref_newapi($doi, true);
+            add_spie_crossref_json_editors($template, $doi, $rest);
+        }
+        return;
+    }
     if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
@@ -182,9 +192,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (
                 $series_title === '' &&
                 str_starts_with($doi, '10.1117/12.') &&
-                $doi_type === 'proceedings-article' &&
-                isset($crossRefNewAPI->{'container-title'}[0]) &&
-                $crossRefNewAPI->{'container-title'}[0] === 'SPIE Proceedings'
+                // Do not infer SPIE solely from this publisher DOI prefix.
+                (spie_rest_confirms_series($doi, $crossRefNewAPI) ||
+                 spie_openurl_confirms_series($doi, $crossRef))
             ) {
                 $series_title = 'Proceedings of SPIE';
             }
@@ -225,6 +235,8 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                 }
             }
+            // Editor metadata is more complete in Crossref REST than in OpenURL.
+            add_spie_crossref_json_editors($template, $doi, $crossRefNewAPI);
             $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
             $template->add_if_new('journal', $journal_title); // add_if_new will format the title
             $crossref_volume = (string) $crossRef->volume;
@@ -260,9 +272,221 @@ function expand_by_doi(Template $template, bool $force = false): void {
         } else {
             report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
             expand_doi_with_dx($template, $doi);
+            // The REST record can still contain SPIE volume editors when the
+            // legacy OpenURL service has no usable XML response. It also has
+            // article metadata (title, authors, date, etc.) which must be
+            // populated here: adding editors alone cannot expand a DOI-only
+            // citation if DOI content negotiation also failed.
+            if (str_starts_with($doi, '10.1117/12.')) {
+                $spie_json = query_crossref_newapi($doi, true);
+                if (($spie_json->type ?? '') === 'proceedings-article') {
+                    // Crossref's REST response is an object; the shared DOI
+                    // parser accepts associative arrays. Map proceedings
+                    // paper metadata to its book/chapter representation, as
+                    // the OpenURL branch does (do not cite the paper as the
+                    // title of the entire proceedings volume).
+                    $spie_record_json = json_encode($spie_json);
+                    $spie_record = is_string($spie_record_json)
+                        ? ExternalApiResponseGuard::decodeAssocObject($spie_record_json)
+                        : null;
+                    if (is_array($spie_record)) {
+                        $spie_record['type'] = 'book-chapter';
+                        // Some records name both a generic series and the
+                        // actual volume; use only the volume as book title.
+                        $volume_title = '';
+                        $containers = $spie_record['container-title'] ?? [];
+                        if (is_array($containers)) {
+                            foreach ($containers as $candidate) {
+                                if (is_string($candidate) && mb_trim($candidate) !== '' &&
+                                    !in_array(mb_strtolower(mb_trim($candidate)), [
+                                        'spie proceedings', 'proceedings of spie',
+                                        'proceedings of spie - the international society for optical engineering',
+                                    ], true)) {
+                                    $volume_title = $candidate;
+                                }
+                            }
+                        }
+                        if ($volume_title === '') {
+                            unset($spie_record['container-title']);
+                        } else {
+                            $spie_record['container-title'] = [$volume_title];
+                        }
+                        // The dedicated helper validates editor alignment and
+                        // skips corporate entries; do not use generic parsing.
+                        unset($spie_record['editor']);
+                        // DX may have filled title= with the paper title.
+                        $paper_title = $spie_record['title'][0] ?? null;
+                        if (is_string($paper_title)) {
+                            spie_reconcile_dx_paper_title($template, $volume_title, $paper_title);
+                        }
+                        process_doi_json($template, $doi, $spie_record);
+                    }
+                    if (spie_rest_confirms_series($doi, $spie_json)) {
+                        $template->add_if_new('series', 'Proceedings of SPIE', 'crossref');
+                    }
+                    add_spie_crossref_json_editors($template, $doi, $spie_json);
+                }
+            }
         }
     }
     return;
+}
+
+/** Add named SPIE proceedings editors, completing only a matching existing list. */
+function add_spie_crossref_json_editors(Template $template, string $doi, object $record): void {
+    if (
+        !str_starts_with($doi, '10.1117/12.') ||
+        ($record->type ?? '') !== 'proceedings-article' ||
+        !isset($record->editor) ||
+        !is_array($record->editor) ||
+        $template->had_initial_editor()
+    ) {
+        return;
+    }
+
+    /** @var array<int, array{family: string, given: string}> $editors */
+    $editors = [];
+    foreach ($record->editor as $editor) {
+        if (!is_object($editor)) {
+            continue;
+        }
+        $family = is_string($editor->family ?? null) ? mb_trim($editor->family) : '';
+        $given = is_string($editor->given ?? null) ? mb_trim($editor->given) : '';
+        if ($family === '') {
+            continue; // Organization or nameless record, not a personal editor.
+        }
+        $formatted_last = format_surname($family);
+        $formatted_first = format_forename($given);
+        if (in_array(mb_strtolower($formatted_last), REJECT_NEW, true) ||
+            ($formatted_first !== '' && in_array(mb_strtolower($formatted_first), REJECT_NEW, true)) ||
+            preg_match('~[{}<>|\[\]]~u', $formatted_last . $formatted_first)) {
+            // A rejected editor would otherwise leave a numbered-list gap.
+            return;
+        }
+        $editors[] = ['family' => $family, 'given' => $given];
+        // Never add a partial editor list that appears complete in a citation.
+        if (count($editors) > 30) {
+            report_warning('Skipping SPIE editors for DOI ' . echoable($doi) .
+                ': Crossref REST lists more than 30 named editors');
+            return;
+        }
+    }
+    if ($editors === []) {
+        return;
+    }
+
+    // Named/literal or unnumbered editors cannot be aligned safely with REST.
+    if (!$template->blank(['editors', 'veditors', 'editor', 'editor1', 'editor-last', 'editor-first'])) {
+        return;
+    }
+    // OpenURL can have just the first volume editor. Only extend a *matching*
+    // numbered list, and never interleave editors from disagreeing sources.
+    // Check all numbered fields before making any changes (no partial writes).
+    for ($index = 1; $index <= 30; ++$index) {
+        $number = (string) $index;
+        if (!$template->blank(['editor' . $number, 'editor' . $number . '-surname', 'editor-surname' . $number,
+                               'editor' . $number . '-given', 'editor-given' . $number])) {
+            return;
+        }
+        $existing_last = $template->get_without_comments_and_placeholders('editor-last' . $number);
+        $existing_last_alt = $template->get_without_comments_and_placeholders('editor' . $number . '-last');
+        $existing_first = $template->get_without_comments_and_placeholders('editor-first' . $number);
+        $existing_first_alt = $template->get_without_comments_and_placeholders('editor' . $number . '-first');
+        foreach ([$existing_last, $existing_last_alt] as $last) {
+            if ($last !== '' && (!isset($editors[$index - 1]) ||
+                !str_equivalent($last, $editors[$index - 1]['family']))) {
+                return;
+            }
+        }
+        foreach ([$existing_first, $existing_first_alt] as $first) {
+            if ($first !== '' && (!isset($editors[$index - 1]) ||
+                $editors[$index - 1]['given'] === '' ||
+                !str_equivalent($first, $editors[$index - 1]['given']))) {
+                return;
+            }
+        }
+    }
+    // The entire list must be accepted; a failed later surname must not
+    // leave an apparently complete but incorrectly numbered editor list.
+    $fields = [];
+    foreach ($editors as $index => $editor) {
+        $number = (string) ($index + 1);
+        if ($template->blank(['editor-last' . $number, 'editor' . $number . '-last'])) {
+            $fields['editor-last' . $number] = format_surname($editor['family']);
+        }
+        if ($editor['given'] !== '' &&
+            $template->blank(['editor-first' . $number, 'editor' . $number . '-first'])) {
+            $fields['editor-first' . $number] = format_forename($editor['given']);
+        }
+    }
+    $template->add_editor_fields_atomically($fields, 'crossref');
+}
+
+/**
+ * Never make an editor-enrichment API request once any editor is populated.
+ * Include numbered CS1 aliases beyond editor #1, even when the editor was
+ * added after template construction (had_initial_editor() is then false).
+ */
+function spie_has_existing_editor(Template $template): bool {
+    if ($template->had_initial_editor()) {
+        return true;
+    }
+    return $template->has_any_editor_parameter();
+}
+
+/** True only for an already complete SPIE paper citation missing editors. */
+function spie_editor_only_candidate(Template $template, string $doi): bool {
+    if (!str_starts_with($doi, '10.1117/12.') || spie_has_existing_editor($template) ||
+        !$template->has('title') || !$template->has('volume')) {
+        return false;
+    }
+    $series = mb_trim($template->get_without_comments_and_placeholders('series'));
+    if (preg_match('~^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$~u', $series, $match)) {
+        $series = $match[1];
+    }
+    return $template->has('chapter') || in_array(mb_strtolower(mb_trim($series)),
+        ['spie proceedings', 'proceedings of spie'], true);
+}
+
+/**
+ * Distinguish a proceedings series from a paper or unrelated volume using
+ * Crossref's explicit proceedings type and SPIE container identity.
+ */
+function spie_rest_confirms_series(string $doi, object $rest): bool {
+    if (!str_starts_with($doi, '10.1117/12.') || ($rest->type ?? '') !== 'proceedings-article' ||
+        !is_array($rest->{'container-title'} ?? null)) {
+        return false;
+    }
+    foreach ($rest->{'container-title'} as $container) {
+        if (is_string($container) && in_array(mb_strtolower(mb_trim($container)),
+            ['spie proceedings', 'proceedings of spie'], true)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * OpenURL can independently corroborate a SPIE proceedings volume when
+ * Crossref REST is unavailable. A volume name alone is insufficient: require
+ * the DOI prefix, volume number and year, and reject journal records.
+ */
+function spie_openurl_confirms_series(string $doi, SimpleXMLElement $openurl): bool {
+    if (!str_starts_with($doi, '10.1117/12.') ||
+        mb_trim((string) $openurl->volume_title) === '' ||
+        mb_trim((string) $openurl->journal_title) !== '') {
+        return false;
+    }
+    return preg_match('~^[1-9]\d{2,5}$~D', mb_trim((string) $openurl->volume)) === 1 &&
+        preg_match('~^[12]\d{3}$~D', mb_trim((string) $openurl->year)) === 1;
+}
+
+/** When DX added the paper title, move only an identical title to chapter. */
+function spie_reconcile_dx_paper_title(Template $template, string $volume_title, string $paper_title): void {
+    if ($volume_title !== '' && $paper_title !== '' && $template->has('title') &&
+        $template->blank('chapter') && str_equivalent($template->get('title'), $paper_title)) {
+        $template->rename('title', 'chapter');
+    }
 }
 
 function parse_crossref_xml_response(string $raw_xml): ?SimpleXMLElement {
@@ -740,7 +964,7 @@ function should_skip_crossref_issue_as_volume_match(string $doi, string $crossre
 /**
  * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addition to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
  */
-function query_crossref_newapi(string $doi): object {
+function query_crossref_newapi(string $doi, bool $spie_fallback = false): object {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
@@ -751,13 +975,37 @@ function query_crossref_newapi(string $doi): object {
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $result = parse_crossref_newapi_response($json);
+    // Only retry when REST is the fallback/sole metadata source. Ordinary
+    // OpenURL-successful DOI lookups should not pay for an extra REST request.
+    if ($result === null && $spie_fallback && str_starts_with($doi, '10.1117/12.')) {
+        $transfer = bot_curl_last_transfer($ch);
+        $http_status = $transfer['http_code'];
+        // DNS/connection failures during an outage should not be retried for
+        // every citation. Timeouts, empty replies, receive errors and HTTP
+        // 429/5xx can be transient; give those one short retry.
+        if (in_array($transfer['errno'], [28, 52, 56], true) ||
+            $http_status === 429 || $http_status >= 500) {
+            usleep(100000);
+            $json = bot_curl_exec($ch);
+            $result = parse_crossref_newapi_response($json);
+        }
+        if ($result === null) {
+            $transfer = bot_curl_last_transfer($ch);
+            report_warning('Crossref REST SPIE metadata unavailable for DOI ' . echoable($doi) .
+                ' (HTTP ' . (string) $transfer['http_code'] . ', cURL ' . (string) $transfer['errno'] . ')');
+        }
+    }
     unset($json);
 
     if ($result !== null) {
         HandleCache::$cache_active[$doi] = true;
         HandleCache::check_memory_use();
     } else {
-        sleep(2);  // @codeCoverageIgnore
+        // This extra fallback must not add the generic two-second failure
+        // sleep to every SPIE DOI during a Crossref outage.
+        if (!$spie_fallback) {
+            sleep(2); // @codeCoverageIgnore
+        }
         return new stdClass(); // @codeCoverageIgnore
     }
 

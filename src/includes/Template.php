@@ -910,6 +910,47 @@ final class Template
     }
 
     /**
+     * Match any populated CS1 editor-name alias, including numbered fields
+     * beyond 99. Link/mask fields alone do not constitute an editor name.
+     */
+    public function has_any_editor_parameter(): bool {
+        foreach ($this->param as $param) {
+            if (preg_match('~^(?:editors|veditors|editor(?:\d+)?|editor-(?:last|first|surname|given)\d*|editor\d+-(?:last|first|surname|given))$~iD',
+                $param->param) && mb_trim($param->val) !== '') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Stage numbered editor fields on a deep copy, then commit only if every
+     * add_if_new() succeeds. An invalid later surname cannot leave gaps.
+     * Existing matching editor fields remain unchanged.
+     * @param array<string, string> $fields
+     */
+    public function add_editor_fields_atomically(array $fields, string $api): bool {
+        if ($fields === []) {
+            return false;
+        }
+        $working = clone $this;
+        $working->param = array_map(static fn (Parameter $p): Parameter => clone $p, $this->param);
+        foreach ($fields as $name => $value) {
+            if (!$working->blank($name)) {
+                // Caller has already confirmed source alignment; do not
+                // overwrite an existing matching name.
+                continue;
+            }
+            if (!$working->add_if_new($name, $value, $api)) {
+                return false;
+            }
+        }
+        $this->param = $working->param;
+        $this->used_by_api = $working->used_by_api;
+        return true;
+    }
+
+    /**
      * @param array<string>|string $param
      */
     public function blank(array|string $param): bool {

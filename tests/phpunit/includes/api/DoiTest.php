@@ -558,11 +558,8 @@ final class DoiTest extends testBaseClass {
             'doi_works' => true,
             'doi_active' => true,
             'query_crossref' => $record,
-            'query_crossref_newapi' => (object) [
-                'type' => 'proceedings-article',
-                'title' => [$chapter],
-                'container-title' => ['SPIE Proceedings', $title],
-            ],
+            // The legacy OpenURL volume title remains useful if REST is down.
+            'query_crossref_newapi' => new stdClass(),
         ];
         foreach ($stubs as $name => $value) {
             /** @psalm-suppress UnusedFunctionCall */
@@ -578,6 +575,544 @@ final class DoiTest extends testBaseClass {
             $this->assertSame('Proceedings of SPIE', $template->get('series'));
             $this->assertSame('6505', $template->get('volume'));
             $this->assertNull($template->get2('editor-last1'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    /** The series rule must work when REST confirms proceedings without an OpenURL volume title. */
+    public function testSpieSeriesFromRestTypeWithoutOpenUrlVolumeTitle(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.2078768';
+        $openurl = new SimpleXMLElement(
+            '<query><article_title>Example SPIE paper</article_title><year>2015</year></query>'
+        );
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => $openurl,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'container-title' => ['SPIE Proceedings'],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $this->assertSame('Proceedings of SPIE', $template->get2('series'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieOverThirtyNamedEditorsNeverWritesPartialList(): void {
+        $doi = '10.1117/12.2078768';
+        $editors = [];
+        for ($i = 1; $i <= 31; ++$i) {
+            $editors[] = (object) ['given' => 'Alex', 'family' => 'Smith'];
+        }
+        $record = (object) ['type' => 'proceedings-article', 'editor' => $editors];
+        foreach ([false, true] as $withExistingEditor) {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+            if ($withExistingEditor) {
+                $this->assertTrue($template->add_if_new('editor-last1', 'Smith', 'crossref'));
+            }
+            $before = $template->parsed_text();
+            add_spie_crossref_json_editors($template, $doi, $record);
+            $this->assertSame($before, $template->parsed_text());
+            $this->assertNull($template->get2('editor-last2'));
+        }
+    }
+
+    public function testSpieThirtyNamedEditorsAndOrganizationsAreAccepted(): void {
+        $doi = '10.1117/12.2078768';
+        $editors = [(object) ['name' => 'SPIE']];
+        for ($i = 1; $i <= 30; ++$i) {
+            $editors[] = (object) ['given' => 'Alex', 'family' => 'Smith'];
+        }
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        add_spie_crossref_json_editors($template, $doi, (object) [
+            'type' => 'proceedings-article',
+            'editor' => $editors,
+        ]);
+        $this->assertSame('Smith', $template->get2('editor-last1'));
+        $this->assertSame('Smith', $template->get2('editor-last30'));
+        $this->assertNull($template->get2('editor-last31'));
+    }
+
+    public function testSpieRestRetriesOnlyFallbackAndSkipsOutageSleeps(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub cURL responses');
+        }
+
+        $requests = 0;
+        $sleepCalls = [];
+        $shortSleeps = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', static function () use (&$requests): string {
+            ++$requests;
+            return '';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_last_transfer', [
+            'ok' => false, 'errno' => 0, 'error' => '', 'http_code' => 503,
+        ]);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('sleep', static function (int $seconds) use (&$sleepCalls): int {
+            $sleepCalls[] = $seconds;
+            return 0;
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('usleep', static function (int $microseconds) use (&$shortSleeps): void {
+            $shortSleeps[] = $microseconds;
+        }, true);
+
+        try {
+            // A normal lookup should retain its old one-request behavior.
+            $normal = query_crossref_newapi('10.1117/12.2078768');
+            $this->assertSame([], get_object_vars($normal));
+            $this->assertSame(1, $requests);
+            $this->assertSame([2], $sleepCalls);
+            $this->assertSame([], $shortSleeps);
+
+            // REST-only fallback retries a transient 503, without a 2-second sleep.
+            $fallback = query_crossref_newapi('10.1117/12.2078768', true);
+            $this->assertSame([], get_object_vars($fallback));
+            $this->assertSame(3, $requests);
+            $this->assertSame([2], $sleepCalls);
+            $this->assertSame([100000], $shortSleeps);
+
+            // A DNS outage should not trigger a futile second request.
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return('bot_curl_last_transfer', [
+                'ok' => false, 'errno' => 6, 'error' => 'DNS failure', 'http_code' => 0,
+            ]);
+            $fallback = query_crossref_newapi('10.1117/12.703370', true);
+            $this->assertSame([], get_object_vars($fallback));
+            $this->assertSame(4, $requests);
+            $this->assertSame([2], $sleepCalls);
+            $this->assertSame([100000], $shortSleeps);
+        } finally {
+            foreach (['usleep', 'sleep', 'bot_curl_last_transfer', 'bot_curl_exec'] as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    /**
+     * Exercise the normal, unforced DOI-only code path, with the comment-only
+     * PMID/PMC fields used in the report. OpenURL and DOI content negotiation
+     * are deliberately unavailable: Crossref REST must still add metadata.
+     */
+    public function testSpieDoiOnlyCitationUsesRestWhenOpenUrlAndDxUnavailable(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub the DOI services');
+        }
+
+        $doi = '10.1117/12.2078768';
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'title' => ['Evaluation of laser ultrasonic testing for inspection of metal additive manufacturing'],
+            'container-title' => ['SPIE Proceedings', 'Laser 3D Manufacturing II'],
+            'volume' => '9353',
+            'issued' => (object) ['date-parts' => [[2015]]],
+            'author' => [
+                (object) ['given' => 'Sarah', 'family' => 'Everton'],
+            ],
+            'editor' => [
+                (object) ['given' => 'Henry', 'family' => 'Helvajian'],
+                (object) ['given' => 'Alberto', 'family' => 'Piqué'],
+                (object) ['given' => 'Martin', 'family' => 'Wegener'],
+                (object) ['given' => 'Bo', 'family' => 'Gu'],
+            ],
+        ];
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => null,
+            'expand_doi_with_dx' => null,
+            'query_crossref_newapi' => $rest,
+        ];
+        foreach ($stubs as $name => $return) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $return);
+        }
+        try {
+            $template = $this->make_citation(
+                '{{Cite journal | doi = ' . $doi . ' |pmid=<!-- -->|pmc=<!-- -->}}'
+            );
+            $original = $template->parsed_text();
+            expand_by_doi($template); // No force=true: match the real bot.
+            $template->final_tidy();
+            $this->assertNotSame($original, $template->parsed_text());
+            $this->assertSame('Laser 3D Manufacturing II', $template->get('title'));
+            $this->assertStringContainsString('laser ultrasonic testing', mb_strtolower($template->get('chapter')));
+            $this->assertSame('9353', $template->get('volume'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('Everton', $template->get2('last1'));
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2'));
+            $this->assertSame('Gu', $template->get2('editor-last4'));
+            $this->assertSame('', $template->get_without_comments_and_placeholders('pmid'));
+            $this->assertSame('', $template->get_without_comments_and_placeholders('pmc'));
+            $this->assertNotSame('', $template->get('doi'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieDoiOnlyWithoutRestEditorsStillGetsBibliography(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub the DOI services');
+        }
+
+        $doi = '10.1117/12.703370';
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'title' => ['Digital imaging sensor identification (further study)'],
+            'container-title' => ['Security, Steganography, and Watermarking of Multimedia Contents IX'],
+            'volume' => '6505',
+            'issued' => (object) ['date-parts' => [[2007]]],
+            'author' => [(object) ['given' => 'Mo', 'family' => 'Chen']],
+            // Historical Crossref records sometimes omit editor metadata.
+        ];
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => null,
+            'expand_doi_with_dx' => null,
+            'query_crossref_newapi' => $rest,
+        ];
+        foreach ($stubs as $name => $return) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $return);
+        }
+        try {
+            $template = $this->make_citation(
+                '{{cite journal | doi = ' . $doi . ' |pmid=<!-- -->|pmc=<!-- -->}}'
+            );
+            $original = $template->parsed_text();
+            expand_by_doi($template);
+            $template->final_tidy();
+            $this->assertNotSame($original, $template->parsed_text());
+            $this->assertStringContainsString('Security, Steganography', $template->get('title'));
+            $this->assertStringContainsString('digital imaging sensor identification', mb_strtolower($template->get('chapter')));
+            $this->assertSame('Chen', $template->get2('last1'));
+            $this->assertSame('6505', $template->get('volume'));
+            $this->assertNull($template->get2('series'));
+            $this->assertNull($template->get2('editor-last1'));
+            $this->assertNull($template->get2('editor-last2'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieProceedingsEditorsFromCrossrefJson(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.2078768';
+        $title = 'Laser 3D Manufacturing II';
+        $chapter = 'Evaluation of laser ultrasonic testing for inspection of metal additive manufacturing';
+        $record = new SimpleXMLElement(
+            '<query><article_title>' . $chapter . '</article_title>' .
+            '<volume_title>' . $title . '</volume_title><volume>9353</volume><year>2015</year></query>'
+        );
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'title' => [$chapter],
+                // The real REST container can name the volume, not the series.
+                'container-title' => [$title],
+                'editor' => [
+                    (object) ['given' => 'Henry', 'family' => 'Helvajian', 'sequence' => 'first'],
+                    (object) ['name' => 'SPIE', 'sequence' => 'additional'],
+                    (object) ['given' => 'Alberto', 'family' => 'Piqué', 'sequence' => 'additional'],
+                ],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $template->final_tidy();
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Henry', $template->get2('editor-first1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2')); // the organization entry is skipped
+            $this->assertSame('Alberto', $template->get2('editor-first2'));
+            $this->assertNull($template->get2('editor-last3'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieEditorsWhenOpenUrlXmlIsUnavailable(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.2078768';
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => null,
+            'expand_doi_with_dx' => null,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'container-title' => ['SPIE Proceedings'],
+                'editor' => [
+                    (object) ['given' => 'Henry', 'family' => 'Helvajian'],
+                    (object) ['name' => 'SPIE'],
+                    (object) ['given' => 'Alberto', 'family' => 'Piqué'],
+                ],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $this->assertSame('Proceedings of SPIE', $template->get2('series'));
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2'));
+            $this->assertNull($template->get2('editor-last3'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieCompletesMatchingOpenUrlEditorsWithoutOverwritingThem(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.2078768';
+        $openurl = new SimpleXMLElement(
+            '<query><article_title>Example SPIE paper</article_title>' .
+            '<volume_title>Laser 3D Manufacturing II</volume_title>' .
+            '<contributors><contributor contributor_role="editor">' .
+            '<surname>Helvajian</surname><given_name>Henry</given_name>' .
+            '</contributor></contributors></query>'
+        );
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'editor' => [
+                (object) ['family' => 'Helvajian', 'given' => 'Henry'],
+                (object) ['family' => 'Piqué', 'given' => 'Alberto'],
+                (object) ['family' => 'Wegener', 'given' => 'Martin'],
+                (object) ['family' => 'Gu', 'given' => 'Bo'],
+            ],
+        ];
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => $openurl,
+            'query_crossref_newapi' => $rest,
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Henry', $template->get2('editor-first1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2'));
+            $this->assertSame('Wegener', $template->get2('editor-last3'));
+            $this->assertSame('Gu', $template->get2('editor-last4'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testSpieConflictingOpenUrlEditorDoesNotGetMixedWithRest(): void {
+        $doi = '10.1117/12.2078768';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        $this->assertTrue($template->add_if_new('editor-last1', 'Other', 'crossref'));
+        $rest = (object) [
+            'type' => 'proceedings-article',
+            'editor' => [
+                (object) ['family' => 'Helvajian', 'given' => 'Henry'],
+                (object) ['family' => 'Piqué', 'given' => 'Alberto'],
+            ],
+        ];
+        add_spie_crossref_json_editors($template, $doi, $rest);
+        $this->assertSame('Other', $template->get2('editor-last1'));
+        $this->assertNull($template->get2('editor-last2'));
+    }
+
+    public function testSpieEditorOnlyCandidateAcceptsLinkedSeries(): void {
+        $doi = '10.1117/12.703370';
+        $volume = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        foreach (['[[Proceedings of SPIE]]', 'Proceedings of SPIE', '[[Proceedings of SPIE|SPIE]]'] as $series) {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+                $volume . '|volume=6505|year=2007|series=' . $series . '}}');
+            $this->assertTrue(spie_editor_only_candidate($template, $doi), $series);
+            $this->assertFalse(spie_editor_only_candidate($template, '10.1234/not-spie'));
+        }
+        $unrelated = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+            $volume . '|volume=6505|year=2007|series=Other Series}}');
+        $this->assertFalse(spie_editor_only_candidate($unrelated, $doi));
+        $existing = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+            $volume . '|volume=6505|year=2007|series=Proceedings of SPIE|editor-last1=Existing}}');
+        $this->assertFalse(spie_editor_only_candidate($existing, $doi));
+    }
+
+    public function testSpieSeriesRequiresCrossrefCorroboration(): void {
+        $doi = '10.1117/12.703370';
+        $this->assertTrue(spie_rest_confirms_series($doi, (object) [
+            'type' => 'proceedings-article', 'container-title' => ['SPIE Proceedings'],
+        ]));
+        foreach ([
+            (object) ['type' => 'journal-article', 'container-title' => ['SPIE Proceedings']],
+            (object) ['type' => 'proceedings-article', 'container-title' => ['Unrelated Series']],
+            (object) ['type' => 'proceedings-article', 'container-title' => []],
+            (object) ['type' => 'proceedings-article'],
+        ] as $record) {
+            $this->assertFalse(spie_rest_confirms_series($doi, $record));
+        }
+        $this->assertFalse(spie_rest_confirms_series('10.1234/5678', (object) [
+            'type' => 'proceedings-article', 'container-title' => ['SPIE Proceedings'],
+        ]));
+    }
+
+    public function testSpieReconcilesDxPaperTitleOnlyWhenMatching(): void {
+        $doi = '10.1117/12.703370';
+        $paper = 'Digital imaging sensor identification (further study)';
+        $volume = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '|title=' . $paper . '}}');
+        spie_reconcile_dx_paper_title($template, $volume, $paper);
+        $this->assertSame($paper, $template->get2('chapter'));
+        $this->assertSame('', $template->get_without_comments_and_placeholders('title'));
+        $other = $this->make_citation('{{cite book|doi=' . $doi . '|title=Different title}}');
+        spie_reconcile_dx_paper_title($other, $volume, $paper);
+        $this->assertSame('Different title', $other->get2('title'));
+        $this->assertNull($other->get2('chapter'));
+    }
+
+    public function testSpieOpenUrlSeriesCorroboration(): void {
+        $doi = '10.1117/12.703370';
+        $record = new SimpleXMLElement('<query><volume_title>Verified Proceedings</volume_title>' .
+            '<volume>6505</volume><year>2007</year></query>');
+        $this->assertTrue(spie_openurl_confirms_series($doi, $record));
+        foreach (['<volume>6505</volume>', '<year>2007</year>',
+                  '<volume_title>Verified Proceedings</volume_title>'] as $field) {
+            $bad = new SimpleXMLElement(str_replace($field, '', (string) $record->asXML()));
+            $this->assertFalse(spie_openurl_confirms_series($doi, $bad));
+        }
+        $journal = new SimpleXMLElement('<query><volume_title>Verified Proceedings</volume_title>' .
+            '<volume>6505</volume><year>2007</year><journal_title>Other</journal_title></query>');
+        $this->assertFalse(spie_openurl_confirms_series($doi, $journal));
+        $this->assertFalse(spie_openurl_confirms_series('10.1234/other', $record));
+    }
+
+    public function testSpieEditorListIsAtomicWhenLaterFieldIsRejected(): void {
+        $doi = '10.1117/12.703370';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        $initial = $template->parsed_text();
+        $this->assertFalse($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-first1' => 'Edward',
+            'editor-last2' => 'Null', 'editor-first2' => 'Jane',
+        ], 'crossref'));
+        $this->assertSame($initial, $template->parsed_text());
+        $this->assertTrue($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-first1' => 'Edward',
+            'editor-last2' => 'Wong', 'editor-first2' => 'Ping',
+        ], 'crossref'));
+        $this->assertSame('Delp', $template->get2('editor-last1'));
+        $this->assertSame('Wong', $template->get2('editor-last2'));
+    }
+
+    public function testSpieAnyEditorNumberBeyond99BlocksCrossrefEnrichment(): void {
+        $doi = '10.1117/12.703370';
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        foreach (['editor-last100', 'editor100-first', 'editor-surname120', 'editor150'] as $field) {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '|title=' .
+                $title . '|volume=6505|year=2007|' . $field . '=Existing}}');
+            $this->assertTrue(spie_has_existing_editor($template), $field);
+            $this->assertFalse(spie_editor_only_candidate($template, $doi), $field);
+        }
+    }
+
+    public function testSpieWithNullRestEditorsDoesNotInventEditors(): void {
+        $doi = '10.1117/12.703370';
+        $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+        add_spie_crossref_json_editors($template, $doi, (object) [
+            'type' => 'proceedings-article',
+            'editor' => null,
+        ]);
+        $this->assertNull($template->get2('editor-last1'));
+    }
+
+    public function testCrossRefAddEditorsSpieProceedingsLive(): void {
+        // Exercise *live REST metadata* independently of the less reliable
+        // OpenURL and DOI content-negotiation services.
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to isolate the live Crossref REST test');
+        }
+        $doi = '10.1117/12.2078768';
+        $record = query_crossref_newapi($doi);
+        // Empty metadata cannot distinguish a transport outage from a parser
+        // regression. Required integration tests must fail, never skip.
+        $this->assertSame('proceedings-article', $record->type ?? null,
+            'Crossref returned no usable proceedings metadata for ' . $doi);
+        $this->assertIsArray($record->editor ?? null);
+        $this->assertCount(4, $record->editor);
+
+        $stubs = [
+            'doi_works' => true,
+            'query_crossref' => null,
+            'expand_doi_with_dx' => null,
+            'query_crossref_newapi' => $record,
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite book|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $this->assertSame(spie_rest_confirms_series($doi, $record) ? 'Proceedings of SPIE' : null,
+                $template->get2('series'));
+            $this->assertSame('Helvajian', $template->get2('editor-last1'));
+            $this->assertSame('Henry', $template->get2('editor-first1'));
+            $this->assertSame('Piqué', $template->get2('editor-last2'));
+            $this->assertSame('Wegener', $template->get2('editor-last3'));
+            $this->assertSame('Gu', $template->get2('editor-last4'));
+            $this->assertNull($template->get2('editor-last5'));
         } finally {
             foreach (array_keys($stubs) as $name) {
                 /** @psalm-suppress UnusedFunctionCall */
@@ -984,4 +1519,22 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('Smith', $template->get2('last1'));
         $this->assertSame('Jane', $template->get2('first1'));
     }
+    public function testSpieAlternateEditorAliasesArePreserved(): void {
+        $doi = '10.1117/12.2078768';
+        $template = $this->make_citation('{{cite book|doi=' . $doi .
+            '|editor1-last=Helvajian|editor1-first=Henry}}');
+        $original = $template->parsed_text();
+        add_spie_crossref_json_editors($template, $doi, (object) [
+            'type' => 'proceedings-article',
+            'editor' => [
+                (object) ['family' => 'Helvajian', 'given' => 'Henry'],
+                (object) ['family' => 'Piqué', 'given' => 'Alberto'],
+            ],
+        ]);
+        $this->assertSame($original, $template->parsed_text());
+        $this->assertSame('Helvajian', $template->get2('editor1-last'));
+        $this->assertNull($template->get2('editor-last1'));
+        $this->assertNull($template->get2('editor-last2'));
+    }
+
 }
