@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/APIResponseGuard.php'; // @codeCoverageIgnore
+require_once __DIR__ . '/APISpieVolumeEditors.php'; // @codeCoverageIgnore
 
 const BAD_DOIS_FROM_CROSSREF = ['10.1355/9789812306319'];
 const NO_CHAPTER_ADD = ['citation', 'cite web', 'cite news', 'cite magazine', 'cite press release', 'cite podcast', 'cite newsgroup', 'cite journal'];
@@ -262,6 +263,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             expand_doi_with_dx($template, $doi);
         }
     }
+    spie_add_verified_volume_editors($template, $doi);
     return;
 }
 

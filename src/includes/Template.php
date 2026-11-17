@@ -910,6 +910,27 @@ final class Template
     }
 
     /**
+     * Stage editor additions on a deep copy, then commit the entire roster.
+     * This prevents rejected later names from leaving partial editor lists.
+     * @param array<string, string> $fields
+     */
+    public function add_editor_fields_atomically(array $fields, string $api): bool {
+        if ($fields === []) {
+            return false;
+        }
+        $working = clone $this;
+        $working->param = array_map(static fn (Parameter $p): Parameter => clone $p, $this->param);
+        foreach ($fields as $name => $value) {
+            if (!$working->blank($name) || !$working->add_if_new($name, $value, $api)) {
+                return false;
+            }
+        }
+        $this->param = $working->param;
+        $this->used_by_api = $working->used_by_api;
+        return true;
+    }
+
+    /**
      * @param array<string>|string $param
      */
     public function blank(array|string $param): bool {
