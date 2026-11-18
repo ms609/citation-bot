@@ -129,7 +129,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 report_warning("Journal DOI does not match the cited proceedings: " . doi_link($doi));
                 return;
             }
-            if (isCrossRefReviewConfusion($template, $crossRefNewAPI)) {
+            if (isCrossRefReviewConfusion($template, $crossRefNewAPI, $doi)) {
                 report_info("Book review confusion rejected for doi:" . doi_link($doi) . " — not adding journal metadata to book citation");
                 return;
             }
@@ -696,13 +696,14 @@ function conference_citation_conflicts_with_journal(Template $template, string $
     return $journal === '' || (!str_equivalent($proceedings, $journal) && !str_equivalent($event, $journal));
 }
 
-function isCrossRefReviewConfusion(Template $template, object $msg): bool {
+function isCrossRefReviewConfusion(Template $template, object $msg, string $doi = ''): bool {
     if (!function_exists('isBookCitationForReviewGuard') || !isBookCitationForReviewGuard($template)) {
         return false;
     }
-    // Conference papers are not journal book reviews. In particular, SPIE
-    // proceedings metadata may identify both a paper and its parent volume.
-    if (in_array($msg->type ?? '', ['proceedings-article', 'conference-paper', 'paper-conference'], true)) {
+    // Only SPIE proceedings qualify for this exception. Other proceedings
+    // citations must retain the book-review safeguard (e.g. AIP).
+    if (str_starts_with($doi, '10.1117/12.') &&
+        in_array($msg->type ?? '', ['proceedings-article', 'conference-paper', 'paper-conference'], true)) {
         return false;
     }
     $container = '';

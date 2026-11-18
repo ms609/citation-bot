@@ -530,6 +530,18 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($template->get2('series'));
     }
 
+    public function testNonSpieProceedingsRetainBookReviewGuard(): void {
+        $template = $this->make_citation(
+            '{{cite book|doi=10.1063/1.2833100|title=A Transient Semi-Metallic Layer in Detonating Nitromethane}}'
+        );
+        $crossref = (object) [
+            'type' => 'proceedings-article',
+            'title' => ['A Transient Semi-Metallic Layer in Detonating Nitromethane'],
+            'container-title' => ['AIP Conference Proceedings'],
+        ];
+        $this->assertTrue(isCrossRefReviewConfusion($template, $crossref, '10.1063/1.2833100'));
+    }
+
     public function testCrossRefAddSeries2(): void {
         // Kind of messed up, but "matches" enough to expand
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings|pmid=<!-- -->|pmc=<!-- -->}}";
