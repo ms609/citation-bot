@@ -700,6 +700,11 @@ function isCrossRefReviewConfusion(Template $template, object $msg): bool {
     if (!function_exists('isBookCitationForReviewGuard') || !isBookCitationForReviewGuard($template)) {
         return false;
     }
+    // Conference papers are not journal book reviews. In particular, SPIE
+    // proceedings metadata may identify both a paper and its parent volume.
+    if (in_array($msg->type ?? '', ['proceedings-article', 'conference-paper', 'paper-conference'], true)) {
+        return false;
+    }
     $container = '';
     if (isset($msg->{'container-title'}) && is_array($msg->{'container-title'}) && isset($msg->{'container-title'}[0]) && is_string($msg->{'container-title'}[0])) {
         $container = (string) $msg->{'container-title'}[0];
