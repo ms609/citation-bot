@@ -37,6 +37,97 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
         $this->assertSame('Wong', $template->get2('editor-last2'));
     }
 
+    /** A paper title is not the proceedings title; specific container fields are. */
+    public function testPaperTitleWithMatchingProceedingsContainerAddsEditors(): void {
+        $paperTitle = 'Digital imaging sensor identification (further study)';
+        $containers = [
+            'book-title' => '|book-title=' . self::VOLUME_TITLE,
+            'journal' => '|journal=' . self::VOLUME_TITLE,
+            'periodical' => '|periodical=' . self::VOLUME_TITLE,
+            'series' => '|series=' . self::VOLUME_TITLE,
+            'book-title and generic series' => '|book-title=' . self::VOLUME_TITLE . '|series=Proceedings of SPIE',
+            'journal and generic series' => '|journal=' . self::VOLUME_TITLE . '|series=SPIE Proceedings',
+        ];
+        foreach ($containers as $label => $container) {
+            $template = $this->make_citation('{{cite book|doi=' . self::DOI .
+                '|title=' . $paperTitle . '|volume=6505|year=2007' . $container . '}}');
+            $this->assertTrue(spie_add_verified_volume_editors($template, self::DOI), $label);
+            $this->assertSame($paperTitle, $template->get2('title'), $label);
+            $this->assertSame('Delp III', $template->get2('editor-last1'), $label);
+            $this->assertSame('Edward J.', $template->get2('editor-first1'), $label);
+            $this->assertSame('Wong', $template->get2('editor-last2'), $label);
+            $this->assertSame('Ping Wah', $template->get2('editor-first2'), $label);
+            $this->assertFalse(spie_add_verified_volume_editors($template, self::DOI), $label);
+        }
+    }
+
+    public function testCrossrefVolumeTitleIsVerifiedWithoutRewritingPaperTitle(): void {
+        $paperTitle = 'Digital imaging sensor identification (further study)';
+        $template = $this->make_citation('{{cite book|doi=' . self::DOI .
+            '|title=' . $paperTitle . '|volume=6505|year=2007|series=SPIE Proceedings}}');
+        $this->assertFalse(spie_add_verified_volume_editors($template, self::DOI));
+        $this->assertTrue(spie_add_verified_volume_editors($template, self::DOI, self::VOLUME_TITLE));
+        $this->assertSame($paperTitle, $template->get2('title'));
+        $this->assertSame('Delp III', $template->get2('editor-last1'));
+        $this->assertSame('Wong', $template->get2('editor-last2'));
+    }
+
+    public function testRejectsMissingOrConflictingProceedingsTitle(): void {
+        $paperTitle = 'Digital imaging sensor identification (further study)';
+        $cases = [
+            'paper title only' => ['', ''],
+            'generic series only' => ['|series=Proceedings of SPIE', ''],
+            'wrong book title' => ['|book-title=Other Proceedings', ''],
+            'conflicting book title and series' => ['|book-title=' . self::VOLUME_TITLE .
+                '|series=Other Proceedings', ''],
+            'conflicting journal and periodical' => ['|journal=' . self::VOLUME_TITLE .
+                '|periodical=Other Proceedings', ''],
+            'conflicting Crossref volume title' => ['|book-title=' . self::VOLUME_TITLE, 'Other Proceedings'],
+            'conflicting Crossref without citation container' => ['', 'Other Proceedings'],
+            'generic Crossref title only' => ['', 'SPIE Proceedings'],
+        ];
+        foreach ($cases as $label => [$container, $crossrefTitle]) {
+            $template = $this->make_citation('{{cite book|doi=' . self::DOI .
+                '|title=' . $paperTitle . '|volume=6505|year=2007' . $container . '}}');
+            $original = $template->parsed_text();
+            $this->assertFalse(spie_add_verified_volume_editors($template, self::DOI, $crossrefTitle), $label);
+            $this->assertSame($original, $template->parsed_text(), $label);
+            $this->assertNull($template->get2('editor-last1'), $label);
+        }
+    }
+
+    public function testPublicationYearFallbackRejectsAmbiguousDates(): void {
+        $positive = ['date=2007-02-27', 'date=February 2007',
+                     'year=2007|date=2008-01-01'];
+        foreach ($positive as $input) {
+            $template = $this->make_citation('{{cite book|doi=' . self::DOI .
+                '|title=' . self::VOLUME_TITLE . '|volume=6505|' . $input . '}}');
+            $this->assertSame('2007', spie_citation_publication_year($template), $input);
+            $this->assertTrue(spie_add_verified_volume_editors($template, self::DOI), $input);
+        }
+        $negative = ['date=2006-2007', 'date=2007 to 2008',
+                     'year=2008|date=2007-02-27', 'year=2007-2008|date=2007',
+                     'date=unknown'];
+        foreach ($negative as $input) {
+            $template = $this->make_citation('{{cite book|doi=' . self::DOI .
+                '|title=' . self::VOLUME_TITLE . '|volume=6505|' . $input . '}}');
+            $this->assertFalse(spie_add_verified_volume_editors($template, self::DOI), $input);
+            $this->assertNull($template->get2('editor-last1'), $input);
+        }
+    }
+
+    public function testExistingEditorLinksStillBlockRealisticPaperCitations(): void {
+        $paperTitle = 'Digital imaging sensor identification (further study)';
+        foreach (['editor-link1=Another Editor', 'editor-mask1=1', 'editor1-last=Other'] as $editor) {
+            $template = $this->make_citation('{{cite book|doi=' . self::DOI .
+                '|title=' . $paperTitle . '|book-title=' . self::VOLUME_TITLE .
+                '|volume=6505|year=2007|' . $editor . '}}');
+            $original = $template->parsed_text();
+            $this->assertFalse(spie_add_verified_volume_editors($template, self::DOI), $editor);
+            $this->assertSame($original, $template->parsed_text(), $editor);
+        }
+    }
+
     public function testRejectsWrongVolumeYearTitleDoiAndSeries(): void {
         $variants = [
             ['6506', '2007', self::VOLUME_TITLE, self::DOI, ''],

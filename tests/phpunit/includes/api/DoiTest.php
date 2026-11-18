@@ -590,6 +590,50 @@ final class DoiTest extends testBaseClass {
         }
     }
 
+    public function testSpieCrossrefVolumeTitleFallbackPreservesPaperCitation(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.703370';
+        $paperTitle = 'Digital imaging sensor identification (further study)';
+        $volumeTitle = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $record = new SimpleXMLElement(
+            '<query><article_title>' . $paperTitle . '</article_title>' .
+            '<volume_title>' . $volumeTitle . '</volume_title><volume>6505</volume><year>2007</year></query>'
+        );
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'title' => [$paperTitle],
+                'container-title' => ['SPIE Proceedings', $volumeTitle],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            // A generic existing book-title prevents the normal Crossref
+            // volume-title rewrite, so enrichment must use the verified fallback.
+            $template = $this->make_citation('{{cite book|doi=' . $doi .
+                '|title=' . $paperTitle . '|book-title=SPIE Proceedings|volume=6505|year=2007}}');
+            expand_by_doi($template, true);
+            $this->assertSame($paperTitle, $template->get2('title'));
+            $this->assertSame('Delp III', $template->get2('editor-last1'));
+            $this->assertSame('Edward J.', $template->get2('editor-first1'));
+            $this->assertSame('Wong', $template->get2('editor-last2'));
+            $this->assertSame('Ping Wah', $template->get2('editor-first2'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
     public function testBlankTypeFromDX1(): void {
         $text = "{{cite book| doi=10.14989/doctor.k19250 |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
