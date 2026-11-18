@@ -3,9 +3,8 @@
 # Tests and constants contain deliberate malformed strings used by parser and normalization fixtures.
 skip = .git*,*.svg,locale,vendor,*.lock,*.css,*.min.*,.codespellrc,./tests/phpunit,./src/includes/constants
 check-hidden = true
-ignore-regex = \b(Fro|Ownes|Requestor|forIn|afterAll|File::WRONLY)\b|/sombody/
+ignore-regex = \b(Fro|Ownes|Requestor|forIn|afterAll|File::WRONLY)\b|/sombody/|"family":\s*"(?:Gage|Cleary)"
 # Keep intentional HTTP/query/hostname/regex fragments and existing source identifiers.
 # dne == do-not-exists
 # defaultY == javascript variable name (cf. defaultX)
-# Gage and Cleary are SPIE proceedings editors' surnames, not typos.
-ignore-words-list = 2st,ans,Cleary,defaultY,dne,doubleclick,dum,Gage,independ,ist,nd,ned
+ignore-words-list = 2st,ans,defaultY,dne,doubleclick,dum,independ,ist,nd,ned

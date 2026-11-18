@@ -1,7 +1,7 @@
 # One-time reconciliation of the final five SPIE volumes
 
 `reconcile_spie_remaining.py` is a manual, offline maintenance utility for
-Citation Bot PR #6487. Use it **after** the DBLP streaming generator and the
+Citation Bot. Use it **after** the DBLP streaming generator and the
 SPIE KBART publisher-title lookup. It is not run by Citation Bot itself.
 
 The supplied `data/spie_reviewed_reconciliations.json` is a deliberately small

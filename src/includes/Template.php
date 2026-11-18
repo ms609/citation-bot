@@ -929,6 +929,17 @@ final class Template
         return false;
     }
 
+    /** Whether any populated editor link or mask could conflict with an imported editor. */
+    public function has_any_editor_link_or_mask_parameter(): bool {
+        foreach ($this->param as $parameter) {
+            if (mb_trim($parameter->val) !== '' &&
+                preg_match('~^editor(?:(?:-?(?:link|mask))\d*|\d+-?(?:link|mask))$~iD', $parameter->param) === 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Stage numbered editor fields so a later rejected name cannot leave a
      * partially populated editor list. Existing matching values are preserved.
@@ -4135,6 +4146,19 @@ final class Template
                         $suffix_test = junior_test($fv);
                         $fv_base = normalize_unicode_nfc(mb_trim($suffix_test[0]));
                         $fv_suffix = $suffix_test[1];
+                        // Some sources include generational suffixes in the family-name field.
+                        // Vancouver style places the suffix after the initials.
+                        if (preg_match('~^(.+?)\s+(Jr\.?|Sr\.?|II|III|IV|V|VI|VII|VIII|IX)$~iD', $lv, $match)) {
+                            $suffixes = [
+                                'JR' => 'Jr', 'SR' => 'Sr', 'II' => '2nd', 'III' => '3rd',
+                                'IV' => '4th', 'V' => '5th', 'VI' => '6th',
+                                'VII' => '7th', 'VIII' => '8th', 'IX' => '9th',
+                            ];
+                            if ($fv_suffix === '') {
+                                $lv = $match[1];
+                                $fv_suffix = ' ' . $suffixes[mb_strtoupper(mb_rtrim($match[2], '.'))];
+                            }
+                        }
                         $v .= mb_trim($lv . ' ' . mb_substr($fv_base, 0, 1));
                         $lve = explode(' ', $fv_base);
                         if (array_key_exists(1, $lve)) {

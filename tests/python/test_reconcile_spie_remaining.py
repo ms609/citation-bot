@@ -10,23 +10,29 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 from reconcile_spie_remaining import (  # noqa: E402
-    DEFAULT_MANIFEST, main, reconcile,
+    DEFAULT_MANIFEST,
+    main,
+    reconcile,
 )
 
 
 class ReconcileSpieRemainingTest(unittest.TestCase):
     def setUp(self):
         self.rules = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
-        self.candidates = {"12039:2022": {
-            "title": "Medical Imaging 2022: Digital and Computational Pathology",
-            "editors": [
-                {"given": "John E.", "family": "Tomaszewski"},
-                {"given": "Aaron D.", "family": "Ward"},
-                {"given": "Richard M.", "family": "Levenson"},
-            ],
-            "sources": ["https://dblp.org/rec/conf/midp/2022",
-                        "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12039"],
-        }}
+        self.candidates = {
+            "12039:2022": {
+                "title": "Medical Imaging 2022: Digital and Computational Pathology",
+                "editors": [
+                    {"given": "John E.", "family": "Tomaszewski"},
+                    {"given": "Aaron D.", "family": "Ward"},
+                    {"given": "Richard M.", "family": "Levenson"},
+                ],
+                "sources": [
+                    "https://dblp.org/rec/conf/midp/2022",
+                    "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12039",
+                ],
+            }
+        }
         self.review = {}
         self.audit = {}
         for key, rule in self.rules.items():
@@ -34,22 +40,25 @@ class ReconcileSpieRemainingTest(unittest.TestCase):
             names = rule["dblp_editors"]
             # Representative complete editor roster; real parsed values come
             # from the generator. Only the order/validity matters here.
-            editors = [{"given": f"Given{index}", "family": f"Last{index}"}
-                       for index, _ in enumerate(names)]
+            editors = [{"given": f"Given{index}", "family": f"Last{index}"} for index, _ in enumerate(names)]
             self.review[key] = {
                 "key": key,
                 "issues": ["title-includes-venue-date", "canonical-title-not-reviewed"],
-                "data": {"title": rule["dblp_title"], "editors": editors,
-                         "sources": [f"https://dblp.org/rec/conf/test/{original_year}"]},
+                "data": {
+                    "title": rule["dblp_title"],
+                    "editors": editors,
+                    "sources": [f"https://dblp.org/rec/conf/test/{original_year}"],
+                },
                 "dblp_editors": names,
                 "dblp_key": f"conf/test/{original_year}",
             }
             self.audit[key] = {
-                "key": key, "dblp_titles": [rule["dblp_title"]],
-                "issues": (["publisher-year-mismatch"] if key == "5609:2002" else
-                           ["publisher-dblp-title-mismatch"]),
+                "key": key,
+                "dblp_titles": [rule["dblp_title"]],
+                "issues": (["publisher-year-mismatch"] if key == "5609:2002" else ["publisher-dblp-title-mismatch"]),
                 "publisher": {
-                    "volume": volume, "title": rule["publisher_title"],
+                    "volume": volume,
+                    "title": rule["publisher_title"],
                     "year": rule["publisher_year"],
                     "online_year": rule["publisher_year"],
                     "source": f"https://www.spiedigitallibrary.org/conference-proceedings-of-spie/{volume}",
@@ -66,8 +75,10 @@ class ReconcileSpieRemainingTest(unittest.TestCase):
         self.assertNotIn("5609:2002", output)
         self.assertNotIn("12039:2023", output)
         self.assertEqual("Mobile Robots XVII", output["5609:2004"]["title"])
-        self.assertEqual("13th International Conference on Medical Information Processing and Analysis",
-                         output["10572:2017"]["title"])
+        self.assertEqual(
+            "13th International Conference on Medical Information Processing and Analysis",
+            output["10572:2017"]["title"],
+        )
         self.assertEqual("Given0", output["10572:2017"]["editors"][0]["given"])
         self.assertEqual(2, len(output["7254:2009"]["sources"]))
         self.assertEqual(1, len(remaining))
@@ -155,9 +166,18 @@ class ReconcileSpieRemainingTest(unittest.TestCase):
             candidates.write_text(json.dumps(self.candidates), encoding="utf-8")
             review.write_text("".join(json.dumps(row) + "\n" for row in self.review.values()), encoding="utf-8")
             publisher.write_text("".join(json.dumps(row) + "\n" for row in self.audit.values()), encoding="utf-8")
-            arguments = ["--candidates", str(candidates), "--review", str(review),
-                         "--publisher-audit", str(publisher), "--output", str(output),
-                         "--remaining", str(remaining)]
+            arguments = [
+                "--candidates",
+                str(candidates),
+                "--review",
+                str(review),
+                "--publisher-audit",
+                str(publisher),
+                "--output",
+                str(output),
+                "--remaining",
+                str(remaining),
+            ]
             self.assertEqual(0, main(arguments))
             self.assertEqual(5, len(json.loads(output.read_text())))
             self.assertEqual("12039:2023", json.loads(remaining.read_text())["key"])

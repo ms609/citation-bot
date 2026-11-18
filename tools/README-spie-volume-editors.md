@@ -1,7 +1,7 @@
 # Offline DBLP → SPIE volume-editor candidates
 
 `build_spie_volume_editors.py` produces *candidate* entries matching the shape of
-`src/includes/data/spie_volume_editors.json` in PR #6487. It reads the full DBLP
+`src/includes/data/spie_volume_editors.json`. It reads the full DBLP
 XML dump in bounded memory, without network access or loading the whole dump into
 memory. It is a manual maintainer tool, **not** an automated source of verified
 metadata and not a runtime Citation Bot dependency.
@@ -63,7 +63,7 @@ particular, suffixes, particles, compound family names, Eastern name order and
 DBLP homonym disambiguators need attention. A record may be missing from DBLP;
 this generator does not invent editorial metadata.
 
-**Size limit:** PR #6487 currently rejects runtime JSON over 512 KiB. The tool
+**Size limit:** The runtime loader rejects JSON over 512 KiB. The tool
 warns when output exceeds this limit. Review and adjust the bounded PHP loader
 size separately before committing a larger output. Do not copy its full output
 without reviewing the report and ensuring the runtime loader accepts it.

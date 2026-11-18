@@ -29,8 +29,26 @@ SUFFIXES = {"jr", "sr", "ii", "iii", "iv", "v", "vi"}
 # editor records. Longer particle sequences still require manual review.
 SURNAME_PARTICLES = {"de", "van"}
 PARTICLES = {
-    "al", "ap", "bin", "da", "de", "del", "della", "der", "di", "dos",
-    "du", "el", "ibn", "la", "le", "van", "von", "ten", "ter", "st",
+    "al",
+    "ap",
+    "bin",
+    "da",
+    "de",
+    "del",
+    "della",
+    "der",
+    "di",
+    "dos",
+    "du",
+    "el",
+    "ibn",
+    "la",
+    "le",
+    "van",
+    "von",
+    "ten",
+    "ter",
+    "st",
 }
 UNSAFE = re.compile(r"[{}<>|\[\]\x00-\x1f]")
 # Venue/date suffixes appear in several orders: e.g. "San Jose, CA, USA,
@@ -52,7 +70,7 @@ def title_contains_venue_date(title: str) -> bool:
     # DBLP titles may end with a year followed by ', Proceedings' or similar.
     # Look at the bibliographic tail to avoid interpreting a year in the
     # principal title (e.g. 'Medical Imaging 2019: Image Processing') as a date.
-    tail = title[title.find(",") + 1:]
+    tail = title[title.find(",") + 1 :]
     return bool(MONTH.search(tail) and FOUR_DIGIT_YEAR.search(tail))
 
 
@@ -97,8 +115,9 @@ def split_editor(full_name: str) -> dict[str, str] | None:
     family_start = len(pieces) - 1
     if len(pieces) >= 3 and pieces[-2].strip(".,").casefold() in SURNAME_PARTICLES:
         family_start -= 1
-    if (pieces[0].strip(".,").casefold() in SURNAME_PARTICLES or
-            any(p.strip(".,").casefold() in PARTICLES for p in pieces[1:family_start])):
+    if pieces[0].strip(".,").casefold() in SURNAME_PARTICLES or any(
+        p.strip(".,").casefold() in PARTICLES for p in pieces[1:family_start]
+    ):
         return None
     given, family = " ".join(pieces[:family_start]), " ".join(pieces[family_start:]) + suffix
     if not given or not family or given.endswith(",") or "," in family:
@@ -122,8 +141,12 @@ class LocalDtdResolver(etree.Resolver):
 def records(xml_path: Path, dtd_path: Path) -> Iterator[Any]:
     """Read gzipped or plain XML with bounded, per-record tree retention."""
     parser = etree.XMLPullParser(
-        events=("start", "end"), load_dtd=True, resolve_entities=True,
-        no_network=True, recover=False, huge_tree=False,
+        events=("start", "end"),
+        load_dtd=True,
+        resolve_entities=True,
+        no_network=True,
+        recover=False,
+        huge_tree=False,
     )
     parser.resolvers.add(LocalDtdResolver(dtd_path.resolve()))
     opener = gzip.open if xml_path.suffix == ".gz" else open
@@ -187,17 +210,20 @@ def extract(record: Any) -> tuple[str | None, dict[str, Any], list[str]] | None:
     return record_id, {"data": candidate, "dblp_editors": editors, "dblp_key": key}, issues
 
 
-
-
 def valid_spie_source(url: str, volume: str) -> bool:
     """Allow only a SPIE proceedings volume URL for the matched volume."""
     try:
         parsed = urlparse(url)
         host = (parsed.hostname or "").lower()
-        return (parsed.scheme == "https" and parsed.username is None and
-                (host == "spiedigitallibrary.org" or host.endswith(".spiedigitallibrary.org")) and
-                re.fullmatch(r"/conference-proceedings-of-spie/" + re.escape(volume) +
-                             r"(?:\.toc)?/?", parsed.path, re.IGNORECASE) is not None)
+        return (
+            parsed.scheme == "https"
+            and parsed.username is None
+            and (host == "spiedigitallibrary.org" or host.endswith(".spiedigitallibrary.org"))
+            and re.fullmatch(
+                r"/conference-proceedings-of-spie/" + re.escape(volume) + r"(?:\.toc)?/?", parsed.path, re.IGNORECASE
+            )
+            is not None
+        )
     except ValueError:
         return False
 
@@ -212,7 +238,9 @@ def load_json_object(path: Path | None) -> dict[str, Any]:
 
 
 def build(
-    xml_path: Path, dtd_path: Path, existing: dict[str, Any] | None = None,
+    xml_path: Path,
+    dtd_path: Path,
+    existing: dict[str, Any] | None = None,
     titles: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, int]]:
     """Build candidates, preserving previously reviewed records when supplied."""
@@ -243,8 +271,7 @@ def build(
             if not isinstance(override, str) or not override.strip() or len(override) > 2000:
                 issues.append("invalid-title-override")
             elif publisher_source is not None and (
-                not isinstance(publisher_source, str) or
-                not valid_spie_source(publisher_source, key.split(":")[0])
+                not isinstance(publisher_source, str) or not valid_spie_source(publisher_source, key.split(":")[0])
             ):
                 issues.append("invalid-publisher-source")
             else:
@@ -314,7 +341,9 @@ def main(argv: list[str] | None = None) -> int:
     argument_parser.add_argument("--output", type=Path, required=True, help="New reviewable JSON output")
     argument_parser.add_argument("--review", type=Path, required=True, help="Records requiring human review (JSONL)")
     argument_parser.add_argument("--existing", type=Path, help="Existing verified JSON to preserve")
-    argument_parser.add_argument("--titles", type=Path, help="JSON map from volume:year to canonical title or SPIE publisher title/source")
+    argument_parser.add_argument(
+        "--titles", type=Path, help="JSON map from volume:year to canonical title or SPIE publisher title/source"
+    )
     args = argument_parser.parse_args(argv)
     if not args.xml.is_file() or not args.dtd.is_file():
         argument_parser.error("--xml and --dtd must point to existing files")
@@ -335,13 +364,17 @@ def main(argv: list[str] | None = None) -> int:
     audit = "".join(json.dumps(item, ensure_ascii=False) + "\n" for item in review)
     write_atomic(args.output, encoded)
     write_atomic(args.review, audit)
-    print(f"Processed {stats['proceedings']} proceedings, {stats['spie']} SPIE; "
-          f"generated {stats['new']} new entries, {stats['review']} for review.")
+    print(
+        f"Processed {stats['proceedings']} proceedings, {stats['spie']} SPIE; "
+        f"generated {stats['new']} new entries, {stats['review']} for review."
+    )
     print(f"Output: {args.output} ({len(encoded.encode('utf-8'))} bytes); review: {args.review}")
     if len(encoded.encode("utf-8")) > 512 * 1024:
-        print("WARNING: PR #6487's runtime loader rejects JSON over 512 KiB; "
-              "raise its bounded limit or curate a smaller output before deployment.",
-              file=sys.stderr)
+        print(
+            "WARNING: The runtime SPIE editor loader rejects JSON over 512 KiB; "
+            "raise its bounded limit or curate a smaller output before deployment.",
+            file=sys.stderr,
+        )
     return 0
 
 

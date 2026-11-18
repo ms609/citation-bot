@@ -112,7 +112,9 @@ function spie_add_verified_volume_editors(Template $template, string $doi): bool
         ['proceedings of spie', 'spie proceedings'], true)) {
         return false;
     }
-    if (spie_citation_has_editors($template)) {
+    if (spie_citation_has_editors($template) ||
+        $template->has_any_editor_link_or_mask_parameter()) {
+        // Pre-existing links and masks may refer to different people.
         return false;
     }
     // The empty API label is intentional: these editor names came from the

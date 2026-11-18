@@ -29,6 +29,20 @@ final class EditorListSafetyTest extends testBaseClass {
         $this->assertFalse($this->make_citation('{{cite book|editor-last1=  }}')->has_any_editor_parameter());
     }
 
+    public function testDetectsEditorLinkAndMaskConflictsWithoutTreatingThemAsNames(): void {
+        foreach (['editor-link1', 'editor1-link', 'editorlink2',
+                  'editor-mask1', 'editor1-mask', 'editormask2',
+                  'editor-link50', 'editor50-mask'] as $field) {
+            $template = $this->make_citation('{{cite book|' . $field . '=Existing}}');
+            $this->assertTrue($template->has_any_editor_link_or_mask_parameter(), $field);
+            $this->assertFalse($template->has_any_editor_parameter(), $field);
+        }
+        foreach (['editor-link1', 'editor1-mask', 'editorlink2'] as $field) {
+            $template = $this->make_citation('{{cite book|' . $field . '= }}');
+            $this->assertFalse($template->has_any_editor_link_or_mask_parameter(), $field);
+        }
+    }
+
     public function testAtomicallyAddsValidEditorList(): void {
         $template = $this->make_citation('{{cite book|title=Proceedings}}');
         $this->assertTrue($template->add_editor_fields_atomically([

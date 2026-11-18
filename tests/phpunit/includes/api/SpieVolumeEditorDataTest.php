@@ -65,6 +65,19 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
         }
     }
 
+    public function testExistingEditorLinksOrMasksBlockLocalEnrichment(): void {
+        foreach (['editor-link1=Some Other Editor', 'editor1-link=Some Other Editor',
+                  'editorlink2=Some Other Editor', 'editor-mask1=1',
+                  'editor1-mask=1', 'editormask2=1',
+                  'editor-link50=Some Other Editor'] as $field) {
+            $template = $this->volumeCitation('|' . $field);
+            $before = $template->parsed_text();
+            $this->assertFalse(spie_add_verified_volume_editors($template, self::DOI), $field);
+            $this->assertSame($before, $template->parsed_text(), $field);
+            $this->assertNull($template->get2('editor-last1'), $field);
+        }
+    }
+
     public function testBlankEditorFieldsDoNotBlockEnrichment(): void {
         foreach (['editor-last1=', 'editor-last1=   ',
                   "editor-last1=\n ", 'editor-last1=|unused=value',
@@ -94,6 +107,26 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
             $this->assertSame('Delp III', $template->get2('editor-last1'));
             $this->assertSame('Wong', $template->get2('editor-last2'));
             $this->assertNull($template->get2('veditors'));
+        } finally {
+            Template::$name_list_style = $previousStyle;
+        }
+    }
+
+    public function testVancouverFormattingMovesGenerationalSuffixAfterInitials(): void {
+        $previousStyle = Template::$name_list_style;
+        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
+        try {
+            $template = $this->volumeCitation();
+            $this->assertTrue(spie_add_verified_volume_editors($template, self::DOI));
+            $rendered = $template->parsed_text();
+            $this->assertStringContainsString('Delp EJ 3rd', $rendered);
+            $this->assertStringContainsString('Wong PW', $rendered);
+            $this->assertStringNotContainsString('Delp III EJ', $rendered);
+
+            $junior = $this->make_citation('{{cite book|title=Test}}');
+            $this->assertTrue($junior->add_if_new('editor-last1', 'Galloway Jr.'));
+            $this->assertTrue($junior->add_if_new('editor-first1', 'Robert L.'));
+            $this->assertStringContainsString('Galloway RL Jr', $junior->parsed_text());
         } finally {
             Template::$name_list_style = $previousStyle;
         }

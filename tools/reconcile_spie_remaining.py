@@ -52,18 +52,24 @@ def is_spie_volume_url(url: str, volume: str) -> bool:
     if not isinstance(url, str):
         return False
     parsed = urlparse(url)
-    return (parsed.scheme == "https" and
-            (parsed.hostname or "").lower() in
-            ("spiedigitallibrary.org", "www.spiedigitallibrary.org") and
-            parsed.username is None and parsed.password is None and
-            parsed.port in (None, 443) and not parsed.query and not parsed.fragment and
-            parsed.path.rstrip("/") == f"/conference-proceedings-of-spie/{volume}")
+    return (
+        parsed.scheme == "https"
+        and (parsed.hostname or "").lower() in ("spiedigitallibrary.org", "www.spiedigitallibrary.org")
+        and parsed.username is None
+        and parsed.password is None
+        and parsed.port in (None, 443)
+        and not parsed.query
+        and not parsed.fragment
+        and parsed.path.rstrip("/") == f"/conference-proceedings-of-spie/{volume}"
+    )
 
 
-def reconcile(candidates: dict[str, Any], review: dict[str, dict[str, Any]],
-              publisher_audit: dict[str, dict[str, Any]],
-              manifest: dict[str, dict[str, Any]],
-              ) -> tuple[dict[str, Any], list[dict[str, Any]], list[str]]:
+def reconcile(
+    candidates: dict[str, Any],
+    review: dict[str, dict[str, Any]],
+    publisher_audit: dict[str, dict[str, Any]],
+    manifest: dict[str, dict[str, Any]],
+) -> tuple[dict[str, Any], list[dict[str, Any]], list[str]]:
     """Return final records, residual review rows and keys added this run."""
     if not isinstance(candidates, dict) or not isinstance(manifest, dict):
         raise ValueError("Expected candidate and manifest JSON objects")
@@ -78,8 +84,7 @@ def reconcile(candidates: dict[str, Any], review: dict[str, dict[str, Any]],
         target = rule.get("target_key")
         target_match = KEY.fullmatch(target) if isinstance(target, str) else None
         action = rule.get("action")
-        if target_match is None or target_match.group(1) != volume or action not in (
-                "add", "correct-year", "exclude"):
+        if target_match is None or target_match.group(1) != volume or action not in ("add", "correct-year", "exclude"):
             raise ValueError(f"Invalid target/action for {key}")
         if action == "add" and target != key:
             raise ValueError(f"Unexpected key change for {key}")
@@ -91,19 +96,21 @@ def reconcile(candidates: dict[str, Any], review: dict[str, dict[str, Any]],
         audit_record = publisher_audit.get(key)
         if source_record is None or audit_record is None:
             raise ValueError(f"Missing DBLP or publisher audit evidence for {key}")
-        if set(source_record.get("issues", [])) != {
-                "title-includes-venue-date", "canonical-title-not-reviewed"}:
+        if set(source_record.get("issues", [])) != {"title-includes-venue-date", "canonical-title-not-reviewed"}:
             raise ValueError(f"Other unresolved issues for {key}")
         raw_names = source_record.get("dblp_editors")
         data = source_record.get("data")
         expected = rule.get("dblp_editors")
-        if (not isinstance(data, dict) or raw_names != expected or
-                not isinstance(expected, list) or not expected or
-                not isinstance(data.get("editors"), list) or
-                len(data["editors"]) != len(expected)):
+        if (
+            not isinstance(data, dict)
+            or raw_names != expected
+            or not isinstance(expected, list)
+            or not expected
+            or not isinstance(data.get("editors"), list)
+            or len(data["editors"]) != len(expected)
+        ):
             raise ValueError(f"Incomplete/changed editor roster for {key}")
-        if (data.get("title") != rule.get("dblp_title") or
-                audit_record.get("dblp_titles") != [rule.get("dblp_title")]):
+        if data.get("title") != rule.get("dblp_title") or audit_record.get("dblp_titles") != [rule.get("dblp_title")]:
             raise ValueError(f"Changed DBLP title for {key}")
         db_url = f"https://dblp.org/rec/{source_record.get('dblp_key', '')}"
         if data.get("sources") != [db_url] or not db_url.startswith("https://dblp.org/rec/conf/"):
@@ -111,10 +118,12 @@ def reconcile(candidates: dict[str, Any], review: dict[str, dict[str, Any]],
         publisher = audit_record.get("publisher")
         if not isinstance(publisher, dict):
             raise ValueError(f"Missing SPIE publisher metadata for {key}")
-        if (publisher.get("volume") != volume or
-                publisher.get("title") != rule.get("publisher_title") or
-                publisher.get("year") != rule.get("publisher_year") or
-                not is_spie_volume_url(publisher.get("source"), volume)):
+        if (
+            publisher.get("volume") != volume
+            or publisher.get("title") != rule.get("publisher_title")
+            or publisher.get("year") != rule.get("publisher_year")
+            or not is_spie_volume_url(publisher.get("source"), volume)
+        ):
             raise ValueError(f"Changed or invalid publisher record for {key}")
         if action == "exclude":
             # DBLP incorrectly repeats volume 12039 as both 2022 and 2023.
@@ -127,29 +136,33 @@ def reconcile(candidates: dict[str, Any], review: dict[str, dict[str, Any]],
                 {"given": "Aaron D.", "family": "Ward"},
                 {"given": "Richard M.", "family": "Levenson"},
             ]
-            if (not isinstance(existing, dict) or
-                    existing.get("title") != rule.get("publisher_title") or
-                    existing.get("editors") != expected_existing_editors or
-                    publisher["source"] not in existing.get("sources", [])):
+            if (
+                not isinstance(existing, dict)
+                or existing.get("title") != rule.get("publisher_title")
+                or existing.get("editors") != expected_existing_editors
+                or publisher["source"] not in existing.get("sources", [])
+            ):
                 raise ValueError(f"Expected distinct correct volume missing: {target}")
             if key in output:
                 raise ValueError(f"Incorrect DBLP record already included: {key}")
             unresolved[key]["issues"] = ["incorrect-dblp-volume"]
             unresolved[key]["correct_volume_key"] = target
             continue
-        if (action == "add" and audit_record.get("issues") !=
-                ["publisher-dblp-title-mismatch"]):
+        if action == "add" and audit_record.get("issues") != ["publisher-dblp-title-mismatch"]:
             raise ValueError(f"Unexpected publisher audit reason for {key}")
-        if (action == "correct-year" and audit_record.get("issues") !=
-                ["publisher-year-mismatch"]):
+        if action == "correct-year" and audit_record.get("issues") != ["publisher-year-mismatch"]:
             raise ValueError(f"Unexpected publisher-year audit reason for {key}")
         editors = data["editors"]
-        if not all(isinstance(e, dict) and isinstance(e.get("given"), str)
-                   and e["given"].strip() and isinstance(e.get("family"), str)
-                   and e["family"].strip() for e in editors):
+        if not all(
+            isinstance(e, dict)
+            and isinstance(e.get("given"), str)
+            and e["given"].strip()
+            and isinstance(e.get("family"), str)
+            and e["family"].strip()
+            for e in editors
+        ):
             raise ValueError(f"Malformed editor in {key}")
-        corrected = {"title": publisher["title"], "editors": editors,
-                     "sources": [db_url, publisher["source"]]}
+        corrected = {"title": publisher["title"], "editors": editors, "sources": [db_url, publisher["source"]]}
         if target in output:
             if output[target] != corrected:
                 raise ValueError(f"Conflicting existing record for {target}")
@@ -196,13 +209,14 @@ def main(argv: list[str] | None = None) -> int:
         if len(encoded.encode("utf-8")) > MAX_CANDIDATES_BYTES:
             raise ValueError("Output exceeds the runtime JSON loader 512 KiB limit")
         write_atomic(args.output, encoded)
-        write_atomic(args.remaining, "".join(json.dumps(row, ensure_ascii=False) + "\n"
-                                             for row in remaining))
+        write_atomic(args.remaining, "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in remaining))
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
-    print(f"Reconciled {len(added)} records ({', '.join(added)}); "
-          f"final volume records: {len(output)}; remaining audit items: {len(remaining)}")
+    print(
+        f"Reconciled {len(added)} records ({', '.join(added)}); "
+        f"final volume records: {len(output)}; remaining audit items: {len(remaining)}"
+    )
     return 0
 
 

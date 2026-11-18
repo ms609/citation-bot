@@ -30,7 +30,8 @@ MAX_KBART_BYTES = 64 * 1024 * 1024
 EVENT_MONTH = re.compile(
     r"\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
     r"jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|"
-    r"dec(?:ember)?)\b", re.I,
+    r"dec(?:ember)?)\b",
+    re.I,
 )
 EVENT_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
 EVENT_DATE = re.compile(EVENT_MONTH.pattern + r".{0,40}\b((?:19|20)\d{2})\b", re.I)
@@ -55,20 +56,18 @@ def title_agrees(publisher: str, dblp: str) -> bool:
     d = normalized(dblp)
     if not p:
         return False
-    if d == p or any(d.startswith(p + suffix) for suffix in
-                     (",", ":", ";", ".", " - ", " (")):
+    if d == p or any(d.startswith(p + suffix) for suffix in (",", ":", ";", ".", " - ", " (")):
         return True
 
     def matches_venue_prefix(prefix: str, year: str | None = None) -> bool:
         if not d.startswith(prefix + ", "):
             return False
-        tail = d[len(prefix) + 2:]
+        tail = d[len(prefix) + 2 :]
         years = EVENT_DATE.findall(tail)
         return bool(years and (year is None or year in years))
 
     # DBLP sometimes adds these literal bibliographic prefixes.
-    variants = [p, "proceedings of the conference on " + p,
-                "electronic imaging: " + p]
+    variants = [p, "proceedings of the conference on " + p, "electronic imaging: " + p]
     if any(matches_venue_prefix(variant) for variant in variants):
         return True
     # Some DBLP titles append the conference year, which the publisher
@@ -92,12 +91,9 @@ def title_agrees(publisher: str, dblp: str) -> bool:
         base, year = dated.groups()
         alias = re.match(rf"{re.escape(base)}, ([a-z]{{3,12}}) {year}(?=, )", d)
         if alias:
-            initials = "".join(word[0] for word in re.findall(r"[a-z]+", base)
-                               if word not in ACRONYM_STOPWORDS)
+            initials = "".join(word[0] for word in re.findall(r"[a-z]+", base) if word not in ACRONYM_STOPWORDS)
             short = alias.group(1)
-            if initials.endswith(short) and matches_venue_prefix(
-                f"{base}, {short} {year}", year
-            ):
+            if initials.endswith(short) and matches_venue_prefix(f"{base}, {short} {year}", year):
                 return True
     return False
 
@@ -109,9 +105,13 @@ def publisher_url(url: str, volume: str) -> bool:
         host = (parsed.hostname or "").lower()
         path = parsed.path
         match = VOLUME_URL.search(path)
-        return (parsed.scheme == "https" and not parsed.username and
-                (host == "spiedigitallibrary.org" or host.endswith(".spiedigitallibrary.org")) and
-                match is not None and match.group(1) == volume)
+        return (
+            parsed.scheme == "https"
+            and not parsed.username
+            and (host == "spiedigitallibrary.org" or host.endswith(".spiedigitallibrary.org"))
+            and match is not None
+            and match.group(1) == volume
+        )
     except ValueError:
         return False
 
@@ -145,13 +145,13 @@ def publisher_years(row: dict[str, str]) -> tuple[int | None, int | None]:
     An older printed volume may be digitized or first hosted years later.
     Its online publication date is not a conflicting print publication date.
     """
+
     def year(field: str) -> int | None:
         text = row.get(field, "").strip()
         match = re.match(r"^([12][0-9]{3})(?:\b|-|/|\Z)", text)
         return int(match.group(1)) if match else None
 
-    return (year("date_monograph_published_print"),
-            year("date_monograph_published_online"))
+    return (year("date_monograph_published_print"), year("date_monograph_published_online"))
 
 
 def canonical_row(row: dict[str, str]) -> dict[str, Any] | None:
@@ -173,8 +173,7 @@ def canonical_row(row: dict[str, str]) -> dict[str, Any] | None:
     if not link:
         link = f"https://www.spiedigitallibrary.org/conference-proceedings-of-spie/{volume}"
     print_year, online_year = publisher_years(row)
-    return {"volume": volume, "title": title, "source": link,
-            "year": print_year, "online_year": online_year}
+    return {"volume": volume, "title": title, "source": link, "year": print_year, "online_year": online_year}
 
 
 def kbart_records(path: Path) -> tuple[dict[str, dict[str, Any]], set[str]]:
@@ -197,8 +196,9 @@ def kbart_records(path: Path) -> tuple[dict[str, dict[str, Any]], set[str]]:
                 values = [str(v).strip() if v is not None else "" for v in cells]
                 if header is None:
                     possible = [re.sub(r"\W+", "_", v.lower()).strip("_") for v in values]
-                    if ("publication_title" in possible and
-                        any(field in possible for field in ("monograph_volume", "num_first_vol_online", "title_url"))):
+                    if "publication_title" in possible and any(
+                        field in possible for field in ("monograph_volume", "num_first_vol_online", "title_url")
+                    ):
                         header = possible
                         sheet_count += 1
                     elif position >= 20:
@@ -214,8 +214,7 @@ def kbart_records(path: Path) -> tuple[dict[str, dict[str, Any]], set[str]]:
                     # different volume/edition. Do not manufacture conflicts
                     # when otherwise identical rows have different online dates.
                     current = found[volume]
-                    if any(current[field] != entry[field]
-                           for field in ("title", "source", "year")):
+                    if any(current[field] != entry[field] for field in ("title", "source", "year")):
                         conflicts.add(volume)
                 else:
                     found[volume] = entry
@@ -243,7 +242,8 @@ def load_candidates(path: Path) -> list[dict[str, str]]:
 
 
 def lookup(
-    candidates: list[dict[str, str]], publisher: dict[str, dict[str, Any]],
+    candidates: list[dict[str, str]],
+    publisher: dict[str, dict[str, Any]],
     publisher_conflicts: set[str],
 ) -> tuple[dict[str, dict[str, str]], list[dict[str, Any]], dict[str, int]]:
     by_key: dict[str, set[str]] = defaultdict(set)
@@ -273,8 +273,7 @@ def lookup(
                 # digitization), so disagreement with it is not a conflict.
                 if abs(entry["year"] - int(year)) > 1:
                     issues.append("publisher-year-mismatch")
-            elif (entry["online_year"] is not None and
-                  abs(entry["online_year"] - int(year)) > 1):
+            elif entry["online_year"] is not None and abs(entry["online_year"] - int(year)) > 1:
                 # No print date corroborates DBLP here. An online year far
                 # from DBLP's year is not evidence of a wrong print date;
                 # leave the record for review rather than making one up.
@@ -282,8 +281,7 @@ def lookup(
             if len(dblp_titles) == 1 and not title_agrees(entry["title"], next(iter(dblp_titles))):
                 issues.append("publisher-dblp-title-mismatch")
         if issues:
-            audit.append({"key": key, "issues": issues, "dblp_titles": sorted(dblp_titles),
-                          "publisher": entry})
+            audit.append({"key": key, "issues": issues, "dblp_titles": sorted(dblp_titles), "publisher": entry})
             continue
         assert entry is not None
         titles[key] = {"title": entry["title"], "source": entry["source"]}
@@ -294,14 +292,16 @@ def lookup(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--candidates", required=True, type=Path,
-                        help="DBLP review CSV or JSONL (the generator --review output)")
-    parser.add_argument("--spie-kbart", required=True, type=Path,
-                        help="SPIE publisher proceedings volume title list workbook (.xlsx)")
-    parser.add_argument("--titles", required=True, type=Path,
-                        help="Output JSON mapping for build_spie_volume_editors.py --titles")
-    parser.add_argument("--audit", required=True, type=Path,
-                        help="Unmatched/ambiguous records (JSON Lines)")
+    parser.add_argument(
+        "--candidates", required=True, type=Path, help="DBLP review CSV or JSONL (the generator --review output)"
+    )
+    parser.add_argument(
+        "--spie-kbart", required=True, type=Path, help="SPIE publisher proceedings volume title list workbook (.xlsx)"
+    )
+    parser.add_argument(
+        "--titles", required=True, type=Path, help="Output JSON mapping for build_spie_volume_editors.py --titles"
+    )
+    parser.add_argument("--audit", required=True, type=Path, help="Unmatched/ambiguous records (JSON Lines)")
     args = parser.parse_args(argv)
     inputs = {args.candidates.resolve(), args.spie_kbart.resolve()}
     outputs = {args.titles.resolve(), args.audit.resolve()}
@@ -311,13 +311,16 @@ def main(argv: list[str] | None = None) -> int:
         publisher, conflicts = kbart_records(args.spie_kbart)
         titles, audit, stats = lookup(load_candidates(args.candidates), publisher, conflicts)
         from build_spie_volume_editors import write_atomic
+
         write_atomic(args.titles, json.dumps(titles, indent=2, ensure_ascii=False) + "\n")
         write_atomic(args.audit, "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in audit))
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
-    print(f"Publisher title matches: {stats['matched']}; need review: {stats['review']}; "
-          f"publisher title list volumes: {len(publisher)}")
+    print(
+        f"Publisher title matches: {stats['matched']}; need review: {stats['review']}; "
+        f"publisher title list volumes: {len(publisher)}"
+    )
     return 0
 
 
