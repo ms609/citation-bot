@@ -74,8 +74,14 @@ def split_editor(full_name: str) -> dict[str, str] | None:
     if not name or len(name) > 160 or UNSAFE.search(name):
         return None
     pieces = name.split(" ")
-    if len(pieces) < 2 or any(re.fullmatch(r"0\d{3}", p) for p in pieces):
-        return None  # DBLP's numeric homonym disambiguators are not names.
+    # DBLP appends four-digit numeric IDs for homonyms (e.g. "Peng Li 0047").
+    # The trailing code is not part of the editor's printed name. Strip only
+    # a zero-prefixed code in the final position; do not strip other digits or
+    # silently drop an editor from a proceedings roster.
+    if len(pieces) >= 3 and re.fullmatch(r"0\d{3}", pieces[-1]):
+        pieces.pop()
+    if len(pieces) < 2 or any(re.fullmatch(r"\d{4}", p) for p in pieces):
+        return None
     suffix = ""
     if pieces[-1].strip(".,").casefold() in SUFFIXES:
         suffix = " " + pieces.pop()
@@ -311,8 +317,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Processed {stats['proceedings']} proceedings, {stats['spie']} SPIE; "
           f"generated {stats['new']} new entries, {stats['review']} for review.")
     print(f"Output: {args.output} ({len(encoded.encode('utf-8'))} bytes); review: {args.review}")
-    if len(encoded.encode("utf-8")) > 128 * 1024:
-        print("WARNING: PR #6487's runtime loader rejects JSON over 128 KiB; "
+    if len(encoded.encode("utf-8")) > 512 * 1024:
+        print("WARNING: PR #6487's runtime loader rejects JSON over 512 KiB; "
               "raise its bounded limit or curate a smaller output before deployment.",
               file=sys.stderr)
     return 0

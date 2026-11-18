@@ -78,11 +78,15 @@ class BuildSpieEditorDataTest(unittest.TestCase):
         self.assertEqual([], review)
         self.assertEqual(reviewed_title, out["6505:2007"]["title"])
 
-    def test_rejects_ambiguous_or_disambiguated_names(self):
-        for name in ("", "Madonna", "Jean van der Berg", "John Smith 0002", "A {Bad} Name"):
+    def test_rejects_ambiguous_names_and_accepts_dblp_ids(self):
+        for name in ("", "Madonna", "Jean van der Berg", "A {Bad} Name",
+                     "John 0002", "John Smith 0002 Extra", "John Smith 2020"):
             with self.subTest(name=name):
                 self.assertIsNone(split_editor(name))
         self.assertEqual({"given": "Jane", "family": "Doe Jr."}, split_editor("Jane Doe Jr."))
+        self.assertEqual({"given": "Peng", "family": "Li"}, split_editor("Peng Li 0047"))
+        self.assertEqual({"given": "James J.", "family": "Butler"},
+                         split_editor("James J. Butler 0001"))
         xml = self.write_xml([entry(editors=["Jean van der Berg"])])
         out, review, _ = build(xml, self.dtd)
         self.assertEqual({}, out)
@@ -108,13 +112,24 @@ class BuildSpieEditorDataTest(unittest.TestCase):
         self.assertEqual([], review)
         self.assertEqual("Proceedings with No Location", out["6505:2007"]["title"])
 
-    def test_disambiguated_editor_never_truncates_roster(self):
+    def test_disambiguated_editor_keeps_complete_roster(self):
         xml = self.write_xml([entry(editors=["Edward J. Delp III", "Peng Li 0047", "Ping Wah Wong"])])
+        out, review, _ = build(xml, self.dtd, titles={"6505:2007": "Volume"})
+        self.assertEqual([], review)
+        self.assertEqual([
+            {"given": "Edward J.", "family": "Delp III"},
+            {"given": "Peng", "family": "Li"},
+            {"given": "Ping Wah", "family": "Wong"},
+        ], out["6505:2007"]["editors"])
+
+    def test_homonym_suffix_does_not_hide_another_ambiguous_editor(self):
+        xml = self.write_xml([entry(editors=["Peng Li 0047", "Jean van der Berg"])])
         out, review, _ = build(xml, self.dtd, titles={"6505:2007": "Volume"})
         self.assertEqual({}, out)
         self.assertIn("editor-name-needs-review", review[0]["issues"])
         self.assertEqual([], review[0]["data"]["editors"])
-        self.assertEqual(3, len(review[0]["dblp_editors"]))
+        self.assertEqual(["Peng Li 0047", "Jean van der Berg"],
+                         review[0]["dblp_editors"])
 
     def test_duplicate_volume_year_is_excluded(self):
         xml = self.write_xml([

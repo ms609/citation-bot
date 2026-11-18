@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/** Maximum repository-local, verified SPIE editor dataset size (bytes). */
+const SPIE_VOLUME_EDITOR_JSON_MAX_BYTES = 512 * 1024;
+
 /**
  * Offline SPIE proceedings volume editor enrichment.
  *
@@ -20,8 +23,10 @@ function spie_volume_editor_data(): array {
     }
     $records = [];
     $path = __DIR__ . '/../data/spie_volume_editors.json';
-    $raw = @file_get_contents($path);
-    if (!is_string($raw) || $raw === '' || mb_strlen($raw, '8bit') > 128 * 1024) {
+    // Read at most one byte beyond the limit to reject oversized files without
+    // allocating the entire contents. This remains a fixed local path.
+    $raw = @file_get_contents($path, false, null, 0, SPIE_VOLUME_EDITOR_JSON_MAX_BYTES + 1);
+    if (!is_string($raw) || $raw === '' || strlen($raw) > SPIE_VOLUME_EDITOR_JSON_MAX_BYTES) {
         return $records;
     }
     $decoded = json_decode($raw, true);
