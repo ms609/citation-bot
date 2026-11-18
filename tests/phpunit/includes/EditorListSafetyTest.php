@@ -6,7 +6,7 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 final class EditorListSafetyTest extends testBaseClass {
     public function testRecognizesEveryPopulatedEditorNameAlias(): void {
         foreach ([
-            'editors', 'veditors', 'editor', 'editor1', 'editor150',
+            'editors', 'veditors', 'veditor', 'editor', 'editor1', 'editor150',
             'editor-last', 'editor-first1', 'editor-surname120',
             'editor-given1', 'editor-initials2', 'editor100-first',
             'editor1-last', 'editor2-surname', 'editor3-given',
@@ -87,8 +87,41 @@ final class EditorListSafetyTest extends testBaseClass {
         $this->assertSame($before, $template->parsed_text());
     }
 
+    public function testExistingPartialEditorListIsNotExtended(): void {
+        $template = $this->make_citation('{{cite book|editor-first2=Jane}}');
+        $before = $template->parsed_text();
+        $this->assertTrue($template->has_any_editor_parameter());
+        $this->assertFalse($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-first1' => 'Edward',
+        ], 'crossref'));
+        $this->assertSame($before, $template->parsed_text());
+        $this->assertFalse($template->api_has_used('crossref', ['editor-last1']));
+    }
+
+    public function testUnnumberedVeditorBlocksNewList(): void {
+        $template = $this->make_citation('{{cite book|veditor=Existing}}');
+        $this->assertTrue($template->has_any_editor_parameter());
+        $this->assertFalse($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-first1' => 'Edward',
+        ], 'crossref'));
+        $this->assertNull($template->get2('editor-last1'));
+    }
+
+    public function testOutputBufferLevelIsRestoredOnCommitAndRollback(): void {
+        $initial_level = ob_get_level();
+        $template = $this->make_citation('{{cite book|title=Proceedings}}');
+        $this->assertFalse($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-last2' => 'Null',
+        ], 'crossref'));
+        $this->assertSame($initial_level, ob_get_level());
+        $this->assertTrue($template->add_editor_fields_atomically([
+            'editor-last1' => 'Delp', 'editor-first1' => 'Edward',
+        ], 'crossref'));
+        $this->assertSame($initial_level, ob_get_level());
+    }
+
     public function testInvalidEditorFieldsCannotCausePartialWrites(): void {
-        foreach (['editor-link2', 'editor-last31', 'author1'] as $invalid) {
+        foreach (['editor-link2', 'editor-last0', 'author1'] as $invalid) {
             $template = $this->make_citation('{{cite book|title=Proceedings}}');
             $before = $template->parsed_text();
             $this->assertFalse($template->add_editor_fields_atomically([

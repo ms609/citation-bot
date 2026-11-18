@@ -909,16 +909,18 @@ final class Template
         return !(($this->has('journal') || $this->has('periodical') || $this->has('trans-work') || $this->has('script-work')) && $this->has('volume') && $this->has('title') && $has_date);
     }
 
+    /** Whether a field contains an editor name rather than a link or mask. */
+    private static function is_editor_name_parameter(string $name): bool {
+        return preg_match(
+            '~^(?:editors|veditors?|editor\d*|editor-(?:last|first|surname|given|initials)\d*|editor\d+-(?:last|first|surname|given|initials))$~iD',
+            $name
+        ) === 1;
+    }
+
     /** Whether a populated CS1 editor-name field exists (not links or masks). */
     public function has_any_editor_parameter(): bool {
         foreach ($this->param as $parameter) {
-            if (mb_trim($parameter->val) === '') {
-                continue;
-            }
-            if (preg_match(
-                '~^(?:editors|veditors|editor\d*|editor-(?:last|first|surname|given|initials)\d*|editor\d+-(?:last|first|surname|given|initials))$~iD',
-                $parameter->param
-            ) === 1) {
+            if (mb_trim($parameter->val) !== '' && self::is_editor_name_parameter($parameter->param)) {
                 return true;
             }
         }
@@ -928,7 +930,8 @@ final class Template
     /**
      * Stage numbered editor fields so a later rejected name cannot leave a
      * partially populated editor list. Existing matching values are preserved.
-     * Callers must verify source alignment before extending an existing list.
+     * Existing editor-name fields must all be included in the supplied list.
+     * Callers must still verify source alignment before extending a list.
      * Only canonical editor-firstN/editor-lastN fields are accepted.
      *
      * @param array<string, string> $fields
@@ -938,27 +941,47 @@ final class Template
             return false;
         }
 
-        $working = clone $this;
-        // A shallow clone shares Parameter objects with the original template.
-        $working->param = array_map(static fn (Parameter $p): Parameter => clone $p, $this->param);
-        foreach ($fields as $name => $value) {
-            if (preg_match('~^editor-(?:first|last)[1-9]\d*$~D', $name) !== 1 || mb_trim($value) === '') {
-                return false;
-            }
-            if (!$working->blank($name)) {
-                // Matching fields are deliberately left as the citation wrote them.
-                if (!str_equivalent($working->get_without_comments_and_placeholders($name), $value)) {
-                    return false;
-                }
+        // Do not append an unrelated list around a partial or alternate editor field.
+        foreach ($this->param as $parameter) {
+            if (mb_trim($parameter->val) === '' || !self::is_editor_name_parameter($parameter->param)) {
                 continue;
             }
-            if (!$working->add_if_new($name, $value, $api)) {
+            if (preg_match('~^editor-(?:first|last)[1-9]\d*$~D', $parameter->param) !== 1 ||
+                !array_key_exists($parameter->param, $fields)) {
                 return false;
             }
         }
 
+        $working = clone $this;
+        // A shallow clone shares Parameter objects with the original template.
+        $working->param = array_map(static fn (Parameter $p): Parameter => clone $p, $this->param);
+        // add_if_new() reports changes during staging. Publish them only on commit.
+        ob_start();
+        try {
+            foreach ($fields as $name => $value) {
+                if (preg_match('~^editor-(?:first|last)[1-9]\d*$~D', $name) !== 1 || mb_trim($value) === '') {
+                    return false;
+                }
+                if (!$working->blank($name)) {
+                    // Matching fields are deliberately left as the citation wrote them.
+                    if (!str_equivalent($working->get_without_comments_and_placeholders($name), $value)) {
+                        return false;
+                    }
+                    continue;
+                }
+                if (!$working->add_if_new($name, $value, $api)) {
+                    return false;
+                }
+            }
+        } finally {
+            $staged_output = ob_get_clean();
+        }
+
         $this->param = $working->param;
         $this->used_by_api = $working->used_by_api;
+        if ($staged_output !== false) {
+            echo $staged_output;
+        }
         return true;
     }
 
