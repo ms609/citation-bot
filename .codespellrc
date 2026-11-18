@@ -7,4 +7,5 @@ ignore-regex = \b(Fro|Ownes|Requestor|forIn|afterAll|File::WRONLY)\b|/sombody/
 # Keep intentional HTTP/query/hostname/regex fragments and existing source identifiers.
 # dne == do-not-exists
 # defaultY == javascript variable name (cf. defaultX)
-ignore-words-list = 2st,ans,defaultY,dne,doubleclick,dum,independ,ist,nd,ned
+# Gage and Cleary are SPIE proceedings editors' surnames, not typos.
+ignore-words-list = 2st,ans,Cleary,defaultY,dne,doubleclick,dum,Gage,independ,ist,nd,ned

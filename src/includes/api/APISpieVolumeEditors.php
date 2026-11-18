@@ -26,7 +26,7 @@ function spie_volume_editor_data(): array {
     // Read at most one byte beyond the limit to reject oversized files without
     // allocating the entire contents. This remains a fixed local path.
     $raw = @file_get_contents($path, false, null, 0, SPIE_VOLUME_EDITOR_JSON_MAX_BYTES + 1);
-    if (!is_string($raw) || $raw === '' || strlen($raw) > SPIE_VOLUME_EDITOR_JSON_MAX_BYTES) {
+    if (!is_string($raw) || $raw === '' || mb_strlen($raw, '8bit') > SPIE_VOLUME_EDITOR_JSON_MAX_BYTES) {
         return $records;
     }
     $decoded = json_decode($raw, true);
