@@ -4008,6 +4008,24 @@ final class Template
         return $this->had_initial_eds;
     }
 
+    /** True when an existing editor-name or others= field has a value. */
+    public function has_editor_name_values(): bool {
+        if ($this->had_initial_editor()) {
+            return true;
+        }
+        foreach ($this->param as $p) {
+            if (mb_trim($p->val) === '') {
+                continue;
+            }
+            if (preg_match('~^(?:editors?|veditors|others|editor[0-9]+|'
+                . 'editor-(?:last|first|surname|given|forename|initials)[0-9]*|'
+                . 'editor[0-9]+-(?:last|first|surname|given|forename|initials))$~i', $p->param)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private function join_params(): string {
         $this->convert_to_vanc();
         $ret = '';

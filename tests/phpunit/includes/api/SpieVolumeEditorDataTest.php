@@ -55,13 +55,59 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
 
     public function testPreservesExistingEditorsIncludingAlternativeAliasesAndHighNumbers(): void {
         foreach (['editor-last1=Other', 'editor1-last=Other', 'editor100-last=Other',
-                  'editor-surname120=Other', 'editor=Other', 'editors=Other',
-                  'veditors=Other'] as $field) {
+                  'editor-surname120=Other', 'editor2-forename=Other',
+                  'editor-initials2=Other', 'editor3-initials=Other',
+                  'editor=Other', 'editors=Other', 'veditors=Other', 'others=Other'] as $field) {
             $template = $this->volumeCitation('|' . $field);
             $original = $template->parsed_text();
             $this->assertFalse(spie_add_verified_volume_editors($template, self::DOI), $field);
             $this->assertSame($original, $template->parsed_text(), $field);
         }
+    }
+
+    public function testBlankEditorFieldsDoNotBlockEnrichment(): void {
+        foreach (['editor-last1=', 'editor-last1=   ',
+                  "editor-last1=\n ", 'editor-last1=|unused=value',
+                  'editor2-forename=', 'veditors=', 'others='] as $field) {
+            $template = $this->volumeCitation('|' . $field);
+            $this->assertFalse(spie_citation_has_editors($template), $field);
+            $this->assertTrue(spie_add_verified_volume_editors($template, self::DOI), $field);
+            $this->assertSame('Delp III', $template->get2('editor-last1'), $field);
+            $this->assertSame('Wong', $template->get2('editor-last2'), $field);
+        }
+    }
+
+    public function testEditorDetectionDoesNotConvertToVanc(): void {
+        $template = $this->volumeCitation('|editor-last1=|editor-first1=');
+        $previousStyle = Template::$name_list_style;
+        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
+        try {
+            $this->assertFalse(spie_citation_has_editors($template));
+            $this->assertNull($template->get2('veditors'));
+            $this->assertTrue(spie_add_verified_volume_editors($template, self::DOI));
+            $this->assertSame('Delp III', $template->get2('editor-last1'));
+            $this->assertSame('Wong', $template->get2('editor-last2'));
+            $this->assertNull($template->get2('veditors'));
+        } finally {
+            Template::$name_list_style = $previousStyle;
+        }
+    }
+
+    public function testEveryLocalVolumeRosterIsValid(): void {
+        $records = spie_volume_editor_data();
+        $this->assertCount(412, $records);
+        $this->assertArrayHasKey('12468:2023', $records);
+        $this->assertArrayNotHasKey('12468:2022', $records);
+        foreach ($records as $key => $record) {
+            [$volume, $year] = explode(':', $key, 2);
+            $fields = spie_verified_volume_editor_fields($record['title'], $volume, $year);
+            $this->assertCount(2 * count($record['editors']), $fields, $key);
+        }
+        foreach (['5029:2003', '5367:2004', '5744:2005'] as $key) {
+            $this->assertSame('Galloway Jr.', $records[$key]['editors'][0]['family'], $key);
+        }
+        $this->assertSame('Delp III', $records['7254:2009']['editors'][0]['family']);
+        $this->assertSame('Delp III', $records['7541:2010']['editors'][3]['family']);
     }
 
     public function testNoPartialEditorWritesWhenDataIsInvalid(): void {

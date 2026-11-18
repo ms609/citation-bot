@@ -219,6 +219,7 @@ def build(
     output: dict[str, Any] = dict(existing or {})
     review: list[dict[str, Any]] = []
     seen: dict[str, dict[str, Any]] = {}
+    first_details: dict[str, dict[str, Any]] = {}
     conflicted: set[str] = set()
     stats = {"proceedings": 0, "spie": 0, "new": 0, "review": 0}
     for record in records(xml_path, dtd_path):
@@ -260,12 +261,15 @@ def build(
             continue
         if key in seen:
             if candidate != seen[key]:
+                # Keep both conflicting rosters in the review file.
+                review.append({"key": key, "issues": ["duplicate-volume-year"], **first_details[key]})
                 conflicted.add(key)
                 if key not in (existing or {}):
                     output.pop(key, None)
                 review.append({"key": key, "issues": ["duplicate-volume-year"], **details})
             continue
         seen[key] = candidate
+        first_details[key] = details
         if key in (existing or {}):
             # Never overwrite verified data; differing editors need review.
             old = (existing or {})[key]

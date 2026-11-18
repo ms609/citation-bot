@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-/** Maximum repository-local, verified SPIE editor dataset size (bytes). */
+/** Maximum repository-local SPIE editor dataset size (bytes). */
 const SPIE_VOLUME_EDITOR_JSON_MAX_BYTES = 512 * 1024;
 
 /**
  * Offline SPIE proceedings volume editor enrichment.
  *
- * The JSON file contains *independently verified editorial roles*, not
- * Crossref or OpenAlex authorships. To add a volume, record its full title,
- * number, publication year, complete ordered editor roster, and source URLs.
- * Neither a publisher DOI prefix nor a matching author list establishes an
- * editor role on its own.
+ * The local rosters are curated from DBLP proceedings editor metadata; SPIE's
+ * publisher title list corroborates volume titles and years, not editor names.
+ * Individual editor roles should be checked against publisher front matter or
+ * another independent source before considering a roster independently verified.
+ * A matching DOI prefix or article authorship is not evidence of editor roles.
  *
  * @return array<string, mixed>
  */
@@ -80,22 +80,15 @@ function spie_verified_volume_editor_fields(string $title, string $volume, strin
 }
 
 /**
- * Refuse to mix the offline roster with any existing editor-name parameter,
+ * Refuse to mix the local roster with any populated editor-name parameter,
  * regardless of CS1 alias or numbering. Link/mask-only fields are not names.
+ * Check parsed parameters to avoid the mutation caused by parsed_text().
  */
 function spie_citation_has_editors(Template $template): bool {
-    if ($template->had_initial_editor()) {
-        return true;
-    }
-    // A conservative check of the serialized template also catches aliases
-    // beyond editor99 and editor fields added since initial construction.
-    $pattern = '~\|\s*(?:editors?|veditors?|editor(?:\d+)?|'
-        . 'editor-(?:last|first|surname|given)\d*|'
-        . 'editor\d+-(?:last|first|surname|given)|others)\s*=\s*(?=\S)~iu';
-    return preg_match($pattern, $template->parsed_text()) === 1;
+    return $template->has_editor_name_values();
 }
 
-/** Add only the complete independently verified roster, never partial lists. */
+/** Add only a complete local roster, never partial lists. */
 function spie_add_verified_volume_editors(Template $template, string $doi): bool {
     if (!str_starts_with(mb_strtolower($doi), '10.1117/12.')) {
         return false;

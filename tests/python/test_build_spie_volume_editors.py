@@ -220,7 +220,10 @@ class BuildSpieEditorDataTest(unittest.TestCase):
         out, review, stats = build(xml, self.dtd, titles={"6505:2007": "Verified Title"})
         self.assertEqual({}, out)
         self.assertEqual(0, stats["new"])
-        self.assertIn("duplicate-volume-year", review[0]["issues"])
+        self.assertEqual(2, len(review))
+        self.assertEqual({"conf/test/2007a", "conf/test/2007b"},
+                         {item["dblp_key"] for item in review})
+        self.assertTrue(all("duplicate-volume-year" in item["issues"] for item in review))
 
     def test_preserves_existing_record_and_reports_editor_mismatch(self):
         xml = self.write_xml([entry(editors=["An Unknown Editor"])])
