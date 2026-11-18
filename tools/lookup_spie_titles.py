@@ -25,6 +25,16 @@ KEY = re.compile(r"([1-9][0-9]{2,5}):([12][0-9]{3})\Z")
 VOLUME_URL = re.compile(r"/conference-proceedings-of-spie/([1-9][0-9]{2,5})(?:\.toc)?(?:/|\Z)", re.I)
 GENERIC_TITLES = {"proceedings of spie", "spie proceedings", "conference proceedings"}
 MAX_KBART_BYTES = 64 * 1024 * 1024
+# Meeting dates, not just the conference year in a title, must follow any
+# relaxed title variant. The publication title itself is never truncated.
+EVENT_MONTH = re.compile(
+    r"\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
+    r"jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|"
+    r"dec(?:ember)?)\b", re.I,
+)
+EVENT_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+EVENT_DATE = re.compile(EVENT_MONTH.pattern + r".{0,40}\b((?:19|20)\d{2})\b", re.I)
+ACRONYM_STOPWORDS = {"a", "an", "and", "at", "by", "for", "in", "of", "on", "the", "to", "with"}
 
 
 def normalized(value: str) -> str:
@@ -34,10 +44,62 @@ def normalized(value: str) -> str:
 
 
 def title_agrees(publisher: str, dblp: str) -> bool:
-    """Accept only a publisher title at the start of DBLP's extended title."""
+    """Accept exact/prefix titles and narrowly scoped DBLP venue-date variants.
+
+    The publisher title is always retained verbatim. DBLP may add a fixed
+    proceedings prefix, a conference-year suffix, or an acronym in commas
+    instead of publisher parentheses. These variants must end with a meeting
+    month and year, and never tolerate word substitution or missing editions.
+    """
     p = normalized(publisher).rstrip(".,;:")
     d = normalized(dblp)
-    return bool(p and (d == p or any(d.startswith(p + suffix) for suffix in (",", ":", ";", ".", " - ", " ("))))
+    if not p:
+        return False
+    if d == p or any(d.startswith(p + suffix) for suffix in
+                     (",", ":", ";", ".", " - ", " (")):
+        return True
+
+    def matches_venue_prefix(prefix: str, year: str | None = None) -> bool:
+        if not d.startswith(prefix + ", "):
+            return False
+        tail = d[len(prefix) + 2:]
+        years = EVENT_DATE.findall(tail)
+        return bool(years and (year is None or year in years))
+
+    # DBLP sometimes adds these literal bibliographic prefixes.
+    variants = [p, "proceedings of the conference on " + p,
+                "electronic imaging: " + p]
+    if any(matches_venue_prefix(variant) for variant in variants):
+        return True
+    # Some DBLP titles append the conference year, which the publisher
+    # omits from the proceedings title. Verify that the meeting date agrees.
+    for year in set(EVENT_YEAR.findall(d)):
+        if matches_venue_prefix(p + " " + year, year) or matches_venue_prefix(
+            "proceedings of the conference on " + p + " " + year, year
+        ):
+            return True
+
+    # SPIE: "Conference (ICMV 2017)"; DBLP: "Conference, ICMV 2017, Rome...".
+    acronym = re.fullmatch(r"(.+?) \(([a-z][a-z0-9-]+) ((?:19|20)\d{2})\)", p)
+    if acronym:
+        base, short, year = acronym.groups()
+        return matches_venue_prefix(f"{base}, {short} {year}", year)
+
+    # SPIE: "Visualization and Data Analysis 2009";
+    # DBLP: "Visualization and Data Analysis, VDA 2009, San Jose...".
+    dated = re.fullmatch(r"(.+?) ((?:19|20)\d{2})", p)
+    if dated:
+        base, year = dated.groups()
+        alias = re.match(rf"{re.escape(base)}, ([a-z]{{3,12}}) {year}(?=, )", d)
+        if alias:
+            initials = "".join(word[0] for word in re.findall(r"[a-z]+", base)
+                               if word not in ACRONYM_STOPWORDS)
+            short = alias.group(1)
+            if initials.endswith(short) and matches_venue_prefix(
+                f"{base}, {short} {year}", year
+            ):
+                return True
+    return False
 
 
 def publisher_url(url: str, volume: str) -> bool:

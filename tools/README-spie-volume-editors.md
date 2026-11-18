@@ -63,7 +63,7 @@ particular, suffixes, particles, compound family names, Eastern name order and
 DBLP homonym disambiguators need attention. A record may be missing from DBLP;
 this generator does not invent editorial metadata.
 
-**Size limit:** PR #6487 currently rejects runtime JSON over 128 KiB. The tool
+**Size limit:** PR #6487 currently rejects runtime JSON over 512 KiB. The tool
 warns when output exceeds this limit. Review and adjust the bounded PHP loader
 size separately before committing a larger output. Do not copy its full output
 without reviewing the report and ensuring the runtime loader accepts it.
@@ -111,7 +111,17 @@ python3 tools/build_spie_volume_editors.py \
 
 The lookup joins publisher records by **exact SPIE proceedings volume**.
 It accepts a publisher title only if it is the exact DBLP title or an
-unambiguous initial title followed by a bibliographic suffix; it also rejects
+unambiguous initial title followed by a bibliographic suffix. The matcher
+also handles specific formatting differences: DBLP's literal "Proceedings of
+the Conference on" or "Electronic Imaging:" prefixes, a trailing meeting
+year, conference acronyms in comma form rather than SPIE's parentheses, and
+acronyms preceding a publisher title's final conference year. These extended
+forms require a meeting month and year in the DBLP remainder; they are not
+fuzzy matches and never change the canonical title. Different conference
+types ("Symposium" versus "Conference"), differing series numerals, title
+years, and unrelated words still require review. A publisher record may have
+a print year one year later than DBLP's meeting year; differences over one
+year remain rejected. The lookup also rejects
 publisher *print* year differences greater than one year, conflicting workbook rows,
 non-SPIE links, missing volume identifiers, and duplicate DBLP keys with
 different titles. Rejected and missing records go into the `--audit` JSONL
