@@ -77,3 +77,54 @@ Run the offline tests without downloading DBLP:
 ```sh
 python3 -m unittest discover -s tests/python -v
 ```
+
+## Automatically match publisher-verified titles (SPIE KBART)
+
+SPIE provides an official **Title List (KBART)** Excel workbook on its
+[Librarian Resources](https://www.spiedigitallibrary.org/librarian-resources)
+page, with a worksheet containing proceedings *volumes*. Using that one
+publisher-maintained spreadsheet is more reliable and less intrusive than
+scraping hundreds of protected SPIE proceedings pages. Download the current
+`.xlsx` file from SPIE in a browser. The utility does not bypass anti-bot
+mechanisms or request full-text articles. `openpyxl` is an additional
+**maintenance-only** dependency:
+
+```sh
+python3 -m pip install openpyxl
+
+# Reuse the JSON Lines report made by the DBLP generator, or the
+# 413-volume CSV review inventory if you already have it.
+python3 tools/lookup_spie_titles.py \
+  --spie-kbart /path/to/SPIE-title-list.xlsx \
+  --candidates /tmp/spie_volume_editors.review.jsonl \
+  --titles /tmp/spie-publisher-titles.json \
+  --audit /tmp/spie-publisher-title-audit.jsonl
+
+# Rerun the original DBLP streaming generator, now with publisher titles.
+python3 tools/build_spie_volume_editors.py \
+  --xml /tmp/dblp/dblp.xml.gz --dtd /tmp/dblp/dblp.dtd \
+  --existing src/includes/data/spie_volume_editors.json \
+  --titles /tmp/spie-publisher-titles.json \
+  --output /tmp/spie_volume_editors.candidates.json \
+  --review /tmp/spie_volume_editors.review.jsonl
+```
+
+The lookup joins publisher records by **exact SPIE proceedings volume**.
+It accepts a publisher title only if it is the exact DBLP title or an
+unambiguous initial title followed by a bibliographic suffix; it also rejects
+publisher year differences greater than one year, conflicting workbook rows,
+non-SPIE links, missing volume identifiers, and duplicate DBLP keys with
+different titles. Rejected and missing records go into the `--audit` JSONL
+with reasons. An SPIE link is retained as a `sources` URL alongside DBLP's
+link when the primary generator consumes the title map. Existing curated
+entries remain unchanged. A publisher title is **not** proof that all DBLP
+names were parsed into correct `given`/`family` fields: the generated JSON is
+still a candidate and its full editor roster and spelling should be reviewed
+before copying it to the production JSON.
+
+SPIE's KBART download may omit historical volumes that SPIE cannot publish
+online; those volumes will remain in the audit queue. The spreadsheet's
+sheet names may change, so the tool detects the KBART header fields instead
+of assuming a particular worksheet index. It reads the workbook in read-only
+mode and never contacts the SPIE website automatically; download a fresh
+publisher spreadsheet when you wish to refresh the records.

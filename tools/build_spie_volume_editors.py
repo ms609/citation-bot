@@ -14,7 +14,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any, Iterator
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 try:
     from lxml import etree
@@ -171,6 +171,21 @@ def extract(record: Any) -> tuple[str | None, dict[str, Any], list[str]] | None:
     return record_id, {"data": candidate, "dblp_editors": editors, "dblp_key": key}, issues
 
 
+
+
+def valid_spie_source(url: str, volume: str) -> bool:
+    """Allow only a SPIE proceedings volume URL for the matched volume."""
+    try:
+        parsed = urlparse(url)
+        host = (parsed.hostname or "").lower()
+        return (parsed.scheme == "https" and parsed.username is None and
+                (host == "spiedigitallibrary.org" or host.endswith(".spiedigitallibrary.org")) and
+                re.fullmatch(r"/conference-proceedings-of-spie/" + re.escape(volume) +
+                             r"(?:\.toc)?/?", parsed.path, re.IGNORECASE) is not None)
+    except ValueError:
+        return False
+
+
 def load_json_object(path: Path | None) -> dict[str, Any]:
     if path is None:
         return {}
@@ -198,16 +213,26 @@ def build(
         stats["spie"] += 1
         key, details, issues = result
         candidate = details["data"]
-        # DBLP's bibliographic title frequently includes location/date.
-        # The runtime importer requires the canonical proceedings title.
-        # A reviewed title is mandatory for *new* records, even if the
-        # heuristic above does not recognize a venue/date suffix.
+        # DBLP often includes a venue/date in the bibliographic title.
+        # Accept either a maintainer-reviewed title string or an SPIE KBART
+        # mapping with independently sourced title and publisher URL.
         if key is not None and titles and key in titles:
-            title = titles[key]
-            if not isinstance(title, str) or not title.strip() or len(title) > 2000:
+            override = titles[key]
+            publisher_source = None
+            if isinstance(override, dict):
+                publisher_source = override.get("source")
+                override = override.get("title")
+            if not isinstance(override, str) or not override.strip() or len(override) > 2000:
                 issues.append("invalid-title-override")
+            elif publisher_source is not None and (
+                not isinstance(publisher_source, str) or
+                not valid_spie_source(publisher_source, key.split(":")[0])
+            ):
+                issues.append("invalid-publisher-source")
             else:
-                candidate["title"] = " ".join(title.split())
+                candidate["title"] = " ".join(override.split())
+                if publisher_source:
+                    candidate["sources"].append(publisher_source)
                 issues = [issue for issue in issues if issue != "title-includes-venue-date"]
         elif key is not None and key not in (existing or {}):
             issues.append("canonical-title-not-reviewed")
@@ -262,7 +287,7 @@ def main(argv: list[str] | None = None) -> int:
     argument_parser.add_argument("--output", type=Path, required=True, help="New reviewable JSON output")
     argument_parser.add_argument("--review", type=Path, required=True, help="Records requiring human review (JSONL)")
     argument_parser.add_argument("--existing", type=Path, help="Existing verified JSON to preserve")
-    argument_parser.add_argument("--titles", type=Path, help="JSON map from volume:year to reviewed canonical title")
+    argument_parser.add_argument("--titles", type=Path, help="JSON map from volume:year to canonical title or SPIE publisher title/source")
     args = argument_parser.parse_args(argv)
     if not args.xml.is_file() or not args.dtd.is_file():
         argument_parser.error("--xml and --dtd must point to existing files")
