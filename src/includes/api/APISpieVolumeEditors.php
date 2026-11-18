@@ -88,28 +88,56 @@ function spie_citation_has_editors(Template $template): bool {
     return $template->had_initial_editor() || $template->has_any_editor_parameter();
 }
 
+/**
+ * Only a specific proceedings title can identify this roster. A paper title
+ * may remain in |title=; its mismatch is not a container-title conflict.
+ * Generic SPIE series labels are neutral, not proof of a volume match.
+ */
+function spie_citation_matches_volume_title(Template $template, string $volume_title): bool {
+    $expected = spie_editor_data_normalize($volume_title);
+    if ($expected === '') {
+        return false;
+    }
+
+    $matched = false;
+    foreach (['book-title', 'journal', 'periodical', 'series'] as $field) {
+        $value = $template->get_without_comments_and_placeholders($field);
+        if (preg_match('~^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$~u', $value, $link)) {
+            $value = $link[1];
+        }
+        $value = spie_editor_data_normalize($value);
+        if ($value === '' || in_array($value, ['proceedings of spie', 'spie proceedings'], true)) {
+            continue;
+        }
+        // A different specific publication title must not be ignored.
+        if ($value !== $expected) {
+            return false;
+        }
+        $matched = true;
+    }
+
+    // Preserve citations that already put the volume title in |title=.
+    return $matched ||
+        spie_editor_data_normalize($template->get_without_comments_and_placeholders('title')) === $expected;
+}
+
 /** Add only a complete local roster, never partial lists. */
 function spie_add_verified_volume_editors(Template $template, string $doi): bool {
     if (!str_starts_with(mb_strtolower($doi), '10.1117/12.')) {
         return false;
     }
-    $title = $template->get_without_comments_and_placeholders('title');
     $volume = $template->get_without_comments_and_placeholders('volume');
     $year = $template->get_without_comments_and_placeholders('year');
     if ($year === '' && preg_match('~\b([12][0-9]{3})\b~', $template->get('date'), $match)) {
         $year = $match[1];
     }
-    $fields = spie_verified_volume_editor_fields($title, $volume, $year);
-    if ($fields === []) {
+    $record = spie_volume_editor_data()[$volume . ':' . $year] ?? null;
+    if (!is_array($record) || !is_string($record['title'] ?? null) ||
+        !spie_citation_matches_volume_title($template, $record['title'])) {
         return false;
     }
-
-    $series = $template->get_without_comments_and_placeholders('series');
-    if (preg_match('~^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$~u', $series, $match)) {
-        $series = $match[1];
-    }
-    if ($series !== '' && !in_array(spie_editor_data_normalize($series),
-        ['proceedings of spie', 'spie proceedings'], true)) {
+    $fields = spie_verified_volume_editor_fields($record['title'], $volume, $year);
+    if ($fields === []) {
         return false;
     }
     if (spie_citation_has_editors($template) ||
