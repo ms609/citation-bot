@@ -112,10 +112,17 @@ python3 tools/build_spie_volume_editors.py \
 The lookup joins publisher records by **exact SPIE proceedings volume**.
 It accepts a publisher title only if it is the exact DBLP title or an
 unambiguous initial title followed by a bibliographic suffix; it also rejects
-publisher year differences greater than one year, conflicting workbook rows,
+publisher *print* year differences greater than one year, conflicting workbook rows,
 non-SPIE links, missing volume identifiers, and duplicate DBLP keys with
 different titles. Rejected and missing records go into the `--audit` JSONL
-with reasons. An SPIE link is retained as a `sources` URL alongside DBLP's
+with reasons. The publisher's `date_monograph_published_online` is **not**
+treated as a second, conflicting publication year: a print volume may be
+published online years later. When print year is missing and online year
+differs substantially from DBLP, `publisher-print-year-unavailable` is
+reported for manual review. Entries with a mismatched print year remain
+rejected as `publisher-year-mismatch`. A publisher/DBLP title mismatch
+also remains rejected, even if the years now agree. An SPIE link is retained
+as a `sources` URL alongside DBLP's
 link when the primary generator consumes the title map. Existing curated
 entries remain unchanged. A publisher title is **not** proof that all DBLP
 names were parsed into correct `given`/`family` fields: the generated JSON is

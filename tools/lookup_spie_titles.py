@@ -77,14 +77,19 @@ def volume_from_row(row: dict[str, str]) -> tuple[str | None, str | None]:
     return next(iter(candidates)), None
 
 
-def publisher_years(row: dict[str, str]) -> set[int]:
-    years: set[int] = set()
-    for key in ("date_monograph_published_print", "date_monograph_published_online"):
-        text = row.get(key, "").strip()
+def publisher_years(row: dict[str, str]) -> tuple[int | None, int | None]:
+    """Return distinct KBART print and online years, never conflating them.
+
+    An older printed volume may be digitized or first hosted years later.
+    Its online publication date is not a conflicting print publication date.
+    """
+    def year(field: str) -> int | None:
+        text = row.get(field, "").strip()
         match = re.match(r"^([12][0-9]{3})(?:\b|-|/|\Z)", text)
-        if match:
-            years.add(int(match.group(1)))
-    return years
+        return int(match.group(1)) if match else None
+
+    return (year("date_monograph_published_print"),
+            year("date_monograph_published_online"))
 
 
 def canonical_row(row: dict[str, str]) -> dict[str, Any] | None:
@@ -105,10 +110,9 @@ def canonical_row(row: dict[str, str]) -> dict[str, Any] | None:
         return None
     if not link:
         link = f"https://www.spiedigitallibrary.org/conference-proceedings-of-spie/{volume}"
-    years = publisher_years(row)
+    print_year, online_year = publisher_years(row)
     return {"volume": volume, "title": title, "source": link,
-            "year": next(iter(years)) if len(years) == 1 else None,
-            "year_conflict": len(years) > 1}
+            "year": print_year, "online_year": online_year}
 
 
 def kbart_records(path: Path) -> tuple[dict[str, dict[str, Any]], set[str]]:
@@ -143,8 +147,14 @@ def kbart_records(path: Path) -> tuple[dict[str, dict[str, Any]], set[str]]:
                 if entry is None:
                     continue
                 volume = entry["volume"]
-                if volume in found and found[volume] != entry:
-                    conflicts.add(volume)
+                if volume in found:
+                    # Online dates describe electronic availability, not a
+                    # different volume/edition. Do not manufacture conflicts
+                    # when otherwise identical rows have different online dates.
+                    current = found[volume]
+                    if any(current[field] != entry[field]
+                           for field in ("title", "source", "year")):
+                        conflicts.add(volume)
                 else:
                     found[volume] = entry
         if sheet_count == 0:
@@ -195,10 +205,18 @@ def lookup(
         if entry is None:
             issues.append("missing-publisher-record")
         else:
-            if entry["year_conflict"]:
-                issues.append("conflicting-publisher-years")
-            elif entry["year"] is not None and abs(entry["year"] - int(year)) > 1:
-                issues.append("publisher-year-mismatch")
+            if entry["year"] is not None:
+                # Compare DBLP's proceedings year with SPIE's *print* year.
+                # Online availability may occur much later (retrospective
+                # digitization), so disagreement with it is not a conflict.
+                if abs(entry["year"] - int(year)) > 1:
+                    issues.append("publisher-year-mismatch")
+            elif (entry["online_year"] is not None and
+                  abs(entry["online_year"] - int(year)) > 1):
+                # No print date corroborates DBLP here. An online year far
+                # from DBLP's year is not evidence of a wrong print date;
+                # leave the record for review rather than making one up.
+                issues.append("publisher-print-year-unavailable")
             if len(dblp_titles) == 1 and not title_agrees(entry["title"], next(iter(dblp_titles))):
                 issues.append("publisher-dblp-title-mismatch")
         if issues:

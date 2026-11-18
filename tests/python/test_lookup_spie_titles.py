@@ -98,7 +98,7 @@ class PublisherTitleLookupTest(unittest.TestCase):
         self.assertIn("publisher-year-mismatch", audit[0]["issues"])
         self.assertIn("publisher-dblp-title-mismatch", audit[1]["issues"])
 
-    def test_conflicting_publisher_years_require_review(self):
+    def test_later_online_publication_does_not_conflict_with_print_year(self):
         wb = Workbook()
         sheet = wb.active
         sheet.append(["publication_title", "monograph_volume", "publisher_name",
@@ -109,11 +109,61 @@ class PublisherTitleLookupTest(unittest.TestCase):
         book = self.directory / "publisher.xlsx"
         wb.save(book)
         publisher, conflicts = kbart_records(book)
+        self.assertEqual(2007, publisher["6505"]["year"])
+        self.assertEqual(2014, publisher["6505"]["online_year"])
         titles, audit, _ = lookup([{"key": "6505:2007", "title":
                                    "Security, Steganography IX, USA 2007"}],
                                   publisher, conflicts)
+        self.assertEqual([], audit)
+        self.assertEqual("Security, Steganography IX", titles["6505:2007"]["title"])
+
+    def test_print_year_remains_authoritative_when_online_year_matches_dblp(self):
+        wb = Workbook()
+        sheet = wb.active
+        sheet.append(["publication_title", "monograph_volume", "publisher_name",
+                      "publication_type", "date_monograph_published_print",
+                      "date_monograph_published_online"])
+        sheet.append(["Conference IX", 6505, "SPIE", "monograph", "2001", "2007"])
+        book = self.directory / "publisher.xlsx"
+        wb.save(book)
+        publisher, conflicts = kbart_records(book)
+        titles, audit, _ = lookup([{"key": "6505:2007", "title": "Conference IX"}],
+                                  publisher, conflicts)
         self.assertEqual({}, titles)
-        self.assertIn("conflicting-publisher-years", audit[0]["issues"])
+        self.assertIn("publisher-year-mismatch", audit[0]["issues"])
+
+    def test_online_only_later_year_needs_review(self):
+        wb = Workbook()
+        sheet = wb.active
+        sheet.append(["publication_title", "monograph_volume", "publisher_name",
+                      "publication_type", "date_monograph_published_print",
+                      "date_monograph_published_online"])
+        sheet.append(["Conference IX", 6505, "SPIE", "monograph", "", "2015"])
+        book = self.directory / "publisher.xlsx"
+        wb.save(book)
+        publisher, conflicts = kbart_records(book)
+        titles, audit, _ = lookup([{"key": "6505:2007", "title": "Conference IX"}],
+                                  publisher, conflicts)
+        self.assertEqual({}, titles)
+        self.assertIn("publisher-print-year-unavailable", audit[0]["issues"])
+        self.assertNotIn("publisher-year-mismatch", audit[0]["issues"])
+
+    def test_identical_rows_with_different_online_years_are_not_conflicts(self):
+        wb = Workbook()
+        sheet = wb.active
+        sheet.append(["publication_title", "monograph_volume", "publisher_name",
+                      "publication_type", "date_monograph_published_print",
+                      "date_monograph_published_online"])
+        sheet.append(["Conference IX", 6505, "SPIE", "monograph", "2007", "2014"])
+        sheet.append(["Conference IX", 6505, "SPIE", "monograph", "2007", "2015"])
+        book = self.directory / "publisher.xlsx"
+        wb.save(book)
+        publisher, conflicts = kbart_records(book)
+        self.assertEqual(set(), conflicts)
+        titles, audit, _ = lookup([{"key": "6505:2007", "title": "Conference IX"}],
+                                  publisher, conflicts)
+        self.assertEqual([], audit)
+        self.assertIn("6505:2007", titles)
 
     def test_duplicate_dblp_key_with_different_titles_is_not_accepted(self):
         book = self.write_book([("Conference IX", 6505, "", "SPIE", "monograph", "2007")])
