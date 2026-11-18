@@ -908,7 +908,7 @@ final class Template
         }
         return !(($this->has('journal') || $this->has('periodical') || $this->has('trans-work') || $this->has('script-work')) && $this->has('volume') && $this->has('title') && $has_date);
     }
-dfsasdfads
+
     /**
      * Stage editor additions on a deep copy, then commit the entire roster.
      * This prevents rejected later names from leaving partial editor lists.
