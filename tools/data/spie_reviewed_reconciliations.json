@@ -1,0 +1,42 @@
+{
+  "3695:1999": {
+    "action": "add",
+    "target_key": "3695:1999",
+    "dblp_title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology I, Orlando, FL, USA, April 5, 1999",
+    "publisher_title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology",
+    "publisher_year": 1999,
+    "dblp_editors": ["Belur V. Dasarathy"]
+  },
+  "5609:2002": {
+    "action": "correct-year",
+    "target_key": "5609:2004",
+    "dblp_title": "Mobile Robots XVII, Philadelphia, PA, USA, October 25, 2004",
+    "publisher_title": "Mobile Robots XVII",
+    "publisher_year": 2004,
+    "dblp_editors": ["Douglas W. Gage"]
+  },
+  "7254:2009": {
+    "action": "add",
+    "target_key": "7254:2009",
+    "dblp_title": "Media Forensics and Security I, part of the IS&T-SPIE Electronic Imaging Symposium, San Jose, CA, USA, January 19-21, 2009, Proceedings",
+    "publisher_title": "Media Forensics and Security",
+    "publisher_year": 2009,
+    "dblp_editors": ["Edward J. Delp", "Jana Dittmann", "Nasir D. Memon", "Ping Wah Wong"]
+  },
+  "10572:2017": {
+    "action": "add",
+    "target_key": "10572:2017",
+    "dblp_title": "13th International Symposium on Medical Information Processing and Analysis, SIPAIM 2017, San Andres Island, Colombia, 5-7 October 2017",
+    "publisher_title": "13th International Conference on Medical Information Processing and Analysis",
+    "publisher_year": 2017,
+    "dblp_editors": ["Eduardo Romero 0001", "Natasha Leporé", "Jorge Brieva", "Juan David García"]
+  },
+  "12039:2023": {
+    "action": "exclude",
+    "target_key": "12039:2022",
+    "dblp_title": "Medical Imaging 2023: Digital and Computational Pathology, San Diego, CA, USA, February 19-23, 2023",
+    "publisher_title": "Medical Imaging 2022: Digital and Computational Pathology",
+    "publisher_year": 2022,
+    "dblp_editors": ["John E. Tomaszewski", "Aaron D. Ward"]
+  }
+}
