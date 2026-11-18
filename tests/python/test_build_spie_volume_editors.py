@@ -182,13 +182,13 @@ class BuildSpieEditorDataTest(unittest.TestCase):
                 "Mobile Robots XIII and Intelligent Transportation Systems",
                 [
                     "Howie Choset",
-                    "Douglas W. Gage",
-                    "Pushkin Kachroo",  # codespell:ignore Gage
+                    "Douglas W. Gage",  # codespell:ignore Gage
+                    "Pushkin Kachroo",
                     "Mikhail Kourjanski",
                     "Marten J. de Vries",
                 ],
-                ["Choset", "Gage", "Kachroo", "Kourjanski", "de Vries"],
-            ),  # codespell:ignore Gage
+                ["Choset", "Gage", "Kachroo", "Kourjanski", "de Vries"],  # codespell:ignore Gage
+            ),
             (
                 "7963",
                 "2011",
