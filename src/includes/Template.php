@@ -912,7 +912,9 @@ final class Template
     /** Whether a field contains an editor name rather than a link or mask. */
     private static function is_editor_name_parameter(string $name): bool {
         return preg_match(
-            '~^(?:editors|veditors?|editor\d*|editor-(?:last|first|surname|given|initials)\d*|editor\d+-(?:last|first|surname|given|initials))$~iD',
+            '~^(?:editors|veditors?|others|editor\d*|'
+            . 'editor-(?:last|first|surname|given|forename|initials)\d*|'
+            . 'editor\d+-(?:last|first|surname|given|forename|initials))$~iD',
             $name
         ) === 1;
     }
@@ -982,27 +984,6 @@ final class Template
         if ($staged_output !== false) {
             echo $staged_output;
         }
-        return true;
-    }
-
-    /**
-     * Stage editor additions on a deep copy, then commit the entire roster.
-     * This prevents rejected later names from leaving partial editor lists.
-     * @param array<string, string> $fields
-     */
-    public function add_editor_fields_atomically(array $fields, string $api): bool {
-        if ($fields === []) {
-            return false;
-        }
-        $working = clone $this;
-        $working->param = array_map(static fn (Parameter $p): Parameter => clone $p, $this->param);
-        foreach ($fields as $name => $value) {
-            if (!$working->blank($name) || !$working->add_if_new($name, $value, $api)) {
-                return false;
-            }
-        }
-        $this->param = $working->param;
-        $this->used_by_api = $working->used_by_api;
         return true;
     }
 
@@ -4082,24 +4063,6 @@ final class Template
 
     public function had_initial_editor(): bool {
         return $this->had_initial_eds;
-    }
-
-    /** True when an existing editor-name or others= field has a value. */
-    public function has_editor_name_values(): bool {
-        if ($this->had_initial_editor()) {
-            return true;
-        }
-        foreach ($this->param as $p) {
-            if (mb_trim($p->val) === '') {
-                continue;
-            }
-            if (preg_match('~^(?:editors?|veditors|others|editor[0-9]+|'
-                . 'editor-(?:last|first|surname|given|forename|initials)[0-9]*|'
-                . 'editor[0-9]+-(?:last|first|surname|given|forename|initials))$~i', $p->param)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private function join_params(): string {

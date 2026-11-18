@@ -82,10 +82,10 @@ function spie_verified_volume_editor_fields(string $title, string $volume, strin
 /**
  * Refuse to mix the local roster with any populated editor-name parameter,
  * regardless of CS1 alias or numbering. Link/mask-only fields are not names.
- * Check parsed parameters to avoid the mutation caused by parsed_text().
+ * Use the shared structural helper, retaining the initial-editor safeguard.
  */
 function spie_citation_has_editors(Template $template): bool {
-    return $template->has_editor_name_values();
+    return $template->had_initial_editor() || $template->has_any_editor_parameter();
 }
 
 /** Add only a complete local roster, never partial lists. */

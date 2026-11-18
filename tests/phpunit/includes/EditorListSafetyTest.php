@@ -6,10 +6,11 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 final class EditorListSafetyTest extends testBaseClass {
     public function testRecognizesEveryPopulatedEditorNameAlias(): void {
         foreach ([
-            'editors', 'veditors', 'veditor', 'editor', 'editor1', 'editor150',
+            'editors', 'veditors', 'veditor', 'others', 'editor', 'editor1', 'editor150',
             'editor-last', 'editor-first1', 'editor-surname120',
             'editor-given1', 'editor-initials2', 'editor100-first',
             'editor1-last', 'editor2-surname', 'editor3-given',
+            'editor-forename1', 'editor2-forename',
         ] as $field) {
             $template = $this->make_citation('{{cite book|' . $field . '=Existing}}');
             $this->assertTrue($template->has_any_editor_parameter(), $field);
