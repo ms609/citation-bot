@@ -3,7 +3,7 @@
 # Tests and constants contain deliberate malformed strings used by parser and normalization fixtures.
 skip = .git*,*.svg,locale,vendor,*.lock,*.css,*.min.*,.codespellrc,./tests/phpunit,./src/includes/constants
 check-hidden = true
-ignore-regex = \b(Fro|Ownes|Requestor|forIn|afterAll|File::WRONLY)\b|/sombody/
+ignore-regex = \b(Fro|Ownes|Requestor|forIn|afterAll|File::WRONLY)\b|/sombody/|"family":\s*"(?:Gage|Cleary)"|"dblp_editors":\s*\["Douglas W\. Gage"\]
 # Keep intentional HTTP/query/hostname/regex fragments and existing source identifiers.
 # dne == do-not-exists
 # defaultY == javascript variable name (cf. defaultX)

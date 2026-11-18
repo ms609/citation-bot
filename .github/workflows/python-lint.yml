@@ -5,12 +5,18 @@ on:
     branches: [ master ]
     paths:
       - '.github/scripts/**/*.py'
+      - 'tools/*.py'
+      - 'tests/python/**/*.py'
+      - 'tools/requirements-spie.txt'
       - '.github/workflows/python-lint.yml'
       - 'ruff.toml'
   pull_request:
     branches: [ master ]
     paths:
       - '.github/scripts/**/*.py'
+      - 'tools/*.py'
+      - 'tests/python/**/*.py'
+      - 'tools/requirements-spie.txt'
       - '.github/workflows/python-lint.yml'
       - 'ruff.toml'
   schedule:
@@ -37,6 +43,20 @@ jobs:
           src: '.github/scripts'
           args: 'check --output-format=github'
 
-      # Formatting violations are errors and must fail this workflow.
+      - name: Lint SPIE maintenance scripts and tests
+        run: ruff check --output-format=github tools/build_spie_volume_editors.py tools/lookup_spie_titles.py tools/reconcile_spie_remaining.py tests/python
+
+      # Ruff is installed by the action above; check committed formatting too.
       - name: Check Python formatting
-        run: ruff format --check .github/scripts
+        run: ruff format --check .github/scripts tools/build_spie_volume_editors.py tools/lookup_spie_titles.py tools/reconcile_spie_remaining.py tests/python
+
+      - name: Set up Python for offline tests
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+
+      - name: Install offline SPIE dependencies
+        run: python -m pip install --disable-pip-version-check -r tools/requirements-spie.txt
+
+      - name: Run offline SPIE regression tests
+        run: python -m unittest discover -s tests/python -v

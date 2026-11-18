@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/APIResponseGuard.php'; // @codeCoverageIgnore
+require_once __DIR__ . '/APISpieVolumeEditors.php'; // @codeCoverageIgnore
 
 const BAD_DOIS_FROM_CROSSREF = ['10.1355/9789812306319'];
 const NO_CHAPTER_ADD = ['citation', 'cite web', 'cite news', 'cite magazine', 'cite press release', 'cite podcast', 'cite newsgroup', 'cite journal'];
@@ -35,6 +36,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $template->add_if_new('jstor', mb_substr($doi, 8));
     }
+    $spie_volume_title = '';
     if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
@@ -110,6 +112,8 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if ((string) @$crossRef->series_title === 'Professional Paper') {
                 unset($crossRef->series_title);
             }
+            // Keep the publisher's volume title even when book-title is already set.
+            $spie_volume_title = (string) ($crossRef->volume_title ?? '');
             if ($template->has('book-title')) {
                 unset($crossRef->volume_title);
             }
@@ -125,7 +129,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 report_warning("Journal DOI does not match the cited proceedings: " . doi_link($doi));
                 return;
             }
-            if (isCrossRefReviewConfusion($template, $crossRefNewAPI)) {
+            if (isCrossRefReviewConfusion($template, $crossRefNewAPI, $doi)) {
                 report_info("Book review confusion rejected for doi:" . doi_link($doi) . " — not adding journal metadata to book citation");
                 return;
             }
@@ -262,6 +266,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             expand_doi_with_dx($template, $doi);
         }
     }
+    spie_add_verified_volume_editors($template, $doi, $spie_volume_title);
     return;
 }
 
@@ -691,8 +696,14 @@ function conference_citation_conflicts_with_journal(Template $template, string $
     return $journal === '' || (!str_equivalent($proceedings, $journal) && !str_equivalent($event, $journal));
 }
 
-function isCrossRefReviewConfusion(Template $template, object $msg): bool {
+function isCrossRefReviewConfusion(Template $template, object $msg, string $doi = ''): bool {
     if (!function_exists('isBookCitationForReviewGuard') || !isBookCitationForReviewGuard($template)) {
+        return false;
+    }
+    // Only SPIE proceedings qualify for this exception. Other proceedings
+    // citations must retain the book-review safeguard (e.g. AIP).
+    if (str_starts_with($doi, '10.1117/12.') &&
+        in_array($msg->type ?? '', ['proceedings-article', 'conference-paper', 'paper-conference'], true)) {
         return false;
     }
     $container = '';
