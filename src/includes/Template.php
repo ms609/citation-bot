@@ -909,6 +909,59 @@ final class Template
         return !(($this->has('journal') || $this->has('periodical') || $this->has('trans-work') || $this->has('script-work')) && $this->has('volume') && $this->has('title') && $has_date);
     }
 
+    /** Whether a populated CS1 editor-name field exists (not links or masks). */
+    public function has_any_editor_parameter(): bool {
+        foreach ($this->param as $parameter) {
+            if (mb_trim($parameter->val) === '') {
+                continue;
+            }
+            if (preg_match(
+                '~^(?:editors|veditors|editor\d*|editor-(?:last|first|surname|given|initials)\d*|editor\d+-(?:last|first|surname|given|initials))$~iD',
+                $parameter->param
+            ) === 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Stage numbered editor fields so a later rejected name cannot leave a
+     * partially populated editor list. Existing matching values are preserved.
+     * Callers must verify source alignment before extending an existing list.
+     * Only canonical editor-firstN/editor-lastN fields are accepted.
+     *
+     * @param array<string, string> $fields
+     */
+    public function add_editor_fields_atomically(array $fields, string $api = ''): bool {
+        if ($fields === []) {
+            return false;
+        }
+
+        $working = clone $this;
+        // A shallow clone shares Parameter objects with the original template.
+        $working->param = array_map(static fn (Parameter $p): Parameter => clone $p, $this->param);
+        foreach ($fields as $name => $value) {
+            if (preg_match('~^editor-(?:first|last)[1-9]\d*$~D', $name) !== 1 || mb_trim($value) === '') {
+                return false;
+            }
+            if (!$working->blank($name)) {
+                // Matching fields are deliberately left as the citation wrote them.
+                if (!str_equivalent($working->get_without_comments_and_placeholders($name), $value)) {
+                    return false;
+                }
+                continue;
+            }
+            if (!$working->add_if_new($name, $value, $api)) {
+                return false;
+            }
+        }
+
+        $this->param = $working->param;
+        $this->used_by_api = $working->used_by_api;
+        return true;
+    }
+
     /**
      * @param array<string>|string $param
      */
