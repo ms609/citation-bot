@@ -25,6 +25,9 @@ SERIES = {"spie proceedings", "proceedings of spie"}
 VOLUME = re.compile(r"[1-9][0-9]{2,5}\Z")
 YEAR = re.compile(r"[12][0-9]{3}\Z")
 SUFFIXES = {"jr", "sr", "ii", "iii", "iv", "v", "vi"}
+# These single-word particles form part of the surname in the reported SPIE
+# editor records. Longer particle sequences still require manual review.
+SURNAME_PARTICLES = {"de", "van"}
 PARTICLES = {
     "al", "ap", "bin", "da", "de", "del", "della", "der", "di", "dos",
     "du", "el", "ibn", "la", "le", "van", "von", "ten", "ter", "st",
@@ -87,10 +90,17 @@ def split_editor(full_name: str) -> dict[str, str] | None:
         suffix = " " + pieces.pop()
     if len(pieces) < 2:
         return None
-    # 'van der ...' and other multiword surnames require explicit review.
-    if any(p.strip(".,").casefold() in PARTICLES for p in pieces[1:-1]):
+    # Keep a single directly preceding 'de' or 'van' with the surname:
+    # Huib de Ridder, Harmen R. van As, Marten J. de Vries, etc.
+    # Do not guess more complex particles (e.g. 'van der') or mistake a
+    # standalone particle for someone's given name.
+    family_start = len(pieces) - 1
+    if len(pieces) >= 3 and pieces[-2].strip(".,").casefold() in SURNAME_PARTICLES:
+        family_start -= 1
+    if (pieces[0].strip(".,").casefold() in SURNAME_PARTICLES or
+            any(p.strip(".,").casefold() in PARTICLES for p in pieces[1:family_start])):
         return None
-    given, family = " ".join(pieces[:-1]), pieces[-1] + suffix
+    given, family = " ".join(pieces[:family_start]), " ".join(pieces[family_start:]) + suffix
     if not given or not family or given.endswith(",") or "," in family:
         return None
     return {"given": given, "family": family}

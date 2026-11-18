@@ -93,6 +93,87 @@ class BuildSpieEditorDataTest(unittest.TestCase):
         self.assertIn("editor-name-needs-review", review[0]["issues"])
         self.assertEqual([], review[0]["data"]["editors"])
 
+    def test_single_particle_surnames_and_ambiguous_particles(self):
+        cases = {
+            "Harmen R. van As": {"given": "Harmen R.", "family": "van As"},
+            "Huib de Ridder": {"given": "Huib", "family": "de Ridder"},
+            "Marten J. de Vries": {"given": "Marten J.", "family": "de Vries"},
+            "Bram van Ginneken": {"given": "Bram", "family": "van Ginneken"},
+            "Harmen R. van As Jr.": {"given": "Harmen R.", "family": "van As Jr."},
+            "Harmen R. van As 0001": {"given": "Harmen R.", "family": "van As"},
+        }
+        for name, expected in cases.items():
+            with self.subTest(name=name):
+                self.assertEqual(expected, split_editor(name))
+        for name in ("van As", "de Ridder", "Jean van der Berg",
+                     "Maria de la Cruz"):
+            with self.subTest(rejected=name):
+                self.assertIsNone(split_editor(name))
+
+    def test_eight_reported_spie_editor_rosters(self):
+        # Real names and volume/year keys from the DBLP review report.
+        # The source titles in this test simulate reviewed publisher titles;
+        # volume 3408 deliberately has no publisher title and stays in review.
+        cases = [
+            ("3408", "1998", "Broadband European Networks and Multimedia Services 1998,"
+             " Zurich, Switzerland, May 19-20, 1998.",
+             ["Stephan Fischer 0001", "Ralf Steinmetz", "Heinrich J. Stüttgen",
+              "Harmen R. van As", "Roberto Vercelli"],
+             ["Fischer", "Steinmetz", "Stüttgen", "van As", "Vercelli"]),
+            ("8651", "2013", "Human Vision and Electronic Imaging XVIII",
+             ["Bernice E. Rogowitz", "Thrasyvoulos N. Pappas", "Huib de Ridder"],
+             ["Rogowitz", "Pappas", "de Ridder"]),
+            ("9014", "2014", "Human Vision and Electronic Imaging XIX",
+             ["Bernice E. Rogowitz", "Thrasyvoulos N. Pappas", "Huib de Ridder"],
+             ["Rogowitz", "Pappas", "de Ridder"]),
+            ("9394", "2015", "Human Vision and Electronic Imaging XX",
+             ["Bernice E. Rogowitz", "Thrasyvoulos N. Pappas", "Huib de Ridder"],
+             ["Rogowitz", "Pappas", "de Ridder"]),
+            ("8291", "2012", "Human Vision and Electronic Imaging XVII",
+             ["Bernice E. Rogowitz", "Thrasyvoulos N. Pappas", "Huib de Ridder"],
+             ["Rogowitz", "Pappas", "de Ridder"]),
+            ("3525", "1998", "Mobile Robots XIII and Intelligent Transportation Systems",
+             ["Howie Choset", "Douglas W. Gage", "Pushkin Kachroo",
+              "Mikhail Kourjanski", "Marten J. de Vries"],
+             ["Choset", "Gage", "Kachroo", "Kourjanski", "de Vries"]),
+            ("7963", "2011", "Medical Imaging 2011: Computer-Aided Diagnosis",
+             ["Ronald M. Summers", "Bram van Ginneken"],
+             ["Summers", "van Ginneken"]),
+            ("8315", "2012", "Medical Imaging 2012: Computer-Aided Diagnosis",
+             ["Bram van Ginneken", "Carol L. Novak"],
+             ["van Ginneken", "Novak"]),
+        ]
+        xml = self.write_xml([
+            entry(volume=volume, year=year, title=title, editors=names,
+                  key=f"conf/particle/{volume}")
+            for volume, year, title, names, _ in cases
+        ])
+        titles = {f"{volume}:{year}": title
+                  for volume, year, title, _, _ in cases if volume != "3408"}
+        output, review, stats = build(xml, self.dtd, titles=titles)
+        self.assertEqual(8, stats["spie"])
+        self.assertEqual(7, stats["new"])
+        self.assertEqual(1, len(review))
+        self.assertEqual("3408:1998", review[0]["key"])
+        self.assertNotIn("editor-name-needs-review", review[0]["issues"])
+        self.assertIn("canonical-title-not-reviewed", review[0]["issues"])
+        for volume, year, title, names, surnames in cases:
+            key = f"{volume}:{year}"
+            if key == "3408:1998":
+                self.assertNotIn(key, output)
+                continue
+            with self.subTest(key=key):
+                self.assertEqual(len(names), len(output[key]["editors"]))
+                self.assertEqual(surnames,
+                                 [person["family"] for person in output[key]["editors"]])
+        # A separate verified canonical title is required before accepting 3408.
+        titles["3408:1998"] = "Publisher-reviewed canonical title"
+        output, review, _ = build(xml, self.dtd, titles=titles)
+        self.assertEqual([], review)
+        self.assertEqual(8, len(output))
+        self.assertEqual(["Fischer", "Steinmetz", "Stüttgen", "van As", "Vercelli"],
+                         [person["family"] for person in output["3408:1998"]["editors"]])
+
     def test_venue_date_detection_catches_reverse_month_day_order(self):
         xml = self.write_xml([entry(
             title="Medical Imaging 2019: Image Processing, San Diego, CA, USA,"
