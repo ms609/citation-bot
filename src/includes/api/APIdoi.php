@@ -36,6 +36,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $template->add_if_new('jstor', mb_substr($doi, 8));
     }
+    $spie_volume_title = '';
     if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
@@ -111,6 +112,8 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if ((string) @$crossRef->series_title === 'Professional Paper') {
                 unset($crossRef->series_title);
             }
+            // Keep the publisher's volume title even when book-title is already set.
+            $spie_volume_title = (string) ($crossRef->volume_title ?? '');
             if ($template->has('book-title')) {
                 unset($crossRef->volume_title);
             }
@@ -263,7 +266,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             expand_doi_with_dx($template, $doi);
         }
     }
-    spie_add_verified_volume_editors($template, $doi);
+    spie_add_verified_volume_editors($template, $doi, $spie_volume_title);
     return;
 }
 

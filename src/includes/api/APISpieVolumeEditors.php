@@ -93,20 +93,30 @@ function spie_citation_has_editors(Template $template): bool {
  * may remain in |title=; its mismatch is not a container-title conflict.
  * Generic SPIE series labels are neutral, not proof of a volume match.
  */
-function spie_citation_matches_volume_title(Template $template, string $volume_title): bool {
+function spie_citation_matches_volume_title(Template $template, string $volume_title,
+    string $crossref_volume_title = ''): bool {
     $expected = spie_editor_data_normalize($volume_title);
     if ($expected === '') {
         return false;
     }
 
+    $generic_series = ['proceedings of spie', 'spie proceedings'];
+    $crossref_title = spie_editor_data_normalize($crossref_volume_title);
     $matched = false;
+    if ($crossref_title !== '' && !in_array($crossref_title, $generic_series, true)) {
+        // External volume metadata must agree with the independently curated title.
+        if ($crossref_title !== $expected) {
+            return false;
+        }
+        $matched = true;
+    }
     foreach (['book-title', 'journal', 'periodical', 'series'] as $field) {
         $value = $template->get_without_comments_and_placeholders($field);
         if (preg_match('~^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$~u', $value, $link)) {
             $value = $link[1];
         }
         $value = spie_editor_data_normalize($value);
-        if ($value === '' || in_array($value, ['proceedings of spie', 'spie proceedings'], true)) {
+        if ($value === '' || in_array($value, $generic_series, true)) {
             continue;
         }
         // A different specific publication title must not be ignored.
@@ -121,19 +131,31 @@ function spie_citation_matches_volume_title(Template $template, string $volume_t
         spie_editor_data_normalize($template->get_without_comments_and_placeholders('title')) === $expected;
 }
 
+/** Use only a single unambiguous year; a conflicting or invalid explicit year is not overridden. */
+function spie_citation_publication_year(Template $template): string {
+    $year = mb_trim($template->get_without_comments_and_placeholders('year'));
+    if ($year !== '') {
+        return preg_match('~^[12][0-9]{3}$~D', $year) === 1 ? $year : '';
+    }
+    $date = $template->get_without_comments_and_placeholders('date');
+    if (preg_match_all('~(?<![0-9])[12][0-9]{3}(?![0-9])~', $date, $matches) < 1) {
+        return '';
+    }
+    $years = array_unique($matches[0]);
+    return count($years) === 1 ? $years[0] : '';
+}
+
 /** Add only a complete local roster, never partial lists. */
-function spie_add_verified_volume_editors(Template $template, string $doi): bool {
+function spie_add_verified_volume_editors(Template $template, string $doi,
+    string $crossref_volume_title = ''): bool {
     if (!str_starts_with(mb_strtolower($doi), '10.1117/12.')) {
         return false;
     }
     $volume = $template->get_without_comments_and_placeholders('volume');
-    $year = $template->get_without_comments_and_placeholders('year');
-    if ($year === '' && preg_match('~\b([12][0-9]{3})\b~', $template->get('date'), $match)) {
-        $year = $match[1];
-    }
+    $year = spie_citation_publication_year($template);
     $record = spie_volume_editor_data()[$volume . ':' . $year] ?? null;
     if (!is_array($record) || !is_string($record['title'] ?? null) ||
-        !spie_citation_matches_volume_title($template, $record['title'])) {
+        !spie_citation_matches_volume_title($template, $record['title'], $crossref_volume_title)) {
         return false;
     }
     $fields = spie_verified_volume_editor_fields($record['title'], $volume, $year);
