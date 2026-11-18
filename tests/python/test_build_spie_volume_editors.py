@@ -225,6 +225,22 @@ class BuildSpieEditorDataTest(unittest.TestCase):
                          {item["dblp_key"] for item in review})
         self.assertTrue(all("duplicate-volume-year" in item["issues"] for item in review))
 
+    def test_duplicate_does_not_repeat_first_record_already_in_review(self):
+        xml = self.write_xml([
+            entry(key="conf/test/2007a"),
+            entry(key="conf/test/2007b", editors=["Other Person"]),
+        ])
+        # Without a reviewed title, the first record is already in the report.
+        out, review, _ = build(xml, self.dtd)
+        self.assertEqual({}, out)
+        self.assertEqual(2, len(review))
+        self.assertEqual(["conf/test/2007a", "conf/test/2007b"],
+                         [item["dblp_key"] for item in review])
+        self.assertTrue(all("canonical-title-not-reviewed" in item["issues"]
+                            for item in review))
+        self.assertTrue(all("duplicate-volume-year" in item["issues"]
+                            for item in review))
+
     def test_preserves_existing_record_and_reports_editor_mismatch(self):
         xml = self.write_xml([entry(editors=["An Unknown Editor"])])
         existing = {"6505:2007": {

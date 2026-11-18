@@ -220,6 +220,7 @@ def build(
     review: list[dict[str, Any]] = []
     seen: dict[str, dict[str, Any]] = {}
     first_details: dict[str, dict[str, Any]] = {}
+    first_review_indices: dict[str, int] = {}
     conflicted: set[str] = set()
     stats = {"proceedings": 0, "spie": 0, "new": 0, "review": 0}
     for record in records(xml_path, dtd_path):
@@ -257,16 +258,20 @@ def build(
             review.append({"key": None, "issues": issues, **details})
             continue
         if key in conflicted:
-            review.append({"key": key, "issues": ["duplicate-volume-year"], **details})
+            review.append({"key": key, "issues": [*issues, "duplicate-volume-year"], **details})
             continue
         if key in seen:
             if candidate != seen[key]:
-                # Keep both conflicting rosters in the review file.
-                review.append({"key": key, "issues": ["duplicate-volume-year"], **first_details[key]})
+                # Mark the first record in place when it already needs review;
+                # otherwise add it once. Preserve its original issue reasons.
+                if key in first_review_indices:
+                    review[first_review_indices[key]]["issues"].append("duplicate-volume-year")
+                else:
+                    review.append({"key": key, "issues": ["duplicate-volume-year"], **first_details[key]})
                 conflicted.add(key)
                 if key not in (existing or {}):
                     output.pop(key, None)
-                review.append({"key": key, "issues": ["duplicate-volume-year"], **details})
+                review.append({"key": key, "issues": [*issues, "duplicate-volume-year"], **details})
             continue
         seen[key] = candidate
         first_details[key] = details
@@ -274,9 +279,11 @@ def build(
             # Never overwrite verified data; differing editors need review.
             old = (existing or {})[key]
             if not isinstance(old, dict) or old.get("editors") != candidate["editors"]:
+                first_review_indices[key] = len(review)
                 review.append({"key": key, "issues": ["conflicts-with-existing"], **details})
             continue
         if issues:
+            first_review_indices[key] = len(review)
             review.append({"key": key, "issues": issues, **details})
             continue
         output[key] = candidate

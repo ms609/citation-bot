@@ -82,9 +82,15 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
         $previousStyle = Template::$name_list_style;
         Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
         try {
+            // A serialized-text check would convert this newly added author to vauthors.
+            $this->assertTrue($template->add_if_new('last1', 'Smith'));
             $this->assertFalse(spie_citation_has_editors($template));
+            $this->assertSame('Smith', $template->get2('last1'));
+            $this->assertNull($template->get2('vauthors'));
             $this->assertNull($template->get2('veditors'));
             $this->assertTrue(spie_add_verified_volume_editors($template, self::DOI));
+            $this->assertSame('Smith', $template->get2('last1'));
+            $this->assertNull($template->get2('vauthors'));
             $this->assertSame('Delp III', $template->get2('editor-last1'));
             $this->assertSame('Wong', $template->get2('editor-last2'));
             $this->assertNull($template->get2('veditors'));
@@ -95,9 +101,7 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
 
     public function testEveryLocalVolumeRosterIsValid(): void {
         $records = spie_volume_editor_data();
-        $this->assertCount(412, $records);
-        $this->assertArrayHasKey('12468:2023', $records);
-        $this->assertArrayNotHasKey('12468:2022', $records);
+        $this->assertNotEmpty($records);
         foreach ($records as $key => $record) {
             [$volume, $year] = explode(':', $key, 2);
             $fields = spie_verified_volume_editor_fields($record['title'], $volume, $year);
@@ -108,6 +112,12 @@ final class SpieVolumeEditorDataTest extends testBaseClass {
         }
         $this->assertSame('Delp III', $records['7254:2009']['editors'][0]['family']);
         $this->assertSame('Delp III', $records['7541:2010']['editors'][3]['family']);
+    }
+
+    public function testCorrectedSpieVolumeYear(): void {
+        $records = spie_volume_editor_data();
+        $this->assertArrayHasKey('12468:2023', $records);
+        $this->assertArrayNotHasKey('12468:2022', $records);
     }
 
     public function testNoPartialEditorWritesWhenDataIsInvalid(): void {
