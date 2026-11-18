@@ -26,16 +26,23 @@ python3 tools/build_spie_volume_editors.py \
 ```
 
 `--existing` is optional; existing curated records take precedence and are never
-modified. New candidates are keyed as `volume:year` and have `title`, ordered
+modified. After supplying reviewed titles, accepted new records are keyed as
+`volume:year` and have `title`, ordered
 `editors` (`given`/`family`) and `sources` (DBLP persistent record URLs).
 
 Records are selected **only** from DBLP `<proceedings>` records whose book series
 is `SPIE Proceedings` (or `Proceedings of SPIE`), with numeric volumes, valid
 years and explicit `<editor>` elements. Paper `<author>` records are not used.
-Records needing manual review go to the JSON Lines report and are not included
-in the candidate JSON. This includes titles containing an apparent venue/date,
-ambiguous editor-name splitting, conflicting existing rosters, duplicate
-volume/year keys and incomplete records.
+**Every new record requires an explicitly reviewed canonical title** supplied
+via `--titles`. By default, the JSON output therefore contains only previously
+verified `--existing` records; all new entries appear in the review report.
+This is intentional: many DBLP titles append venue/date information, including
+cases that a simple regular expression will miss. Records with ambiguous
+editor-name splitting, conflicting existing rosters, duplicate volume/year
+keys or incomplete metadata also remain in review regardless of title override.
+If an editor could not be parsed, the review candidate's `editors` array is
+empty, rather than a dangerously incomplete roster. The full ordered original
+names remain available in its `dblp_editors` array.
 
 DBLP titles often append a meeting location and date. Do **not** strip text
 blindly: the Citation Bot importer currently matches the full title exactly.

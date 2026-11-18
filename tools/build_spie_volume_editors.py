@@ -30,13 +30,27 @@ PARTICLES = {
     "du", "el", "ibn", "la", "le", "van", "von", "ten", "ter", "st",
 }
 UNSAFE = re.compile(r"[{}<>|\[\]\x00-\x1f]")
-# A DBLP proceedings title commonly includes conference place/date. Removing it
-# automatically risks truncating a genuine comma-containing publication title.
-VENUE_DATE = re.compile(
-    r",\s*(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|"
-    r"July?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
-    r"\b.*\b(?:19|20)\d{2}\.?\Z", re.IGNORECASE
+# Venue/date suffixes appear in several orders: e.g. "San Jose, CA, USA,
+# January 28, 2007" and "San Diego, CA, USA, 16-21 February 2019".
+# This is a review hint only: new records also require an explicit
+# maintainer-reviewed canonical title before inclusion in the runtime JSON.
+MONTH = re.compile(
+    r"\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|"
+    r"July?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b",
+    re.IGNORECASE,
 )
+FOUR_DIGIT_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+
+
+def title_contains_venue_date(title: str) -> bool:
+    """Detect likely meeting-date suffixes; never strip titles automatically."""
+    if "," not in title:
+        return False
+    # DBLP titles may end with a year followed by ', Proceedings' or similar.
+    # Look at the bibliographic tail to avoid interpreting a year in the
+    # principal title (e.g. 'Medical Imaging 2019: Image Processing') as a date.
+    tail = title[title.find(",") + 1:]
+    return bool(MONTH.search(tail) and FOUR_DIGIT_YEAR.search(tail))
 
 
 def normalize(value: str) -> str:
@@ -139,7 +153,7 @@ def extract(record: Any) -> tuple[str | None, dict[str, Any], list[str]] | None:
         issues.append("invalid-or-missing-volume-or-year")
     if not title or len(title) > 2000:
         issues.append("invalid-or-missing-title")
-    elif VENUE_DATE.search(title):
+    elif title_contains_venue_date(title):
         issues.append("title-includes-venue-date")
     if not source:
         issues.append("invalid-or-missing-dblp-key")
@@ -150,7 +164,8 @@ def extract(record: Any) -> tuple[str | None, dict[str, Any], list[str]] | None:
         issues.append("editor-name-needs-review")
     candidate = {
         "title": title or "",
-        "editors": [name for name in parsed if name is not None],
+        # Never expose a shortened roster as a valid-looking candidate.
+        "editors": [] if any(name is None for name in parsed) else parsed,
         "sources": [source] if source else [],
     }
     return record_id, {"data": candidate, "dblp_editors": editors, "dblp_key": key}, issues
@@ -183,8 +198,10 @@ def build(
         stats["spie"] += 1
         key, details, issues = result
         candidate = details["data"]
-        # An explicit title supplied by a maintainer replaces DBLP's often
-        # longer bibliographic title; it does not imply editor verification.
+        # DBLP's bibliographic title frequently includes location/date.
+        # The runtime importer requires the canonical proceedings title.
+        # A reviewed title is mandatory for *new* records, even if the
+        # heuristic above does not recognize a venue/date suffix.
         if key is not None and titles and key in titles:
             title = titles[key]
             if not isinstance(title, str) or not title.strip() or len(title) > 2000:
@@ -192,6 +209,8 @@ def build(
             else:
                 candidate["title"] = " ".join(title.split())
                 issues = [issue for issue in issues if issue != "title-includes-venue-date"]
+        elif key is not None and key not in (existing or {}):
+            issues.append("canonical-title-not-reviewed")
         if key is None:
             review.append({"key": None, "issues": issues, **details})
             continue

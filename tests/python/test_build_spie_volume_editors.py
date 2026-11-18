@@ -53,7 +53,7 @@ class BuildSpieEditorDataTest(unittest.TestCase):
             entry(title="S&eacute;curity of Multimedia"),
             entry(volume="6506", series="Other Publisher"),
         ])
-        output, review, stats = build(xml, self.dtd)
+        output, review, stats = build(xml, self.dtd, titles={"6505:2007": "Sécurity of Multimedia"})
         self.assertEqual(stats["proceedings"], 2)
         self.assertEqual(stats["spie"], 1)
         self.assertEqual([], review)
@@ -87,13 +87,41 @@ class BuildSpieEditorDataTest(unittest.TestCase):
         out, review, _ = build(xml, self.dtd)
         self.assertEqual({}, out)
         self.assertIn("editor-name-needs-review", review[0]["issues"])
+        self.assertEqual([], review[0]["data"]["editors"])
+
+    def test_venue_date_detection_catches_reverse_month_day_order(self):
+        xml = self.write_xml([entry(
+            title="Medical Imaging 2019: Image Processing, San Diego, CA, USA,"
+                  " 16-21 February 2019",
+        )])
+        out, review, _ = build(xml, self.dtd)
+        self.assertEqual({}, out)
+        self.assertIn("title-includes-venue-date", review[0]["issues"])
+        self.assertIn("canonical-title-not-reviewed", review[0]["issues"])
+
+    def test_canonical_title_required_even_without_venue_date(self):
+        xml = self.write_xml([entry(title="Proceedings with No Location")])
+        out, review, _ = build(xml, self.dtd)
+        self.assertEqual({}, out)
+        self.assertEqual(["canonical-title-not-reviewed"], review[0]["issues"])
+        out, review, _ = build(xml, self.dtd, titles={"6505:2007": "Proceedings with No Location"})
+        self.assertEqual([], review)
+        self.assertEqual("Proceedings with No Location", out["6505:2007"]["title"])
+
+    def test_disambiguated_editor_never_truncates_roster(self):
+        xml = self.write_xml([entry(editors=["Edward J. Delp III", "Peng Li 0047", "Ping Wah Wong"])])
+        out, review, _ = build(xml, self.dtd, titles={"6505:2007": "Volume"})
+        self.assertEqual({}, out)
+        self.assertIn("editor-name-needs-review", review[0]["issues"])
+        self.assertEqual([], review[0]["data"]["editors"])
+        self.assertEqual(3, len(review[0]["dblp_editors"]))
 
     def test_duplicate_volume_year_is_excluded(self):
         xml = self.write_xml([
             entry(key="conf/test/2007a"),
             entry(key="conf/test/2007b", editors=["Other Person"]),
         ])
-        out, review, stats = build(xml, self.dtd)
+        out, review, stats = build(xml, self.dtd, titles={"6505:2007": "Verified Title"})
         self.assertEqual({}, out)
         self.assertEqual(0, stats["new"])
         self.assertIn("duplicate-volume-year", review[0]["issues"])
@@ -123,8 +151,8 @@ class BuildSpieEditorDataTest(unittest.TestCase):
         status = main(["--xml", str(xml), "--dtd", str(self.dtd),
                        "--output", str(output), "--review", str(review)])
         self.assertEqual(0, status)
-        self.assertEqual("A Verified SPIE Volume", json.loads(output.read_text())["6505:2007"]["title"])
-        self.assertEqual("", review.read_text())
+        self.assertEqual({}, json.loads(output.read_text()))
+        self.assertIn("canonical-title-not-reviewed", review.read_text())
         with self.assertRaises(SystemExit):
             main(["--xml", str(xml), "--dtd", str(self.dtd),
                   "--output", str(xml), "--review", str(review)])
