@@ -1,13 +1,7714 @@
 {
+  "1233:1990": {
+    "title": "Medical Imaging IV: Image Processing",
+    "editors": [
+      {
+        "given": "Murray H.",
+        "family": "Loew"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/1990",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/1233"
+    ]
+  },
+  "1360:1990": {
+    "title": "Visual Communications and Image Processing '90: Fifth in a Series",
+    "editors": [
+      {
+        "given": "Murat",
+        "family": "Kunt"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/1990",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/1360"
+    ]
+  },
+  "1705:1992": {
+    "title": "Visual Information Processing",
+    "editors": [
+      {
+        "given": "Friedrich O.",
+        "family": "Huck"
+      },
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1992",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/1705"
+    ]
+  },
+  "1808:1992": {
+    "title": "Visualization in Biomedical Computing '92",
+    "editors": [
+      {
+        "given": "Richard A.",
+        "family": "Robb"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vbc/1992",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/1808"
+    ]
+  },
+  "1908:1993": {
+    "title": "Storage and Retrieval for Image and Video Databases",
+    "editors": [
+      {
+        "given": "Carlton W.",
+        "family": "Niblack"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/1993",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/1908"
+    ]
+  },
+  "1909:1993": {
+    "title": "Device-Independent Color Imaging and Imaging Systems Integration",
+    "editors": [
+      {
+        "given": "Ricardo J.",
+        "family": "Motta"
+      },
+      {
+        "given": "Hapet A.",
+        "family": "Berberian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/1993",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/1909"
+    ]
+  },
+  "1961:1993": {
+    "title": "Visual Information Processing II",
+    "editors": [
+      {
+        "given": "Friedrich O.",
+        "family": "Huck"
+      },
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1993",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/1961"
+    ]
+  },
+  "2094:1993": {
+    "title": "Visual Communications and Image Processing '93",
+    "editors": [
+      {
+        "given": "Barry G.",
+        "family": "Haskell"
+      },
+      {
+        "given": "Hsueh-Ming",
+        "family": "Hang"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/1993",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2094"
+    ]
+  },
+  "2170:1994": {
+    "title": "Device-Independent Color Imaging",
+    "editors": [
+      {
+        "given": "Eric",
+        "family": "Walowit"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/1994",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2170"
+    ]
+  },
+  "2181:1994": {
+    "title": "Document Recognition",
+    "editors": [
+      {
+        "given": "Luc M.",
+        "family": "Vincent"
+      },
+      {
+        "given": "Theo",
+        "family": "Pavlidis"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/1994",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2181"
+    ]
+  },
+  "2185:1994": {
+    "title": "Storage and Retrieval for Image and Video Databases II",
+    "editors": [
+      {
+        "given": "Carlton W.",
+        "family": "Niblack"
+      },
+      {
+        "given": "Ramesh C.",
+        "family": "Jain"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/1994",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2185"
+    ]
+  },
+  "2239:1994": {
+    "title": "Visual Information Processing III",
+    "editors": [
+      {
+        "given": "Friedrich O.",
+        "family": "Huck"
+      },
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1994",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2239"
+    ]
+  },
+  "2359:1994": {
+    "title": "Visualization in Biomedical Computing 1994",
+    "editors": [
+      {
+        "given": "Richard A.",
+        "family": "Robb"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vbc/1994",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2359"
+    ]
+  },
+  "2414:1995": {
+    "title": "Device-Independent Color Imaging II",
+    "editors": [
+      {
+        "given": "Eric",
+        "family": "Walowit"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/1995",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2414"
+    ]
+  },
+  "2420:1995": {
+    "title": "Storage and Retrieval for Image and Video Databases III",
+    "editors": [
+      {
+        "given": "Wayne",
+        "family": "Niblack"
+      },
+      {
+        "given": "Ramesh C.",
+        "family": "Jain"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/1995",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2420"
+    ]
+  },
+  "2422:1995": {
+    "title": "Document Recognition II",
+    "editors": [
+      {
+        "given": "Luc M.",
+        "family": "Vincent"
+      },
+      {
+        "given": "Henry S.",
+        "family": "Baird"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/1995",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2422"
+    ]
+  },
+  "2488:1995": {
+    "title": "Visual Information Processing IV",
+    "editors": [
+      {
+        "given": "Friedrich O.",
+        "family": "Huck"
+      },
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1995",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2488"
+    ]
+  },
+  "2591:1995": {
+    "title": "Mobile Robots X",
+    "editors": [
+      {
+        "given": "William J.",
+        "family": "Wolfe"
+      },
+      {
+        "given": "Chase H.",
+        "family": "Kenyon"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/1995",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2591"
+    ]
+  },
+  "2657:1996": {
+    "title": "Human Vision and Electronic Imaging",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Jan P.",
+        "family": "Allebach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2657"
+    ]
+  },
+  "2658:1996": {
+    "title": "Color Imaging: Device-Independent Color, Color Hard Copy, and Graphic Arts",
+    "editors": [
+      {
+        "given": "Jan",
+        "family": "Bares"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2658"
+    ]
+  },
+  "2660:1996": {
+    "title": "Document Recognition III",
+    "editors": [
+      {
+        "given": "Luc M.",
+        "family": "Vincent"
+      },
+      {
+        "given": "Jonathan J.",
+        "family": "Hull"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2660"
+    ]
+  },
+  "2662:1996": {
+    "title": "Nonlinear Image Processing VII",
+    "editors": [
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      },
+      {
+        "given": "Jaakko T.",
+        "family": "Astola"
+      },
+      {
+        "given": "Harold G.",
+        "family": "Longbotham"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/einip/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2662"
+    ]
+  },
+  "2670:1996": {
+    "title": "Storage and Retrieval for Still Image and Video Databases IV",
+    "editors": [
+      {
+        "given": "Ishwar K.",
+        "family": "Sethi"
+      },
+      {
+        "given": "Ramesh C.",
+        "family": "Jain"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2670"
+    ]
+  },
+  "2710:1996": {
+    "title": "Medical Imaging 1996: Image Processing",
+    "editors": [
+      {
+        "given": "Murray H.",
+        "family": "Loew"
+      },
+      {
+        "given": "Kenneth M.",
+        "family": "Hanson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2710"
+    ]
+  },
+  "2753:1996": {
+    "title": "Visual Information Processing V",
+    "editors": [
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      },
+      {
+        "given": "Stephen K.",
+        "family": "Park"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2753"
+    ]
+  },
+  "2903:1996": {
+    "title": "Mobile Robots XI and Automated Vehicle Control Systems",
+    "editors": [
+      {
+        "given": "Chase H.",
+        "family": "Kenyon"
+      },
+      {
+        "given": "Pushkin",
+        "family": "Kachroo"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/1996",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/2903"
+    ]
+  },
+  "3016:1997": {
+    "title": "Human Vision and Electronic Imaging II",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3016"
+    ]
+  },
+  "3018:1997": {
+    "title": "Color Imaging: Device-Independent Color, Color Hard Copy, and Graphic Arts II",
+    "editors": [
+      {
+        "given": "Giordano B.",
+        "family": "Beretta"
+      },
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3018"
+    ]
+  },
+  "3022:1997": {
+    "title": "Storage and Retrieval for Image and Video Databases V",
+    "editors": [
+      {
+        "given": "Ishwar K.",
+        "family": "Sethi"
+      },
+      {
+        "given": "Ramesh C.",
+        "family": "Jain"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3022"
+    ]
+  },
+  "3023:1997": {
+    "title": "Three-Dimensional Image Capture",
+    "editors": [
+      {
+        "given": "Richard N.",
+        "family": "Ellson"
+      },
+      {
+        "given": "Joseph H.",
+        "family": "Nurre"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3023"
+    ]
+  },
+  "3027:1997": {
+    "title": "Document Recognition IV",
+    "editors": [
+      {
+        "given": "Luc M.",
+        "family": "Vincent"
+      },
+      {
+        "given": "Jonathan J.",
+        "family": "Hull"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3027"
+    ]
+  },
+  "3031:1997": {
+    "title": "Medical Imaging 1997: Image Display",
+    "editors": [
+      {
+        "given": "Yongmin",
+        "family": "Kim"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3031"
+    ]
+  },
+  "3074:1997": {
+    "title": "Visual Information Processing VI",
+    "editors": [
+      {
+        "given": "Stephen K.",
+        "family": "Park"
+      },
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3074"
+    ]
+  },
+  "3210:1997": {
+    "title": "Mobile Robots XII",
+    "editors": [
+      {
+        "given": "Douglas W.",
+        "family": "Gage"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3210"
+    ]
+  },
+  "3233:1997": {
+    "title": "Broadband Networking Technologies",
+    "editors": [
+      {
+        "given": "Seyhan",
+        "family": "Civanlar"
+      },
+      {
+        "given": "Indra",
+        "family": "Widjaja"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/bnt/1997",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3233"
+    ]
+  },
+  "3299:1998": {
+    "title": "Human Vision and Electronic Imaging III",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3299"
+    ]
+  },
+  "3300:1998": {
+    "title": "Color Imaging: Device-Independent Color, Color Hardcopy, and Graphic Arts III",
+    "editors": [
+      {
+        "given": "Giordano B.",
+        "family": "Beretta"
+      },
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3300"
+    ]
+  },
+  "3305:1998": {
+    "title": "Document Recognition V",
+    "editors": [
+      {
+        "given": "Daniel P.",
+        "family": "Lopresti"
+      },
+      {
+        "given": "Jiangying",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3305"
+    ]
+  },
+  "3312:1998": {
+    "title": "Storage and Retrieval for Image and Video Databases VI",
+    "editors": [
+      {
+        "given": "Ishwar K.",
+        "family": "Sethi"
+      },
+      {
+        "given": "Ramesh C.",
+        "family": "Jain"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3312"
+    ]
+  },
+  "3313:1998": {
+    "title": "Three-Dimensional Image Capture and Applications",
+    "editors": [
+      {
+        "given": "Richard N.",
+        "family": "Ellson"
+      },
+      {
+        "given": "Joseph H.",
+        "family": "Nurre"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3313"
+    ]
+  },
+  "3338:1998": {
+    "title": "Medical Imaging 1998: Image Processing",
+    "editors": [
+      {
+        "given": "Kenneth M.",
+        "family": "Hanson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3338"
+    ]
+  },
+  "3387:1998": {
+    "title": "Visual Information Processing VII",
+    "editors": [
+      {
+        "given": "Stephen K.",
+        "family": "Park"
+      },
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3387"
+    ]
+  },
+  "3408:1998": {
+    "title": "Broadband European Networks and Multimedia Services",
+    "editors": [
+      {
+        "given": "Stephan",
+        "family": "Fischer"
+      },
+      {
+        "given": "Ralf",
+        "family": "Steinmetz"
+      },
+      {
+        "given": "Heinrich J.",
+        "family": "Stüttgen"
+      },
+      {
+        "given": "Harmen R.",
+        "family": "van As"
+      },
+      {
+        "given": "Roberto",
+        "family": "Vercelli"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/syben/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3408"
+    ]
+  },
+  "3409:1998": {
+    "title": "Electronic Imaging: Processing, Printing, and Publishing in Color",
+    "editors": [
+      {
+        "given": "Jan",
+        "family": "Bares"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3409"
+    ]
+  },
+  "3497:1998": {
+    "title": "SAR Image Analysis, Modeling, and Techniques",
+    "editors": [
+      {
+        "given": "Francesco",
+        "family": "Posa"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3497"
+    ]
+  },
+  "3525:1998": {
+    "title": "Mobile Robots XIII and Intelligent Transportation Systems",
+    "editors": [
+      {
+        "given": "Howie",
+        "family": "Choset"
+      },
+      {
+        "given": "Douglas W.",
+        "family": "Gage"
+      },
+      {
+        "given": "Pushkin",
+        "family": "Kachroo"
+      },
+      {
+        "given": "Mikhail",
+        "family": "Kourjanski"
+      },
+      {
+        "given": "Marten J.",
+        "family": "de Vries"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/1998",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3525"
+    ]
+  },
+  "3640:1999": {
+    "title": "Three-Dimensional Image Capture and Applications II",
+    "editors": [
+      {
+        "given": "Joseph H.",
+        "family": "Nurre"
+      },
+      {
+        "given": "Brian D.",
+        "family": "Corner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3640"
+    ]
+  },
+  "3644:1999": {
+    "title": "Human Vision and Electronic Imaging IV",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3644"
+    ]
+  },
+  "3646:1999": {
+    "title": "Nonlinear Image Processing X",
+    "editors": [
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      },
+      {
+        "given": "Jaakko T.",
+        "family": "Astola"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/einip/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3646"
+    ]
+  },
+  "3648:1999": {
+    "title": "Color Imaging: Device-Independent Color, Color Hardcopy, and Graphic Arts IV",
+    "editors": [
+      {
+        "given": "Giordano B.",
+        "family": "Beretta"
+      },
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3648"
+    ]
+  },
+  "3651:1999": {
+    "title": "Document Recognition and Retrieval VI",
+    "editors": [
+      {
+        "given": "Daniel P.",
+        "family": "Lopresti"
+      },
+      {
+        "given": "Jiangying",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3651"
+    ]
+  },
+  "3656:1999": {
+    "title": "Storage and Retrieval for Image and Video Databases VII",
+    "editors": [
+      {
+        "given": "Minerva M.",
+        "family": "Yeung"
+      },
+      {
+        "given": "Boon-Lock",
+        "family": "Yeo"
+      },
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3656"
+    ]
+  },
+  "3657:1999": {
+    "title": "Security and Watermarking of Multimedia Contents",
+    "editors": [
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      },
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3657"
+    ]
+  },
+  "3661:1999": {
+    "title": "Medical Imaging 1999: Image Processing",
+    "editors": [
+      {
+        "given": "Kenneth M.",
+        "family": "Hanson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3661"
+    ]
+  },
+  "3695:1999": {
+    "title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3695"
+    ]
+  },
+  "3716:1999": {
+    "title": "Visual Information Processing VIII",
+    "editors": [
+      {
+        "given": "Stephen K.",
+        "family": "Park"
+      },
+      {
+        "given": "Richard D.",
+        "family": "Juday"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3716"
+    ]
+  },
+  "3838:1999": {
+    "title": "Mobile Robots XIV",
+    "editors": [
+      {
+        "given": "Douglas W.",
+        "family": "Gage"
+      },
+      {
+        "given": "Howie",
+        "family": "Choset"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/1999",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3838"
+    ]
+  },
+  "3958:2000": {
+    "title": "Three-Dimensional Image Capture and Applications III",
+    "editors": [
+      {
+        "given": "Brian D.",
+        "family": "Corner"
+      },
+      {
+        "given": "Joseph H.",
+        "family": "Nurre"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3958"
+    ]
+  },
+  "3959:2000": {
+    "title": "Human Vision and Electronic Imaging V",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3959"
+    ]
+  },
+  "3961:2000": {
+    "title": "Nonlinear Image Processing XI",
+    "editors": [
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      },
+      {
+        "given": "Jaakko T.",
+        "family": "Astola"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/einip/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3961"
+    ]
+  },
+  "3963:2000": {
+    "title": "Color Imaging: Device-Independent Color, Color Hardcopy, and Graphic Arts V",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3963"
+    ]
+  },
+  "3967:2000": {
+    "title": "Document Recognition and Retrieval VII",
+    "editors": [
+      {
+        "given": "Daniel P.",
+        "family": "Lopresti"
+      },
+      {
+        "given": "Jiangying",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3967"
+    ]
+  },
+  "3971:2000": {
+    "title": "Security and Watermarking of Multimedia Contents II",
+    "editors": [
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      },
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3971"
+    ]
+  },
+  "3972:2000": {
+    "title": "Storage and Retrieval for Media Databases 2000",
+    "editors": [
+      {
+        "given": "Minerva M.",
+        "family": "Yeung"
+      },
+      {
+        "given": "Boon-Lock",
+        "family": "Yeo"
+      },
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3972"
+    ]
+  },
+  "3979:2000": {
+    "title": "Medical Imaging 2000: Image Processing",
+    "editors": [
+      {
+        "given": "Kenneth M.",
+        "family": "Hanson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/3979"
+    ]
+  },
+  "4041:2000": {
+    "title": "Visual Information Processing IX",
+    "editors": [
+      {
+        "given": "Stephen K.",
+        "family": "Park"
+      },
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4041"
+    ]
+  },
+  "4057:2000": {
+    "title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology II",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4057"
+    ]
+  },
+  "4067:2000": {
+    "title": "Visual Communications and Image Processing 2000",
+    "editors": [
+      {
+        "given": "King N.",
+        "family": "Ngan"
+      },
+      {
+        "given": "Thomas",
+        "family": "Sikora"
+      },
+      {
+        "given": "Ming-Ting",
+        "family": "Sun"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4067"
+    ]
+  },
+  "4195:2000": {
+    "title": "Mobile Robots XV and Telemanipulator and Telepresence Technologies VII",
+    "editors": [
+      {
+        "given": "Howie",
+        "family": "Choset"
+      },
+      {
+        "given": "Douglas W.",
+        "family": "Gage"
+      },
+      {
+        "given": "Matthew R.",
+        "family": "Stein"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/2000",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4195"
+    ]
+  },
+  "4298:2001": {
+    "title": "Three-Dimensional Image Capture and Applications IV",
+    "editors": [
+      {
+        "given": "Brian D.",
+        "family": "Corner"
+      },
+      {
+        "given": "Joseph H.",
+        "family": "Nurre"
+      },
+      {
+        "given": "Roy P.",
+        "family": "Pargas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4298"
+    ]
+  },
+  "4299:2001": {
+    "title": "Human Vision and Electronic Imaging VI",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4299"
+    ]
+  },
+  "4300:2001": {
+    "title": "Color Imaging: Device-Independent Color, Color Hardcopy, and Graphic Arts VI",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4300"
+    ]
+  },
+  "4307:2001": {
+    "title": "Document Recognition and Retrieval VIII",
+    "editors": [
+      {
+        "given": "Paul B.",
+        "family": "Kantor"
+      },
+      {
+        "given": "Daniel P.",
+        "family": "Lopresti"
+      },
+      {
+        "given": "Jiangying",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4307"
+    ]
+  },
+  "4310:2000": {
+    "title": "Visual Communications and Image Processing 2001",
+    "editors": [
+      {
+        "given": "Bernd",
+        "family": "Girod"
+      },
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Eckehard G.",
+        "family": "Steinbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4310"
+    ]
+  },
+  "4314:2001": {
+    "title": "Security and Watermarking of Multimedia Contents III",
+    "editors": [
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      },
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4314"
+    ]
+  },
+  "4315:2001": {
+    "title": "Storage and Retrieval for Media Databases 2001",
+    "editors": [
+      {
+        "given": "Minerva M.",
+        "family": "Yeung"
+      },
+      {
+        "given": "Chung-Sheng",
+        "family": "Li"
+      },
+      {
+        "given": "Rainer",
+        "family": "Lienhart"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4315"
+    ]
+  },
+  "4319:2001": {
+    "title": "Medical Imaging 2001: Visualization, Display, and Image-Guided Procedures",
+    "editors": [
+      {
+        "given": "Seong Ki",
+        "family": "Mun"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4319"
+    ]
+  },
+  "4322:2001": {
+    "title": "Medical Imaging 2001: Image Processing",
+    "editors": [
+      {
+        "given": "Milan",
+        "family": "Sonka"
+      },
+      {
+        "given": "Kenneth M.",
+        "family": "Hanson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4322"
+    ]
+  },
+  "4384:2001": {
+    "title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology III",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4384"
+    ]
+  },
+  "4388:2001": {
+    "title": "Visual Information Processing X",
+    "editors": [
+      {
+        "given": "Stephen K.",
+        "family": "Park"
+      },
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Robert A.",
+        "family": "Schowengerdt"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4388"
+    ]
+  },
+  "4573:2001": {
+    "title": "Mobile Robots XVI",
+    "editors": [
+      {
+        "given": "Douglas W.",
+        "family": "Gage"
+      },
+      {
+        "given": "Howie",
+        "family": "Choset"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/2001",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4573"
+    ]
+  },
+  "4661:2002": {
+    "title": "Three-Dimensional Image Capture and Applications V",
+    "editors": [
+      {
+        "given": "Brian D.",
+        "family": "Corner"
+      },
+      {
+        "given": "Roy P.",
+        "family": "Pargas"
+      },
+      {
+        "given": "Joseph H.",
+        "family": "Nurre"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4661"
+    ]
+  },
+  "4662:2002": {
+    "title": "Human Vision and Electronic Imaging VII",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4662"
+    ]
+  },
+  "4663:2002": {
+    "title": "Color Imaging: Device-Independent Color, Color Hardcopy, and Applications VII",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4663"
+    ]
+  },
+  "4665:2002": {
+    "title": "Visualization and Data Analysis 2002",
+    "editors": [
+      {
+        "given": "Robert F.",
+        "family": "Erbacher"
+      },
+      {
+        "given": "Philip C.",
+        "family": "Chen"
+      },
+      {
+        "given": "Matti",
+        "family": "Gröhn"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      },
+      {
+        "given": "Craig M.",
+        "family": "Wittenbrink"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4665"
+    ]
+  },
+  "4667:2002": {
+    "title": "Image Processing: Algorithms and Systems",
+    "editors": [
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      },
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4667"
+    ]
+  },
+  "4670:2002": {
+    "title": "Document Recognition and Retrieval IX",
+    "editors": [
+      {
+        "given": "Paul B.",
+        "family": "Kantor"
+      },
+      {
+        "given": "Tapas",
+        "family": "Kanungo"
+      },
+      {
+        "given": "Jiangying",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4670"
+    ]
+  },
+  "4671:2002": {
+    "title": "Visual Communications and Image Processing 2002",
+    "editors": [
+      {
+        "given": "C.-C. Jay",
+        "family": "Kuo"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4671"
+    ]
+  },
+  "4675:2002": {
+    "title": "Security and Watermarking of Multimedia Contents IV",
+    "editors": [
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4675"
+    ]
+  },
+  "4676:2002": {
+    "title": "Storage and Retrieval for Media Databases 2002",
+    "editors": [
+      {
+        "given": "Minerva M.",
+        "family": "Yeung"
+      },
+      {
+        "given": "Chung-Sheng",
+        "family": "Li"
+      },
+      {
+        "given": "Rainer",
+        "family": "Lienhart"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4676"
+    ]
+  },
+  "4681:2002": {
+    "title": "Medical Imaging 2002: Visualization, Image-Guided Procedures, and Display",
+    "editors": [
+      {
+        "given": "Seong Ki",
+        "family": "Mun"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4681"
+    ]
+  },
+  "4684:2002": {
+    "title": "Medical Imaging 2002: Image Processing",
+    "editors": [
+      {
+        "given": "Milan",
+        "family": "Sonka"
+      },
+      {
+        "given": "J. Michael",
+        "family": "Fitzpatrick"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4684"
+    ]
+  },
+  "4730:2002": {
+    "title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology IV",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4730"
+    ]
+  },
+  "4736:2002": {
+    "title": "Visual Information Processing XI",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Robert A.",
+        "family": "Schowengerdt"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4736"
+    ]
+  },
+  "4883:2002": {
+    "title": "SAR Image Analysis, Modeling, and Techniques V",
+    "editors": [
+      {
+        "given": "Francesco",
+        "family": "Posa"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/4883"
+    ]
+  },
+  "5007:2003": {
+    "title": "Human Vision and Electronic Imaging VIII",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5007"
+    ]
+  },
+  "5008:2003": {
+    "title": "Color Imaging VIII: Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5008"
+    ]
+  },
+  "5009:2003": {
+    "title": "Visualization and Data Analysis 2003",
+    "editors": [
+      {
+        "given": "Robert F.",
+        "family": "Erbacher"
+      },
+      {
+        "given": "Philip C.",
+        "family": "Chen"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      },
+      {
+        "given": "Matti T.",
+        "family": "Gröhn"
+      },
+      {
+        "given": "Katy",
+        "family": "Börner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5009"
+    ]
+  },
+  "5010:2003": {
+    "title": "Document Recognition and Retrieval X",
+    "editors": [
+      {
+        "given": "Tapas",
+        "family": "Kanungo"
+      },
+      {
+        "given": "Elisa H. Barney",
+        "family": "Smith"
+      },
+      {
+        "given": "Jianying",
+        "family": "Hu"
+      },
+      {
+        "given": "Paul B.",
+        "family": "Kantor"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5010"
+    ]
+  },
+  "5014:2003": {
+    "title": "Image Processing: Algorithms and Systems II",
+    "editors": [
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      },
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5014"
+    ]
+  },
+  "5016:2003": {
+    "title": "Computational Imaging",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Robert L.",
+        "family": "Stevenson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5016"
+    ]
+  },
+  "5020:2003": {
+    "title": "Security and Watermarking of Multimedia Contents V",
+    "editors": [
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5020"
+    ]
+  },
+  "5021:2003": {
+    "title": "Storage and Retrieval for Media Databases 2003",
+    "editors": [
+      {
+        "given": "Minerva M.",
+        "family": "Yeung"
+      },
+      {
+        "given": "Rainer",
+        "family": "Lienhart"
+      },
+      {
+        "given": "Chung-Sheng",
+        "family": "Li"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5021"
+    ]
+  },
+  "5029:2003": {
+    "title": "Medical Imaging 2003: Visualization, Image-Guided Procedures, and Display",
+    "editors": [
+      {
+        "given": "Robert L.",
+        "family": "Galloway"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5029"
+    ]
+  },
+  "5032:2003": {
+    "title": "Medical Imaging 2003: Image Processing",
+    "editors": [
+      {
+        "given": "Milan",
+        "family": "Sonka"
+      },
+      {
+        "given": "J. Michael",
+        "family": "Fitzpatrick"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5032"
+    ]
+  },
+  "5098:2003": {
+    "title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology V",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5098"
+    ]
+  },
+  "5108:2003": {
+    "title": "Visual Information Processing XII",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Robert A.",
+        "family": "Schowengerdt"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5108"
+    ]
+  },
+  "5150:2003": {
+    "title": "Visual Communications and Image Processing 2003",
+    "editors": [
+      {
+        "given": "Touradj",
+        "family": "Ebrahimi"
+      },
+      {
+        "given": "Thomas",
+        "family": "Sikora"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/2003",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5150"
+    ]
+  },
+  "5292:2004": {
+    "title": "Human Vision and Electronic Imaging IX",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5292"
+    ]
+  },
+  "5293:2004": {
+    "title": "Color Imaging IX: Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5293"
+    ]
+  },
+  "5295:2004": {
+    "title": "Visualization and Data Analysis 2004",
+    "editors": [
+      {
+        "given": "Robert F.",
+        "family": "Erbacher"
+      },
+      {
+        "given": "Philip C.",
+        "family": "Chen"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      },
+      {
+        "given": "Matti T.",
+        "family": "Gröhn"
+      },
+      {
+        "given": "Katy",
+        "family": "Börner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5295"
+    ]
+  },
+  "5296:2004": {
+    "title": "Document Recognition and Retrieval XI",
+    "editors": [
+      {
+        "given": "Elisa H. Barney",
+        "family": "Smith"
+      },
+      {
+        "given": "Jianying",
+        "family": "Hu"
+      },
+      {
+        "given": "James",
+        "family": "Allan"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5296"
+    ]
+  },
+  "5298:2004": {
+    "title": "Image Processing: Algorithms and Systems III",
+    "editors": [
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      },
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5298"
+    ]
+  },
+  "5299:2004": {
+    "title": "Computational Imaging II",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Eric L.",
+        "family": "Miller"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5299"
+    ]
+  },
+  "5302:2004": {
+    "title": "Three-Dimensional Image Capture and Applications VI",
+    "editors": [
+      {
+        "given": "Brian D.",
+        "family": "Corner"
+      },
+      {
+        "given": "Peng",
+        "family": "Li"
+      },
+      {
+        "given": "Roy P.",
+        "family": "Pargas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5302"
+    ]
+  },
+  "5306:2004": {
+    "title": "Security, Steganography, and Watermarking of Multimedia Contents VI",
+    "editors": [
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5306"
+    ]
+  },
+  "5307:2004": {
+    "title": "Storage and Retrieval Methods and Applications for Multimedia 2004",
+    "editors": [
+      {
+        "given": "Minerva M.",
+        "family": "Yeung"
+      },
+      {
+        "given": "Rainer",
+        "family": "Lienhart"
+      },
+      {
+        "given": "Chung-Sheng",
+        "family": "Li"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5307"
+    ]
+  },
+  "5308:2004": {
+    "title": "Visual Communications and Image Processing 2004",
+    "editors": [
+      {
+        "given": "Sethuraman",
+        "family": "Panchanathan"
+      },
+      {
+        "given": "Bhaskaran",
+        "family": "Vasudev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5308"
+    ]
+  },
+  "5367:2004": {
+    "title": "Medical Imaging 2004: Visualization, Image-Guided Procedures, and Display",
+    "editors": [
+      {
+        "given": "Robert L.",
+        "family": "Galloway"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5367"
+    ]
+  },
+  "5370:2004": {
+    "title": "Medical Imaging 2004: Image Processing",
+    "editors": [
+      {
+        "given": "J. Michael",
+        "family": "Fitzpatrick"
+      },
+      {
+        "given": "Milan",
+        "family": "Sonka"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5370"
+    ]
+  },
+  "5433:2004": {
+    "title": "Data Mining and Knowledge Discovery: Theory, Tools, and Technology VI",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5433"
+    ]
+  },
+  "5438:2004": {
+    "title": "Visual Information Processing XIII",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Robert A.",
+        "family": "Schowengerdt"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2004",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5438"
+    ]
+  },
+  "5609:2004": {
+    "title": "Mobile Robots XVII",
+    "editors": [
+      {
+        "given": "Douglas W.",
+        "family": "Gage"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mr/2002",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5609"
+    ]
+  },
+  "5666:2005": {
+    "title": "Human Vision and Electronic Imaging X",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      },
+      {
+        "given": "Scott J.",
+        "family": "Daly"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5666"
+    ]
+  },
+  "5667:2005": {
+    "title": "Color Imaging X: Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5667"
+    ]
+  },
+  "5669:2005": {
+    "title": "Visualization and Data Analysis 2005",
+    "editors": [
+      {
+        "given": "Robert F.",
+        "family": "Erbacher"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      },
+      {
+        "given": "Matti T.",
+        "family": "Gröhn"
+      },
+      {
+        "given": "Katy",
+        "family": "Börner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5669"
+    ]
+  },
+  "5672:2006": {
+    "title": "Image Processing: Algorithms and Systems IV",
+    "editors": [
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      },
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5672"
+    ]
+  },
+  "5674:2005": {
+    "title": "Computational Imaging III",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Eric L.",
+        "family": "Miller"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5674"
+    ]
+  },
+  "5676:2005": {
+    "title": "Document Recognition and Retrieval XII",
+    "editors": [
+      {
+        "given": "Elisa H. Barney",
+        "family": "Smith"
+      },
+      {
+        "given": "Kazem",
+        "family": "Taghva"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5676"
+    ]
+  },
+  "5678:2005": {
+    "title": "Digital Photography",
+    "editors": [
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      },
+      {
+        "given": "Jeffrey M.",
+        "family": "DiCarlo"
+      },
+      {
+        "given": "Ricardo J.",
+        "family": "Motta"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5678"
+    ]
+  },
+  "5681:2005": {
+    "title": "Security, Steganography, and Watermarking of Multimedia Contents VII",
+    "editors": [
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5681"
+    ]
+  },
+  "5682:2005": {
+    "title": "Storage and Retrieval Methods and Applications for Multimedia 2005",
+    "editors": [
+      {
+        "given": "Rainer",
+        "family": "Lienhart"
+      },
+      {
+        "given": "Noboru",
+        "family": "Babaguchi"
+      },
+      {
+        "given": "Edward Y.",
+        "family": "Chang"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieSR/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5682"
+    ]
+  },
+  "5685:2005": {
+    "title": "Image and Video Communications and Processing 2005",
+    "editors": [
+      {
+        "given": "Amir",
+        "family": "Said"
+      },
+      {
+        "given": "John G.",
+        "family": "Apostolopoulos"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/eiivcp/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5685"
+    ]
+  },
+  "5744:2005": {
+    "title": "Medical Imaging 2005: Visualization, Image-Guided Procedures, and Display",
+    "editors": [
+      {
+        "given": "Robert L.",
+        "family": "Galloway"
+      },
+      {
+        "given": "Kevin R.",
+        "family": "Cleary"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5744"
+    ]
+  },
+  "5747:2005": {
+    "title": "Medical Imaging 2005: Image Processing",
+    "editors": [
+      {
+        "given": "J. Michael",
+        "family": "Fitzpatrick"
+      },
+      {
+        "given": "Joseph M.",
+        "family": "Reinhardt"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5747"
+    ]
+  },
+  "5812:2005": {
+    "title": "Data Mining, Intrusion Detection, Information Assurance, and Data Networks Security 2005",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5812"
+    ]
+  },
+  "5817:2005": {
+    "title": "Visual Information Processing XIV",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Robert A.",
+        "family": "Schowengerdt"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2005",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/5817"
+    ]
+  },
+  "6056:2006": {
+    "title": "Three-Dimensional Image Capture and Applications VII",
+    "editors": [
+      {
+        "given": "Brian D.",
+        "family": "Corner"
+      },
+      {
+        "given": "Peng",
+        "family": "Li"
+      },
+      {
+        "given": "Matthew",
+        "family": "Tocheri"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6056"
+    ]
+  },
+  "6057:2006": {
+    "title": "Human Vision and Electronic Imaging XI",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      },
+      {
+        "given": "Scott J.",
+        "family": "Daly"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6057"
+    ]
+  },
+  "6058:2006": {
+    "title": "Color Imaging XI: Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6058"
+    ]
+  },
+  "6060:2006": {
+    "title": "Visualization and Data Analysis 2006",
+    "editors": [
+      {
+        "given": "Robert F.",
+        "family": "Erbacher"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      },
+      {
+        "given": "Matti T.",
+        "family": "Gröhn"
+      },
+      {
+        "given": "Katy",
+        "family": "Börner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6060"
+    ]
+  },
+  "6063:2006": {
+    "title": "Real-Time Image Processing 2006",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Phillip A.",
+        "family": "Laplante"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6063"
+    ]
+  },
+  "6065:2006": {
+    "title": "Computational Imaging IV",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Eric L.",
+        "family": "Miller"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6065"
+    ]
+  },
+  "6067:2006": {
+    "title": "Document Recognition and Retrieval XIII",
+    "editors": [
+      {
+        "given": "Kazem",
+        "family": "Taghva"
+      },
+      {
+        "given": "Xiaofan",
+        "family": "Lin"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6067"
+    ]
+  },
+  "6069:2006": {
+    "title": "Digital Photography II",
+    "editors": [
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      },
+      {
+        "given": "Jeffrey M.",
+        "family": "DiCarlo"
+      },
+      {
+        "given": "Russel A.",
+        "family": "Martin"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6069"
+    ]
+  },
+  "6072:2006": {
+    "title": "Security, Steganography, and Watermarking of Multimedia Contents VIII",
+    "editors": [
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6072"
+    ]
+  },
+  "6141:2006": {
+    "title": "Medical Imaging 2006: Visualization, Image-Guided Procedures, and Display",
+    "editors": [
+      {
+        "given": "Kevin R.",
+        "family": "Cleary"
+      },
+      {
+        "given": "Robert L.",
+        "family": "Galloway Jr."
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6141"
+    ]
+  },
+  "6144:2006": {
+    "title": "Medical Imaging 2006: Image Processing",
+    "editors": [
+      {
+        "given": "Joseph M.",
+        "family": "Reinhardt"
+      },
+      {
+        "given": "Josien P. W.",
+        "family": "Pluim"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6144"
+    ]
+  },
+  "6241:2006": {
+    "title": "Data Mining, Intrusion Detection, Information Assurance, and Data Networks Security 2006",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6241"
+    ]
+  },
+  "6246:2006": {
+    "title": "Visual Information Processing XV",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Neifeld"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2006",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6246"
+    ]
+  },
+  "6492:2007": {
+    "title": "Human Vision and Electronic Imaging XII",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      },
+      {
+        "given": "Scott J.",
+        "family": "Daly"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6492"
+    ]
+  },
+  "6493:2007": {
+    "title": "Color Imaging XII: Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6493"
+    ]
+  },
+  "6495:2007": {
+    "title": "Visualization and Data Analysis 2007",
+    "editors": [
+      {
+        "given": "Robert F.",
+        "family": "Erbacher"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      },
+      {
+        "given": "Matti T.",
+        "family": "Gröhn"
+      },
+      {
+        "given": "Katy",
+        "family": "Börner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6495"
+    ]
+  },
+  "6496:2007": {
+    "title": "Real-Time Image Processing 2007",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6496"
+    ]
+  },
+  "6497:2007": {
+    "title": "Image Processing: Algorithms and Systems V",
+    "editors": [
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      },
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6497"
+    ]
+  },
+  "6498:2007": {
+    "title": "Computational Imaging V",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Eric L.",
+        "family": "Miller"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6498"
+    ]
+  },
+  "6500:2007": {
+    "title": "Document Recognition and Retrieval XIV",
+    "editors": [
+      {
+        "given": "Xiaofan",
+        "family": "Lin"
+      },
+      {
+        "given": "Berrin A.",
+        "family": "Yanikoglu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6500"
+    ]
+  },
+  "6502:2007": {
+    "title": "Digital Photography III",
+    "editors": [
+      {
+        "given": "Russel A.",
+        "family": "Martin"
+      },
+      {
+        "given": "Jeffrey M.",
+        "family": "DiCarlo"
+      },
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6502"
+    ]
+  },
   "6505:2007": {
     "title": "Security, Steganography, and Watermarking of Multimedia Contents IX",
     "editors": [
-      { "given": "Edward J.", "family": "Delp III" },
-      { "given": "Ping Wah", "family": "Wong" }
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      }
     ],
     "sources": [
       "https://dblp.org/rec/conf/sswmc/2007",
       "https://www.cerias.purdue.edu/apps/reports_and_papers/view/3269"
+    ]
+  },
+  "6508:2007": {
+    "title": "Visual Communications and Image Processing 2007",
+    "editors": [
+      {
+        "given": "Chang Wen",
+        "family": "Chen"
+      },
+      {
+        "given": "Dan",
+        "family": "Schonfeld"
+      },
+      {
+        "given": "Jiebo",
+        "family": "Luo"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6508"
+    ]
+  },
+  "6509:2007": {
+    "title": "Medical Imaging 2007: Visualization and Image-Guided Procedures",
+    "editors": [
+      {
+        "given": "Kevin R.",
+        "family": "Cleary"
+      },
+      {
+        "given": "Michael I.",
+        "family": "Miga"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6509"
+    ]
+  },
+  "6512:2007": {
+    "title": "Medical Imaging 2007: Image Processing",
+    "editors": [
+      {
+        "given": "Josien P. W.",
+        "family": "Pluim"
+      },
+      {
+        "given": "Joseph M.",
+        "family": "Reinhardt"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6512"
+    ]
+  },
+  "6514:2007": {
+    "title": "Medical Imaging 2007: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Maryellen L.",
+        "family": "Giger"
+      },
+      {
+        "given": "Nico",
+        "family": "Karssemeijer"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6514"
+    ]
+  },
+  "6570:2007": {
+    "title": "Data Mining, Intrusion Detection, Information Assurance, and Data Networks Security 2007",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6570"
+    ]
+  },
+  "6575:2007": {
+    "title": "Visual Information Processing XVI",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Neifeld"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2007",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6575"
+    ]
+  },
+  "6805:2008": {
+    "title": "Three-Dimensional Image Capture and Applications 2008",
+    "editors": [
+      {
+        "given": "Brian D.",
+        "family": "Corner"
+      },
+      {
+        "given": "Masaaki",
+        "family": "Mochimaru"
+      },
+      {
+        "given": "Robert",
+        "family": "Sitnik"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6805"
+    ]
+  },
+  "6806:2008": {
+    "title": "Human Vision and Electronic Imaging XIII",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6806"
+    ]
+  },
+  "6807:2008": {
+    "title": "Color Imaging XIII: Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Shoji",
+        "family": "Tominaga"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6807"
+    ]
+  },
+  "6809:2008": {
+    "title": "Visualization and Data Analysis 2008",
+    "editors": [
+      {
+        "given": "Katy",
+        "family": "Börner"
+      },
+      {
+        "given": "Matti T.",
+        "family": "Gröhn"
+      },
+      {
+        "given": "Jinah",
+        "family": "Park"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6809"
+    ]
+  },
+  "6811:2008": {
+    "title": "Real-Time Image Processing 2008",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6811"
+    ]
+  },
+  "6812:2008": {
+    "title": "Image Processing: Algorithms and Systems VI",
+    "editors": [
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      },
+      {
+        "given": "Edward R.",
+        "family": "Dougherty"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6812"
+    ]
+  },
+  "6814:2008": {
+    "title": "Computational Imaging VI",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Eric L.",
+        "family": "Miller"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6814"
+    ]
+  },
+  "6815:2008": {
+    "title": "Document Recognition and Retrieval XV",
+    "editors": [
+      {
+        "given": "Berrin A.",
+        "family": "Yanikoglu"
+      },
+      {
+        "given": "Kathrin",
+        "family": "Berkner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6815"
+    ]
+  },
+  "6817:2008": {
+    "title": "Digital Photography IV",
+    "editors": [
+      {
+        "given": "Jeffrey M.",
+        "family": "DiCarlo"
+      },
+      {
+        "given": "Brian G.",
+        "family": "Rodricks"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6817"
+    ]
+  },
+  "6819:2008": {
+    "title": "Security, Forensics, Steganography, and Watermarking of Multimedia Contents X",
+    "editors": [
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      },
+      {
+        "given": "Jana",
+        "family": "Dittmann"
+      },
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sswmc/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6819"
+    ]
+  },
+  "6914:2008": {
+    "title": "Medical Imaging 2008: Image Processing",
+    "editors": [
+      {
+        "given": "Joseph M.",
+        "family": "Reinhardt"
+      },
+      {
+        "given": "Josien P. W.",
+        "family": "Pluim"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6914"
+    ]
+  },
+  "6915:2008": {
+    "title": "Medical Imaging 2008: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Maryellen L.",
+        "family": "Giger"
+      },
+      {
+        "given": "Nico",
+        "family": "Karssemeijer"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6915"
+    ]
+  },
+  "6918:2008": {
+    "title": "Medical Imaging 2008: Visualization, Image-Guided Procedures, and Modeling",
+    "editors": [
+      {
+        "given": "Michael I.",
+        "family": "Miga"
+      },
+      {
+        "given": "Kevin Robert",
+        "family": "Cleary"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6918"
+    ]
+  },
+  "6973:2008": {
+    "title": "Data Mining, Intrusion Detection, Information Assurance, and Data Networks Security 2008",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6973"
+    ]
+  },
+  "6978:2008": {
+    "title": "Visual Information Processing XVII",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Neifeld"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2008",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/6978"
+    ]
+  },
+  "7240:2009": {
+    "title": "Human Vision and Electronic Imaging XIV",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7240"
+    ]
+  },
+  "7241:2009": {
+    "title": "Color Imaging XIV: Displaying, Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Shoji",
+        "family": "Tominaga"
+      },
+      {
+        "given": "Alessandro",
+        "family": "Rizzi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7241"
+    ]
+  },
+  "7243:2009": {
+    "title": "Visualization and Data Analysis 2009",
+    "editors": [
+      {
+        "given": "Katy",
+        "family": "Börner"
+      },
+      {
+        "given": "Jinah",
+        "family": "Park"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7243"
+    ]
+  },
+  "7244:2009": {
+    "title": "Real-Time Image and Video Processing 2009",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7244"
+    ]
+  },
+  "7245:2009": {
+    "title": "Image Processing: Algorithms and Systems VII",
+    "editors": [
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      },
+      {
+        "given": "Nasser M.",
+        "family": "Nasrabadi"
+      },
+      {
+        "given": "Syed A.",
+        "family": "Rizvi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7245"
+    ]
+  },
+  "7246:2009": {
+    "title": "Computational Imaging VII",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Eric L.",
+        "family": "Miller"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7246"
+    ]
+  },
+  "7247:2009": {
+    "title": "Document Recognition and Retrieval XVI",
+    "editors": [
+      {
+        "given": "Kathrin",
+        "family": "Berkner"
+      },
+      {
+        "given": "Laurence",
+        "family": "Likforman-Sulem"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7247"
+    ]
+  },
+  "7250:2009": {
+    "title": "Digital Photography V",
+    "editors": [
+      {
+        "given": "Brian G.",
+        "family": "Rodricks"
+      },
+      {
+        "given": "Sabine",
+        "family": "Süsstrunk"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7250"
+    ]
+  },
+  "7254:2009": {
+    "title": "Media Forensics and Security",
+    "editors": [
+      {
+        "given": "Edward J.",
+        "family": "Delp"
+      },
+      {
+        "given": "Jana",
+        "family": "Dittmann"
+      },
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      },
+      {
+        "given": "Ping Wah",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mediaforensics/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7254"
+    ]
+  },
+  "7259:2009": {
+    "title": "Medical Imaging 2009: Image Processing",
+    "editors": [
+      {
+        "given": "Josien P. W.",
+        "family": "Pluim"
+      },
+      {
+        "given": "Benoit M.",
+        "family": "Dawant"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7259"
+    ]
+  },
+  "7260:2009": {
+    "title": "Medical Imaging 2009: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Nico",
+        "family": "Karssemeijer"
+      },
+      {
+        "given": "Maryellen L.",
+        "family": "Giger"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7260"
+    ]
+  },
+  "7261:2009": {
+    "title": "Medical Imaging 2009: Visualization, Image-Guided Procedures, and Modeling",
+    "editors": [
+      {
+        "given": "Michael I.",
+        "family": "Miga"
+      },
+      {
+        "given": "Kenneth H.",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7261"
+    ]
+  },
+  "7341:2009": {
+    "title": "Visual Information Processing XVIII",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Neifeld"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7341"
+    ]
+  },
+  "7344:2009": {
+    "title": "Data Mining, Intrusion Detection, Information Security and Assurance, and Data Networks Security 2009",
+    "editors": [
+      {
+        "given": "Belur V.",
+        "family": "Dasarathy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dmkdttt/2009",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7344"
+    ]
+  },
+  "7526:2010": {
+    "title": "Three-Dimensional Image Processing (3DIP) and Applications",
+    "editors": [
+      {
+        "given": "Atilla",
+        "family": "Baskurt"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7526"
+    ]
+  },
+  "7527:2010": {
+    "title": "Human Vision and Electronic Imaging XV",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7527"
+    ]
+  },
+  "7528:2010": {
+    "title": "Color Imaging XV: Displaying, Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Shoji",
+        "family": "Tominaga"
+      },
+      {
+        "given": "Alessandro",
+        "family": "Rizzi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7528"
+    ]
+  },
+  "7530:2010": {
+    "title": "Visualization and Data Analysis 2010",
+    "editors": [
+      {
+        "given": "Jinah",
+        "family": "Park"
+      },
+      {
+        "given": "Ming C.",
+        "family": "Hao"
+      },
+      {
+        "given": "Pak Chung",
+        "family": "Wong"
+      },
+      {
+        "given": "Chaomei",
+        "family": "Chen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7530"
+    ]
+  },
+  "7532:2010": {
+    "title": "Image Processing: Algorithms and Systems VIII",
+    "editors": [
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7532"
+    ]
+  },
+  "7533:2010": {
+    "title": "Computational Imaging VIII",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      },
+      {
+        "given": "Patrick J.",
+        "family": "Wolfe"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7533"
+    ]
+  },
+  "7534:2010": {
+    "title": "Document Recognition and Retrieval XVII",
+    "editors": [
+      {
+        "given": "Laurence",
+        "family": "Likforman-Sulem"
+      },
+      {
+        "given": "Gady",
+        "family": "Agam"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7534"
+    ]
+  },
+  "7537:2010": {
+    "title": "Digital Photography VI",
+    "editors": [
+      {
+        "given": "Francisco H.",
+        "family": "Imai"
+      },
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      },
+      {
+        "given": "Feng",
+        "family": "Xiao"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7537"
+    ]
+  },
+  "7541:2010": {
+    "title": "Media Forensics and Security II",
+    "editors": [
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      },
+      {
+        "given": "Jana",
+        "family": "Dittmann"
+      },
+      {
+        "given": "Adnan M.",
+        "family": "Alattar"
+      },
+      {
+        "given": "Edward J.",
+        "family": "Delp"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mediaforensics/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7541"
+    ]
+  },
+  "7543:2010": {
+    "title": "Visual Information Processing and Communication",
+    "editors": [
+      {
+        "given": "Amir",
+        "family": "Said"
+      },
+      {
+        "given": "Onur G.",
+        "family": "Guleryuz"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vipc/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7543"
+    ]
+  },
+  "7546:2010": {
+    "title": "Second International Conference on Digital Image Processing",
+    "editors": [
+      {
+        "given": "Kamaruzaman",
+        "family": "Jusoff"
+      },
+      {
+        "given": "Yi",
+        "family": "Xie"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icdip/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7546"
+    ]
+  },
+  "7623:2010": {
+    "title": "Medical Imaging 2010: Image Processing",
+    "editors": [
+      {
+        "given": "Benoit M.",
+        "family": "Dawant"
+      },
+      {
+        "given": "David R.",
+        "family": "Haynor"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7623"
+    ]
+  },
+  "7624:2010": {
+    "title": "Medical Imaging 2010: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Nico",
+        "family": "Karssemeijer"
+      },
+      {
+        "given": "Ronald M.",
+        "family": "Summers"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7624"
+    ]
+  },
+  "7625:2010": {
+    "title": "Medical Imaging 2010: Visualization, Image-Guided Procedures, and Modeling",
+    "editors": [
+      {
+        "given": "Kenneth H.",
+        "family": "Wong"
+      },
+      {
+        "given": "Michael I.",
+        "family": "Miga"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7625"
+    ]
+  },
+  "7701:2010": {
+    "title": "Visual Information Processing XIX",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Neifeld"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7701"
+    ]
+  },
+  "7724:2010": {
+    "title": "Real-Time Image and Video Processing 2010",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7724"
+    ]
+  },
+  "7744:2010": {
+    "title": "Visual Communications and Image Processing 2010",
+    "editors": [
+      {
+        "given": "Pascal",
+        "family": "Frossard"
+      },
+      {
+        "given": "Houqiang",
+        "family": "Li"
+      },
+      {
+        "given": "Feng",
+        "family": "Wu"
+      },
+      {
+        "given": "Bernd",
+        "family": "Girod"
+      },
+      {
+        "given": "Shipeng",
+        "family": "Li"
+      },
+      {
+        "given": "Guo",
+        "family": "Wei"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vcip/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7744"
+    ]
+  },
+  "7829:2010": {
+    "title": "SAR Image Analysis, Modeling, and Techniques X",
+    "editors": [
+      {
+        "given": "Claudia",
+        "family": "Notarnicola"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2010",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7829"
+    ]
+  },
+  "7863:2011": {
+    "title": "Stereoscopic Displays and Applications XXII",
+    "editors": [
+      {
+        "given": "Andrew J.",
+        "family": "Woods"
+      },
+      {
+        "given": "Nicolas S.",
+        "family": "Holliman"
+      },
+      {
+        "given": "Neil A.",
+        "family": "Dodgson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-sda/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7863"
+    ]
+  },
+  "7864:2011": {
+    "title": "Three-Dimensional Imaging, Interaction, and Measurement",
+    "editors": [
+      {
+        "given": "J.-Angelo",
+        "family": "Beraldin"
+      },
+      {
+        "given": "Geraldine S.",
+        "family": "Cheok"
+      },
+      {
+        "given": "Michael B.",
+        "family": "McCarthy"
+      },
+      {
+        "given": "Ulrich",
+        "family": "Neuschaefer-Rube"
+      },
+      {
+        "given": "Atilla",
+        "family": "Baskurt"
+      },
+      {
+        "given": "Ian E.",
+        "family": "McDowall"
+      },
+      {
+        "given": "Margaret",
+        "family": "Dolinsky"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7864"
+    ]
+  },
+  "7865:2011": {
+    "title": "Human Vision and Electronic Imaging XVI",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7865"
+    ]
+  },
+  "7866:2011": {
+    "title": "Color Imaging XVI: Displaying, Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Alessandro",
+        "family": "Rizzi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7866"
+    ]
+  },
+  "7867:2011": {
+    "title": "Image Quality and System Performance VIII",
+    "editors": [
+      {
+        "given": "Susan P.",
+        "family": "Farnand"
+      },
+      {
+        "given": "Frans",
+        "family": "Gaykema"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/iqsp/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7867"
+    ]
+  },
+  "7868:2011": {
+    "title": "Visualization and Data Analysis 2011",
+    "editors": [
+      {
+        "given": "Pak Chung",
+        "family": "Wong"
+      },
+      {
+        "given": "Jinah",
+        "family": "Park"
+      },
+      {
+        "given": "Ming C.",
+        "family": "Hao"
+      },
+      {
+        "given": "Chaomei",
+        "family": "Chen"
+      },
+      {
+        "given": "Katy",
+        "family": "Börner"
+      },
+      {
+        "given": "David L.",
+        "family": "Kao"
+      },
+      {
+        "given": "Jonathan C.",
+        "family": "Roberts"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7868"
+    ]
+  },
+  "7869:2011": {
+    "title": "Computer Vision and Image Analysis of Art II",
+    "editors": [
+      {
+        "given": "David G.",
+        "family": "Stork"
+      },
+      {
+        "given": "Jim",
+        "family": "Coddington"
+      },
+      {
+        "given": "Anna",
+        "family": "Bentkowska-Kafel"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-cvaa/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7869"
+    ]
+  },
+  "7870:2011": {
+    "title": "Image Processing: Algorithms and Systems IX",
+    "editors": [
+      {
+        "given": "Jaakko",
+        "family": "Astola"
+      },
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7870"
+    ]
+  },
+  "7871:2011": {
+    "title": "Real-Time Image and Video Processing 2011",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7871"
+    ]
+  },
+  "7872:2011": {
+    "title": "Parallel Processing for Imaging Applications",
+    "editors": [
+      {
+        "given": "John D.",
+        "family": "Owens"
+      },
+      {
+        "given": "I-Jong",
+        "family": "Lin"
+      },
+      {
+        "given": "Yu-Jin",
+        "family": "Zhang"
+      },
+      {
+        "given": "Giordano B.",
+        "family": "Beretta"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ppia/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7872"
+    ]
+  },
+  "7873:2011": {
+    "title": "Computational Imaging IX",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      },
+      {
+        "given": "Patrick J.",
+        "family": "Wolfe"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7873"
+    ]
+  },
+  "7874:2011": {
+    "title": "Document Recognition and Retrieval XVIII",
+    "editors": [
+      {
+        "given": "Gady",
+        "family": "Agam"
+      },
+      {
+        "given": "Christian",
+        "family": "Viard-Gaudin"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7874"
+    ]
+  },
+  "7875:2011": {
+    "title": "Sensors, Cameras, and Systems for Industrial, Scientific, and Consumer Applications XII",
+    "editors": [
+      {
+        "given": "Ralf",
+        "family": "Widenhorn"
+      },
+      {
+        "given": "Valérie",
+        "family": "Nguyen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iss/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7875"
+    ]
+  },
+  "7876:2011": {
+    "title": "Digital Photography VII",
+    "editors": [
+      {
+        "given": "Francisco H.",
+        "family": "Imai"
+      },
+      {
+        "given": "Feng",
+        "family": "Xiao"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7876"
+    ]
+  },
+  "7877:2011": {
+    "title": "Image Processing: Machine Vision Applications IV",
+    "editors": [
+      {
+        "given": "David",
+        "family": "Fofi"
+      },
+      {
+        "given": "Philip R.",
+        "family": "Bingham"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-ipmva/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7877"
+    ]
+  },
+  "7878:2011": {
+    "title": "Intelligent Robots and Computer Vision XXVIII: Algorithms and Techniques",
+    "editors": [
+      {
+        "given": "Juha",
+        "family": "Röning"
+      },
+      {
+        "given": "David P.",
+        "family": "Casasent"
+      },
+      {
+        "given": "Ernest L.",
+        "family": "Hall"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iriacv/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7878"
+    ]
+  },
+  "7879:2011": {
+    "title": "Imaging and Printing in a Web 2.0 World II",
+    "editors": [
+      {
+        "given": "Qian",
+        "family": "Lin"
+      },
+      {
+        "given": "Jan P.",
+        "family": "Allebach"
+      },
+      {
+        "given": "Zhigang",
+        "family": "Fan"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-imawm/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7879"
+    ]
+  },
+  "7880:2011": {
+    "title": "Media Watermarking, Security, and Forensics III",
+    "editors": [
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      },
+      {
+        "given": "Jana",
+        "family": "Dittmann"
+      },
+      {
+        "given": "Adnan M.",
+        "family": "Alattar"
+      },
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mediaforensics/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7880"
+    ]
+  },
+  "7881:2011": {
+    "title": "Multimedia on Mobile Devices 2011; and Multimedia Content Access: Algorithms and Systems V",
+    "editors": [
+      {
+        "given": "David",
+        "family": "Akopian"
+      },
+      {
+        "given": "Reiner",
+        "family": "Creutzburg"
+      },
+      {
+        "given": "Cees G. M.",
+        "family": "Snoek"
+      },
+      {
+        "given": "Nicu",
+        "family": "Sebe"
+      },
+      {
+        "given": "Lyndon",
+        "family": "Kennedy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-mobmu/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7881"
+    ]
+  },
+  "7882:2011": {
+    "title": "Visual Information Processing and Communication II",
+    "editors": [
+      {
+        "given": "Amir",
+        "family": "Said"
+      },
+      {
+        "given": "Onur G.",
+        "family": "Guleryuz"
+      },
+      {
+        "given": "Robert L.",
+        "family": "Stevenson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vipc/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7882"
+    ]
+  },
+  "7962:2011": {
+    "title": "Medical Imaging 2011: Image Processing",
+    "editors": [
+      {
+        "given": "Benoit M.",
+        "family": "Dawant"
+      },
+      {
+        "given": "David R.",
+        "family": "Haynor"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7962"
+    ]
+  },
+  "7963:2011": {
+    "title": "Medical Imaging 2011: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Ronald M.",
+        "family": "Summers"
+      },
+      {
+        "given": "Bram",
+        "family": "van Ginneken"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7963"
+    ]
+  },
+  "7964:2011": {
+    "title": "Medical Imaging 2011: Visualization, Image-Guided Procedures, and Modeling",
+    "editors": [
+      {
+        "given": "Kenneth H.",
+        "family": "Wong"
+      },
+      {
+        "given": "David R.",
+        "family": "Holmes III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/7964"
+    ]
+  },
+  "8009:2011": {
+    "title": "Third International Conference on Digital Image Processing (ICDIP 2011)",
+    "editors": [
+      {
+        "given": "Ting",
+        "family": "Zhang"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icdip/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8009"
+    ]
+  },
+  "8056:2011": {
+    "title": "Visual Information Processing XX",
+    "editors": [
+      {
+        "given": "Zia-ur",
+        "family": "Rahman"
+      },
+      {
+        "given": "Stephen E.",
+        "family": "Reichenbach"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Neifeld"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8056"
+    ]
+  },
+  "8179:2011": {
+    "title": "SAR Image Analysis, Modeling, and Techniques XI",
+    "editors": [
+      {
+        "given": "Claudia",
+        "family": "Notarnicola"
+      },
+      {
+        "given": "Simonetta",
+        "family": "Paloscia"
+      },
+      {
+        "given": "Nazzareno",
+        "family": "Pierdicca"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2011",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8179"
+    ]
+  },
+  "8288:2012": {
+    "title": "Stereoscopic Displays and Applications XXIII",
+    "editors": [
+      {
+        "given": "Andrew J.",
+        "family": "Woods"
+      },
+      {
+        "given": "Nicolas S.",
+        "family": "Holliman"
+      },
+      {
+        "given": "Gregg E.",
+        "family": "Favalora"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-sda/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8288"
+    ]
+  },
+  "8289:2012": {
+    "title": "The Engineering Reality of Virtual Reality 2012",
+    "editors": [
+      {
+        "given": "Ian E.",
+        "family": "McDowall"
+      },
+      {
+        "given": "Margaret",
+        "family": "Dolinsky"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ervr/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8289"
+    ]
+  },
+  "8290:2012": {
+    "title": "Three-Dimensional Image Processing (3DIP) and Applications II",
+    "editors": [
+      {
+        "given": "Atilla",
+        "family": "Baskurt"
+      },
+      {
+        "given": "Robert",
+        "family": "Sitnik"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8290"
+    ]
+  },
+  "8291:2012": {
+    "title": "Human Vision and Electronic Imaging XVII",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      },
+      {
+        "given": "Huib",
+        "family": "de Ridder"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8291"
+    ]
+  },
+  "8292:2012": {
+    "title": "Color Imaging XVII: Displaying, Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Alessandro",
+        "family": "Rizzi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8292"
+    ]
+  },
+  "8293:2012": {
+    "title": "Image Quality and System Performance IX",
+    "editors": [
+      {
+        "given": "Frans",
+        "family": "Gaykema"
+      },
+      {
+        "given": "Peter D.",
+        "family": "Burns"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/iqsp/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8293"
+    ]
+  },
+  "8294:2012": {
+    "title": "Visualization and Data Analysis 2012",
+    "editors": [
+      {
+        "given": "Pak Chung",
+        "family": "Wong"
+      },
+      {
+        "given": "David L.",
+        "family": "Kao"
+      },
+      {
+        "given": "Ming C.",
+        "family": "Hao"
+      },
+      {
+        "given": "Chaomei",
+        "family": "Chen"
+      },
+      {
+        "given": "Robert",
+        "family": "Kosara"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Livingston"
+      },
+      {
+        "given": "Jinah",
+        "family": "Park"
+      },
+      {
+        "given": "Ian",
+        "family": "Roberts"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8294"
+    ]
+  },
+  "8295:2012": {
+    "title": "Image Processing: Algorithms and Systems X; and Parallel Processing for Imaging Applications II",
+    "editors": [
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      },
+      {
+        "given": "Sos S.",
+        "family": "Agaian"
+      },
+      {
+        "given": "Atanas P.",
+        "family": "Gotchev"
+      },
+      {
+        "given": "John",
+        "family": "Recker"
+      },
+      {
+        "given": "Guijin",
+        "family": "Wang"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8295"
+    ]
+  },
+  "8296:2012": {
+    "title": "Computational Imaging X",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      },
+      {
+        "given": "Patrick J.",
+        "family": "Wolfe"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8296"
+    ]
+  },
+  "8297:2012": {
+    "title": "Document Recognition and Retrieval XIX",
+    "editors": [
+      {
+        "given": "Christian",
+        "family": "Viard-Gaudin"
+      },
+      {
+        "given": "Richard",
+        "family": "Zanibbi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8297"
+    ]
+  },
+  "8298:2012": {
+    "title": "Sensors, Cameras, and Systems for Industrial and Scientific Applications XIII",
+    "editors": [
+      {
+        "given": "Ralf",
+        "family": "Widenhorn"
+      },
+      {
+        "given": "Valérie",
+        "family": "Nguyen"
+      },
+      {
+        "given": "Antoine",
+        "family": "Dupret"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iss/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8298"
+    ]
+  },
+  "8299:2012": {
+    "title": "Digital Photography VIII",
+    "editors": [
+      {
+        "given": "Sebastiano",
+        "family": "Battiato"
+      },
+      {
+        "given": "Brian G.",
+        "family": "Rodricks"
+      },
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      },
+      {
+        "given": "Francisco H.",
+        "family": "Imai"
+      },
+      {
+        "given": "Feng",
+        "family": "Xiao"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8299"
+    ]
+  },
+  "8300:2012": {
+    "title": "Image Processing: Machine Vision Applications V",
+    "editors": [
+      {
+        "given": "Philip R.",
+        "family": "Bingham"
+      },
+      {
+        "given": "Edmund Y.",
+        "family": "Lam"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-ipmva/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8300"
+    ]
+  },
+  "8301:2012": {
+    "title": "Intelligent Robots and Computer Vision XXIX: Algorithms and Techniques",
+    "editors": [
+      {
+        "given": "Juha",
+        "family": "Röning"
+      },
+      {
+        "given": "David P.",
+        "family": "Casasent"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iriacv/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8301"
+    ]
+  },
+  "8302:2012": {
+    "title": "Imaging and Printing in a Web 2.0 World III",
+    "editors": [
+      {
+        "given": "Qian",
+        "family": "Lin"
+      },
+      {
+        "given": "Jan P.",
+        "family": "Allebach"
+      },
+      {
+        "given": "Zhigang",
+        "family": "Fan"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-imawm/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8302"
+    ]
+  },
+  "8303:2012": {
+    "title": "Media Watermarking, Security, and Forensics 2012",
+    "editors": [
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      },
+      {
+        "given": "Adnan M.",
+        "family": "Alattar"
+      },
+      {
+        "given": "Edward J.",
+        "family": "Delp III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mediaforensics/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8303"
+    ]
+  },
+  "8304:2012": {
+    "title": "Multimedia on Mobile Devices 2012; and Multimedia Content Access: Algorithms and Systems VI",
+    "editors": [
+      {
+        "given": "Cees G. M.",
+        "family": "Snoek"
+      },
+      {
+        "given": "Nicu",
+        "family": "Sebe"
+      },
+      {
+        "given": "Lyndon",
+        "family": "Kennedy"
+      },
+      {
+        "given": "Reiner",
+        "family": "Creutzburg"
+      },
+      {
+        "given": "David",
+        "family": "Akopian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-mobmu/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8304"
+    ]
+  },
+  "8305:2012": {
+    "title": "Visual Information Processing and Communication III",
+    "editors": [
+      {
+        "given": "Amir",
+        "family": "Said"
+      },
+      {
+        "given": "Onur G.",
+        "family": "Guleryuz"
+      },
+      {
+        "given": "Robert L.",
+        "family": "Stevenson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vipc/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8305"
+    ]
+  },
+  "8314:2012": {
+    "title": "Medical Imaging 2012: Image Processing",
+    "editors": [
+      {
+        "given": "David R.",
+        "family": "Haynor"
+      },
+      {
+        "given": "Sébastien",
+        "family": "Ourselin"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8314"
+    ]
+  },
+  "8315:2012": {
+    "title": "Medical Imaging 2012: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Bram",
+        "family": "van Ginneken"
+      },
+      {
+        "given": "Carol L.",
+        "family": "Novak"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8315"
+    ]
+  },
+  "8316:2012": {
+    "title": "Medical Imaging 2012: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "David R.",
+        "family": "Holmes III"
+      },
+      {
+        "given": "Kenneth H.",
+        "family": "Wong"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8316"
+    ]
+  },
+  "8334:2012": {
+    "title": "Fourth International Conference on Digital Image Processing (ICDIP 2012)",
+    "editors": [
+      {
+        "given": "Mohamed",
+        "family": "Othman"
+      },
+      {
+        "given": "Sukumar",
+        "family": "Senthilkumar"
+      },
+      {
+        "given": "Xie",
+        "family": "Yi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icdip/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8334"
+    ]
+  },
+  "8399:2012": {
+    "title": "Visual Information Processing XXI",
+    "editors": [
+      {
+        "given": "Mark A.",
+        "family": "Neifeld"
+      },
+      {
+        "given": "Amit",
+        "family": "Ashok"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/spieVIP/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8399"
+    ]
+  },
+  "8437:2012": {
+    "title": "Real-Time Image and Video Processing 2012",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8437"
+    ]
+  },
+  "8536:2012": {
+    "title": "SAR Image Analysis, Modeling, and Techniques XII",
+    "editors": [
+      {
+        "given": "Claudia",
+        "family": "Notarnicola"
+      },
+      {
+        "given": "Simonetta",
+        "family": "Paloscia"
+      },
+      {
+        "given": "Nazzareno",
+        "family": "Pierdicca"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2012",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8536"
+    ]
+  },
+  "8648:2013": {
+    "title": "Stereoscopic Displays and Applications XXIV",
+    "editors": [
+      {
+        "given": "Andrew J.",
+        "family": "Woods"
+      },
+      {
+        "given": "Nicolas S.",
+        "family": "Holliman"
+      },
+      {
+        "given": "Gregg E.",
+        "family": "Favalora"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-sda/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8648"
+    ]
+  },
+  "8649:2013": {
+    "title": "The Engineering Reality of Virtual Reality 2013",
+    "editors": [
+      {
+        "given": "Margaret",
+        "family": "Dolinsky"
+      },
+      {
+        "given": "Ian E.",
+        "family": "McDowall"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ervr/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8649"
+    ]
+  },
+  "8650:2013": {
+    "title": "Three-Dimensional Image Processing (3DIP) and Applications 2013",
+    "editors": [
+      {
+        "given": "Atilla",
+        "family": "Baskurt"
+      },
+      {
+        "given": "Robert",
+        "family": "Sitnik"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8650"
+    ]
+  },
+  "8651:2013": {
+    "title": "Human Vision and Electronic Imaging XVIII",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      },
+      {
+        "given": "Huib",
+        "family": "de Ridder"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8651"
+    ]
+  },
+  "8652:2013": {
+    "title": "Color Imaging XVIII: Displaying, Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Alessandro",
+        "family": "Rizzi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8652"
+    ]
+  },
+  "8653:2013": {
+    "title": "Image Quality and System Performance X",
+    "editors": [
+      {
+        "given": "Peter D.",
+        "family": "Burns"
+      },
+      {
+        "given": "Sophie",
+        "family": "Triantaphillidou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/iqsp/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8653"
+    ]
+  },
+  "8654:2013": {
+    "title": "Visualization and Data Analysis 2013",
+    "editors": [
+      {
+        "given": "Pak Chung",
+        "family": "Wong"
+      },
+      {
+        "given": "David L.",
+        "family": "Kao"
+      },
+      {
+        "given": "Ming C.",
+        "family": "Hao"
+      },
+      {
+        "given": "Chaomei",
+        "family": "Chen"
+      },
+      {
+        "given": "Christopher G.",
+        "family": "Healey"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8654"
+    ]
+  },
+  "8655:2013": {
+    "title": "Image Processing: Algorithms and Systems XI",
+    "editors": [
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      },
+      {
+        "given": "Sos S.",
+        "family": "Agaian"
+      },
+      {
+        "given": "Atanas P.",
+        "family": "Gotchev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8655"
+    ]
+  },
+  "8656:2013": {
+    "title": "Real-Time Image and Video Processing 2013",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8656"
+    ]
+  },
+  "8657:2013": {
+    "title": "Computational Imaging XI",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Ilya",
+        "family": "Pollak"
+      },
+      {
+        "given": "Patrick J.",
+        "family": "Wolfe"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8657"
+    ]
+  },
+  "8658:2013": {
+    "title": "Document Recognition and Retrieval XX",
+    "editors": [
+      {
+        "given": "Richard",
+        "family": "Zanibbi"
+      },
+      {
+        "given": "Bertrand",
+        "family": "Coüasnon"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8658"
+    ]
+  },
+  "8659:2013": {
+    "title": "Sensors, Cameras, and Systems for Industrial and Scientific Applications XIV",
+    "editors": [
+      {
+        "given": "Ralf",
+        "family": "Widenhorn"
+      },
+      {
+        "given": "Antoine",
+        "family": "Dupret"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iss/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8659"
+    ]
+  },
+  "8660:2013": {
+    "title": "Digital Photography IX",
+    "editors": [
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      },
+      {
+        "given": "Sebastiano",
+        "family": "Battiato"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8660"
+    ]
+  },
+  "8661:2013": {
+    "title": "Image Processing: Machine Vision Applications VI",
+    "editors": [
+      {
+        "given": "Philip R.",
+        "family": "Bingham"
+      },
+      {
+        "given": "Edmund Y.",
+        "family": "Lam"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-ipmva/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8661"
+    ]
+  },
+  "8662:2013": {
+    "title": "Intelligent Robots and Computer Vision XXX: Algorithms and Techniques",
+    "editors": [
+      {
+        "given": "Juha",
+        "family": "Röning"
+      },
+      {
+        "given": "David P.",
+        "family": "Casasent"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iriacv/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8662"
+    ]
+  },
+  "8663:2013": {
+    "title": "Video Surveillance and Transportation Imaging Applications",
+    "editors": [
+      {
+        "given": "Robert Paul",
+        "family": "Loce"
+      },
+      {
+        "given": "Eli",
+        "family": "Saber"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-srv/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8663"
+    ]
+  },
+  "8664:2013": {
+    "title": "Imaging and Printing in a Web 2.0 World IV",
+    "editors": [
+      {
+        "given": "Qian",
+        "family": "Lin"
+      },
+      {
+        "given": "Jan P.",
+        "family": "Allebach"
+      },
+      {
+        "given": "Zhigang",
+        "family": "Fan"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-imawm/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8664"
+    ]
+  },
+  "8665:2013": {
+    "title": "Media Watermarking, Security, and Forensics 2013",
+    "editors": [
+      {
+        "given": "Adnan M.",
+        "family": "Alattar"
+      },
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      },
+      {
+        "given": "Chad",
+        "family": "Heitzenrater"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mediaforensics/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8665"
+    ]
+  },
+  "8666:2013": {
+    "title": "Visual Information Processing and Communication IV",
+    "editors": [
+      {
+        "given": "Amir",
+        "family": "Said"
+      },
+      {
+        "given": "Onur G.",
+        "family": "Guleryuz"
+      },
+      {
+        "given": "Robert L.",
+        "family": "Stevenson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vipc/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8666"
+    ]
+  },
+  "8667:2013": {
+    "title": "Multimedia Content and Mobile Devices",
+    "editors": [
+      {
+        "given": "Dietmar",
+        "family": "Wüller"
+      },
+      {
+        "given": "Kevin J.",
+        "family": "Matherson"
+      },
+      {
+        "given": "Reiner",
+        "family": "Creutzburg"
+      },
+      {
+        "given": "David",
+        "family": "Akopian"
+      },
+      {
+        "given": "Todor G.",
+        "family": "Georgiev"
+      },
+      {
+        "given": "Andrew",
+        "family": "Lumsdaine"
+      },
+      {
+        "given": "Cees G. M.",
+        "family": "Snoek"
+      },
+      {
+        "given": "Lyndon S.",
+        "family": "Kennedy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-mobmu/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8667"
+    ]
+  },
+  "8669:2013": {
+    "title": "Medical Imaging 2013: Image Processing",
+    "editors": [
+      {
+        "given": "Sébastien",
+        "family": "Ourselin"
+      },
+      {
+        "given": "David R.",
+        "family": "Haynor"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8669"
+    ]
+  },
+  "8670:2013": {
+    "title": "Medical Imaging 2013: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Carol L.",
+        "family": "Novak"
+      },
+      {
+        "given": "Stephen R.",
+        "family": "Aylward"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8670"
+    ]
+  },
+  "8671:2013": {
+    "title": "Medical Imaging 2013: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "David R.",
+        "family": "Holmes III"
+      },
+      {
+        "given": "Ziv R.",
+        "family": "Yaniv"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8671"
+    ]
+  },
+  "8676:2013": {
+    "title": "Medical Imaging 2013: Digital Pathology",
+    "editors": [
+      {
+        "given": "Metin N.",
+        "family": "Gurcan"
+      },
+      {
+        "given": "Anant",
+        "family": "Madabhushi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8676"
+    ]
+  },
+  "8878:2013": {
+    "title": "Fifth International Conference on Digital Image Processing (ICDIP 2013)",
+    "editors": [
+      {
+        "given": "Yulin",
+        "family": "Wang"
+      },
+      {
+        "given": "Xie",
+        "family": "Yi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icdip/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8878"
+    ]
+  },
+  "8891:2013": {
+    "title": "SAR Image Analysis, Modeling, and Techniques XIII",
+    "editors": [
+      {
+        "given": "Claudia",
+        "family": "Notarnicola"
+      },
+      {
+        "given": "Simonetta",
+        "family": "Paloscia"
+      },
+      {
+        "given": "Nazzareno",
+        "family": "Pierdicca"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/8891"
+    ]
+  },
+  "9011:2014": {
+    "title": "Stereoscopic Displays and Applications XXV",
+    "editors": [
+      {
+        "given": "Andrew J.",
+        "family": "Woods"
+      },
+      {
+        "given": "Nicolas S.",
+        "family": "Holliman"
+      },
+      {
+        "given": "Gregg E.",
+        "family": "Favalora"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-sda/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9011"
+    ]
+  },
+  "9012:2014": {
+    "title": "The Engineering Reality of Virtual Reality 2014",
+    "editors": [
+      {
+        "given": "Margaret",
+        "family": "Dolinsky"
+      },
+      {
+        "given": "Ian E.",
+        "family": "McDowall"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ervr/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9012"
+    ]
+  },
+  "9013:2014": {
+    "title": "Three-Dimensional Image Processing, Measurement (3DIPM), and Applications 2014",
+    "editors": [
+      {
+        "given": "Atilla",
+        "family": "Baskurt"
+      },
+      {
+        "given": "Robert",
+        "family": "Sitnik"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9013"
+    ]
+  },
+  "9014:2014": {
+    "title": "Human Vision and Electronic Imaging XIX",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      },
+      {
+        "given": "Huib",
+        "family": "de Ridder"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9014"
+    ]
+  },
+  "9015:2014": {
+    "title": "Color Imaging XIX: Displaying, Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Alessandro",
+        "family": "Rizzi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9015"
+    ]
+  },
+  "9016:2014": {
+    "title": "Image Quality and System Performance XI",
+    "editors": [
+      {
+        "given": "Sophie",
+        "family": "Triantaphillidou"
+      },
+      {
+        "given": "Mohamed-Chaker",
+        "family": "Larabi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/iqsp/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9016"
+    ]
+  },
+  "9017:2014": {
+    "title": "Visualization and Data Analysis 2014",
+    "editors": [
+      {
+        "given": "Pak Chung",
+        "family": "Wong"
+      },
+      {
+        "given": "David L.",
+        "family": "Kao"
+      },
+      {
+        "given": "Ming C.",
+        "family": "Hao"
+      },
+      {
+        "given": "Chaomei",
+        "family": "Chen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9017"
+    ]
+  },
+  "9018:2014": {
+    "title": "Measuring, Modeling, and Reproducing Material Appearance",
+    "editors": [
+      {
+        "given": "Maria V. Ortiz",
+        "family": "Segovia"
+      },
+      {
+        "given": "Philipp",
+        "family": "Urban"
+      },
+      {
+        "given": "Jan P.",
+        "family": "Allebach"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-maap/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9018"
+    ]
+  },
+  "9019:2014": {
+    "title": "Image Processing: Algorithms and Systems XII",
+    "editors": [
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      },
+      {
+        "given": "Sos S.",
+        "family": "Agaian"
+      },
+      {
+        "given": "Atanas P.",
+        "family": "Gotchev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9019"
+    ]
+  },
+  "9020:2014": {
+    "title": "Computational Imaging XII",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Ken D.",
+        "family": "Sauer"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9020"
+    ]
+  },
+  "9021:2014": {
+    "title": "Document Recognition and Retrieval XXI",
+    "editors": [
+      {
+        "given": "Bertrand",
+        "family": "Coüasnon"
+      },
+      {
+        "given": "Eric K.",
+        "family": "Ringger"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9021"
+    ]
+  },
+  "9022:2014": {
+    "title": "Image Sensors and Imaging Systems 2014",
+    "editors": [
+      {
+        "given": "Ralf",
+        "family": "Widenhorn"
+      },
+      {
+        "given": "Antoine",
+        "family": "Dupret"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iss/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9022"
+    ]
+  },
+  "9023:2014": {
+    "title": "Digital Photography X",
+    "editors": [
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      },
+      {
+        "given": "Radka",
+        "family": "Tezaur"
+      },
+      {
+        "given": "Sebastiano",
+        "family": "Battiato"
+      },
+      {
+        "given": "Boyd A.",
+        "family": "Fowler"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9023"
+    ]
+  },
+  "9024:2014": {
+    "title": "Image Processing: Machine Vision Applications VII",
+    "editors": [
+      {
+        "given": "Kurt S.",
+        "family": "Niel"
+      },
+      {
+        "given": "Philip R.",
+        "family": "Bingham"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-ipmva/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9024"
+    ]
+  },
+  "9025:2014": {
+    "title": "Intelligent Robots and Computer Vision XXXI: Algorithms and Techniques",
+    "editors": [
+      {
+        "given": "Juha",
+        "family": "Röning"
+      },
+      {
+        "given": "David P.",
+        "family": "Casasent"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iriacv/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9025"
+    ]
+  },
+  "9026:2014": {
+    "title": "Video Surveillance and Transportation Imaging Applications 2014",
+    "editors": [
+      {
+        "given": "Robert P.",
+        "family": "Loce"
+      },
+      {
+        "given": "Eli",
+        "family": "Saber"
+      },
+      {
+        "given": "Ned",
+        "family": "Lecky"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-srv/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9026"
+    ]
+  },
+  "9027:2014": {
+    "title": "Imaging and Multimedia Analytics in a Web and Mobile World 2014",
+    "editors": [
+      {
+        "given": "Qian",
+        "family": "Lin"
+      },
+      {
+        "given": "Jan Philip",
+        "family": "Allebach"
+      },
+      {
+        "given": "Zhigang",
+        "family": "Fan"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-imawm/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9027"
+    ]
+  },
+  "9028:2014": {
+    "title": "Media Watermarking, Security, and Forensics 2014",
+    "editors": [
+      {
+        "given": "Adnan M.",
+        "family": "Alattar"
+      },
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      },
+      {
+        "given": "Chad",
+        "family": "Heitzenrater"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mediaforensics/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9028"
+    ]
+  },
+  "9029:2014": {
+    "title": "Visual Information Processing and Communication V",
+    "editors": [
+      {
+        "given": "Amir",
+        "family": "Said"
+      },
+      {
+        "given": "Onur G.",
+        "family": "Guleryuz"
+      },
+      {
+        "given": "Robert L.",
+        "family": "Stevenson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vipc/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9029"
+    ]
+  },
+  "9030:2014": {
+    "title": "Mobile Devices and Multimedia: Enabling Technologies, Algorithms, and Applications 2014",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Creutzburg"
+      },
+      {
+        "given": "David",
+        "family": "Akopian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-mobmu/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9030"
+    ]
+  },
+  "9034:2014": {
+    "title": "Medical Imaging 2014: Image Processing",
+    "editors": [
+      {
+        "given": "Sébastien",
+        "family": "Ourselin"
+      },
+      {
+        "given": "Martin A.",
+        "family": "Styner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9034"
+    ]
+  },
+  "9035:2014": {
+    "title": "Medical Imaging 2014: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Stephen R.",
+        "family": "Aylward"
+      },
+      {
+        "given": "Lubomir M.",
+        "family": "Hadjiiski"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9035"
+    ]
+  },
+  "9036:2014": {
+    "title": "Medical Imaging 2014: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Ziv R.",
+        "family": "Yaniv"
+      },
+      {
+        "given": "David R.",
+        "family": "Holmes III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9036"
+    ]
+  },
+  "9041:2014": {
+    "title": "Medical Imaging 2014: Digital Pathology",
+    "editors": [
+      {
+        "given": "Metin N.",
+        "family": "Gurcan"
+      },
+      {
+        "given": "Anant",
+        "family": "Madabhushi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9041"
+    ]
+  },
+  "9067:2013": {
+    "title": "Sixth International Conference on Machine Vision (ICMV 2013)",
+    "editors": [
+      {
+        "given": "Branislav",
+        "family": "Vuksanovic"
+      },
+      {
+        "given": "Jianhong",
+        "family": "Zhou"
+      },
+      {
+        "given": "Antanas",
+        "family": "Verikas"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2013",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9067"
+    ]
+  },
+  "9139:2014": {
+    "title": "Real-Time Image and Video Processing 2014",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9139"
+    ]
+  },
+  "9159:2014": {
+    "title": "Sixth International Conference on Digital Image Processing (ICDIP 2014)",
+    "editors": [
+      {
+        "given": "Charles M.",
+        "family": "Falco"
+      },
+      {
+        "given": "Chin-Chen",
+        "family": "Chang"
+      },
+      {
+        "given": "Xudong",
+        "family": "Jiang"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icdip/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9159"
+    ]
+  },
+  "9218:2014": {
+    "title": "Earth Observing Systems XIX",
+    "editors": [
+      {
+        "given": "James J.",
+        "family": "Butler"
+      },
+      {
+        "given": "Xiaoxiong (Jack)",
+        "family": "Xiong"
+      },
+      {
+        "given": "Xingfa",
+        "family": "Gu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/eos/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9218"
+    ]
+  },
+  "9243:2014": {
+    "title": "SAR Image Analysis, Modeling, and Techniques XIV",
+    "editors": [
+      {
+        "given": "Claudia",
+        "family": "Notarnicola"
+      },
+      {
+        "given": "Simonetta",
+        "family": "Paloscia"
+      },
+      {
+        "given": "Nazzareno",
+        "family": "Pierdicca"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9243"
+    ]
+  },
+  "9391:2015": {
+    "title": "Stereoscopic Displays and Applications XXVI",
+    "editors": [
+      {
+        "given": "Nicolas S.",
+        "family": "Holliman"
+      },
+      {
+        "given": "Andrew J.",
+        "family": "Woods"
+      },
+      {
+        "given": "Gregg E.",
+        "family": "Favalora"
+      },
+      {
+        "given": "Takashi",
+        "family": "Kawai"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-sda/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9391"
+    ]
+  },
+  "9392:2015": {
+    "title": "The Engineering Reality of Virtual Reality 2015",
+    "editors": [
+      {
+        "given": "Margaret",
+        "family": "Dolinsky"
+      },
+      {
+        "given": "Ian E.",
+        "family": "McDowall"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ervr/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9392"
+    ]
+  },
+  "9393:2015": {
+    "title": "Three-Dimensional Image Processing, Measurement (3DIPM), and Applications 2015",
+    "editors": [
+      {
+        "given": "Robert",
+        "family": "Sitnik"
+      },
+      {
+        "given": "William",
+        "family": "Puech"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/3dica/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9393"
+    ]
+  },
+  "9394:2015": {
+    "title": "Human Vision and Electronic Imaging XX",
+    "editors": [
+      {
+        "given": "Bernice E.",
+        "family": "Rogowitz"
+      },
+      {
+        "given": "Thrasyvoulos N.",
+        "family": "Pappas"
+      },
+      {
+        "given": "Huib",
+        "family": "de Ridder"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/hvei/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9394"
+    ]
+  },
+  "9395:2015": {
+    "title": "Color Imaging XX: Displaying, Processing, Hardcopy, and Applications",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Eschbach"
+      },
+      {
+        "given": "Gabriel G.",
+        "family": "Marcu"
+      },
+      {
+        "given": "Alessandro",
+        "family": "Rizzi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/clrimg/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9395"
+    ]
+  },
+  "9396:2015": {
+    "title": "Image Quality and System Performance XII",
+    "editors": [
+      {
+        "given": "Mohamed-Chaker",
+        "family": "Larabi"
+      },
+      {
+        "given": "Sophie",
+        "family": "Triantaphillidou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/iqsp/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9396"
+    ]
+  },
+  "9397:2015": {
+    "title": "Visualization and Data Analysis 2015",
+    "editors": [
+      {
+        "given": "David L.",
+        "family": "Kao"
+      },
+      {
+        "given": "Ming C.",
+        "family": "Hao"
+      },
+      {
+        "given": "Mark A.",
+        "family": "Livingston"
+      },
+      {
+        "given": "Thomas",
+        "family": "Wischgoll"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vda/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9397"
+    ]
+  },
+  "9398:2015": {
+    "title": "Measuring, Modeling, and Reproducing Material Appearance 2015",
+    "editors": [
+      {
+        "given": "Maria V. Ortiz",
+        "family": "Segovia"
+      },
+      {
+        "given": "Philipp",
+        "family": "Urban"
+      },
+      {
+        "given": "Francisco H.",
+        "family": "Imai"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-maap/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9398"
+    ]
+  },
+  "9399:2015": {
+    "title": "Image Processing: Algorithms and Systems XIII",
+    "editors": [
+      {
+        "given": "Karen O.",
+        "family": "Egiazarian"
+      },
+      {
+        "given": "Sos S.",
+        "family": "Agaian"
+      },
+      {
+        "given": "Atanas P.",
+        "family": "Gotchev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ipas/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9399"
+    ]
+  },
+  "9400:2015": {
+    "title": "Real-Time Image and Video Processing 2015",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9400"
+    ]
+  },
+  "9401:2015": {
+    "title": "Computational Imaging XIII",
+    "editors": [
+      {
+        "given": "Charles A.",
+        "family": "Bouman"
+      },
+      {
+        "given": "Ken D.",
+        "family": "Sauer"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/cimaging/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9401"
+    ]
+  },
+  "9402:2015": {
+    "title": "Document Recognition and Retrieval XXII",
+    "editors": [
+      {
+        "given": "Eric K.",
+        "family": "Ringger"
+      },
+      {
+        "given": "Bart",
+        "family": "Lamiroy"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/drr/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9402"
+    ]
+  },
+  "9403:2015": {
+    "title": "Image Sensors and Imaging Systems 2015",
+    "editors": [
+      {
+        "given": "Ralf",
+        "family": "Widenhorn"
+      },
+      {
+        "given": "Antoine",
+        "family": "Dupret"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iss/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9403"
+    ]
+  },
+  "9404:2015": {
+    "title": "Digital Photography XI",
+    "editors": [
+      {
+        "given": "Nitin",
+        "family": "Sampat"
+      },
+      {
+        "given": "Radka",
+        "family": "Tezaur"
+      },
+      {
+        "given": "Dietmar",
+        "family": "Wüller"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/dphoto/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9404"
+    ]
+  },
+  "9405:2015": {
+    "title": "Image Processing: Machine Vision Applications VIII",
+    "editors": [
+      {
+        "given": "Edmund Y.",
+        "family": "Lam"
+      },
+      {
+        "given": "Kurt S.",
+        "family": "Niel"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-ipmva/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9405"
+    ]
+  },
+  "9406:2015": {
+    "title": "Intelligent Robots and Computer Vision XXXII: Algorithms and Techniques",
+    "editors": [
+      {
+        "given": "Juha",
+        "family": "Röning"
+      },
+      {
+        "given": "David P.",
+        "family": "Casasent"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-iriacv/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9406"
+    ]
+  },
+  "9407:2015": {
+    "title": "Video Surveillance and Transportation Imaging Applications 2015",
+    "editors": [
+      {
+        "given": "Robert P.",
+        "family": "Loce"
+      },
+      {
+        "given": "Eli",
+        "family": "Saber"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-srv/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9407"
+    ]
+  },
+  "9408:2015": {
+    "title": "Imaging and Multimedia Analytics in a Web and Mobile World 2015",
+    "editors": [
+      {
+        "given": "Qian",
+        "family": "Lin"
+      },
+      {
+        "given": "Jan P.",
+        "family": "Allebach"
+      },
+      {
+        "given": "Zhigang",
+        "family": "Fan"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-imawm/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9408"
+    ]
+  },
+  "9409:2015": {
+    "title": "Media Watermarking, Security, and Forensics 2015",
+    "editors": [
+      {
+        "given": "Adnan M.",
+        "family": "Alattar"
+      },
+      {
+        "given": "Nasir D.",
+        "family": "Memon"
+      },
+      {
+        "given": "Chad",
+        "family": "Heitzenrater"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mediaforensics/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9409"
+    ]
+  },
+  "9410:2015": {
+    "title": "Visual Information Processing and Communication VI",
+    "editors": [
+      {
+        "given": "Amir",
+        "family": "Said"
+      },
+      {
+        "given": "Onur G.",
+        "family": "Guleryuz"
+      },
+      {
+        "given": "Robert L.",
+        "family": "Stevenson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/vipc/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9410"
+    ]
+  },
+  "9411:2015": {
+    "title": "Mobile Devices and Multimedia: Enabling Technologies, Algorithms, and Applications 2015",
+    "editors": [
+      {
+        "given": "Reiner",
+        "family": "Creutzburg"
+      },
+      {
+        "given": "David",
+        "family": "Akopian"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/ei-mobmu/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9411"
+    ]
+  },
+  "9413:2015": {
+    "title": "Medical Imaging 2015: Image Processing",
+    "editors": [
+      {
+        "given": "Sébastien",
+        "family": "Ourselin"
+      },
+      {
+        "given": "Martin Andreas",
+        "family": "Styner"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9413"
+    ]
+  },
+  "9414:2015": {
+    "title": "Medical Imaging 2015: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Lubomir M.",
+        "family": "Hadjiiski"
+      },
+      {
+        "given": "Georgia D.",
+        "family": "Tourassi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9414"
+    ]
+  },
+  "9415:2015": {
+    "title": "Medical Imaging 2015: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Robert J.",
+        "family": "Webster III"
+      },
+      {
+        "given": "Ziv R.",
+        "family": "Yaniv"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9415"
+    ]
+  },
+  "9417:2015": {
+    "title": "Medical Imaging 2015: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Barjor",
+        "family": "Gimi"
+      },
+      {
+        "given": "Robert C.",
+        "family": "Molthen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9417"
+    ]
+  },
+  "9420:2015": {
+    "title": "Medical Imaging 2015: Digital Pathology",
+    "editors": [
+      {
+        "given": "Metin N.",
+        "family": "Gurcan"
+      },
+      {
+        "given": "Anant",
+        "family": "Madabhushi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9420"
+    ]
+  },
+  "9445:2014": {
+    "title": "Seventh International Conference on Machine Vision (ICMV 2014)",
+    "editors": [
+      {
+        "given": "Antanas",
+        "family": "Verikas"
+      },
+      {
+        "given": "Branislav",
+        "family": "Vuksanovic"
+      },
+      {
+        "given": "Petia",
+        "family": "Radeva"
+      },
+      {
+        "given": "Jianhong",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2014",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9445"
+    ]
+  },
+  "9607:2015": {
+    "title": "Earth Observing Systems XX",
+    "editors": [
+      {
+        "given": "James J.",
+        "family": "Butler"
+      },
+      {
+        "given": "Xiaoxiong (Jack)",
+        "family": "Xiong"
+      },
+      {
+        "given": "Xingfa",
+        "family": "Gu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/eos/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9607"
+    ]
+  },
+  "9631:2015": {
+    "title": "Seventh International Conference on Digital Image Processing (ICDIP 2015)",
+    "editors": [
+      {
+        "given": "Charles M.",
+        "family": "Falco"
+      },
+      {
+        "given": "Xudong",
+        "family": "Jiang"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icdip/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9631"
+    ]
+  },
+  "9642:2015": {
+    "title": "SAR Image Analysis, Modeling, and Techniques XV",
+    "editors": [
+      {
+        "given": "Claudia",
+        "family": "Notarnicola"
+      },
+      {
+        "given": "Simonetta",
+        "family": "Paloscia"
+      },
+      {
+        "given": "Nazzareno",
+        "family": "Pierdicca"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9642"
+    ]
+  },
+  "9784:2016": {
+    "title": "Medical Imaging 2016: Image Processing",
+    "editors": [
+      {
+        "given": "Martin A.",
+        "family": "Styner"
+      },
+      {
+        "given": "Elsa D.",
+        "family": "Angelini"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9784"
+    ]
+  },
+  "9785:2016": {
+    "title": "Medical Imaging 2016: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Georgia D.",
+        "family": "Tourassi"
+      },
+      {
+        "given": "Samuel G.",
+        "family": "Armato III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9785"
+    ]
+  },
+  "9786:2016": {
+    "title": "Medical Imaging 2016: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Robert J.",
+        "family": "Webster III"
+      },
+      {
+        "given": "Ziv R.",
+        "family": "Yaniv"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9786"
+    ]
+  },
+  "9787:2016": {
+    "title": "Medical Imaging 2016: Image Perception, Observer Performance, and Technology Assessment",
+    "editors": [
+      {
+        "given": "Craig K.",
+        "family": "Abbey"
+      },
+      {
+        "given": "Matthew A.",
+        "family": "Kupinski"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miipop/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9787"
+    ]
+  },
+  "9788:2016": {
+    "title": "Medical Imaging 2016: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Barjor",
+        "family": "Gimi"
+      },
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9788"
+    ]
+  },
+  "9791:2016": {
+    "title": "Medical Imaging 2016: Digital Pathology",
+    "editors": [
+      {
+        "given": "Metin N.",
+        "family": "Gurcan"
+      },
+      {
+        "given": "Anant",
+        "family": "Madabhushi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9791"
+    ]
+  },
+  "9875:2015": {
+    "title": "Eighth International Conference on Machine Vision (ICMV 2015)",
+    "editors": [
+      {
+        "given": "Antanas",
+        "family": "Verikas"
+      },
+      {
+        "given": "Petia",
+        "family": "Radeva"
+      },
+      {
+        "given": "Dmitry P.",
+        "family": "Nikolaev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2015",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9875"
+    ]
+  },
+  "9897:2016": {
+    "title": "Real-Time Image and Video Processing 2016",
+    "editors": [
+      {
+        "given": "Nasser",
+        "family": "Kehtarnavaz"
+      },
+      {
+        "given": "Matthias F.",
+        "family": "Carlsohn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/rivp/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9897"
+    ]
+  },
+  "9972:2016": {
+    "title": "Earth Observing Systems XXI",
+    "editors": [
+      {
+        "given": "James J.",
+        "family": "Butler"
+      },
+      {
+        "given": "Xiaoxiong (Jack)",
+        "family": "Xiong"
+      },
+      {
+        "given": "Xingfa",
+        "family": "Gu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/eos/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/9972"
+    ]
+  },
+  "10003:2017": {
+    "title": "SAR Image Analysis, Modeling, and Techniques XVI",
+    "editors": [
+      {
+        "given": "Claudia",
+        "family": "Notarnicola"
+      },
+      {
+        "given": "Simonetta",
+        "family": "Paloscia"
+      },
+      {
+        "given": "Nazzareno",
+        "family": "Pierdicca"
+      },
+      {
+        "given": "Edward T. A.",
+        "family": "Mitchard"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sar/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10003"
+    ]
+  },
+  "10133:2017": {
+    "title": "Medical Imaging 2017: Image Processing",
+    "editors": [
+      {
+        "given": "Martin A.",
+        "family": "Styner"
+      },
+      {
+        "given": "Elsa D.",
+        "family": "Angelini"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10133"
+    ]
+  },
+  "10134:2017": {
+    "title": "Medical Imaging 2017: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Samuel G.",
+        "family": "Armato III"
+      },
+      {
+        "given": "Nicholas A.",
+        "family": "Petrick"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10134"
+    ]
+  },
+  "10135:2017": {
+    "title": "Medical Imaging 2017: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Robert J.",
+        "family": "Webster III"
+      },
+      {
+        "given": "Baowei",
+        "family": "Fei"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10135"
+    ]
+  },
+  "10137:2017": {
+    "title": "Medical Imaging 2017: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      },
+      {
+        "given": "Barjor",
+        "family": "Gimi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10137"
+    ]
+  },
+  "10140:2017": {
+    "title": "Medical Imaging 2017: Digital Pathology",
+    "editors": [
+      {
+        "given": "Metin N.",
+        "family": "Gurcan"
+      },
+      {
+        "given": "John",
+        "family": "Tomaszewski"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10140"
+    ]
+  },
+  "10338:2017": {
+    "title": "Thirteenth International Conference on Quality Control by Artificial Vision 2017",
+    "editors": [
+      {
+        "given": "Hajime",
+        "family": "Nagahara"
+      },
+      {
+        "given": "Kazunori",
+        "family": "Umeda"
+      },
+      {
+        "given": "Atsushi",
+        "family": "Yamashita"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/qcav/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10338"
+    ]
+  },
+  "10341:2016": {
+    "title": "Ninth International Conference on Machine Vision (ICMV 2016)",
+    "editors": [
+      {
+        "given": "Antanas",
+        "family": "Verikas"
+      },
+      {
+        "given": "Petia",
+        "family": "Radeva"
+      },
+      {
+        "given": "Dmitry P.",
+        "family": "Nikolaev"
+      },
+      {
+        "given": "Wei",
+        "family": "Zhang"
+      },
+      {
+        "given": "Jianhong",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2016",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10341"
+    ]
+  },
+  "10402:2017": {
+    "title": "Earth Observing Systems XXII",
+    "editors": [
+      {
+        "given": "James J.",
+        "family": "Butler"
+      },
+      {
+        "given": "Xiaoxiong (Jack)",
+        "family": "Xiong"
+      },
+      {
+        "given": "Xingfa",
+        "family": "Gu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/eos/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10402"
+    ]
+  },
+  "10572:2017": {
+    "title": "13th International Conference on Medical Information Processing and Analysis",
+    "editors": [
+      {
+        "given": "Eduardo",
+        "family": "Romero"
+      },
+      {
+        "given": "Natasha",
+        "family": "Leporé"
+      },
+      {
+        "given": "Jorge",
+        "family": "Brieva"
+      },
+      {
+        "given": "Juan David",
+        "family": "García"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/sipaim/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10572"
+    ]
+  },
+  "10574:2018": {
+    "title": "Medical Imaging 2018: Image Processing",
+    "editors": [
+      {
+        "given": "Elsa D.",
+        "family": "Angelini"
+      },
+      {
+        "given": "Bennett A.",
+        "family": "Landman"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10574"
+    ]
+  },
+  "10575:2018": {
+    "title": "Medical Imaging 2018: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Nicholas",
+        "family": "Petrick"
+      },
+      {
+        "given": "Kensaku",
+        "family": "Mori"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10575"
+    ]
+  },
+  "10576:2018": {
+    "title": "Medical Imaging 2018: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Baowei",
+        "family": "Fei"
+      },
+      {
+        "given": "Robert J.",
+        "family": "Webster III"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10576"
+    ]
+  },
+  "10577:2018": {
+    "title": "Medical Imaging 2018: Image Perception, Observer Performance, and Technology Assessment",
+    "editors": [
+      {
+        "given": "Robert M.",
+        "family": "Nishikawa"
+      },
+      {
+        "given": "Frank W.",
+        "family": "Samuelson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miipop/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10577"
+    ]
+  },
+  "10578:2018": {
+    "title": "Medical Imaging 2018: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Barjor",
+        "family": "Gimi"
+      },
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10578"
+    ]
+  },
+  "10581:2018": {
+    "title": "Medical Imaging 2018: Digital Pathology",
+    "editors": [
+      {
+        "given": "John",
+        "family": "Tomaszewski"
+      },
+      {
+        "given": "Metin N.",
+        "family": "Gurcan"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10581"
+    ]
+  },
+  "10611:2018": {
+    "title": "MIPPR 2017: Remote Sensing Image Processing, Geographic Information Systems, and Other Applications",
+    "editors": [
+      {
+        "given": "Nong",
+        "family": "Sang"
+      },
+      {
+        "given": "Jie",
+        "family": "Ma"
+      },
+      {
+        "given": "Zhong",
+        "family": "Chen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mippr/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10611"
+    ]
+  },
+  "10696:2017": {
+    "title": "Tenth International Conference on Machine Vision (ICMV 2017)",
+    "editors": [
+      {
+        "given": "Antanas",
+        "family": "Verikas"
+      },
+      {
+        "given": "Petia",
+        "family": "Radeva"
+      },
+      {
+        "given": "Dmitry P.",
+        "family": "Nikolaev"
+      },
+      {
+        "given": "Jianhong",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2017",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10696"
+    ]
+  },
+  "10718:2018": {
+    "title": "14th International Workshop on Breast Imaging (IWBI 2018)",
+    "editors": [
+      {
+        "given": "Elizabeth A.",
+        "family": "Krupinski"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/iwbi/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10718"
+    ]
+  },
+  "10764:2018": {
+    "title": "Earth Observing Systems XXIII",
+    "editors": [
+      {
+        "given": "James J.",
+        "family": "Butler"
+      },
+      {
+        "given": "Xiaoxiong (Jack)",
+        "family": "Xiong"
+      },
+      {
+        "given": "Xingfa",
+        "family": "Gu"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/eos/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10764"
+    ]
+  },
+  "10949:2019": {
+    "title": "Medical Imaging 2019: Image Processing",
+    "editors": [
+      {
+        "given": "Elsa D.",
+        "family": "Angelini"
+      },
+      {
+        "given": "Bennett A.",
+        "family": "Landman"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2019",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10949"
+    ]
+  },
+  "10950:2019": {
+    "title": "Medical Imaging 2019: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Kensaku",
+        "family": "Mori"
+      },
+      {
+        "given": "Horst K.",
+        "family": "Hahn"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2019",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10950"
+    ]
+  },
+  "10951:2019": {
+    "title": "Medical Imaging 2019: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Baowei",
+        "family": "Fei"
+      },
+      {
+        "given": "Cristian A.",
+        "family": "Linte"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2019",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10951"
+    ]
+  },
+  "10952:2019": {
+    "title": "Medical Imaging 2019: Image Perception, Observer Performance, and Technology Assessment",
+    "editors": [
+      {
+        "given": "Robert M.",
+        "family": "Nishikawa"
+      },
+      {
+        "given": "Frank W.",
+        "family": "Samuelson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miipop/2019",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10952"
+    ]
+  },
+  "10953:2019": {
+    "title": "Medical Imaging 2019: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Barjor",
+        "family": "Gimi"
+      },
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2019",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10953"
+    ]
+  },
+  "10956:2019": {
+    "title": "Medical Imaging 2019: Digital Pathology",
+    "editors": [
+      {
+        "given": "John E.",
+        "family": "Tomaszewski"
+      },
+      {
+        "given": "Aaron D.",
+        "family": "Ward"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2019",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/10956"
+    ]
+  },
+  "11041:2018": {
+    "title": "Eleventh International Conference on Machine Vision (ICMV 2018)",
+    "editors": [
+      {
+        "given": "Antanas",
+        "family": "Verikas"
+      },
+      {
+        "given": "Dmitry P.",
+        "family": "Nikolaev"
+      },
+      {
+        "given": "Petia",
+        "family": "Radeva"
+      },
+      {
+        "given": "Jianhong",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2018",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11041"
+    ]
+  },
+  "11313:2020": {
+    "title": "Medical Imaging 2020: Image Processing",
+    "editors": [
+      {
+        "given": "Ivana",
+        "family": "Isgum"
+      },
+      {
+        "given": "Bennett A.",
+        "family": "Landman"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2020",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11313"
+    ]
+  },
+  "11314:2020": {
+    "title": "Medical Imaging 2020: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Horst K.",
+        "family": "Hahn"
+      },
+      {
+        "given": "Maciej A.",
+        "family": "Mazurowski"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2020",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11314"
+    ]
+  },
+  "11315:2020": {
+    "title": "Medical Imaging 2020: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Baowei",
+        "family": "Fei"
+      },
+      {
+        "given": "Cristian A.",
+        "family": "Linte"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2020",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11315"
+    ]
+  },
+  "11316:2020": {
+    "title": "Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment",
+    "editors": [
+      {
+        "given": "Frank W.",
+        "family": "Samuelson"
+      },
+      {
+        "given": "Sian",
+        "family": "Taylor-Phillips"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miipop/2020",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11316"
+    ]
+  },
+  "11317:2020": {
+    "title": "Medical Imaging 2020: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      },
+      {
+        "given": "Barjor S.",
+        "family": "Gimi"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2020",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11317"
+    ]
+  },
+  "11320:2020": {
+    "title": "Medical Imaging 2020: Digital Pathology",
+    "editors": [
+      {
+        "given": "John E.",
+        "family": "Tomaszewski"
+      },
+      {
+        "given": "Aaron D.",
+        "family": "Ward"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2020",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11320"
+    ]
+  },
+  "11433:2019": {
+    "title": "Twelfth International Conference on Machine Vision (ICMV 2019)",
+    "editors": [
+      {
+        "given": "Wolfgang",
+        "family": "Osten"
+      },
+      {
+        "given": "Dmitry P.",
+        "family": "Nikolaev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2019",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11433"
+    ]
+  },
+  "11596:2021": {
+    "title": "Medical Imaging 2021: Image Processing",
+    "editors": [
+      {
+        "given": "Ivana",
+        "family": "Isgum"
+      },
+      {
+        "given": "Bennett A.",
+        "family": "Landman"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2021",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11596"
+    ]
+  },
+  "11597:2021": {
+    "title": "Medical Imaging 2021: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Maciej A.",
+        "family": "Mazurowski"
+      },
+      {
+        "given": "Karen",
+        "family": "Drukker"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2021",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11597"
+    ]
+  },
+  "11598:2021": {
+    "title": "Medical Imaging 2021: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Cristian A.",
+        "family": "Linte"
+      },
+      {
+        "given": "Jeffrey H.",
+        "family": "Siewerdsen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2021",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11598"
+    ]
+  },
+  "11599:2021": {
+    "title": "Medical Imaging 2021: Image Perception, Observer Performance, and Technology Assessment",
+    "editors": [
+      {
+        "given": "Frank W.",
+        "family": "Samuelson"
+      },
+      {
+        "given": "Sian",
+        "family": "Taylor-Phillips"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miipop/2021",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11599"
+    ]
+  },
+  "11600:2021": {
+    "title": "Medical Imaging 2021: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Barjor S.",
+        "family": "Gimi"
+      },
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2021",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11600"
+    ]
+  },
+  "11603:2021": {
+    "title": "Medical Imaging 2021: Digital Pathology",
+    "editors": [
+      {
+        "given": "John E.",
+        "family": "Tomaszewski"
+      },
+      {
+        "given": "Aaron D.",
+        "family": "Ward"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2021",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11603"
+    ]
+  },
+  "11605:2020": {
+    "title": "Thirteenth International Conference on Machine Vision",
+    "editors": [
+      {
+        "given": "Wolfgang",
+        "family": "Osten"
+      },
+      {
+        "given": "Dmitry P.",
+        "family": "Nikolaev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2020",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11605"
+    ]
+  },
+  "12032:2022": {
+    "title": "Medical Imaging 2022: Image Processing",
+    "editors": [
+      {
+        "given": "Olivier",
+        "family": "Colliot"
+      },
+      {
+        "given": "Ivana",
+        "family": "Isgum"
+      },
+      {
+        "given": "Bennett A.",
+        "family": "Landman"
+      },
+      {
+        "given": "Murray H.",
+        "family": "Loew"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2022",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12032"
+    ]
+  },
+  "12033:2022": {
+    "title": "Medical Imaging 2022: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Karen",
+        "family": "Drukker"
+      },
+      {
+        "given": "Khan M.",
+        "family": "Iftekharuddin"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2022",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12033"
+    ]
+  },
+  "12034:2022": {
+    "title": "Medical Imaging 2022: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Cristian A.",
+        "family": "Linte"
+      },
+      {
+        "given": "Jeffrey H.",
+        "family": "Siewerdsen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2022",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12034"
+    ]
+  },
+  "12035:2022": {
+    "title": "Medical Imaging 2022: Image Perception, Observer Performance, and Technology Assessment",
+    "editors": [
+      {
+        "given": "Claudia R.",
+        "family": "Mello-Thoms"
+      },
+      {
+        "given": "Sian",
+        "family": "Taylor-Phillips"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miipop/2022",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12035"
+    ]
+  },
+  "12036:2022": {
+    "title": "Medical Imaging 2022: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Barjor S.",
+        "family": "Gimi"
+      },
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2022",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12036"
+    ]
+  },
+  "12039:2022": {
+    "title": "Medical Imaging 2022: Digital and Computational Pathology",
+    "editors": [
+      {
+        "given": "John E.",
+        "family": "Tomaszewski"
+      },
+      {
+        "given": "Aaron D.",
+        "family": "Ward"
+      },
+      {
+        "given": "Richard M.",
+        "family": "Levenson"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/midp/2022",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12039"
+    ]
+  },
+  "12084:2021": {
+    "title": "Fourteenth International Conference on Machine Vision (ICMV 2021)",
+    "editors": [
+      {
+        "given": "Wolfgang",
+        "family": "Osten"
+      },
+      {
+        "given": "Dmitry",
+        "family": "Nikolaev"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2021",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12084"
+    ]
+  },
+  "12464:2023": {
+    "title": "Medical Imaging 2023: Image Processing",
+    "editors": [
+      {
+        "given": "Olivier",
+        "family": "Colliot"
+      },
+      {
+        "given": "Ivana",
+        "family": "Isgum"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miip/2023",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12464"
+    ]
+  },
+  "12465:2023": {
+    "title": "Medical Imaging 2023: Computer-Aided Diagnosis",
+    "editors": [
+      {
+        "given": "Khan M.",
+        "family": "Iftekharuddin"
+      },
+      {
+        "given": "Weijie",
+        "family": "Chen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/micad/2023",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12465"
+    ]
+  },
+  "12466:2023": {
+    "title": "Medical Imaging 2023: Image-Guided Procedures, Robotic Interventions, and Modeling",
+    "editors": [
+      {
+        "given": "Cristian A.",
+        "family": "Linte"
+      },
+      {
+        "given": "Jeffrey H.",
+        "family": "Siewerdsen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miigp/2023",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12466"
+    ]
+  },
+  "12467:2023": {
+    "title": "Medical Imaging 2023: Image Perception, Observer Performance, and Technology Assessment",
+    "editors": [
+      {
+        "given": "Claudia R.",
+        "family": "Mello-Thoms"
+      },
+      {
+        "given": "Yan",
+        "family": "Chen"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/miipop/2023",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12467"
+    ]
+  },
+  "12468:2022": {
+    "title": "Medical Imaging 2023: Biomedical Applications in Molecular, Structural, and Functional Imaging",
+    "editors": [
+      {
+        "given": "Barjor S.",
+        "family": "Gimi"
+      },
+      {
+        "given": "Andrzej",
+        "family": "Król"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/mibam/2023",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12468"
+    ]
+  },
+  "12701:2023": {
+    "title": "Fifteenth International Conference on Machine Vision (ICMV 2022)",
+    "editors": [
+      {
+        "given": "Wolfgang",
+        "family": "Osten"
+      },
+      {
+        "given": "Dmitry",
+        "family": "Nikolaev"
+      },
+      {
+        "given": "Jianhong",
+        "family": "Zhou"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2022",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12701"
+    ]
+  },
+  "13072:2024": {
+    "title": "Sixteenth International Conference on Machine Vision (ICMV 2023)",
+    "editors": [
+      {
+        "given": "Wolfgang",
+        "family": "Osten"
+      }
+    ],
+    "sources": [
+      "https://dblp.org/rec/conf/icmv/2023",
+      "https://www.spiedigitallibrary.org/conference-proceedings-of-spie/13072"
     ]
   }
 }
