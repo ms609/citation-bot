@@ -507,7 +507,6 @@ final class Zotero {
             return false;
         }
         $temporary_path = null;
-        $durable = false;
         try {
             if (!self::citoid_directory_matches_path($directory_handle, $directory) ||
                 !self::citoid_lock_file_matches_path($lock, $lock_path)) {
