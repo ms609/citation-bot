@@ -509,7 +509,7 @@ final class ZoteroTest extends testBaseClass {
         );
     }
 
-    public function testZoteroExpansion_biorxiv1(): void {
+    public function testZoteroExpansion_biorxivChecksTitleSunbeamAnExtensiblePipelineFor(): void {
         $text = '{{Cite journal| biorxiv=326363 }}';
         $expanded = $this->process_citation($text);
         $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
@@ -543,19 +543,19 @@ final class ZoteroTest extends testBaseClass {
         }
     }
 
-    public function testZoteroExpansion_biorxiv2(): void {
+    public function testZoteroExpansion_biorxivChecksTitleSunbeamAnExtensiblePipelineForDoi100001RubbishBotFailureTes(): void {
         $text = '{{Cite journal| biorxiv=326363 |doi=10.0001/Rubbish_bot_failure_test}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
     }
 
-    public function testZoteroExpansion_medrxiv1(): void {
+    public function testZoteroExpansion_medrxivKeepsTitleCiteJournal(): void {
         $text = '{{Cite journal| medrxiv=2020.04.05.20054502 }}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('title'));
     }
 
-    public function testZoteroExpansion_medrxiv2(): void {
+    public function testZoteroExpansion_medrxivKeepsTitleDoi100001RubbishBotFailureTes(): void {
         $text = '{{Cite journal| medrxiv=2020.04.05.20054502 |doi=10.0001/Rubbish_bot_failure_test}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('title'));
@@ -567,13 +567,13 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testDropUrlCode2(): void { // URL redirects to URL with the same DOI
+    public function testDropUrlCodeKeepsUrlLastDeVivoFirstTitleNewConstraintsOnThePyrocla(): void { // URL redirects to URL with the same DOI
         $text = '{{cite journal | last = De Vivo | first = B. | title = New constraints on the pyroclastic eruptive history of the Campanian volcanic Plain (Italy) | url = http://www.springerlink.com/content/8r046aa9t4lmjwxj/ | doi = 10.1007/s007100170010 }}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testDropUrlCode3(): void { // url is same as one doi points to, except for http vs. https
+    public function testDropUrlCodeKeepsUrlPmcXYZYear1953TitleMolecularStructureOfNuclei(): void { // url is same as one doi points to, except for http vs. https
         $text = '{{cite journal |pmc=XYZ| last1 = Watson | first1 = James D. | last2 = Crick | first2 = Francis H. C. | year = 1953 | title = Molecular Structure of Nucleic Acids: A Structure for Deoxyribose Nucleic Acid | url = http://www.nature.com/articles/171737a0 | doi=10.1038/171737a0 }}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
@@ -640,7 +640,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testDropSomeEquivURLS2(): void {
+    public function testDropSomeEquivURLSKeepsUrlPmcXYZDoiJournal(): void {
         $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://iopscience.iop.org/324234}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -648,7 +648,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testDropSomeProxies3(): void {
+    public function testDropSomeProxiesKeepsUrlDoiJournalTitle(): void {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://journals.lww.com/3243243}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -656,7 +656,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testDropSomeProxies4(): void {
+    public function testDropSomeProxiesKeepsUrlDoiJournalTitleFirstVariant(): void {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://wkhealth.com/3243243}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -664,7 +664,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testDropSomeURLEquivs5(): void {
+    public function testDropSomeURLEquivsKeepsUrlPmcXYZDoiJournal(): void {
         $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -672,7 +672,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testDropSomeURLEquivs6(): void {
+    public function testDropSomeURLEquivsRemovesUrlPmcXYZDoiJournal(): void {
         $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333|pmc=123|doi-access=free}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -680,7 +680,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testDropSomeURLEquivs7(): void {
+    public function testDropSomeURLEquivsChecksUrlDxDoiOrgXDOIPmcXYZDoiXDOI(): void {
         $text = "{{cite journal|pmc=XYZ|doi=XDOI|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com/cgi/sss|pmid=333}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -688,7 +688,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('https://dx.doi.org/XDOI', $template->get2('url'));
     }
 
-    public function testDropSomeURLEquivs8(): void {
+    public function testDropSomeURLEquivsRemovesUrlPmcXYZJournalTitle(): void {
         $text = "{{cite journal|pmc=XYZ|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com/cgi/sss|pmid=333}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -696,7 +696,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testDropSomeURLEquivs9(): void {
+    public function testDropSomeURLEquivsRemovesUrlUrlPubsAcsOrgDoi101021Doi101021AcsAnalchem804Pmid30741529(): void {
         $text = "{{cite journal|url=https://pubs.acs.org/doi/10.1021/acs.analchem.8b04567|doi=10.1021/acs.analchem.8b04567|doi-access=free|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -704,7 +704,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testZoteroResponse1(): void {
+    public function testZoteroResponseChecksIdEmptyWeb(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -714,7 +714,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse2(): void {
+    public function testZoteroResponseChecksIdEmptyWebCiteWebId(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -724,7 +724,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse3(): void {
+    public function testZoteroResponseChecksIdEmptyWebSorryBut502BadGatewayWas(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -734,7 +734,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse4(): void {
+    public function testZoteroResponseChecksIdEmptyWebThisWillNotBeFoundToBe(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -822,7 +822,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse5(): void {
+    public function testZoteroResponseChecksIdEmptyWebFirstVariant(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -833,7 +833,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse6(): void {
+    public function testZoteroResponseChecksIdEmptyWebSomeStuffThatShouldBeEncoded(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -844,7 +844,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse7(): void {
+    public function testZoteroResponseChecksIdEmptyWebTitle(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -855,7 +855,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse8(): void {
+    public function testZoteroResponseChecksIdEmptyWebNOTFOUND(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -867,7 +867,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse9(): void {
+    public function testZoteroResponseChecksIdEmptyWebOupAcceptedManuscript(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -879,7 +879,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse92(): void {
+    public function testZoteroResponseChecksIdEmptyWebBookTitle(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -891,7 +891,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse93(): void {
+    public function testZoteroResponseChecksIdEmptyWebPublicationTitle(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -903,7 +903,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse10(): void {
+    public function testZoteroResponseChecksChapterCiteBookIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -918,7 +918,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('This is a Title', $template->get2('title'));
     }
 
-    public function testZoteroResponse11(): void {
+    public function testZoteroResponseChecksTitleCiteWebIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -931,7 +931,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Billy', $template->get2('title'));
     }
 
-    public function testZoteroResponse12(): void {
+    public function testZoteroResponseChecksTitleCiteMagazineIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -944,7 +944,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Billy', $template->get2('title'));
     }
 
-    public function testZoteroResponse13(): void {
+    public function testZoteroResponseChecksTitleCiteWebIdEmptyCiteWebId(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -957,7 +957,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Billy', $template->get2('title'));
     }
 
-    public function testZoteroResponse14(): void {
+    public function testZoteroResponseChecksTitleCiteWebIdEmptyTitle(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -970,7 +970,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Billy', $template->get2('title'));
     }
 
-    public function testZoteroResponse15(): void {
+    public function testZoteroResponseChecksTitleCiteThesisIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -985,7 +985,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('MS', $template->get2('type'));
     }
 
-    public function testZoteroResponse16(): void {
+    public function testZoteroResponseChecksTitleCiteNewsIdEmptyPublisherAssociatedPress(): void {
         $text = '{{cite news|id=|publisher=Associated Press|author=Associated Press}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1001,7 +1001,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testZoteroResponse17(): void {
+    public function testZoteroResponseChecksTitleCiteNewsIdEmptyPublisherReuters(): void {
         $text = '{{cite news|id=|publisher=Reuters|author=Reuters}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1017,7 +1017,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testZoteroResponse18(): void {
+    public function testZoteroResponseChecksPmid25408617IdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1030,7 +1030,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('4233402', $template->get2('pmc'));
     }
 
-    public function testZoteroResponse19(): void {
+    public function testZoteroResponseChecksPmid25408617IdEmptyCiteWebId(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1042,7 +1042,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('25408617', $template->get2('pmid'));
     }
 
-    public function testZoteroResponse20(): void {
+    public function testZoteroResponseChecksTitleBillyIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1054,7 +1054,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Billy', $template->get2('title'));
     }
 
-    public function testZoteroResponse21(): void {
+    public function testZoteroResponseRemovesDateIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1092,7 +1092,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('date'));
     }
 
-    public function testZoteroResponse22(): void {
+    public function testZoteroResponseChecksTitleCiteBookIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1105,7 +1105,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Billy', $template->get2('title'));
     }
 
-    public function testZoteroResponse23(): void {
+    public function testZoteroResponseChecksTitleBillyIdEmptyCiteWebId(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1120,7 +1120,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertTrue($template->blank(['author', 'author1', 'last1', 'first1', 'first', 'last']));
     }
 
-    public function testZoteroResponse24(): void {
+    public function testZoteroResponseChecksDoi101021AcsAnalchem804IdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1132,7 +1132,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('10.1021/acs.analchem.8b04567', $template->get2('doi'));
     }
 
-    public function testZoteroResponse25(): void {
+    public function testZoteroResponseChecksTitleBillyIdEmptyCreatorType(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1147,7 +1147,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Joe', $template->get2('editor1'));
     }
 
-    public function testZoteroResponse26(): void {
+    public function testZoteroResponseChecksTitleBillyIdEmptyTranslator(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1162,7 +1162,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Joe', $template->get2('translator1'));
     }
 
-    public function testZoteroResponse27(): void {
+    public function testZoteroResponseRemovesTitleIdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1174,7 +1174,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('title'));
     }
 
-    public function testZoteroResponse28(): void {
+    public function testZoteroResponseChecksTitleBillyIdEmptyTitle(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1186,7 +1186,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Billy', $template->get2('title'));
     }
 
-    public function testZoteroResponse29(): void {
+    public function testZoteroResponseChecksTitleBillyIdEmptyAuthor(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1246,7 +1246,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('first1'));
     }
 
-    public function testZoteroResponse30(): void {
+    public function testZoteroResponseChecksTitleBillyIdEmptySmith(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1348,7 +1348,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('editor2'));
     }
 
-    public function testZoteroResponse31(): void {
+    public function testZoteroResponseChecksIdEmptyWebNoItemsReturnedFromAnyTransl(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1358,7 +1358,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse32(): void {
+    public function testZoteroResponseChecksIdEmptyWebAnErrorOccurredDuringTransla(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1368,7 +1368,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse33(): void {
+    public function testZoteroResponseChecksIdEmptyWebCreatorType(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1382,7 +1382,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse34(): void {
+    public function testZoteroResponseChecksDoi101038546031IdEmpty(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1394,7 +1394,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('10.1038/546031a', $template->get2('doi'));
     }
 
-    public function testZoteroResponse35(): void {
+    public function testZoteroResponseChecksIdEmptyWebInternalServerError(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1404,7 +1404,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse36(): void {
+    public function testZoteroResponseChecksTitleCiteJournalIdEmpty(): void {
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'journalArticle', 'publicationTitle' => "X"];
         $zotero_response = json_encode($zotero_data);
@@ -1440,7 +1440,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('X', $template->get2('work'));
     }
 
-    public function testZoteroResponse37(): void {
+    public function testZoteroResponseChecksTitleCiteWebIdEmptyBilly(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1454,7 +1454,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('X', $template->get2('work'));
     }
 
-    public function testZoteroResponse38(): void {
+    public function testZoteroResponseChecksIdEmptyWeb12December2010(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = strtotime('12 December 2010');
@@ -1466,7 +1466,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testZoteroResponse39(): void {
+    public function testZoteroResponseKeepsUrl101016Laa201205UrlSciencedirectComScienceArtTitleGeometryOfTheWelchBounds(): void {
         $text = '{{cite journal|url=https://www.sciencedirect.com/science/article/pii/S0024379512004405|title=Geometry of the Welch bounds|journal=Linear Algebra and Its Applications|volume=437|issue=10|pages=2455–2470|year=2012|last1=Datta|first1=S.|last2=Howard|first2=S.|last3=Cochran|first3=D.}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1479,7 +1479,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('10.1016/j.laa.2012.05.036', $template->get2('doi'));
     }
 
-    public function testZoteroResponse40(): void {
+    public function testZoteroResponseChecksJournalNationalPost(): void {
         $text = '{{cite journal}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1491,7 +1491,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('National Post', $template->get2('journal'));
     }
 
-    public function testZoteroResponse41(): void {
+    public function testZoteroResponseChecksJournalFinancialPost(): void {
         $text = '{{cite journal}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1503,7 +1503,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Financial Post', $template->get2('journal'));
     }
 
-    public function testZoteroResponse42(): void {
+    public function testZoteroResponseChecksJournalTheDailyStar(): void {
         $text = '{{cite journal}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1516,7 +1516,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('Learn New Stuff', $template->get2('title'));
     }
 
-    public function testZoteroResponse43(): void {
+    public function testZoteroResponseRemovesJournal(): void {
         $text = '{{cite journal}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1529,7 +1529,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('title'));
     }
 
-    public function testZoteroResponse44(): void {
+    public function testZoteroResponseChecksWebsiteSfdbOrg(): void {
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1542,7 +1542,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('34–55', $template->get2('pages'));
     }
 
-    public function testZoteroResponse45(): void {
+    public function testZoteroResponseChecksBibcode1234Asdfghjklqwerty(): void {
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1554,7 +1554,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('1234asdfghjklqwerty', $template->get2('bibcode'));
     }
 
-    public function testZoteroResponse46(): void {
+    public function testZoteroResponseChecksPublisherUnitedStatesCensusBureau(): void {
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1566,7 +1566,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('United States Census Bureau', $template->get2('publisher'));
     }
 
-    public function testZoteroResponse47(): void {
+    public function testZoteroResponseChecksCiteJournalWorkDSfadsfsdf(): void {
         $text = '{{cite web|work=DSfadsfsdf}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1578,7 +1578,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('cite journal', $template->wikiname());
     }
 
-    public function testZoteroResponse47b(): void {
+    public function testZoteroResponseChecksCiteWebWorkDSfadsfsdf(): void {
         $text = '{{cite web|work=DSfadsfsdf}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1590,7 +1590,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('cite web', $template->wikiname());
     }
 
-    public function testZoteroResponse48(): void {
+    public function testZoteroResponseChecksIdEmptyWebTranslator(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1609,7 +1609,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('{{cite web|last1=Smitha|first1=Joea|last2=Smithax|first2=Joeax|editor1=Smithe, Joee|editor2=Smithex, Joeex|translator1=Smitht, Joet|translator2=Smithtx, Joetx|title=Billy|id=}}', $template->parsed_text());
     }
 
-    public function testZoteroResponse49(): void {
+    public function testZoteroResponseChecksPages3455TitleChapter(): void {
         $text = '{{cite web|title=X|chapter=Y}}'; // New data for chapter and title match exactly
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1621,7 +1621,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('34–55', $template->get2('pages'));
     }
 
-    public function testZoteroResponse50(): void {
+    public function testZoteroResponseChecksPages3455TitleChapterCiteWebTitleChapter(): void {
         $text = '{{cite web|title=Y|chapter=X}}'; // New data for chapter and title match exactly, but reversed
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1633,7 +1633,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('34–55', $template->get2('pages'));
     }
 
-    public function testZoteroResponse51(): void {
+    public function testZoteroResponseChecksPages3455TitleNoOneSeemsToUnderstandHowTChapterThisIsTheTitleOfTheChapter(): void {
         $text = '{{cite web|title=No one seems to understand how this work|chapter=This is the title of the chapter}}'; // New data for chapter and title match exactly, but reversed
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1645,7 +1645,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('34–55', $template->get2('pages'));
     }
 
-    public function testZoteroResponse52(): void {
+    public function testZoteroResponseChecksPmid12345(): void {
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1718,7 +1718,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testRemoveURLthatRedirects2(): void {
+    public function testRemoveURLthatRedirectsKeepsUrlDoi101021AcsAnalchem804UrlShortdoiOrgGf7SqtPmid30741529(): void {
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -1726,7 +1726,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testRemoveURLwithProxy1(): void { // PROXY_HOSTS_TO_DROP
+    public function testRemoveURLwithProxyKeepsUrlDoi101021AcsAnalchem804UrlDeliveryAcmOrg(): void { // PROXY_HOSTS_TO_DROP
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -1734,7 +1734,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testRemoveURLwithProxy1b(): void { // PROXY_HOSTS_TO_DROP
+    public function testRemoveURLwithProxyRemovesUrlDoi101021AcsAnalchem804UrlDeliveryAcmOrgIssue1(): void { // PROXY_HOSTS_TO_DROP
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -1742,7 +1742,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testRemoveURLwithProxy2(): void { // PROXY_HOSTS_TO_ALWAYS_DROP
+    public function testRemoveURLwithProxyKeepsUrlDoi101021AcsAnalchem804UrlJournalsRoyalsocietyOrg(): void { // PROXY_HOSTS_TO_ALWAYS_DROP
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://journals.royalsociety.org|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -1750,7 +1750,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testRemoveURLwithProxy2b(): void { // PROXY_HOSTS_TO_ALWAYS_DROP
+    public function testRemoveURLwithProxyRemovesUrlDoi101021AcsAnalchem804UrlJournalsRoyalsocietyOrgIssue1(): void { // PROXY_HOSTS_TO_ALWAYS_DROP
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://journals.royalsociety.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -1758,7 +1758,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testRemoveURLwithProxy3a(): void { // CANONICAL_PUBLISHER_URLS
+    public function testRemoveURLwithProxyKeepsUrlDoi101021AcsAnalchem804UrlPubsGeoscienceworldOrg(): void { // CANONICAL_PUBLISHER_URLS
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -1766,7 +1766,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testRemoveURLwithProxy3b(): void { // CANONICAL_PUBLISHER_URLS
+    public function testRemoveURLwithProxyRemovesUrlDoi101021AcsAnalchem804UrlPubsGeoscienceworldOrgIssue1(): void { // CANONICAL_PUBLISHER_URLS
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -1954,7 +1954,7 @@ final class ZoteroTest extends testBaseClass {
         });
     }
 
-    public function testHDLSimpler1(): void {
+    public function testHDLSimplerChecksHdl2027Mdp39015064(): void {
         $text = '{{Cite web}}';
         $template = $this->make_citation($text);
         hdl_works('2027/mdp.39015064245429');
@@ -1966,22 +1966,22 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('2027/mdp.39015064245429?urlappend=%3Bseq=326', $template->get2('hdl'));
     }
 
-    public function testHDLSimpler2a(): void {
+    public function testHDLSimplerHandles201000100(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertIsString(hdl_works('20.1000/100'));
     }
 
-    public function testHDLSimpler2b(): void {
+    public function testHDLSimplerRejects201000100Urlappend3(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326'));
     }
 
-    public function testHDLSimpler2c(): void {
+    public function testHDLSimplerRejects201000100Urlappend3201000100Urlappend3(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35'));
     }
 
-    public function testHDLSimpler2d(): void {
+    public function testHDLSimplerChecksHdl201000100(): void {
         $text = '{{Cite web}}';
         $template = $this->make_citation($text);
         hdl_works('20.1000/100');
@@ -1991,35 +1991,35 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('20.1000/100', $template->get2('hdl'));
     }
 
-    public function testPubMedTermStuff1(): void {
+    public function testPubMedTermStuffChecksUrlPubmedNcbiNlmNihGovTermDropperUrlStuffNcbiNlmNihGovPubmedTe(): void {
         $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=dropper}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/?term=dropper', $template->get2('url'));
     }
 
-    public function testPubMedTermStuff2(): void {
+    public function testPubMedTermStuffRemovesUrlUrlStuffNcbiNlmNihGovPubmedTePmid21234(): void {
         $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=dropper|pmid=21234}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertNull($template->get2('url'));
     }
 
-    public function testPubMedTermStuff3(): void {
+    public function testPubMedTermStuffRemovesUrlUrlStuffNcbiNlmNihGovPubmedTePmid21234CiteWebUrlHttpsStuffNcbiNlm(): void {
         $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed?term=21234|pmid=21234}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertNull($template->get2('url'));
     }
 
-    public function testPubMedTermStuff4(): void {
+    public function testPubMedTermStuffChecksUrlStuffNcbiNlmNihGovPubmedTermUrlStuffNcbiNlmNihGovPubmedTePmid32412(): void {
         $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed?term=12343214|pmid=32412}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertSame('https://stuff.ncbi.nlm.nih.gov/pubmed?term=12343214', $template->get2('url'));
     }
 
-    public function testPubMedTermStuff5(): void {
+    public function testPubMedTermStuffChecksPmid21234UrlStuffNcbiNlmNihGovPubmedTePmidEmpty(): void {
         $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=21234|pmid=}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
@@ -2060,7 +2060,7 @@ final class ZoteroTest extends testBaseClass {
     }
 
     // Test for author numbering fix: ensure authors are numbered contiguously after filtering
-    public function testAuthorNumberingAfterFiltering1(): void {
+    public function testAuthorNumberingAfterFilteringChecksLast1AleazizIdEmpty(): void {
         // Test case: Two valid authors with a bad author in between should be numbered 1 and 2
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
@@ -2082,7 +2082,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last3')); // Should not exist
     }
 
-    public function testAuthorNumberingAfterFiltering2(): void {
+    public function testAuthorNumberingAfterFilteringChecksLast1MagidIdEmpty(): void {
         // Test case: First author is bad, second author should become author1
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
@@ -2101,7 +2101,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last2')); // Should not exist
     }
 
-    public function testAuthorNumberingAfterFiltering3(): void {
+    public function testAuthorNumberingAfterFilteringChecksLast1DahirIdEmpty(): void {
         // Test case: Multiple bad authors at the start, valid authors should be numbered sequentially
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
@@ -2127,7 +2127,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last4')); // Should not exist
     }
 
-    public function testAuthorNumberingAfterFiltering4(): void {
+    public function testAuthorNumberingAfterFilteringChecksLast1SmithIdEmpty(): void {
         // Test case: Mix of good and bad authors should result in contiguous numbering
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
@@ -2153,7 +2153,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last4')); // Should not exist
     }
 
-    public function testAuthorNumberingAfterFiltering5_RealWorldExample1(): void {
+    public function testAuthorNumberingAfterFiltering5_RealWorldExampleChecksLast1MagidIdEmpty(): void {
         // Simulate scenario where Zotero filtered out first author, leaving only second
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);

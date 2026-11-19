@@ -78,7 +78,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertNull($expanded->get2('url'));
     }
 
-    public function testCiteODNB1(): void {
+    public function testCiteODNBChecksDoi101093RefOdnbWrongStuffUrlOxforddnbComView101093RefDoi101093RefOdnbWrongStuff(): void {
         $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876;jsession=XYZ|doi=10.1093/ref:odnb/wrong_stuff|id=74876}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/ref:odnb/wrong_stuff', $template->get2('doi'));
@@ -86,100 +86,100 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertSame('https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876', $template->get2('url'));
     }
 
-    public function testCiteODNB2(): void {
+    public function testCiteODNBChecksDoi101093RefOdnb7487UrlOxforddnbComView101093RefDoi101093Odnb74876(): void {
         $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876|doi=10.1093/odnb/74876|id=74876}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/ref:odnb/74876', $template->get2('doi'));
         $this->assertSame('74876', $template->get2('id'));
     }
 
-    public function testCiteODNB3(): void {
+    public function testCiteODNBChecksDoi101093Odnb978019UrlOxforddnbComView101093OdnbDoi101093Odnb978019(): void {
         $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|doi=10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
     }
 
-    public function testCiteODNB4(): void {
+    public function testCiteODNBChecksDoi101093Odnb978019UrlOxforddnbComView101093OdnbId107316(): void {
         $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|id=107316}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
         $this->assertNull($template->get2('id'));
     }
 
-    public function testCiteODNB5(): void {
+    public function testCiteODNBChecksDoi101093Odnb978019UrlOxforddnbComView101093OdnbId107316101093Odnb978019(): void {
         $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|id=107316|doi=10.0001/Rubbish_bot_failure_test}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
         $this->assertNull($template->get2('id'));
     }
 
-    public function testCiteODNB6(): void {
+    public function testCiteODNBChecksDoi101093Odnb978019Id107316Doi101093Odnb978019(): void {
         $text = '{{Cite ODNB|id=107316|doi=10.1093/odnb/9780198614128.013.107316}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
         $this->assertNull($template->get2('id'));
     }
 
-    public function testCiteODNB7(): void { // Prefer given doi over ID, This is a contrived test
+    public function testCiteODNBChecksDoi101038Ncomms14879Id107316Doi101038Ncomms14879(): void { // Prefer given doi over ID, This is a contrived test
         $text = '{{Cite ODNB|id=107316|doi=10.1038/ncomms14879}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1038/ncomms14879', $template->get2('doi'));
         $this->assertNull($template->get2('id'));
     }
 
-    public function testPriorParametersGroupF1(): void {
+    public function testPriorParametersGroupFChecksSurname2Forename1Initials1Author1(): void {
         $parameter = 'surname2';
         $list = [];
         $expected = ['first1', 'forename1', 'initials1', 'author1', 'contributor-given1', 'contributor-first1', 'contributor1-given', 'contributor1-first'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroupL1(): void {
+    public function testPriorParametersGroupLChecksSurname3Author2ContributorLast2ContributorSurname2(): void {
         $parameter = 'first3';
         $list = [];
         $expected = ['last3', 'surname3', 'author2', 'contributor-last2', 'contributor-surname2', 'contributor2', 'contributor2-surname', 'contributor2-last'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup1(): void {
+    public function testPriorParametersGroupChecksSpecialInput(): void {
         $parameter = 'author';
         $list = [];
         $expected = ['author'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup2(): void {
+    public function testPriorParametersGroupChecksSpecialInputOthers(): void {
         $parameter = 'others';
         $list = [];
         // Doesn't merge GROUP 1 for some reason. Interesting.
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, 'others'], prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup5(): void {
+    public function testPriorParametersGroupChecksJournal(): void {
         $parameter = 'journal';
         $list = [];
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, 'journal'], prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup5_2(): void {
+    public function testPriorParametersGroup5ChecksSpecialInput(): void {
         $parameter = 'work';
         $list = [];
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, 'work'], prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup15(): void {
+    public function testPriorParametersGroupChecksDoiAccess(): void {
         $parameter = 'doi-access';
         $list = [];
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12, ...GROUP13, ...GROUP14, 'doi-access'], prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup23(): void {
+    public function testPriorParametersGroupChecksSpecialInputFirstVariant(): void {
         $parameter = 'hdl';
         $list = [];
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...GROUP15, ...GROUP17, ...GROUP18, ...GROUP19, ...GROUP20, ...GROUP21, ...GROUP22, 'hdl'], prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup30(): void {
+    public function testPriorParametersGroupChecksSpecialInputSecondVariant(): void {
         $parameter = 'id';
         $list = [];
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...GROUP15, ...GROUP17, ...GROUP18, ...GROUP19, ...GROUP20, ...GROUP21, ...GROUP22, ...GROUP23, ...GROUP24, ...GROUP25, ...GROUP26, ...GROUP27, ...GROUP28, ...GROUP29, 'id'], prior_parameters($parameter, $list));
@@ -192,14 +192,14 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersParameterNotInAnyGroup1(): void {
+    public function testPriorParametersParameterNotInAnyGroupChecksNotParam(): void {
         $parameter = 'not-a-param';
         $list = [];
         $expected = ['not-a-param'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersParameterNotInAnyGroup2(): void {
+    public function testPriorParametersParameterNotInAnyGroupChecksSpecialInput(): void {
         $parameter = 's2cid1';
         $list = [];
         $expected = ['s2cid1'];
@@ -213,7 +213,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, 'title-link', 'titlelink'], prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersBlankParameter_2(): void {
+    public function testPriorParametersBlankParameterChecksTestingMoreTesting(): void {
         $parameter = '';
         // these params are not in any groups
         $list = ['testing', 'more-testing'];
@@ -234,7 +234,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, 'publisher1', 'publisher1-last', 'publisher1-first', 'publisher-last1', 'publisher-first1', 'publisher1-surname', 'publisher1-given', 'publisher-surname1', 'publisher-given1'], prior_parameters($parameter, $list));
     }
 
-    public function testNoDuplicates1(): void {
+    public function testNoDuplicatesHandlesSpecialInput(): void {
         $test = [...GROUP_F1, ...GROUP_L1];
         $unique = array_unique($test);
         $duplicates = array_diff_assoc($test, $unique);
@@ -246,7 +246,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertEmpty($duplicates);
     }
 
-    public function testNoDuplicates2(): void {
+    public function testNoDuplicatesHandlesSpecialInputFirstVariant(): void {
         $test = [...GROUP1, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6,
                  ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12,
                  ...GROUP13, ...GROUP14, ...GROUP15, ...GROUP17, ...GROUP18,
@@ -294,11 +294,11 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertSame(FLATTENED_AUTHOR_PARAMETERS, equivalent_parameters('authors'));
     }
 
-    public function testEquivalentParametersAuthor1(): void {
+    public function testEquivalentParametersAuthorChecksAuthor1(): void {
         $this->assertSame(FLATTENED_AUTHOR_PARAMETERS, equivalent_parameters('author1'));
     }
 
-    public function testEquivalentParametersLast1(): void {
+    public function testEquivalentParametersLastChecksSpecialInput(): void {
         $this->assertSame(FLATTENED_AUTHOR_PARAMETERS, equivalent_parameters('last1'));
     }
 
@@ -397,7 +397,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertFalse(should_url2chapter($template, false));
     }
 
-    public function testShouldUrl2ChapterPA0(): void {
+    public function testShouldUrl2ChapterPARejectsUrlExampleComPA0TestChapterTest(): void {
         $template = $this->make_citation('{{cite book |url=http://example.com/PA0test |chapter=Test}}');
         $this->assertFalse(should_url2chapter($template, false));
     }

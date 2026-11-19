@@ -16,7 +16,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($template->get2('show-authors'));
     }
 
-    public function testLotsOfFloaters2(): void {
+    public function testLotsOfFloatersChecksJournal(): void {
         $text_in = '{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}';
         $text_out = '{{cite journal| journal=L Dog | series=Not mine today |isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe }}';
         $prepared = $this->prepare_citation($text_in);
@@ -60,13 +60,13 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('{{cite news| newspaper=The Economist}}', $prepared->parsed_text());
     }
 
-    public function testParameterWithNoParameters_1(): void {
+    public function testParameterWithNoParametersChecksCiteWeb(): void {
         $text = "{{Cite web | text without equals sign  }}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testParameterWithNoParameters_2(): void {
+    public function testParameterWithNoParametersChecksSpecialInput(): void {
         $text = "{{   No pipe }}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
@@ -211,13 +211,13 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertFalse($expanded->add_if_new('last1', 'Z'));
     }
 
-    public function testAddAuthorAgainDiff1(): void {
+    public function testAddAuthorAgainDiffRejectsCiteWebAuthor1(): void {
         $text = "{{Cite web|last1=X}}";
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('author1', 'Z'));
     }
 
-    public function testAddAuthorAgainDiff2(): void {
+    public function testAddAuthorAgainDiffRejectsAuthor1CiteWeb(): void {
         $text = "{{Cite web|author1=X}}";
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('last1', 'Z'));
@@ -271,7 +271,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testCleanUpTemplatesCitewebCiteWebPage2(): void {
+    public function testCleanUpTemplatesCitewebCiteWebPageChecksCiteWeb(): void {
         $text = "{{Citeweb|page=2}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite web|page=2}}", $expanded->parsed_text());
@@ -286,7 +286,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("{{Citation|page=2}}", $expanded->parsed_text());
     }
 
-    public function testCleanUpTemplatesCitewebCiteWebPage2ResultCiteWebPage2(): void {
+    public function testCleanUpTemplatesCitewebCiteWebPage2ResultCiteWebPageChecksCiteWeb(): void {
         $text = "{{Citeweb |page=2}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite web |page=2}}", $expanded->parsed_text());
@@ -503,7 +503,7 @@ JSON;
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testBrokenDoiUrlChangesCiteJournal1014928Amstec23(): void {
+    public function testBrokenDoiUrlChangesCiteJournal1014928AmstecKeepsUrlUrlDoiOrg1014928AmstecDoi1014928Amstec231Pmid(): void {
         $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';    // This also troublesome DOI
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
@@ -573,7 +573,7 @@ JSON;
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testBadAuthorCiteJournalDoi101164Rccm200405RemovesAuthor1(): void {
+    public function testBadAuthorCiteJournalDoi101164Rccm200405RemovesAuthorRemovesAuthor1TitleGuidelinesForTheManagementJournalAmRespirCritCareMedVolume17(): void {
         $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST|pmid=|pmc=|arxiv=}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('author1'));
@@ -615,7 +615,7 @@ JSON;
         $this->assertSame('BNXXXXXXXX', $expanded->get2('asin'));
     }
 
-    public function testAddASIN4(): void {
+    public function testAddASINAcceptsIsbn0781765625(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('asin', '0781765625'));
@@ -623,7 +623,7 @@ JSON;
         $this->assertNull($expanded->get2('asin'));
     }
 
-    public function testAddASIN5(): void {
+    public function testAddASINAcceptsAsin0002TV08(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('asin', 'B0002TV0K8'));
@@ -728,7 +728,7 @@ JSON;
         $this->assertSame('Associated Press', $expanded->get2('agency'));
     }
 
-    public function testAPCiteWebUrlTheguardianScienceFebRemovesAuthor2(): void {
+    public function testAPCiteWebUrlTheguardianScienceFebRemovesAuthorRemovesAuthor2DogAuthor1DogUrlTheguardianComScience2018F(): void {
         $text = '{{cite web|author1=Dog|author1-link=X|authorlink2=Z|author2=Associated Press |last3=M|first3=N |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('author2'));
@@ -1063,7 +1063,7 @@ JSON;
         $this->assertSame('{{cite book|authorlink=X}}', $expanded->parsed_text());
     }
 
-    public function testMisspeltParametersCiteBookCiteBookAuthorlink33X(): void {
+    public function testMisspeltParametersCiteBookCiteBookAuthorlinkChecksBook(): void {
         $text = "{{cite book|authorlinks33=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{cite book|authorlink33=X}}', $expanded->parsed_text());
@@ -1100,7 +1100,7 @@ JSON;
         $this->assertSame('{{cite book | arxiv=zzzz/1234567 }}', $expanded->parsed_text());
     }
 
-    public function testId2ParamCiteBookPages12(): void {
+    public function testId2ParamCiteBookPagesChecksPages12IdArxiv(): void {
         $text = '{{cite book|pages=1-2|id={{arxiv|zzzz|1234567}}}}{{cite book|pages=1-3|id={{arxiv|zzzz|1234567}}}}'; // Two of the same sub-template, but in different templates
         $expanded = $this->process_page($text);
         $this->assertSame('{{cite book|pages=1–2|arxiv=zzzz/1234567 }}{{cite book|pages=1–3|arxiv=zzzz/1234567 }}', $expanded->parsed_text());
@@ -1114,7 +1114,7 @@ JSON;
         $this->assertNull($expanded->get2('arxiv'));
     }
 
-    public function testNestedTemplatesCiteBookPages12(): void {
+    public function testNestedTemplatesCiteBookPagesChecksPages12Book(): void {
         $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} | id={{cite book|pages=1-3| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }}  }} |  cool stuff | not cool}}}}';
         $expanded = $this->process_citation($text);
         $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
@@ -1135,28 +1135,28 @@ JSON;
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testDropPostscript2(): void {
+    public function testDropPostscriptChecksCitation(): void {
         $text = '{{citation|postscript=.}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testDropPostscript3(): void {
+    public function testDropPostscriptChecksJournal(): void {
         $text = '{{cite journal|postscript=}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{cite journal}}', $prepared->parsed_text());
     }
 
-    public function testDropPostscript4(): void {
+    public function testDropPostscriptChecksJournalCiteJournalPostscript(): void {
         $text = '{{cite journal|postscript=.}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{cite journal}}', $prepared->parsed_text());
     }
 
-    public function testDropPostscript5(): void {
+    public function testDropPostscriptChecksJournalCiteJournalPostscriptNone(): void {
         $text = '{{cite journal|postscript=none}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
@@ -1202,7 +1202,7 @@ JSON;
         $this->assertSame($expected, $prepared->get2('postscript'), $text);
     }
 
-    public function testChangeParameters1(): void {
+    public function testChangeParametersChecksCitation(): void {
         // publicationplace
         $text = '{{citation|publicationplace=Home}}';
         $prepared = $this->prepare_citation($text);
@@ -1210,14 +1210,14 @@ JSON;
         $this->assertSame('{{citation|publication-place=Home}}', $prepared->parsed_text());
     }
 
-    public function testChangeParameters2(): void {
+    public function testChangeParametersChecksCitationCitationPublicationPlaceHome(): void {
         $text = '{{citation|publication-place=Home|location=Away}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testChangeParameters3(): void {
+    public function testChangeParametersChecksCitationCitationPublicationdate2000(): void {
         // publicationdate
         $text = '{{citation|publicationdate=2000}}';
         $prepared = $this->prepare_citation($text);
@@ -1225,14 +1225,14 @@ JSON;
         $this->assertSame('{{citation|publication-date=2000}}', $prepared->parsed_text());
     }
 
-    public function testChangeParameters4(): void {
+    public function testChangeParametersChecksDate1999Citation(): void {
         $text = '{{citation|publicationdate=2000|date=1999}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{citation|publication-date=2000|date=1999}}', $prepared->parsed_text());
     }
 
-    public function testChangeParameters5(): void {
+    public function testChangeParametersChecksCitationCitationOrigyear2000(): void {
         // origyear
         $text = '{{citation|origyear=2000}}';
         $prepared = $this->prepare_citation($text);
@@ -1240,7 +1240,7 @@ JSON;
         $this->assertSame('{{citation|orig-date=2000}}', $prepared->parsed_text());
     }
 
-    public function testChangeParameters6(): void {
+    public function testChangeParametersChecksDate1999CitationCitationOrigyear2000Date1999(): void {
         $text = '{{citation|origyear=2000|date=1999}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
@@ -1271,141 +1271,141 @@ JSON;
         $this->assertNull($template->get2('orig-year'));
     }
 
-    public function testDropDuplicates1(): void {
+    public function testDropDuplicatesChecksWorkWorkJournalEmptyWebsiteEmpty(): void {
         $text = '{{citation|work=Work|journal=|magazine=|website=}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{citation|work=Work}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates2(): void {
+    public function testDropDuplicatesChecksWorkWorkJournalJournalWebsiteWebsite(): void {
         $text = '{{citation|work=Work|journal=Journal|magazine=Magazine|website=Website}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3(): void {
+    public function testDropDuplicatesChecksYear2000YearEmpty(): void {
         $text = '{{citation|year=2000|year=}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa1(): void {
+    public function testDropDuplicatesChecksYearEmptyYear2000(): void {
         $text = '{{citation|year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa2(): void {
+    public function testDropDuplicatesChecksYearEmptyYear2000CitationYearYearYearYearYear(): void {
         $text = '{{citation|year= | year= |year=| year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa3(): void {
+    public function testDropDuplicatesChecksYear2000(): void {
         $text = '{{citation|year=2000|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa4(): void {
+    public function testDropDuplicatesChecksYear2000Citation(): void {
         $text = '{{citation|year 2000|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa5(): void {
+    public function testDropDuplicatesChecksYearEmptyYear2000CitationYearYear2000Year20(): void {
         $text = '{{citation|year=|year 2000|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa6(): void {
+    public function testDropDuplicatesChecksYearEmptyYear2000CitationYear2000YearYear20(): void {
         $text = '{{citation|year 2000|year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa7(): void {
+    public function testDropDuplicatesChecksYear2000CitationCitationYear2000Year2000(): void {
         $text = '{{citation|year=2000|year 2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa8(): void {
+    public function testDropDuplicatesChecksYear2000YearEmptyCitationYear2000Year2000(): void {
         $text = '{{citation|year=2000|year=2000|year 2000|year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa9(): void {
+    public function testDropDuplicatesChecksYear2000Year2001(): void {
         $text = '{{citation|year=2000|year=2001|year=2000|year=2001|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|DUPLICATE_year=2000|DUPLICATE_year=2001|DUPLICATE_year=2000|DUPLICATE_year=2001|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa10(): void {
+    public function testDropDuplicatesChecksYearEmptyYear2000CiteWebYearYear2000(): void {
         $text = "{{Cite web|year=|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa11(): void {
+    public function testDropDuplicatesChecksYear2000CiteWebYear2000Year20(): void {
         $text = "{{Cite web|year=2000|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa12(): void {
+    public function testDropDuplicatesChecksYear2000CiteWeb(): void {
         $text = "{{Cite web|year|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year|year=2000}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa13(): void {
+    public function testDropDuplicatesChecksCiteWeb(): void {
         $text = "{{Cite web|year|year}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year|year}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa14(): void {
+    public function testDropDuplicatesChecksCiteWebCiteWebYearYear2000(): void {
         $text = "{{Cite web|year|year 2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web| date=2000 |year}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa15(): void {
+    public function testDropDuplicatesChecksCiteWebCiteWebYear2000Year(): void {
         $text = "{{Cite web|year 2000|year }}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web| date=2000 |year }}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa16(): void {
+    public function testDropDuplicatesChecksYear2000YearEmptyCitationYear2000Year(): void {
         $text = '{{citation|year=2000|year=||||||||||||||||||||||||||||||||||||||||}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicates3aa17(): void {
+    public function testDropDuplicatesChecksYearEmptyTitleYear2000(): void {
         $text = "{{citation|year=|title=X|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|title=X|year=2000}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa18(): void {
+    public function testDropDuplicatesChecksYear2000TitleYearEmpty(): void {
         $text = "{{citation|year=2000|title=X|year=}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000|title=X}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa19(): void {
+    public function testDropDuplicatesChecksTitleEmptyYear2003TitleTen(): void {
         $text = '{{Cite web |title= | year=2003 | title= Ten}}'; // Something between the two but with blank first is different code path, and the item of interest is not year
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web | year=2003 | title= Ten}}', $expanded->parsed_text());
     }
 
-    public function testDropDuplicates3aa20(): void {
+    public function testDropDuplicatesChecksTitle2000TitleEmpty(): void {
         $text = '{{citation|title=2000|title=2000|title 2000|title=|title=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|title=2000}}', $prepared->parsed_text());
@@ -1418,21 +1418,21 @@ JSON;
         $this->assertNull($prepared->get2('URL'));
     }
 
-    public function testFixCAPSJunk2(): void {
+    public function testFixCAPSJunkChecksUrl(): void {
         $text = '{{cite news|URL=X}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('X', $prepared->get('url'));
         $this->assertNull($prepared->get2('URL'));
     }
 
-    public function testFixCAPSJunk3(): void {
+    public function testFixCAPSJunkChecksUrlCiteNewsURLUrl(): void {
         $text = '{{cite news|URL=X|url=Y}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('Y', $prepared->get('url'));
         $this->assertSame('X', $prepared->get('URL'));
     }
 
-    public function testFixCAPSJunk4(): void {
+    public function testFixCAPSJunkChecksUrlCiteJournalURLUrl(): void {
         $text = '{{cite journal|URL=X|url=Y}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('Y', $prepared->get('url'));
@@ -1440,91 +1440,91 @@ JSON;
         $this->assertSame('X', $prepared->get('DUPLICATE_url'));
     }
 
-    public function testBadPunctuation1(): void {
+    public function testBadPunctuationChecksTitleHuhTitleHuh(): void {
         $text = '{{citation|title=:: Huh ::}}';
         $prepared = $this->make_citation($text);
         $prepared->tidy_parameter('title');
         $this->assertSame(':: Huh ::', $prepared->get2('title'));
     }
 
-    public function testBadPunctuation2(): void {
+    public function testBadPunctuationChecksTitleHuhTitleHuhCitationTitleHuh(): void {
         $text = '{{citation|title=: Huh :}}';
         $prepared = $this->make_citation($text);
         $prepared->tidy_parameter('title');
         $this->assertSame('Huh', $prepared->get2('title'));
     }
 
-    public function testBadPunctuation3(): void {
+    public function testBadPunctuationChecksTitleHuhTitleHuhTitle(): void {
         $text = '{{citation|title=; Huh ;;}}';
         $prepared = $this->make_citation($text);
         $prepared->tidy_parameter('title');
         $this->assertSame('Huh ;;', $prepared->get2('title'));
     }
 
-    public function testWorkParamter1(): void {
+    public function testWorkParamterChecksWorkRUBBISHTitleRubbishChapterDog(): void {
         $text = '{{citation|work=RUBBISH|title=Rubbish|chapter=Dog}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{citation|title=Rubbish|chapter=Dog}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter2(): void {
+    public function testWorkParamterChecksSeriesKeepSeriesLoseWorkWorkKeepSeriesLoseWork(): void {
         $text = '{{cite book|series=Keep Series, Lose Work|work=Keep Series, Lose Work}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{cite book|series=Keep Series, Lose Work}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter3(): void {
+    public function testWorkParamterChecksChapterBookChapterWorkBookChapter(): void {
         $text = '{{cite journal|chapter=A book chapter|work=A book chapter}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{cite book|chapter=A book chapter}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter4(): void {
+    public function testWorkParamterChecksWorkLiveCitation(): void {
         $text = '{{citation|work=I Live}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testWorkParamter5(): void {
+    public function testWorkParamterChecksSpecialInput(): void {
         $text = '{{not cite|work=xyz|chapter=xzy}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{not cite|work=xyz|chapter=xzy}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter6(): void {
+    public function testWorkParamterChecksWorkXyzJournalXyz(): void {
         $text = '{{citation|work=xyz|journal=xyz}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{citation|journal=Xyz}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter7(): void {
+    public function testWorkParamterChecksWorkEmptyChapterKeepWorkInCitationTemplate(): void {
         $text = '{{citation|work=|chapter=Keep work in Citation template}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{citation|work=|chapter=Keep work in Citation template}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter8(): void {
+    public function testWorkParamterChecksWorkWorkShouldBecomeJournalJournal(): void {
         $text = '{{cite journal|work=work should become journal}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{cite journal|journal=Work Should Become Journal}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter9(): void {
+    public function testWorkParamterChecksWorkAbcMagazine(): void {
         $text = '{{cite magazine|work=abc}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{cite magazine|magazine=abc}}', $prepared->parsed_text());
     }
 
-    public function testWorkParamter10(): void {
+    public function testWorkParamterChecksWorkEmptyJournal(): void {
         $text = '{{cite journal|work=}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
@@ -1539,19 +1539,19 @@ JSON;
         $this->assertSame('2009', $this->getDateAndYear($prepared));
     }
 
-    public function testDropAmazon_1(): void {
+    public function testDropAmazonKeepsPublisherPublisherAmazonCom(): void {
         $text = '{{Cite journal | publisher=amazon.com}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('publisher'));
     }
 
-    public function testDropAmazon_2(): void {
+    public function testDropAmazonKeepsPublisherPublisherAmazonComUrlAmazonComStuff(): void {
         $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/stuff}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('publisher'));
     }
 
-    public function testDropAmazon_3(): void {
+    public function testDropAmazonRemovesPublisherPublisherAmazonComUrlAmazonComDp(): void {
         $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/dp/}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('publisher'));
@@ -1566,7 +1566,7 @@ JSON;
         $this->assertSame('The ATLAS Collaboration', $expanded->first_author());
     }
 
-    public function testLongAuthorLists2(): void {
+    public function testLongAuthorListsChecksTitle1(): void {
         // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
         $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
         $expanded = $this->process_citation($text);

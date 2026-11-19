@@ -674,84 +674,84 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
     }
 
-    public function testTidy73b(): void {
+    public function testTidyChecksJournalCnnComWeb(): void {
         $text = "{{cite web|journal=cnn.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('journal');
         $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
     }
 
-    public function testTidy73c(): void {
+    public function testTidyChecksJournalWeb(): void {
         $text = "{{cite web|journal=www.x}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('journal');
         $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
     }
 
-    public function testTidy73d(): void {
+    public function testTidyChecksJournalThewebOrgWeb(): void {
         $text = "{{cite web|journal=theweb.org}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('journal');
         $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
     }
 
-    public function testTidy73e(): void {
+    public function testTidyChecksJournalThewebNetWeb(): void {
         $text = "{{cite web|journal=theweb.net}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('journal');
         $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
     }
 
-    public function testTidy73f(): void {
+    public function testTidyRemovesWebsiteJournalTheWebNet(): void {
         $text = "{{cite web|journal=the web.net}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('journal');
         $this->assertNull($template->get2('website'));
     }
 
-    public function testTidy74c(): void {
+    public function testTidyRemovesJournalJournalOpenidTransactionInProgresIsbn1234Chapter(): void {
         $text = "{{cite web|journal=openid transaction in progress|isbn=1234|chapter=X|title=Y}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertNull($template->get2('journal'));
     }
 
-    public function testTidy75a(): void {
+    public function testTidyChecksPublisherGoogleIncUrlDevelopersGoogleComPublisherTheGoogleHiveMind(): void {
         $text = "{{cite web|url=developers.google.com|publisher=the google hive mind}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Google Inc.', $template->get2('publisher'));
     }
 
-    public function testTidy75b(): void {
+    public function testTidyChecksPublisherGoogleIncUrlSupportGoogleComPublisherTheGoogleHiveMind(): void {
         $text = "{{cite web|url=support.google.com|publisher=the Google hive mind}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Google Inc.', $template->get2('publisher'));
     }
 
-    public function testTidy77(): void {
+    public function testTidyChecksPages12PagesPages12(): void {
         $text = "{{cite journal |pages=Pages: 1-2 }}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('pages');
         $this->assertSame('1–2', $template->get2('pages'));
     }
 
-    public function testTidy78(): void {
+    public function testTidyChecksPages12Pages12(): void {
         $text = "{{cite journal |pages=p. 1-2 }}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('pages');
         $this->assertSame('1–2', $template->get2('pages'));
     }
 
-    public function testTidy79(): void {
+    public function testTidyRemovesWebsiteWebsiteArXiv(): void {
         $text = "{{cite arxiv|website=arXiv}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('website');
         $this->assertNull($template->get2('website'));
     }
 
-    public function testTidy80(): void {
+    public function testTidyChecksUrlRocksbackpagesComLibraryArticlUrlWwwRocksbackpagesComWikipeViaWikiStuff(): void {
         $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via = wiki stuff }}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -759,7 +759,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('via'));
     }
 
-    public function testTidy81(): void {
+    public function testTidyChecksUrlRocksbackpagesComLibraryArticlUrlRocksbackpagesComWikipediaViaMyDog(): void {
         $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via=My Dog}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -767,56 +767,56 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('My Dog', $template->get2('via'));
     }
 
-    public function testTidy82(): void {
+    public function testTidyChecksUrlSearchEbscohostComUrlButteIdmOclcOrgLoginQurlHt(): void {
         $text = "{{cite web|url=https://butte.idm.oclc.org/login?qurl=http://search.ebscohost.com/X}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('http://search.ebscohost.com/X', $template->get2('url'));
     }
 
-    public function testTidy83(): void {
+    public function testTidyChecksUrlSearchEbscohostComUrlButteIdmOclcOrgLoginUrlHtt(): void {
         $text = "{{cite web|url=https://butte.idm.oclc.org/login?url=http://search.ebscohost.com/X}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('http://search.ebscohost.com/X', $template->get2('url'));
     }
 
-    public function testTidy84(): void {
+    public function testTidyChecksUrlGoGalegroupComUrlGoGalegroupComCcclibraryId(): void {
         $text = "{{cite web|url=https://go.galegroup.com.ccclibrary.idm.oclc.org/X}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://go.galegroup.com/X', $template->get2('url'));
     }
 
-    public function testTidy85(): void {
+    public function testTidyChecksUrlSearchEbscohostComUrlButteIdmOclcOrgLoginUrlHttCiteWebUrlHttpsButteIdmOclc(): void {
         $text = "{{cite web|url=https://butte.idm.oclc.org/login?url=http://search.ebscohost.com%2fX}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('http://search.ebscohost.com/X', $template->get2('url'));
     }
 
-    public function testTidy86(): void {
+    public function testTidyChecksUrlUrlLoginLibproxyUnionEduLogin(): void {
         $text = "{{cite web|url=https://login.libproxy.union.edu/login?qurl=https://go.gale.com%2fps%2fretrieve.do%3ftabID%3dT002%26resultListType%3dRESULT_LIST%26searchResultsType%3dSingleTab%26searchType%3dBasicSearchForm%26currentPosition%3d1%26docId%3dGALE%257CA493733315%26docType%3dArticle%26sort%3dRelevance%26contentSegment%3dZGPP-MOD1%26prodId%3dITOF%26contentSet%3dGALE%257CA493733315%26searchId%3dR2%26userGroupName%3dnysl_ca_unionc%26inPS%3dtrue}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true', $template->get2('url'));
     }
 
-    public function testTidy87(): void {
+    public function testTidyChecksUrlUrlLoginLibproxyUnionEduLoginFirstVariant(): void {
         $text = "{{cite web|url=https://login.libproxy.union.edu/login?url=https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame("https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true", $template->get2('url'));
     }
 
-    public function testTidy88(): void {
+    public function testTidyChecksUrlUrlLoginLibproxyUnionEduLoginSecondVariant(): void {
         $text = "{{cite web|url=https://login.libproxy.union.edu/login?url=https%3A%2F%2Fgo.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame("https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true", $template->get2('url'));
     }
 
-    public function testTidy89a(): void {
+    public function testTidyChecksIsbn0671748750(): void {
         $text = "{{cite web|asin=0671748750}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('asin');
@@ -824,7 +824,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('asin'));
     }
 
-    public function testTidy89b(): void {
+    public function testTidyChecksAsin6371748750(): void {
         $text = "{{cite web|asin=6371748750}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('asin');
@@ -832,7 +832,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('isbn'));
     }
 
-    public function testTidy90(): void {
+    public function testTidyChecksUrlHaaretzCoIlGallery201006UrlWwwHaaretzCoIlWikipedialibViaWikiStuff(): void {
         $text = "{{cite web|url=https://www-haaretz-co-il.wikipedialibrary.idm.oclc.org/gallery/2010-06-28/ty-article/0000017f-f85f-d47e-a37f-f97fac920000 |via = wiki stuff }}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -840,14 +840,14 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('via'));
     }
 
-    public function testIncomplete1a(): void {
+    public function testIncompleteAcceptsUrlPermaArchivesOrgPqd1234IsbnXxxxTitleXxxIssue(): void {
         $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertTrue($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
     }
 
-    public function testIncomplete1b(): void {
+    public function testIncompleteAcceptsUrlPerfectlyAcceptableWebsiteIsbnXxxxIssueHhVolumeRrfff(): void {
         $text = "{{cite book|url=http://a_perfectly_acceptable_website/pqd1234|isbn=Xxxx|issue=hh|volume=rrfff|title=xxx}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
@@ -855,28 +855,28 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertTrue($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
     }
 
-    public function testIncomplete2(): void {
+    public function testIncompleteAcceptsUrlPermaArchivesOrgPqd1234IsbnXxxxTitleXxxIssueCiteBookUrlHttpPermaArchives(): void {
         $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x|author1=Yes}}"; // Non-date website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertFalse($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
     }
 
-    public function testIncomplete3(): void {
+    public function testIncompleteAcceptsUrlFoxnewsComWebsiteFoxTitleXxxIssue(): void {
         $text = "{{cite web|url=http://foxnews.com/x|website=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
     }
 
-    public function testIncomplete4(): void {
+    public function testIncompleteAcceptsUrlFoxnewsComTitleXxxIssueYear2000(): void {
         $text = "{{cite web|url=http://foxnews.com/x|contribution=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
     }
 
-    public function testIncomplete5(): void {
+    public function testIncompleteAcceptsUrlFoxnewsComTitleXxxIssueYear2000CiteWebUrlHttpFoxnewsComEncy(): void {
         $text = "{{cite web|url=http://foxnews.com/x|encyclopedia=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
@@ -889,40 +889,40 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertFalse($template->profoundly_incomplete('https://www.nga.org/governor/william-calhoun-mcdonald/'));
     }
 
-    public function testAddEditor_1(): void {
+    public function testAddEditorAcceptsEditorLast1Phil(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('editor-last1', 'Phil'));
         $this->assertSame('Phil', $template->get2('editor-last1'));
     }
 
-    public function testAddEditor_2(): void {
+    public function testAddEditorRejectsJournalEditorLast1(): void {
         $text = "{{cite journal|editor-last=Junk}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('editor-last1', 'Phil'));
     }
 
-    public function testAddEditor_3(): void {
+    public function testAddEditorAcceptsEditor1Phil(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('editor1', 'Phil'));
         $this->assertSame('Phil', $template->get2('editor1'));
     }
 
-    public function testAddEditor_4(): void {
+    public function testAddEditorRejectsJournalEditor1(): void {
         $text = "{{cite journal|editor-last=Junk}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('editor1', 'Phil'));
     }
 
-    public function testAddFirst_1(): void {
+    public function testAddFirstAcceptsFirst1(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('first1', 'X M'));
         $this->assertSame('X. M.', $template->get2('first1'));
     }
 
-    public function testAddFirst_2(): void {
+    public function testAddFirstAcceptsFirst2(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('first2', 'X M'));
@@ -936,7 +936,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('3', $template->get2('display-editors'));
     }
 
-    public function testArchiveDate_1(): void {
+    public function testArchiveDateAcceptsArchiveDateJanuary202010ArchiveUrlWebArchiveOrgWeb201001(): void {
         // archive-url= present so the added date is no orphan.
         $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
@@ -945,7 +945,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('January 20, 2010', $template->get2('archive-date'));
     }
 
-    public function testArchiveDate_2(): void {
+    public function testArchiveDateAcceptsArchiveDate20January2010ArchiveUrlWebArchiveOrgWeb201001(): void {
         // archive-url= present so the added date is no orphan.
         $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
@@ -954,7 +954,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('20 January 2010', $template->get2('archive-date'));
     }
 
-    public function testArchiveDate_3(): void {
+    public function testArchiveDateAcceptsArchiveDate20January2010ArchiveUrlWebArchiveOrgWeb201001CiteJournalArchiveUrlHttpsWe(): void {
         // archive-url= present so the added date is no orphan.
         $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
@@ -963,7 +963,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('20 January 2010', $template->get2('archive-date'));
     }
 
-    public function testArchiveDate_4(): void {
+    public function testArchiveDateRejectsArchiveDate20100120ArchiveUrlWebArchiveOrgWeb201001(): void {
         // archive-url= present so the added date is no orphan.
         $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
@@ -980,7 +980,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
-    public function testAccessDate1(): void {
+    public function testAccessDateAcceptsAccessDateJanuary202010UrlXXX(): void {
         $text = "{{cite journal|url=XXX}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_MDY;
@@ -988,7 +988,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('January 20, 2010', $template->get2('access-date'));
     }
 
-    public function testAccessDate2(): void {
+    public function testAccessDateAcceptsAccessDate20January2010UrlXXX(): void {
         $text = "{{cite journal|url=XXX}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_DMY;
@@ -996,7 +996,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('20 January 2010', $template->get2('access-date'));
     }
 
-    public function testAccessDate3(): void {
+    public function testAccessDateAcceptsAccessDate20January2010UrlXXXCiteJournalUrlXXX(): void {
         $text = "{{cite journal|url=XXX}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_WHATEVER;
@@ -1004,21 +1004,21 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('20 January 2010', $template->get2('access-date'));
     }
 
-    public function testAccessDate4(): void {
+    public function testAccessDateRejectsAccessDateUrlXXX(): void {
         $text = "{{cite journal|url=XXX}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('access-date', 'SDAFEWFEWW#F#WFWEFESFEFSDFDFD'));
         $this->assertNull($template->get2('access-date'));
     }
 
-    public function testAccessDate5(): void {
+    public function testAccessDateAcceptsAccessDateJournal(): void {
         $text = "{{cite journal}}"; // NO url
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010')); // Pretty bogus return value
         $this->assertNull($template->get2('access-date'));
     }
 
-    public function testWorkStuff1(): void {
+    public function testWorkStuffChecksJournalYesIndeedWorkYesIndeed(): void {
         $text = "{{cite journal|work=Yes Indeed}}";
         $template = $this->make_citation($text);
         $template->add_if_new('journal', 'Yes indeed');
@@ -1026,7 +1026,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('work'));
     }
 
-    public function testWorkStuff2(): void {
+    public function testWorkStuffChecksWorkYesIndeedWorkYesIndeed(): void {
         $text = "{{cite journal|work=Yes Indeed}}";
         $template = $this->make_citation($text);
         $template->add_if_new('journal', 'No way sir');
@@ -1074,14 +1074,14 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Times', $template->get2('newspaper'));
     }
 
-    public function testNewspaperJournal100(): void {
+    public function testNewspaperJournalRejectsNewspaperWorkWork(): void {
         $text = "{{cite journal|work=A work}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('newspaper', 'news.bbc.co.uk'));
         $this->assertNull($template->get2('newspaper'));
     }
 
-    public function testNewspaperJournal101(): void {
+    public function testNewspaperJournalAcceptsWebsiteNewsBBCCoUkWebsiteXyz(): void {
         $text = "{{cite web|website=xyz}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('newspaper', 'news.bbc.co.uk'));
@@ -1089,7 +1089,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('News.BBC.co.uk', $template->get2('work'));
     }
 
-    public function testNewspaperJournal102(): void {
+    public function testNewspaperJournalAcceptsWebsiteJunkAndStuffWebsiteXyz(): void {
         $text = "{{cite journal|website=xyz}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('newspaper', 'Junk and stuff'));
@@ -1097,7 +1097,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Junk and Stuff', $template->get2('newspaper'));
     }
 
-    public function testNewspaperJournal2(): void {
+    public function testNewspaperJournalAcceptsViaSomethingJournal(): void {
         $text = "{{cite journal|via=Something}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('newspaper', 'A newspaper'));
@@ -1119,7 +1119,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('The Sun Post', $template->get2('newspaper'));
     }
 
-    public function testNewspaperJournal3(): void {
+    public function testNewspaperJournalAcceptsPublisherBigCompanyPublisherBigCompany(): void {
         $text = "{{cite journal|publisher=A Big Company}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('newspaper', 'A Big Company'));
@@ -1127,7 +1127,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('A Big Company', $template->get2('newspaper'));
     }
 
-    public function testNewspaperJournal4a(): void {
+    public function testNewspaperJournalAcceptsJournalBigCompanyWebsiteBigCompany(): void {
         $text = "{{cite journal|website=A Big Company}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('journal', 'A Big Company'));
@@ -1135,7 +1135,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('website'));
     }
 
-    public function testNewspaperJournal4b(): void {
+    public function testNewspaperJournalAcceptsJournalSmallLittleCompanyWebsiteBigCompany(): void {
         $text = "{{cite journal|website=A Big Company}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('journal', 'A Small Little Company'));
@@ -1143,7 +1143,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('website'));
     }
 
-    public function testNewspaperJournal4c(): void {
+    public function testNewspaperJournalAcceptsJournalBigCompanyWebsiteBigCompanyCiteJournalWebsiteBigCompany(): void {
         $text = "{{cite journal|website=[[A Big Company]]}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('journal', 'A Small Little Company'));
@@ -1159,21 +1159,21 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('The Sun Post', $template->get2('series'));
     }
 
-    public function testExistingIsTitle1(): void {
+    public function testExistingIsTitleRejectsTitleJournal(): void {
         $text = "{{cite journal|encyclopedia=Existing Data}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('title', 'Existing Data'));
         $this->assertNull($template->get2('title'));
     }
 
-    public function testExistingIsTitle2(): void {
+    public function testExistingIsTitleRejectsTitleJournalCiteJournalDictionaryExistin(): void {
         $text = "{{cite journal|dictionary=Existing Data}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('title', 'Existing Data'));
         $this->assertNull($template->get2('title'));
     }
 
-    public function testExistingIsTitle3(): void {
+    public function testExistingIsTitleRejectsTitleJournalExistingData(): void {
         $text = "{{cite journal|journal=Existing Data}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('title', 'Existing Data'));
@@ -1202,14 +1202,14 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('431234', $template->get2('pages'));
     }
 
-    public function testExitingURL1(): void {
+    public function testExitingURLRejectsUrlJournal(): void {
         $text = "{{cite journal|conferenceurl=http://XXXX-TEST.COM}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('url', 'http://XXXX-TEST.COM'));
         $this->assertNull($template->get2('url'));
     }
 
-    public function testExitingURL2(): void {
+    public function testExitingURLRejectsTitleLinUrlXyz(): void {
         $text = "{{cite journal|url=xyz}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('title-link', 'abc'));
@@ -1230,14 +1230,14 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('doi'));
     }
 
-    public function testAddBrokenDateFormat1(): void {
+    public function testAddBrokenDateFormatAcceptsDoiBrokenDate1December2019Doi100001RubbishBotFailureTes(): void {
         $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
         $this->assertSame('1 December 2019', $template->get2('doi-broken-date'));
     }
 
-    public function testAddBrokenDateFormat2(): void {
+    public function testAddBrokenDateFormatAcceptsDoiBrokenDateDecember12019Doi100001RubbishBotFailureTes(): void {
         $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_MDY;
@@ -1245,7 +1245,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('December 1, 2019', $template->get2('doi-broken-date'));
     }
 
-    public function testAddBrokenDateFormat3(): void {
+    public function testAddBrokenDateFormatAcceptsDoiBrokenDate1December2019Doi100001RubbishBotFailureTesCiteJournalDoi100001Rubbish(): void {
         $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_DMY;
@@ -1259,28 +1259,28 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertFalse($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     }
 
-    public function testForgettersChangeType1(): void {
+    public function testForgettersChangeTypeChecksCiteWebId(): void {
         $text = "{{cite web|id=x}}";
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertSame('cite web', $template->wikiname());
     }
 
-    public function testForgettersChangeType2(): void {
+    public function testForgettersChangeTypeChecksCiteJournalJournal(): void {
         $text = "{{cite web|journal=X}}";
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertSame('cite journal', $template->wikiname());
     }
 
-    public function testForgettersChangeType3(): void {
+    public function testForgettersChangeTypeChecksCiteNewsNewspaper(): void {
         $text = "{{cite web|newspaper=X}}";
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertSame('cite news', $template->wikiname());
     }
 
-    public function testForgettersChangeType4(): void {
+    public function testForgettersChangeTypeChecksCiteBookChapter(): void {
         $text = "{{cite web|chapter=X}}";
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -1294,7 +1294,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Y', $template->get2('url'));
     }
 
-    public function testForgettersChangeOtherURLS_2(): void {
+    public function testForgettersChangeOtherURLSChecksUrlChapter(): void {
         $text = "{{cite web|chapterurl=Y|chapter=X}}";
         $template = $this->make_citation($text);
         $template->forget('chapter');
@@ -1315,7 +1315,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('# # CITATION_BOT_PLACEHOLDER_COMMENT # #', $template->get2('work'));
     }
 
-    public function testRenameSpecialCases1(): void {
+    public function testRenameSpecialCasesChecksWorkNewId(): void {
         $text = "{{cite web|id=x}}";
         $template = $this->make_citation($text);
         $template->rename('work', 'work');
@@ -1323,7 +1323,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('new', $template->get2('work'));
     }
 
-    public function testRenameSpecialCases2(): void {
+    public function testRenameSpecialCasesChecksJournalNewId(): void {
         $text = "{{cite web|id=x}}";
         $template = $this->make_citation($text);
         $template->rename('work', 'journal');
@@ -1331,7 +1331,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('New', $template->get2('journal'));
     }
 
-    public function testRenameSpecialCases3(): void {
+    public function testRenameSpecialCasesRemovesJournalWeb(): void {
         $text = "{{cite web}}"; // param will be null
         $template = $this->make_citation($text);
         $template->rename('work', 'journal');
@@ -1339,7 +1339,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('journal'));
     }
 
-    public function testRenameSpecialCases4(): void {
+    public function testRenameSpecialCasesRemovesUrlTitle(): void {
         $text = "{{cite web|title=X|url=Y}}";
         $template = $this->make_citation($text);
         $template->rename('title', 'chapter');
@@ -1400,7 +1400,7 @@ final class TemplatePart4Test extends testBaseClass {
         }
     }
 
-    public function testTidyAgency1(): void {
+    public function testTidyAgencyChecksWorkAssociatedPressAgencyAssociatedPressUrlApnewsCom(): void {
         $text = "{{cite web|agency=associated press|url=apnews.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
@@ -1408,7 +1408,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('agency'));
     }
 
-    public function testTidyAgency2(): void {
+    public function testTidyAgencyChecksWorkAPNewsAgencyAssociatedPressUrlApnewsCom(): void {
         $text = "{{cite web|agency=Associated Press|url=apnews.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
@@ -1416,7 +1416,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('agency'));
     }
 
-    public function testTidyAgency3(): void {
+    public function testTidyAgencyChecksWorkAPNewsAgencyAPUrlApnewsCom(): void {
         $text = "{{cite web|agency=AP|url=apnews.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
@@ -1424,7 +1424,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('agency'));
     }
 
-    public function testTidyAgency4(): void {
+    public function testTidyAgencyChecksWorkAPNewsAgencyAssociatedPressUrlApnewsComArticleExample(): void {
         $text = "{{cite news|agency=[[Associated Press]]|url=https://apnews.com/article/example}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
@@ -1432,7 +1432,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('agency'));
     }
 
-    public function testTidyAgency5(): void {
+    public function testTidyAgencyChecksWorkAPNewsAgencyAssociatedPressNewsUrlApnewsComArticleExample(): void {
         $text = "{{cite news|agency=Associated Press News|url=https://apnews.com/article/example}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
@@ -1440,7 +1440,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('agency'));
     }
 
-    public function testTidyAgency6(): void {
+    public function testTidyAgencyChecksWorkAPNewsAgencyAssociatedPressNewsUrlApnewsComArticleExampleCiteNewsAgencyAssociatedPres(): void {
         $text = "{{cite news|agency=[[Associated Press News]]|url=https://apnews.com/article/example}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
@@ -1469,7 +1469,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('class'));
     }
 
-    public function testTidyMonth1(): void {
+    public function testTidyMonthRemovesDay3Dec2000Year2000(): void {
         $text = "{{cite web|day=3|month=Dec|year=2000}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('month');
@@ -1478,7 +1478,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('3 Dec 2000', $template->get2('date'));
     }
 
-    public function testTidyMonth2(): void {
+    public function testTidyMonthRemovesDayDec2000Year2000(): void {
         $text = "{{cite web|month=Dec|year=2000}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('month');
@@ -1487,31 +1487,31 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Dec 2000', $template->get2('date'));
     }
 
-    public function testGetYear1(): void {
+    public function testGetYearChecks2000Date2000Nov(): void {
         $text = "{{cite web|date=2000 Nov}}";
         $template = $this->make_citation($text);
         $this->assertSame('2000', $template->year());
     }
 
-    public function testGetYear2(): void {
+    public function testGetYearChecks2000DateNov2000(): void {
         $text = "{{cite web|date=Nov 2000}}";
         $template = $this->make_citation($text);
         $this->assertSame('2000', $template->year());
     }
 
-    public function testGetYear3(): void {
+    public function testGetYearChecks2000Date2000(): void {
         $text = "{{cite web|date=2000}}";
         $template = $this->make_citation($text);
         $this->assertSame('2000', $template->year());
     }
 
-    public function testGetYear4(): void {
+    public function testGetYearChecks2000Year2000(): void {
         $text = "{{cite web|year=2000}}";
         $template = $this->make_citation($text);
         $this->assertSame('2000', $template->year());
     }
 
-    public function testTidyDeadurl1(): void {
+    public function testTidyDeadurlRemovesDeadurlDead(): void {
         $text = "{{cite web|deadurl=y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('deadurl');
@@ -1520,7 +1520,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('dead', $template->get2('url-status'));
     }
 
-    public function testTidyDeadurl2(): void {
+    public function testTidyDeadurlRemovesDeadurlLive(): void {
         $text = "{{cite web|dead-url=alive}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('dead-url');
@@ -1529,7 +1529,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('live', $template->get2('url-status'));
     }
 
-    public function testTidyDeadurl3(): void {
+    public function testTidyDeadurlRemovesDeadurlUnfit(): void {
         $text = "{{cite web|dead-url=unfit}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('dead-url');
@@ -1538,7 +1538,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('unfit', $template->get2('url-status'));
     }
 
-    public function testTidyLastAmp1(): void {
+    public function testTidyLastAmpRemovesLastAuthorAmpWeb(): void {
         $text = "{{cite web|lastauthoramp=false}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('lastauthoramp');
@@ -1547,7 +1547,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('name-list-style'));
     }
 
-    public function testTidyLastAmp2(): void {
+    public function testTidyLastAmpRemovesLastAuthorAmpAmp(): void {
         $text = "{{cite web|last-author-amp=yes}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('last-author-amp');
@@ -1647,21 +1647,21 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('The Times Digital Archive', $template->get2('publisher'));
     }
 
-    public function testTidyTimesArchiveAndWork_1(): void {
+    public function testTidyTimesArchiveAndWorkRemovesPublisherPublisherTheTimesDigitalArchiveNewspaperTheTimes(): void {
         $text = "{{cite web|publisher=the times digital archive|newspaper=the times}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testTidyTimesArchiveAndWork_2(): void {
+    public function testTidyTimesArchiveAndWorkRemovesPublisherPublisherTheTimesDigitalArchiveNewspaperTimesLondon(): void {
         $text = "{{cite web|publisher=the times digital archive|newspaper=times (london)}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testTidyTimesArchiveAndWork_3(): void {
+    public function testTidyTimesArchiveAndWorkRemovesPublisherPublisherTheTimesDigitalArchiveNewspaperTimesLondonCiteWebPublisherTheTimesDigi(): void {
         $text = "{{cite web|publisher=the times digital archive|newspaper=times [london]}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1676,7 +1676,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('[[The Washington Post]]', $template->get2('publisher'));
     }
 
-    public function testTidyWPandWork_1(): void {
+    public function testTidyWPandWorkRemovesPublisherTheWashingtonPostPublisherTheWashingtonPostWebsitesWebsiteWashingtonpostCom(): void {
         $text = "{{cite web|publisher=the washington post websites|website=washingtonpost.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1684,7 +1684,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('[[The Washington Post]]', $template->get2('website'));
     }
 
-    public function testTidyWPandWork_2(): void {
+    public function testTidyWPandWorkRemovesPublisherWashingtonPostPublisherTheWashingtonPostWebsitesWebsiteWashingtonPost(): void {
         $text = "{{cite web|publisher=the washington post websites|website=washington post}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1710,7 +1710,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('san diego union tribune', $template->get2('work'));
     }
 
-    public function testTidyNYTandWorks1(): void {
+    public function testTidyNYTandWorksRemovesPublisherNewYorkTimesWebsitePublisherTheNewYorkTimesSubscriptioWebsiteNewYorkTimesWebsite(): void {
         $text = "{{cite web|publisher=the new york times (subscription required)|website=new york times website}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1718,7 +1718,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('new york times website', $template->get2('website'));
     }
 
-    public function testTidyNYTandWorks2(): void {
+    public function testTidyNYTandWorksRemovesPublisherTheNewYorkTimesPublisherTheNewYorkTimesWebsiteNytimesCom(): void {
         $text = "{{cite web|publisher=the new york times|website=nytimes.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1726,7 +1726,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('[[The New York Times]]', $template->get2('website'));
     }
 
-    public function testTidySJMNandWorks1(): void {
+    public function testTidySJMNandWorksRemovesPublisherMercuryNewsPublisherSanJoseMercuryNewsWebsiteMercuryNews(): void {
         $text = "{{cite web|publisher=san jose mercury news|website=mercury news}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1734,7 +1734,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('mercury news', $template->get2('website'));
     }
 
-    public function testTidySJMNandWorks2(): void {
+    public function testTidySJMNandWorksRemovesPublisherSanJoseMercuryNewsPublisherSanJoseMercuryNewsWebsiteMercurynewsCom(): void {
         $text = "{{cite web|publisher=san jose mercury-news|website=mercurynews.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1749,35 +1749,35 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('The San Diego Union-Tribune', $template->get2('publisher'));
     }
 
-    public function testTidyForbes1(): void {
+    public function testTidyForbesChecksPublisherForbesMediaPublisherForbesForbesMedia(): void {
         $text = "{{cite web|publisher=forbes (forbes Media)}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Forbes Media', $template->get2('publisher'));
     }
 
-    public function testTidyForbes2(): void {
+    public function testTidyForbesChecksPublisherForbesPublisherForbesInc(): void {
         $text = "{{cite web|publisher=Forbes, inc.}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Forbes', $template->get2('publisher'));
     }
 
-    public function testTidyForbes3(): void {
+    public function testTidyForbesChecksPublisherForbesPublisherForbesComLlcTM(): void {
         $text = "{{cite web|publisher=forbes.com llc™}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Forbes', $template->get2('publisher'));
     }
 
-    public function testTidyForbes4(): void {
+    public function testTidyForbesChecksPublisherForbesPublishingPublisherForbesPublishingCompany(): void {
         $text = "{{cite web|publisher=forbes publishing company}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Forbes Publishing', $template->get2('publisher'));
     }
 
-    public function testTidyForbesandWorks1(): void {
+    public function testTidyForbesandWorksRemovesPublisherForbesWebsitePublisherForbesPublishingWebsiteForbesWebsite(): void {
         $text = "{{cite web|publisher=forbes publishing|website=forbes website}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1785,7 +1785,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('forbes website', $template->get2('website'));
     }
 
-    public function testTidyForbesandWorks2(): void {
+    public function testTidyForbesandWorksRemovesPublisherForbesPublisherForbesComWebsiteFromTheWebsiteForbesCom(): void {
         $text = "{{cite web|publisher=forbes.com|website=from the website forbes.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1793,7 +1793,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('[[Forbes]]', $template->get2('website'));
     }
 
-    public function testTidyForbesandAgency1(): void {
+    public function testTidyForbesandAgencyChecksPublisherForbesPublishingPublisherForbesPublishingWebsiteAFXNews(): void {
         $text = "{{cite web|publisher=forbes publishing|website=AFX News}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1801,7 +1801,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('AFX News', $template->get2('agency'));
     }
 
-    public function testTidyForbesandAgency2(): void {
+    public function testTidyForbesandAgencyChecksPublisherForbesPublisherForbesComWebsiteThomsonFinancialNews(): void {
         $text = "{{cite web|publisher=forbes.com|website=Thomson Financial News}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1809,21 +1809,21 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Thomson Financial News', $template->get2('agency'));
     }
 
-    public function testTidyLATimes1(): void {
+    public function testTidyLATimesChecksPublisherLosAngelesTimesPublisherTheLaTimesWorkThisIsWorkThatStays(): void {
         $text = "{{cite web|publisher=the la times|work=This is a work that stays}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Los Angeles Times', $template->get2('publisher'));
     }
 
-    public function testTidyLATimes2(): void {
+    public function testTidyLATimesChecksPublisherLosAngelesTimesPublisherTheLaTimesWorkThisIsWorkThatStaysCiteWebPublisherTheLaTimesWo(): void {
         $text = "{{cite web|publisher=[[the la times]]|work=This is a work that stays}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('[[Los Angeles Times]]', $template->get2('publisher'));
     }
 
-    public function testTidyLAandWorks1(): void {
+    public function testTidyLAandWorksRemovesPublisherLosAngelesTimesAndStuffPublisherLosAngelesTimesWebsiteLosAngelesTimesAndStuff(): void {
         $text = "{{cite web|publisher=Los Angeles Times|website=los angeles times and stuff}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1831,7 +1831,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('los angeles times and stuff', $template->get2('website'));
     }
 
-    public function testTidyLAandWorks2(): void {
+    public function testTidyLAandWorksRemovesPublisherLosAngelesTimesPublisherLosAngelesTimesWebsiteLatimesCom(): void {
         $text = "{{cite web|publisher=Los Angeles Times|website=latimes.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1855,7 +1855,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('new york times magazine', $template->get2('website'));
     }
 
-    public function testTidyGaurdian1(): void {
+    public function testTidyGaurdianChecksWorkThisIsWorkThatStaysPublisherTheGuardianMediaGroupWorkThisIsWorkThatStays(): void {
         $text = "{{cite web|publisher=the guardian media group|work=This is a work that stays}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1863,7 +1863,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('the guardian media group', $template->get2('publisher'));
     }
 
-    public function testTidyGaurdian2(): void {
+    public function testTidyGaurdianRemovesPublisherTheGuardianPublisherTheGuardianMediaGroupWorkTheguardianCom(): void {
         $text = "{{cite web|publisher=the guardian media group|work=theguardian.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1871,7 +1871,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('[[The Guardian]]', $template->get2('work'));
     }
 
-    public function testTidyEcon1(): void {
+    public function testTidyEconChecksWorkThisIsWorkThatStaysPublisherTheEconomistGroupWorkThisIsWorkThatStays(): void {
         $text = "{{cite web|publisher=the economist group|work=This is a work that stays}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1879,7 +1879,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('the economist group', $template->get2('publisher'));
     }
 
-    public function testTidyEcon2(): void {
+    public function testTidyEconRemovesPublisherTheEconomistPublisherTheEconomistGroupWorkEconomistCom(): void {
         $text = "{{cite web|publisher=the economist group|work=economist.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1887,7 +1887,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('[[The Economist]]', $template->get2('work'));
     }
 
-    public function testTidySD1(): void {
+    public function testTidySDChecksWorkThisIsWorkThatStaysPublisherTheSanDiegoUnionTribuneWorkThisIsWorkThatStays(): void {
         $text = "{{cite web|publisher=the san diego union tribune|work=This is a work that stays}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1895,7 +1895,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('the san diego union tribune', $template->get2('publisher'));
     }
 
-    public function testTidySD2(): void {
+    public function testTidySDRemovesPublisherTheSanDiegoUnionTribunePublisherTheSanDiegoUnionTribuneWorkSignOnSanDiegoCom(): void {
         $text = "{{cite web|publisher=the san diego union tribune|work=SignOnSanDiego.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -1943,7 +1943,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('http://connection.ebscohost.com/c/articles/1234', $template->get2('url'));
     }
 
-    public function testAuthors1(): void {
+    public function testAuthorsChecksAuthor3JoeJoesTitle(): void {
         $text = "{{cite web|title=X}}";
         $template = $this->make_citation($text);
         $template->set('author3', '[[Joe|Joes]]'); // Must use set
@@ -1970,7 +1970,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('author'));
     }
 
-    public function testAddingEtAl2(): void {
+    public function testAddingEtAlRemovesAuthorEtal(): void {
         $text = "{{cite web}}";
         $template = $this->process_citation($text);
         $template->set('author', 'et al');
@@ -1980,7 +1980,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('etal', $template->get2('display-authors'));
     }
 
-    public function testCiteTypeWarnings1(): void {
+    public function testCiteTypeWarningsChecksChapterCiteJournalJournalChapterEmpty(): void {
         $text = "{{cite web|journal=X|chapter=|publisher=}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
@@ -1989,7 +1989,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testCiteTypeWarnings1b(): void {
+    public function testCiteTypeWarningsChecksTitleCiteWebJournalChapter(): void {
         $text = "{{cite web|journal=X|chapter=Y|}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
@@ -1997,7 +1997,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Y', $template->get2('title'));
     }
 
-    public function testCiteTypeWarnings2(): void {
+    public function testCiteTypeWarningsRemovesBibcodeEprintXYZBibcodeXXXX(): void {
         $text = "{{cite arxiv|eprint=XYZ|bibcode=XXXX}}";
         $template = $this->make_citation($text);
         $template->final_tidy();

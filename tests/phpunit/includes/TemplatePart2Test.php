@@ -717,13 +717,13 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('access-date'));
     }
 
-    public function testFloatersCiteJournal33SetsIssueTo33(): void {
+    public function testFloatersCiteJournal33SetsIssueToChecksIssue33(): void {
         $text = '{{Cite journal | issue 33 }}';
         $template = $this->process_citation($text);
         $this->assertSame('33', $template->get2('issue'));
     }
 
-    public function testFloatersCiteJournalEmptyIssueSetsIssueTo33(): void {
+    public function testFloatersCiteJournalEmptyIssueSetsIssueToChecksIssue33IssueEmpty(): void {
         $text = '{{Cite journal | issue 33 |issue=}}';
         $template = $this->process_citation($text);
         $this->assertSame('33', $template->get2('issue'));
@@ -846,7 +846,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('id'));
     }
 
-    public function testIDconvertCiteJournalMrSetsMrTo222(): void {
+    public function testIDconvertCiteJournalMrSetsMrToChecksMr222IdMrId222(): void {
         $text = '{{Cite journal | id = {{mr|id=222}} }}';
         $template = $this->process_citation($text);
         $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
@@ -1264,7 +1264,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame((string) date('Y'), $template->get('date') . $template->get('year'));
     }
 
-    public function testUpdateYear4(): void {
+    public function testUpdateYearChecksDateJournal(): void {
         $text = '{{cite journal}}';
         $template = $this->make_citation($text);
         $template->add_if_new('year', (string) date('Y'), 'crossref');
@@ -1348,14 +1348,14 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $template->get2('doi'));
     }
 
-    public function testVerifyDOI9(): void {
+    public function testVerifyDOIChecksDoi10111114710528Doi10111114710528(): void {
         $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.}}';
         $template = $this->make_citation($text);
         $template->verify_doi();
         $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $template->get2('doi'));
     }
 
-    public function testVerifyDOI10(): void {
+    public function testVerifyDOIChecksDoi10111114710528Doi10111114710528CiteJournalDoi10111114(): void {
         $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x;}}';
         $template = $this->make_citation($text);
         $template->verify_doi();
@@ -1369,14 +1369,14 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get2('doi'));
     }
 
-    public function testVerifyDOICiteJournal052407b2fEd76SetsDoiTo1052407b2f(): void {
+    public function testVerifyDOICiteJournal052407b2fEd76SetsDoiTo1052407bChecksDoi10524072ED76Doi0524072ED76(): void {
         $text = '{{cite journal|doi=0.5240/7B2F-ED76-31F6-8CFB-4DB9-M}}'; // Not in crossref, and no meta data in DX.DOI.ORG
         $template = $this->make_citation($text);
         $template->verify_doi();
         $this->assertSame('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M', $template->get2('doi'));
     }
 
-    public function testVerifyDOI13(): void {
+    public function testVerifyDOIChecksDoi10111114710528Doi1011111471052810111114710528(): void {
         $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x</a>}}';
         $template = $this->make_citation($text);
         $template->verify_doi();
@@ -1612,14 +1612,14 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('cite web', $expanded->wikiname()); // Title-less: no retry conversion
     }
 
-    public function testAddExitingThings2(): void {
+    public function testAddExitingThingsAcceptsCiteWebLocationSpringerZone(): void {
         $text = "{{Cite web}}";
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('location', 'Springer Zone'));
         $this->assertFalse($expanded->add_if_new('location', 'Goodbye dead'));
     }
 
-    public function testAddExitingThings3(): void {
+    public function testAddExitingThingsAcceptsCiteWebWebsiteSpringerZone(): void {
         $text = "{{Cite web}}";
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('website', 'Springer Zone'));
@@ -2030,55 +2030,55 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('live', $expanded->get2('url-status'));
     }
 
-    public function testCiteDocument_1(): void {
+    public function testCiteDocumentHandlesUrlWebsite(): void {
         $text = "{{cite document|url=x|website=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite web', $expanded->wikiname());
     }
 
-    public function testCiteDocument_2(): void {
+    public function testCiteDocumentHandlesUrlDocument(): void {
         $text = "{{cite document|url=x|magazine=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite magazine', $expanded->wikiname());
     }
 
-    public function testCiteDocument_3(): void {
+    public function testCiteDocumentHandlesUrlDocumentCiteDocumentUrlEncyclopedia(): void {
         $text = "{{cite document|url=x|encyclopedia=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite encyclopedia', $expanded->wikiname());
     }
 
-    public function testCiteDocument_4(): void {
+    public function testCiteDocumentHandlesUrlJournal(): void {
         $text = "{{cite document|url=x|journal=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite journal', $expanded->wikiname());
     }
 
-    public function testCiteDocument_5(): void {
+    public function testCiteDocumentHandlesUrlWebsiteCiteDocumentUrlWebsite(): void {
         $text = "{{cite document|url=x|website=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite web', $expanded->wikiname());
     }
 
-    public function testCiteDocument_6(): void {
+    public function testCiteDocumentHandlesUrlDocumentCiteDocumentUrlMagazine(): void {
         $text = "{{cite document|url=x|magazine=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite magazine', $expanded->wikiname());
     }
 
-    public function testCiteDocument_7(): void {
+    public function testCiteDocumentHandlesUrlDocumentCiteEncyclopedia(): void {
         $text = "{{cite document|url=x|encyclopedia=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite encyclopedia', $expanded->wikiname());
     }
 
-    public function testCiteDocument_8(): void {
+    public function testCiteDocumentHandlesUrlJournalCiteDocumentUrlJournal(): void {
         $text = "{{cite document|url=x|journal=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite journal', $expanded->wikiname());
     }
 
-    public function testCiteDocument_9(): void {
+    public function testCiteDocumentHandlesUrlPmc(): void {
         $text = "{{cite document|url=x|pmc=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite document', $expanded->wikiname());
@@ -2090,55 +2090,55 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('cite book', $expanded->wikiname());
     }
 
-    public function testCitePaper_1(): void {
+    public function testCitePaperHandlesUrlWebsite(): void {
         $text = "{{cite paper|url=x|website=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite web', $expanded->wikiname());
     }
 
-    public function testCitePaper_2(): void {
+    public function testCitePaperHandlesUrlPaper(): void {
         $text = "{{cite paper|url=x|magazine=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite magazine', $expanded->wikiname());
     }
 
-    public function testCitePaper_3(): void {
+    public function testCitePaperHandlesUrlPaperCitePaperUrlEncyclopedia(): void {
         $text = "{{cite paper|url=x|encyclopedia=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite encyclopedia', $expanded->wikiname());
     }
 
-    public function testCitePaper_4(): void {
+    public function testCitePaperHandlesUrlJournal(): void {
         $text = "{{cite paper|url=x|journal=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite journal', $expanded->wikiname());
     }
 
-    public function testCitePaper_5(): void {
+    public function testCitePaperHandlesUrlWebsiteCitePaperUrlWebsite(): void {
         $text = "{{Cite paper|url=x|website=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite web', $expanded->wikiname());
     }
 
-    public function testCitePaper_6(): void {
+    public function testCitePaperHandlesUrlCitePaper(): void {
         $text = "{{Cite paper|url=x|magazine=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite magazine', $expanded->wikiname());
     }
 
-    public function testCitePaper_7(): void {
+    public function testCitePaperHandlesUrlCitePaperCitePaperUrlEncyclopedia(): void {
         $text = "{{Cite paper|url=x|encyclopedia=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite encyclopedia', $expanded->wikiname());
     }
 
-    public function testCitePaper_8(): void {
+    public function testCitePaperHandlesUrlJournalCitePaperUrlJournal(): void {
         $text = "{{Cite paper|url=x|journal=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite journal', $expanded->wikiname());
     }
 
-    public function testCitePaper_9(): void {
+    public function testCitePaperHandlesUrlPmc(): void {
         $text = "{{Cite paper|url=x|pmc=x}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('cite journal', $expanded->wikiname());
@@ -2151,7 +2151,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('Ballotpedia', $expanded->get2('website'));
     }
 
-    public function testAreManyThings_2(): void {
+    public function testAreManyThingsHandlesNewspaperCiteNews(): void {
         $text = "{{Cite news}}";
         $expanded = $this->make_citation($text);
         $expanded->add_if_new('newspaper', 'Ballotpedia');
@@ -2271,7 +2271,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('cite book', $expanded->wikiname());
     }
 
-    public function testFinalTidyThings1d(): void {
+    public function testFinalTidyThingsHandlesTitleStuffChapterMoreStuffSeries(): void {
         $text = "{{Cite web|title=Stuff|chapter=More Stuff|series=X}}";
         $expanded = $this->make_citation($text);
         $expanded->final_tidy();
@@ -2285,21 +2285,21 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('cite book', $expanded->wikiname());
     }
 
-    public function testFinalTidyThings1f(): void {
+    public function testFinalTidyThingsHandlesTitleStuffChapterMoreStuffSeriesJournal(): void {
         $text = "{{cite web|title=Stuff|chapter=More Stuff|series=X|journal=Y}}";
         $expanded = $this->make_citation($text);
         $expanded->final_tidy();
         $this->AssertSame('cite book', $expanded->wikiname());
     }
 
-    public function testFinalTidyThings1g(): void {
+    public function testFinalTidyThingsHandlesTitleStuffChapterMoreStuffJournal(): void {
         $text = "{{cite web|title=Stuff|chapter=More Stuff|journal=Y}}";
         $expanded = $this->make_citation($text);
         $expanded->final_tidy();
         $this->AssertSame('cite book', $expanded->wikiname());
     }
 
-    public function testFinalTidyThings1h(): void {
+    public function testFinalTidyThingsHandlesTitleStuffChapterMoreStuffSeriesCiteWebTitleStuffChapterMore(): void {
         $text = "{{cite web|title=Stuff|chapter=More Stuff|series=X}}";
         $expanded = $this->make_citation($text);
         $expanded->final_tidy();
@@ -2387,13 +2387,13 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertFalse($expanded->incomplete());
     }
 
-    public function testCiteConferenceIncomplete_2(): void {
+    public function testCiteConferenceIncompleteHandlesTitleBookTitle(): void {
         $text = "{{cite conference|title=X|book-title=Y}}";
         $expanded = $this->make_citation($text);
         $this->AssertFalse($expanded->incomplete());
     }
 
-    public function testCiteConferenceIncomplete_3(): void {
+    public function testCiteConferenceIncompleteHandlesTitleChapter(): void {
         $text = "{{cite conference|title=X|chapter=Y}}";
         $expanded = $this->make_citation($text);
         $this->AssertFalse($expanded->incomplete());
@@ -2469,7 +2469,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('A_X http', $expanded->get3('author-link3'));
     }
 
-    public function testBookTitleCleanUp1(): void {
+    public function testBookTitleCleanUpChecksTitleBookTitle(): void {
         $text = "{{cite book|book-title=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('X', $expanded->get3('title'));
