@@ -1662,7 +1662,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($expanded->get2('issue'));
     }
 
-    public function testTestExistingVerifiedData(): void {
+    public function testExistingVolumeIsNotOverwritten(): void {
         $text = "{{Cite journal|volume=((4))}}";
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->set('volume', '3'));

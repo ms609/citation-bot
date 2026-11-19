@@ -56,14 +56,14 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertContains('10.1234567/example', get_possible_dois('junk 10.1234567/example'));
     }
 
-    public function testSanitizeDoi1(): void {
+    public function testSanitizeDoiRemovesTrailingPunctuation(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
     }
 
-    public function testSanitizeDoi2(): void {
+    public function testSanitizeDoiRemovesTrackingAndSessionSuffixes(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
         $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test#page_scan_tab_contents'));
@@ -104,7 +104,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('3111111', $template->get2('jstor'));
     }
 
-    public function testDOIWorks(): void {
+    public function testBlankDoisAreRejectedByWorkAndActiveChecks(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(doi_works(''));
         $this->assertFalse(doi_active(''));
@@ -153,7 +153,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertFalse(doi_works('/dfadsfasf'));
     }
 
-    public function testHDLworks(): void {
+    public function testMalformedHandleIsRejected(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('10.1126fwerw4w4r2342314'));
     }
@@ -305,217 +305,217 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertFalse(doi_works('10.1002/was.00020423'));
     }
 
-    public function testFixLotsOfDOIs1(): void {
+    public function testOxfordReferenceAcrefDoiIsNormalized(): void {
         $text = '{{cite journal| doi= 10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs2(): void {
+    public function testOxfordResearchEncyclopediaArticle1357DoiIsNormalized(): void {
         $text = '{{cite journal| doi= 10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs3(): void {
+    public function testOxfordResearchEncyclopediaArticle1195DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs4(): void {
+    public function testOxfordResearchEncyclopediaArticle699DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs5(): void {
+    public function testOxfordResearchEncyclopediaArticle181DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs6(): void {
+    public function testOxfordResearchEncyclopediaArticle384DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs7(): void {
+    public function testOxfordResearchEncyclopediaArticle191DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs8(): void {
+    public function testOxfordResearchEncyclopediaArticle39DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs9(): void {
+    public function testOxfordResearchEncyclopediaArticle45DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs10(): void {
+    public function testOxfordResearchEncyclopediaArticle17DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs11(): void {
+    public function testOxfordResearchEncyclopediaArticle568DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs12(): void {
+    public function testOxfordResearchEncyclopediaArticle2DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs13(): void {
+    public function testOxfordResearchEncyclopediaArticle7023DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs14(): void {
+    public function testOxfordResearchEncyclopediaArticle224DoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs15(): void {
+    public function testAmericanNationalBiographyDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs16(): void {
+    public function testBenezitDictionaryDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs17(): void {
+    public function testGroveArtOnlineDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs18(): void {
+    public function testOxfordMedicineChapterDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/med/9780199592548.003.0199', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs19(): void {
+    public function testOxfordBiographyLegacyDoiIsCanonicalized(): void {
         $text = '{{cite journal| doi=10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs20(): void {
+    public function testOxfordBiographyReferenceDoiIsCanonicalized(): void {
         $text = '{{cite journal| doi=10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs21(): void {
+    public function testOxfordBiographyShortDoiIsCanonicalized(): void {
         $text = '{{cite journal| doi=10.1093/odnb/29929 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs23(): void {
+    public function testGroveMusicPlainArticleNumberDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs24(): void {
+    public function testGroveMusicArticleWithAPrefixDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs25(): void {
+    public function testGroveMusicArticleWithJPrefixDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs26(): void {
+    public function testGroveMusicArticleWithLPrefixDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs27(): void {
+    public function testGroveMusicArticleWithOPrefixDoiIsNormalized(): void {
         $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs28(): void {
+    public function testShortOxfordBiographyDoiIsExpanded(): void {
         $text = '{{cite journal| doi=10.1093/ref:odnb/108196 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs29(): void {
+    public function testBareOxfordBiographyDoiIsExpanded(): void {
         $text = '{{cite journal| doi=10.1093/9780198614128.013.108196 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs30(): void {
+    public function testOxfordHandbooksDoiIsCanonicalized(): void {
         $text = '{{cite journal| doi=10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs31(): void {
+    public function testOxfordScholarshipChapterDoiIsCanonicalized(): void {
         $text = '{{cite journal| doi=10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
     }
 
-    public function testFixLotsOfDOIs32(): void {
+    public function testOxfordScholarshipBookDoiIsCanonicalized(): void {
         $text = '{{cite journal| doi=10.1093/oso/9780190124786.001.0001/oso-9780190124786 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');

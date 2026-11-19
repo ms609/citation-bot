@@ -733,14 +733,14 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get2('url'));
     }
 
-    public function testDOI1093(): void {
+    public function testOxfordMusicDoiConvertsCiteWebToDocument(): void {
         $text = '{{cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|pmid=<!-- -->|pmc=<!-- -->}}', $template->parsed_text());
     }
 
-    public function testDOI1093_part2(): void {
+    public function testOxfordMusicDoiConversionPreservesTemplateCase(): void {
         $text = '{{Cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->final_tidy();

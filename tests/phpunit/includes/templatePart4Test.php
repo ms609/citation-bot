@@ -11,47 +11,47 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 final class templatePart4Test extends testBaseClass { // Lower case "t" to run later in test suite
 
-    public function testTidy1(): void {
+    public function testCommentOnlyPostscriptIsRemoved(): void {
         $text = '{{cite web|postscript = <!-- A comment only --> }}';
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('postscript'));
     }
 
-    public function testTidy1a(): void {
+    public function testPostscriptWithCommentAndTemplateIsRemoved(): void {
         $text = '{{cite web|postscript = <!-- A comment only --> {{Some Template}} }}';
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('postscript'));
     }
 
-    public function testTidy2(): void {
+    public function testSurroundingQuotesAreRemovedFromIssue(): void {
         $text = '{{citation|issue="Something Special"}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertSame('Something Special', $template->get2('issue'));
     }
 
-    public function testTidy3(): void {
+    public function testAsciiWhitespaceIsTrimmedFromIssue(): void {
         $text = "{{citation|issue=Dog \t\n\r\0\x0B }}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertSame('Dog', $template->get2('issue'));
     }
 
-    public function testTidy4(): void {
+    public function testTrailingHtmlNonbreakingSpaceIsTrimmedFromIssue(): void {
         $text = "{{citation|issue=Dog &nbsp;}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertSame('Dog', $template->get2('issue'));
     }
 
-    public function testTidy5(): void {
+    public function testLeadingHtmlNonbreakingSpaceIsTrimmedFromIssue(): void {
         $text = '{{citation|issue=&nbsp; Dog }}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertSame('Dog', $template->get2('issue'));
     }
 
-    public function testTidy5b(): void {
+    public function testAgencyIsMovedIntoPublisher(): void {
         $text = "{{citation|agency=California Department of Public Health|publisher=California Tobacco Control Program}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
@@ -59,21 +59,21 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('agency'));
     }
 
-    public function testTidy6(): void {
+    public function testInvalidArxivDoesNotChangeCitationType(): void {
         $text = "{{cite web|arxiv=xxxxxxxxxxxx}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('arxiv');
         $this->assertSame('cite web', $template->wikiname());
     }
 
-    public function testTidy6b(): void {
+    public function testDuplicateAuthorIsMarked(): void {
         $text = "{{cite web|author=X|authors=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('author');
         $this->assertSame('X', $template->get2('DUPLICATE_authors'));
     }
 
-    public function testTidy7(): void {
+    public function testLinkedAuthorNameIsPreserved(): void {
         $text = "{{cite web|author1=[[Hoser|Yoser]]}}";     // No longer do this, COINS now fixed
         $template = $this->make_citation($text);
         $template->tidy_parameter('author1');
@@ -81,14 +81,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('author1-link'));
     }
 
-    public function testTidy8(): void {
+    public function testInvalidBibcodeDoesNotChangeCitationType(): void {
         $text = "{{cite web|bibcode=abookthisis}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('bibcode');
         $this->assertSame('cite web', $template->wikiname());
     }
 
-    public function testTidy9(): void {
+    public function testChapterMatchingTitleIsRemoved(): void {
         $text = "{{cite web|title=XXX|chapter=XXX}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('chapter');
@@ -102,21 +102,21 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('XXX', $template->get2('chapter')); // chapter must not be removed when trans-chapter exists
     }
 
-    public function testTidy10(): void {
+    public function testUnreliableScienceDoiIsRemoved(): void {
         $text = "{{cite web|doi=10.1267/science.040579197}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertNull($template->get2('doi'));
     }
 
-    public function testTidy11(): void {
+    public function testUnreliableArchaeologyDoiIsRemoved(): void {
         $text = "{{cite web|doi=10.5284/1000184}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertNull($template->get2('doi'));
     }
 
-    public function testTidy12(): void {
+    public function testTestPrefixDoiIsRemovedWithoutAddingUrl(): void {
         $text = "{{cite web|doi=10.5555/TEST_DATA}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
@@ -124,49 +124,49 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('url'));
     }
 
-    public function testTidy13(): void {
+    public function testAcceptedManuscriptFormatIsRemoved(): void {
         $text = "{{cite web|format=Accepted manuscript}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('format');
         $this->assertNull($template->get2('format'));
     }
 
-    public function testTidy14(): void {
+    public function testSubmittedManuscriptFormatIsRemoved(): void {
         $text = "{{cite web|format=Submitted manuscript}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('format');
         $this->assertNull($template->get2('format'));
     }
 
-    public function testTidy15(): void {
+    public function testFullTextFormatIsRemoved(): void {
         $text = "{{cite web|format=Full text}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('format');
         $this->assertNull($template->get2('format'));
     }
 
-    public function testTidy16(): void {
+    public function testAcceptedManuscriptChapterFormatIsRemoved(): void {
         $text = "{{cite web|chapter-format=Accepted manuscript}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('chapter-format');
         $this->assertNull($template->get2('chapter-format'));
     }
 
-    public function testTidy17(): void {
+    public function testSubmittedManuscriptChapterFormatIsRemoved(): void {
         $text = "{{cite web|chapter-format=Submitted manuscript}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('chapter-format');
         $this->assertNull($template->get2('chapter-format'));
     }
 
-    public function testTidy18(): void {
+    public function testFullTextChapterFormatIsRemoved(): void {
         $text = "{{cite web|chapter-format=Full text}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('chapter-format');
         $this->assertNull($template->get2('chapter-format'));
     }
 
-    public function testTidy19(): void {
+    public function testRedundantPdfFormatIsRemovedForPdfUrls(): void {
         $text = "{{cite web|chapter-format=portable document format|chapter-url=http://www.x.com/stuff.pdf}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('chapter-format');
@@ -177,35 +177,35 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('format'));
     }
 
-    public function testTidy20(): void {
+    public function testPdfChapterFormatIsRemovedForChapterurlAlias(): void {
         $text = "{{cite web|chapter-format=portable document format|chapterurl=http://www.x.com/stuff.pdf}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('chapter-format');
         $this->assertNull($template->get2('chapter-format'));
     }
 
-    public function testTidy21(): void {
+    public function testPdfChapterFormatIsRemovedWithoutChapterUrl(): void {
         $text = "{{cite web|chapter-format=portable document format}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('chapter-format');
         $this->assertNull($template->get2('chapter-format'));
     }
 
-    public function testTidy22(): void {
+    public function testTrailingCommaIsRemovedFromPeriodical(): void {
         $text = "{{cite web|periodical=X,}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('periodical');
         $this->assertSame('X', $template->get2('periodical'));
     }
 
-    public function testTidy23(): void {
+    public function testMagazineIsMovedToJournalInJournalCitation(): void {
         $text = "{{cite journal|magazine=Xyz}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('magazine');
         $this->assertSame('Xyz', $template->get2('journal'));
     }
 
-    public function testTidy24(): void {
+    public function testEmptyOtherDayAndMonthParametersAreRemoved(): void {
         $text = "{{cite journal|others=|day=|month=}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('others');
@@ -214,21 +214,21 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('{{cite journal}}', $template->parsed_text());
     }
 
-    public function testTidy25(): void {
+    public function testDuplicateArchiveDateAliasIsRemoved(): void {
         $text = "{{cite journal|archivedate=X|archive-date=X}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archivedate');
         $this->assertNull($template->get2('archivedate'));
     }
 
-    public function testTidy26(): void {
+    public function testPublisherMatchingNewspaperIsRemoved(): void {
         $text = "{{cite journal|newspaper=X|publisher=X}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testTidy27(): void {
+    public function testProQuestPublisherBecomesVia(): void {
         $text = "{{cite journal|publisher=Proquest|thesisurl=proquest}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
@@ -236,21 +236,21 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('ProQuest', $template->get2('via'));
     }
 
-    public function testTidy28(): void {
+    public function testGoogleMapsPublisherIsNormalized(): void {
         $text = "{{cite journal|url=stuff.maps.google.stuff|publisher=something from google land}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertSame('Google Maps', $template->get2('publisher'));
     }
 
-    public function testTidy29(): void {
+    public function testPublisherMatchingJournalIsRemoved(): void {
         $text = "{{cite journal|journal=X|publisher=X}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testTidy30(): void {
+    public function testDistinctJournalIsPreservedWhenBookSeriesExists(): void {
         $text = "{{cite journal|series=Methods of Molecular Biology|journal=biomaas}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('series');
@@ -259,7 +259,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('Methods of Molecular Biology', $template->get2('series'));
     }
 
-    public function testTidy31(): void {
+    public function testMatchingJournalAndBookSeriesConvertsToBook(): void {
         $text = "{{cite journal|series=Methods of Molecular Biology|journal=Methods of Molecular Biology}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('series');
@@ -267,28 +267,28 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('journal'));
     }
 
-    public function testTidy32(): void {
+    public function testPdfSuffixIsRemovedFromTitle(): void {
         $text = "{{cite journal|title=A title (PDF)|pmc=1234}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('title');
         $this->assertSame('A title', $template->get2('title'));
     }
 
-    public function testTidy34(): void {
+    public function testWebArchiveSaveUrlIsRemoved(): void {
         $text = "{{cite journal|archive-url=http://web.archive.org/web/save/some_website}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archive-url');
         $this->assertNull($template->get2('archive-url'));
     }
 
-    public function testTidy35(): void {
+    public function testArchiveUrlMatchingUrlIsRemoved(): void {
         $text = "{{cite journal|archive-url=XYZ|url=XYZ}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archive-url');
         $this->assertNull($template->get2('archive-url'));
     }
 
-    public function testTidy36(): void {
+    public function testBookSeriesPeriodicalIsMovedIntoSeries(): void {
         $text = "{{cite journal|series=|periodical=Methods of Molecular Biology}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('periodical');
@@ -296,7 +296,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('Methods of Molecular Biology', $template->get2('series'));
     }
 
-    public function testTidy37(): void {
+    public function testBookSeriesDuplicatedInPeriodicalIsDeduplicated(): void {
         $text = "{{cite journal|series=Methods of Molecular Biology|periodical=Methods of Molecular Biology}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('periodical');
@@ -305,7 +305,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('periodical'));
     }
 
-    public function testTidy38(): void {
+    public function testResearchGateArchiveUrlAndPdfTitleAreCleaned(): void {
         $text = "{{cite journal|archiveurl=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
@@ -313,7 +313,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('abc', $template->get2('title'));
     }
 
-    public function testTidy39(): void {
+    public function testAcademiaArchiveUrlIsCanonicalized(): void {
         $text = "{{cite journal|archiveurl=http://academia.edu/documents/1234_feasdfafdsfsd}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
@@ -328,28 +328,28 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame($url, $template->get2('archiveurl'));
     }
 
-    public function testTidy42(): void {
+    public function testGoogleSearchTrackingIsRemovedFromArchiveUrl(): void {
         $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=Search&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&oe=Bogus&rct=ABC}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
         $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oe=Bogus&rct=ABC', $template->get2('archiveurl'));
     }
 
-    public function testTidy43(): void {
+    public function testScienceDirectViaIsRemovedFromArchiveUrl(): void {
         $text = "{{cite journal|archiveurl=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
         $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get2('archiveurl'));
     }
 
-    public function testTidy44(): void {
+    public function testBloombergUtmIsRemovedFromArchiveUrl(): void {
         $text = "{{cite journal|archiveurl=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
         $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get2('archiveurl'));
     }
 
-    public function testTidy45(): void {
+    public function testResearchGateUrlAndPdfTitleAreCleaned(): void {
         $text = "{{cite journal|url=http://researchgate.net/publication/1234_feasdfafdsfsd|title=(PDF) abc}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -357,7 +357,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('abc', $template->get2('title'));
     }
 
-    public function testTidy46(): void {
+    public function testAcademiaUrlIsCanonicalized(): void {
         $text = "{{cite journal|url=http://academia.edu/documents/1234_feasdfafdsfsd}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -395,63 +395,63 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         }
     }
 
-    public function testTidy48(): void {
+    public function testGoogleSearchTrackingIsRemovedFromUrl(): void {
         $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&btnG=YUP&cshid=X}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=YUP&cshid=X', $template->get2('url'));
     }
 
-    public function testTidy49(): void {
+    public function testScienceDirectViaIsRemovedFromUrl(): void {
         $text = "{{cite journal|url=https://sciencedirect.com/stuff_stuff?via=more_stuff}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://sciencedirect.com/stuff_stuff', $template->get2('url'));
     }
 
-    public function testTidy50(): void {
+    public function testBloombergUtmIsRemovedFromUrl(): void {
         $text = "{{cite journal|url=https://bloomberg.com/stuff_stuff?utm_=more_stuff}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://bloomberg.com/stuff_stuff', $template->get2('url'));
     }
 
-    public function testTidy51(): void {
+    public function testSilverchairWatermarkUrlIsRemovedWithoutArchive(): void {
         $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertNull($template->get2('url'));
     }
 
-    public function testTidy52(): void {
+    public function testSilverchairWatermarkUrlIsKeptWithArchive(): void {
         $text = "{{cite journal|url=https://watermark.silverchair.com/rubbish|archiveurl=has_one}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://watermark.silverchair.com/rubbish', $template->get2('url'));
     }
 
-    public function testTidy53(): void {
+    public function testSilverchairWatermarkArchiveUrlIsRemoved(): void {
         $text = "{{cite journal|archiveurl=https://watermark.silverchair.com/rubbish}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
         $this->assertNull($template->get2('archiveurl'));
     }
 
-    public function testTidy53b(): void {
+    public function testAcademiaS3UrlIsRemoved(): void {
         $text = "{{cite journal|url=https://s3.amazonaws.com/academia.edu/stuff}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertNull($template->get2('url'));
     }
 
-    public function testTidy53c(): void {
+    public function testAcademiaS3ArchiveUrlIsRemoved(): void {
         $text = "{{cite journal|archiveurl=https://s3.amazonaws.com/academia.edu/stuff}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
         $this->assertNull($template->get2('archiveurl'));
     }
 
-    public function testTidy54(): void {
+    public function testIeeeProxyHostIsRemoved(): void {
         $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/document/1234}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -465,7 +465,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame($url, $template->get2('url'));
     }
 
-    public function testTidy55(): void {
+    public function testOxfordHandbooksProxyUrlRemovesLibraryVia(): void {
         $text = "{{cite journal|url=https://www.oxfordhandbooks.com.proxy/view/1234|via=Library}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -473,13 +473,13 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('via'));
     }
 
-    public function testTidy55B(): void { // Do not drop AU
+    public function testTheAgeNewsUrlIsPreserved(): void { // Do not drop AU
         $text = "{{cite news|title=Misogynist rants from Young Libs|url=http://www.theage.com.au/victoria/misogynist-rants-from-young-libs-20140809-3dfhw.html|accessdate=10 August 2014|newspaper=[[The Age]]|date=10 August 2014|agency=[[Fairfax Media]]}}";
         $template = $this->process_citation($text);
         $this->assertSame('http://www.theage.com.au/victoria/misogynist-rants-from-young-libs-20140809-3dfhw.html', $template->get2('url'));
     }
 
-    public function testTidy56(): void {
+    public function testOxfordArtProxyUrlPreservesVia(): void {
         $text = "{{cite journal|url=https://www.oxfordartonline.com.proxy/view/1234|via=me}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -487,14 +487,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('me', $template->get2('via'));
     }
 
-    public function testTidy57(): void {
+    public function testScienceDirectProxyHostIsRemoved(): void {
         $text = "{{cite journal|url=https://sciencedirect.com.proxy/stuff_stuff|via=the via}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.sciencedirect.com/stuff_stuff', $template->get2('url'));
     }
 
-    public function testTidy58(): void {
+    public function testUniversityProxyHostIsRemoved(): void {
         $text = "{{cite journal|url=https://www.random.com.mutex.gmu/stuff_stuff|via=the via}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -502,7 +502,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('via'));
     }
 
-    public function testTidy59(): void {
+    public function testHyphenatedUniversityProxyHostIsRemoved(): void {
         $text = "{{cite journal|url=https://www-random-com.mutex.gmu/stuff_stuff|via=the via}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -510,91 +510,91 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('via'));
     }
 
-    public function testTidy60(): void {
+    public function testPercentEncodedGaleGoUrlIsUnwrapped(): void {
         $text = "{{cite journal|url=http://proxy/url=https://go.galegroup.com%2fpsSTUFF}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://go.galegroup.com/psSTUFF', $template->get2('url'));
     }
 
-    public function testTidy61(): void {
+    public function testGaleGoUrlIsUnwrapped(): void {
         $text = "{{cite journal|url=http://proxy/url=https://go.galegroup.com/STUFF}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://go.galegroup.com/STUFF', $template->get2('url'));
     }
 
-    public function testTidy62(): void {
+    public function testPercentEncodedGaleLinkUrlIsUnwrapped(): void {
         $text = "{{cite journal|url=http://proxy/url=https://link.galegroup.com%2fpsSTUFF}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://link.galegroup.com/psSTUFF', $template->get2('url'));
     }
 
-    public function testTidy63(): void {
+    public function testGaleLinkUrlIsUnwrapped(): void {
         $text = "{{cite journal|url=http://proxy/url=https://link.galegroup.com/STUFF}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://link.galegroup.com/STUFF', $template->get2('url'));
     }
 
-    public function testTidy64(): void {
+    public function testGaleGoParametersArePreserved(): void {
         $text = "{{cite journal|url=https://go.galegroup.com/STUFF&u=UNIV&date=1234}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://go.galegroup.com/STUFF&u=UNIV&date=1234', $template->get2('url'));
     }
 
-    public function testTidy65(): void {
+    public function testGaleLinkParametersArePreserved(): void {
         $text = "{{cite journal|url=https://link.galegroup.com/STUFF&u=UNIV&date=1234}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://link.galegroup.com/STUFF&u=UNIV&date=1234', $template->get2('url'));
     }
 
-    public function testTidy66(): void {
+    public function testProQuestDocviewUrlIsCanonicalized(): void {
         $text = "{{cite journal|url=https://search.proquest.com/STUFF/docview/1234/STUFF}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
-    public function testTidy66b(): void {
+    public function testProQuestLoginRedirectIsCanonicalized(): void {
         $text = "{{cite journal|url=http://host.com/login?url=https://search-proquest-com-stuff/STUFF/docview/1234/34123/342}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
-    public function testTidy66c(): void {
+    public function testProQuestAlphanumericDocviewIdIsPreserved(): void {
         $text = "{{cite journal|url=https://search.proquest.com/docview/1234abc}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234abc', $template->get2('url'));
     }
 
-    public function testTidy66d(): void {
+    public function testProQuestOpenviewUrlIsCanonicalized(): void {
         $text = "{{cite journal|url=https://search.proquest.com/openview/1234abc}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/openview/1234abc', $template->get2('url'));
     }
 
-    public function testTidy66e(): void {
+    public function testProQuestDocviewTrackingSuffixIsRemoved(): void {
         $text = "{{cite journal|url=https://search.proquest.com/docview/1234abc/se-32413232}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234abc', $template->get2('url'));
     }
 
-    public function testTidy67(): void {
+    public function testProQuestInstitutionalProxyUrlIsCanonicalized(): void {
         $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
-    public function testTidy67b(): void {
+    public function testProQuestInstitutionalProxyRemovesVia(): void {
         $text = "{{cite journal|url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214|via=library proquest}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -602,7 +602,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('via'));
     }
 
-    public function testTidy67c(): void {
+    public function testProQuestLoginRedirectRemovesVia(): void {
         $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -610,7 +610,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('via'));
     }
 
-    public function testTidy67d(): void {
+    public function testAlternateProQuestLoginRedirectRemovesVia(): void {
         $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -618,56 +618,56 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('via'));
     }
 
-    public function testTidy69(): void {
+    public function testProQuestDissertationUrlIsCanonicalized(): void {
         $text = "{{cite journal|url=https://search.proquest.com/dissertations/docview/1234}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/dissertations/docview/1234', $template->get2('url'));
     }
 
-    public function testTidy70(): void {
+    public function testProQuestFulltextSuffixIsRemoved(): void {
         $text = "{{cite journal|url=https://search.proquest.com/docview/1234/fulltext}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
-    public function testTidy70b(): void {
+    public function testProQuestAccountParameterIsRemoved(): void {
         $text = "{{cite journal|url=https://search.proquest.com/docview/1234?account=XXXXX}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
-    public function testTidy71(): void {
+    public function testPmcPrefixIsRemovedFromPmcIdentifier(): void {
         $text = "{{cite journal|pmc = pMC12341234}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('pmc');
         $this->assertSame('12341234', $template->get2('pmc'));
     }
 
-    public function testTidy72a(): void {
+    public function testFalseQuotesParameterIsRemoved(): void {
         $text = "{{cite journal|quotes=false}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('quotes');
         $this->assertNull($template->get2('quotes'));
     }
 
-    public function testTidy72b(): void {
+    public function testSingleLetterQuotesParameterIsRemoved(): void {
         $text = "{{cite journal|quotes=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('quotes');
         $this->assertNull($template->get2('quotes'));
     }
 
-    public function testTidy72c(): void {
+    public function testMeaningfulQuotesParameterIsPreserved(): void {
         $text = "{{cite journal|quotes=Hello There}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('quotes');
         $this->assertSame('Hello There', $template->get2('quotes'));
     }
 
-    public function testTidy73a(): void {
+    public function testWebsiteDomainInJournalIsMovedToWebsite(): void {
         $text = "{{cite web|journal=www.cnn.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('journal');

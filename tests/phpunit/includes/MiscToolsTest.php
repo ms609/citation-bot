@@ -21,7 +21,7 @@ final class MiscToolsTest extends testBaseClass {
         }
     }
 
-    public function testCovertUrl2Chapter1(): void {
+    public function testCiteBookConversionPreservesArchiveUrl(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');
@@ -262,7 +262,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertEmpty($duplicates);
     }
 
-    public function testEveryThingIsOnTheList(): void {
+    public function testAllKnownParametersHavePriorParameterMappings(): void {
         $bad = [];
         $everything = [];
         foreach (PARAMETER_LIST as $param) {
