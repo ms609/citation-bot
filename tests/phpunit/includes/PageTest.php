@@ -475,7 +475,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithTextChecksTitleAlbanBergWilhelmFliessAndTJournalTheMusicalTimesDate1983Volume124(): void {
+    public function testExpandsJstorReferenceWithinRefTags(): void {
         $text = "<ref>{{doi|10.2307/962034}}</ref>";
         $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertSame('<ref>{{cite journal | last1=Jarman | first1=Douglas | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | journal=The Musical Times | date=1983 | volume=124 | issue=1682 | pages=218–223 | doi=10.2307/962034 | jstor=962034 }}</ref>', $page->parsed_text());
@@ -505,7 +505,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithTextChecksTitleHistoPhysiologyOfTheScentMJournalTheAnatomicalRecordDate2000Volume259(): void {
+    public function testExpandsWileyDoiReferenceWithMultipleAuthors(): void {
         $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
         $page = $this->process_page($text);
         $parsed = str_replace('| s2cid=9250632 ', '', $page->parsed_text());
@@ -516,19 +516,19 @@ final class PageTest extends testBaseClass {
         $this->assertSame('<ref>{{cite journal | last1=Stoeckelhuber | first1=Mechthild | last2=Sliwa | first2=Alexander | last3=Welsch | first3=Ulrich | title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus) | journal=The Anatomical Record | date=2000 | volume=259 | issue=3 | pages=312–326 | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X | pmid=10861364 | url=http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full }}</ref>', $parsed);
     }
 
-    public function testUrlReferencesWithTextChecksTitleCanadianMulticulturalismAnJournalNationalismAndEthnicPolitiDate2015Volume21(): void {
+    public function testExpandsTaylorFrancisReferenceWithMultipleAuthors(): void {
         $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Ambrose | first1=Emma | last2=Mudde | first2=Cas | title=Canadian Multiculturalism and the Absence of the Far Right | journal=Nationalism and Ethnic Politics | date=2015 | volume=21 | issue=2 | pages=213–236 | doi=10.1080/13537113.2015.1032033 | url=http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 }}</ref>', str_replace('| s2cid=145773856 ', '', $page->parsed_text()));
     }
 
-    public function testUrlReferencesWithTextChecksTitleEvolutionAsFactTheoryAndPaJournalEvolutionEducationAndOutreDate2008Volume1(): void {
+    public function testExpandsSpringerReferenceWithBibliographicMetadata(): void {
         $text = "<ref>Gregory, T. Ryan. (2008). [https://link.springer.com/article/10.1007/s12052-007-0001-z ''Evolution as Fact, Theory, and Path'']. ''Evolution: Education and Outreach'' 1 (1): 46–52.</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Gregory | first1=T. Ryan | title=Evolution as Fact, Theory, and Path | journal=Evolution: Education and Outreach | date=2008 | volume=1 | pages=46–52 | doi=10.1007/s12052-007-0001-z | url=https://link.springer.com/article/10.1007/s12052-007-0001-z }}</ref>', str_replace('| s2cid=19788314 ', '', $page->parsed_text()));
     }
 
-    public function testUrlReferencesWithTextChecksTitleImprovingComputerProgramReJournalCommunicationsOfTheACMDate1982Volume25(): void {
+    public function testExpandsAcmReferenceAndLeavesMalformedTextUntouched(): void {
         $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Elshoff | first1=James L. | last2=Marcotty | first2=Michael | title=Improving computer program readability to aid modification | journal=Communications of the ACM | date=1982 | volume=25 | issue=8 | pages=512–521 | doi=10.1145/358589.358596 | url=http://doi.acm.org/10.1145/358589.358596 }}</ref>', str_replace('| s2cid=30026641 ', '', $page->parsed_text()));

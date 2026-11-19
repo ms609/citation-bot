@@ -730,14 +730,14 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Google Inc.', $template->get2('publisher'));
     }
 
-    public function testTidyChecksPages12PagesPages12(): void {
+    public function testPagesLabelAndRangeAreNormalized(): void {
         $text = "{{cite journal |pages=Pages: 1-2 }}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('pages');
         $this->assertSame('1–2', $template->get2('pages'));
     }
 
-    public function testTidyChecksPages12Pages12(): void {
+    public function testPagePrefixAndRangeAreNormalized(): void {
         $text = "{{cite journal |pages=p. 1-2 }}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('pages');
@@ -816,7 +816,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame("https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true", $template->get2('url'));
     }
 
-    public function testTidyChecksIsbn0671748750(): void {
+    public function testNumericAsinIsConvertedToIsbn(): void {
         $text = "{{cite web|asin=0671748750}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('asin');
@@ -824,7 +824,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('asin'));
     }
 
-    public function testTidyChecksAsin6371748750(): void {
+    public function testInvalidIsbnLikeAsinRemainsAsin(): void {
         $text = "{{cite web|asin=6371748750}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('asin');
@@ -896,7 +896,7 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Phil', $template->get2('editor-last1'));
     }
 
-    public function testAddEditorRejectsJournalEditorLast1(): void {
+    public function testEditorLastCannotBeAddedWhenUnnumberedEditorLastExists(): void {
         $text = "{{cite journal|editor-last=Junk}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('editor-last1', 'Phil'));
@@ -909,20 +909,20 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('Phil', $template->get2('editor1'));
     }
 
-    public function testAddEditorRejectsJournalEditor1(): void {
+    public function testNumberedEditorCannotBeAddedWhenEditorLastExists(): void {
         $text = "{{cite journal|editor-last=Junk}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('editor1', 'Phil'));
     }
 
-    public function testAddFirstAcceptsFirst1(): void {
+    public function testFirstAuthorInitialsAreNormalizedWhenAdded(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('first1', 'X M'));
         $this->assertSame('X. M.', $template->get2('first1'));
     }
 
-    public function testAddFirstAcceptsFirst2(): void {
+    public function testSecondAuthorInitialsAreNormalizedWhenAdded(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('first2', 'X M'));

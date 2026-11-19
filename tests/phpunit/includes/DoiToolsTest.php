@@ -112,18 +112,18 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertFalse(doi_active('      '));
     }
 
-    public function testDOIWorksAccepts101594PANGAEA667386(): void {
+    public function testPangaeaDoiIsWellFormedButNotActive(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1594/PANGAEA.667386'));
         $this->assertFalse(doi_active('10.1594/PANGAEA.667386'));
     }
 
-    public function testDOIWorksAccepts10110720569890(): void {
+    public function testCrystallographyDoiIsRecognizedAsValid(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1107/S2056989021000116'));
     }
 
-    public function testDOIWorksAccepts101126ScidipAdo5059(): void {
+    public function testScienceDoiAcceptedButPlaceholderRejected(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
     }
@@ -137,11 +137,11 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertFalse(doi_works('10.1007/springerreference.ado5059'));
     }
 
-    public function testDOIWorksRejects101126ScidipAdo5059(): void {
+    public function testScienceDoiMissingSlashIsRejected(): void {
         $this->assertFalse(doi_works('10.1126scidip.ado5059'));
     }
 
-    public function testDOIWorksRejects1234567893213(): void {
+    public function testMalformedDoiAndHandleFormatsAreRejected(): void {
         $this->assertFalse(doi_works('123456789/32131423'));
     }
 

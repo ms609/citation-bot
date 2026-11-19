@@ -1645,7 +1645,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('34–55', $template->get2('pages'));
     }
 
-    public function testZoteroResponseChecksPmid12345(): void {
+    public function testZoteroMapsPmidOclcAndOpenLibraryIdentifiers(): void {
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1966,12 +1966,12 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('2027/mdp.39015064245429?urlappend=%3Bseq=326', $template->get2('hdl'));
     }
 
-    public function testHDLSimplerHandles201000100(): void {
+    public function testHdlValidationReturnsStringForValidHandle(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertIsString(hdl_works('20.1000/100'));
     }
 
-    public function testHDLSimplerRejects201000100Urlappend3(): void {
+    public function testHdlValidationRejectsUrlappendSequence(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326'));
     }
@@ -1981,7 +1981,7 @@ final class ZoteroTest extends testBaseClass {
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35'));
     }
 
-    public function testHDLSimplerChecksHdl201000100(): void {
+    public function testZoteroPreservesCanonicalHandleIdentifier(): void {
         $text = '{{Cite web}}';
         $template = $this->make_citation($text);
         hdl_works('20.1000/100');
