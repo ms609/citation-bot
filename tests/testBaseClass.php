@@ -97,9 +97,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::block_zotero();
     }
 
-    // ParaTest does not guarantee the order in which test files execute.
     #[\PHPUnit\Framework\Attributes\AfterClass]
-    public static function releaseCachesAfterTestClass(): void {
+    public static function releaseCachesAfterTestClass(): void { // ParaTest does not guarantee the order in which test files execute
         HandleCache::free_memory();
         AdsAbsControl::free_memory();
     }
