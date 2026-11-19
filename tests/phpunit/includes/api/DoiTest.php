@@ -229,6 +229,228 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($template->get2('year'));
     }
 
+    /**
+     * @param Template $template
+     * @param array<string, mixed> $json
+     */
+    private function processDoiJsonOffline(Template $template, array $json): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to guard offline DOI metadata tests');
+        }
+        $requests = new ArrayObject();
+        $this->assertTrue(uopz_set_return('curl_exec', static function () use ($requests): never {
+            $requests->append(true);
+            throw new LogicException('Unexpected network request while applying DOI JSON metadata');
+        }, true));
+        try {
+            process_doi_json($template, '10.1000/offline-metadata', $json);
+            $this->assertCount(0, $requests);
+        } finally {
+            $this->assertTrue(uopz_unset_return('curl_exec'));
+        }
+    }
+
+    /**
+     * @param string $citation
+     * @param list<mixed> $editors
+     * @param string $expected
+     */
+    #[DataProvider('doiJsonEditorsProvider')]
+    public function testDoiJsonMetadataEditors(string $citation, array $editors, string $expected): void {
+        $template = $this->make_citation($citation);
+        $this->processDoiJsonOffline($template, ['type' => 'book', 'editor' => $editors]);
+        $this->assertSame($expected, $template->parsed_text());
+    }
+
+    /** @return array<string, array{string, list<mixed>, string}> */
+    public static function doiJsonEditorsProvider(): array {
+        $person = ['given' => 'Jane', 'family' => 'Smith'];
+        return [
+            'given and family' => ['{{cite book}}', [$person], '{{cite book| editor-first1=Jane | editor-last1=Smith }}'],
+            'given only' => ['{{cite book}}', [['given' => 'Prince']], '{{cite book| editor1=Prince }}'],
+            'literal name' => ['{{cite book}}', [['literal' => 'Example Consortium']], '{{cite book| editor1=Example Consortium }}'],
+            'malformed entries do not consume a number' => ['{{cite book}}', [null, 'invalid', $person], '{{cite book| editor-first1=Jane | editor-last1=Smith }}'],
+            'invalid given field cannot become citation text' => ['{{cite book}}', [['given' => ['bad'], 'family' => 'Smith']], '{{cite book| editor-last1=Smith }}'],
+            'rejected contributor stops the list' => ['{{cite book}}', [['literal' => 'author'], $person], '{{cite book}}'],
+            'existing editor is preserved' => ['{{cite book|editor=Original Editor}}', [$person], '{{cite book|editor=Original Editor}}'],
+            'journal does not acquire book editors' => ['{{cite journal|title=Original title}}', [$person], '{{cite journal|title=Original title}}'],
+        ];
+    }
+
+    #[DataProvider('doiJsonAuthorDateSuffixesProvider')]
+    public function testDoiJsonMetadataAuthorDateSuffixes(string $name, string $expected): void {
+        $template = $this->make_citation('{{cite book}}');
+        $this->processDoiJsonOffline($template, ['type' => 'book', 'author' => [['literal' => $name]]]);
+        $this->assertSame($expected, $template->parsed_text());
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function doiJsonAuthorDateSuffixesProvider(): array {
+        $person = '{{cite book| last1=Smith | first1=Jane }}';
+        return [
+            'birth and death' => ['Smith, Jane, 1900-1980', $person],
+            'birth only' => ['Smith, Jane, 1900-', $person],
+            'death only' => ['Smith, Jane, -1980', $person],
+            'digits in a corporate name' => ['3M', '{{cite book| author1=3M }}'],
+        ];
+    }
+
+    #[DataProvider('doiJsonFieldValuesProvider')]
+    public function testDoiJsonMetadataFieldValues(mixed $value, ?string $publisher): void {
+        $citation = '{{cite book|title=Original title}}';
+        $template = $this->make_citation($citation);
+        $this->processDoiJsonOffline($template, [
+            'type' => 'book', 'title' => 'Replacement title', 'publisher' => $value,
+        ]);
+        $this->assertSame('Original title', $template->get2('title'));
+        $this->assertSame($publisher, $template->get2('publisher'));
+        $this->assertSame(
+            $publisher === null ? $citation : '{{cite book|title=Original title |publisher=Fixture Press }}',
+            $template->parsed_text()
+        );
+    }
+
+    /** @return array<string, array{mixed, string|null}> */
+    public static function doiJsonFieldValuesProvider(): array {
+        return [
+            'scalar' => ['Fixture Press', 'Fixture Press'],
+            'single-item array' => [['Fixture Press'], 'Fixture Press'],
+            'nested single-item arrays' => [[[['Fixture Press']]], 'Fixture Press'],
+            'null' => [null, null],
+            'empty string' => ['', null],
+            'empty array' => [[], null],
+            'multiple values' => [['Fixture Press', 'Other Press'], null],
+            'nested multiple values' => [[['Fixture Press', 'Other Press']], null],
+            'associative array' => [['name' => 'Fixture Press'], null],
+            'object' => [(object) ['name' => 'Fixture Press'], null],
+            'false' => [false, null],
+            'array placeholder' => ['Array', null],
+            'unknown placeholder' => ['Unknown', null],
+            'PDF filename' => ['metadata.PDF', null],
+        ];
+    }
+
+    #[DataProvider('doiJsonWorkTypesProvider')]
+    public function testDoiJsonMetadataWorkTypes(
+        string $type,
+        bool $has_container,
+        string $expected_name,
+        string $title,
+        ?string $chapter
+    ): void {
+        $json = [
+            'type' => $type, 'title' => 'Fixture Title',
+            'publisher' => 'Fixture Press', 'publisher-location' => 'Paris',
+        ];
+        if ($has_container) {
+            $json['container-title'] = 'Fixture Collection';
+        }
+        $template = $this->make_citation('{{cite book}}');
+        $this->processDoiJsonOffline($template, $json);
+        $this->assertSame($expected_name, $template->wikiname());
+        $this->assertSame($title, $template->get2('title'));
+        $this->assertSame($chapter, $template->get2('chapter'));
+        $this->assertSame('Fixture Press', $template->get2('publisher'));
+        $this->assertSame('Paris', $template->get2('location'));
+        $this->assertSame(
+            '{{' . $expected_name . '| title=' . $title . ' |' .
+                ($chapter === null ? '' : ' chapter=' . $chapter . ' |') .
+                ' publisher=Fixture Press | location=Paris }}',
+            $template->parsed_text()
+        );
+
+        $original = '|title=Original title|chapter=Original chapter|publisher=Original press|location=Rome}}';
+        $preserved = $this->make_citation('{{cite book' . $original);
+        $this->processDoiJsonOffline($preserved, $json);
+        $this->assertSame('{{cite book' . $original, $preserved->parsed_text());
+    }
+
+    /** @return iterable<string, array{string, bool, string, string, string|null}> */
+    public static function doiJsonWorkTypesProvider(): iterable {
+        foreach (['other', 'software'] as $type) {
+            yield $type . ' with container' => [$type, true, 'cite book', 'Fixture Collection', 'Fixture Title'];
+            yield $type . ' without container' => [$type, false, 'cite book', 'Fixture Title', null];
+        }
+        foreach (['', 'graphic', 'report', 'report-component', 'standard'] as $type) {
+            yield 'standalone ' . $type => [$type, false, 'cite book', 'Fixture Title', null];
+        }
+        foreach (['thesis', 'dissertation', 'dissertation-thesis'] as $type) {
+            yield $type => [$type, false, 'cite thesis', 'Fixture Title', null];
+        }
+    }
+
+    public function testDoiJsonMetadataStandardPrefersStandardsBodyToPublisher(): void {
+        $template = $this->make_citation('{{cite book}}');
+        $this->processDoiJsonOffline($template, [
+            'type' => 'standard', 'title' => 'Fixture Standard',
+            'standards-body' => ['name' => 'Fixture Standards Body'], 'publisher' => 'Other Publisher',
+        ]);
+        $this->assertSame('{{cite book| title=Fixture Standard | publisher=Fixture Standards Body }}', $template->parsed_text());
+    }
+
+    /** @param array<string, mixed> $dates */
+    #[DataProvider('doiJsonYearsProvider')]
+    public function testDoiJsonMetadataYearPrecedence(array $dates, ?string $expected): void {
+        $json = ['type' => 'book', ...$dates];
+        $template = $this->make_citation('{{cite book}}');
+        $this->processDoiJsonOffline($template, $json);
+        $this->assertSame($expected, $template->get2('date'));
+        $this->assertNull($template->get2('year'));
+        $this->assertSame($expected === null ? '{{cite book}}' : '{{cite book| date=' . $expected . ' }}', $template->parsed_text());
+
+        foreach (['{{cite book|date=1999-06-15}}', '{{cite book|year=1999}}'] as $citation) {
+            $preserved = $this->make_citation($citation);
+            $this->processDoiJsonOffline($preserved, $json);
+            $this->assertSame($citation, $preserved->parsed_text());
+        }
+    }
+
+    /** @return array<string, array{array<string, mixed>, string|null}> */
+    public static function doiJsonYearsProvider(): array {
+        $created = ['created' => ['date-parts' => [[2002]]]];
+        $printed = ['published-print' => ['date-parts' => [[2003]]]];
+        return [
+            'issued wins' => [['issued' => ['date-parts' => [[2001]]], ...$created, ...$printed], '2001'],
+            'created fallback' => [[...$created, ...$printed], '2002'],
+            'invalid issued falls back' => [['issued' => ['date-parts' => [['Unknown']]], ...$created, ...$printed], '2002'],
+            'zero issued falls back' => [['issued' => ['date-parts' => [[0]]], ...$created], '2002'],
+            'print fallback' => [['issued' => null, 'created' => ['date-parts' => [[]]], ...$printed], '2003'],
+            'unusable dates stay absent' => [['issued' => ['date-parts' => [['invalid']]], 'created' => null], null],
+        ];
+    }
+
+    #[DataProvider('doiJsonHandleTypesProvider')]
+    public function testDoiJsonMetadataHandleExtraction(string $type): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Handle resolution');
+        }
+        $handles = new ArrayObject();
+        $this->assertTrue(uopz_set_return('hdl_works', static function (string $handle) use ($handles): string {
+            $handles->append($handle);
+            return 'https://example.test/fulltext';
+        }, true));
+        try {
+            foreach ([
+                'https://hdl.handle.net/2027.42/1234' => '2027.42/1234',
+                'https://example.test/item' => null,
+            ] as $url => $expected) {
+                $template = $this->make_citation('{{cite book}}');
+                $this->processDoiJsonOffline($template, ['type' => $type, 'URL' => $url]);
+                $this->assertSame($expected, $template->get2('hdl'));
+                $this->assertNull($template->get2('url'));
+                $this->assertSame($type === 'thesis' ? 'cite thesis' : 'cite book', $template->wikiname());
+            }
+            $this->assertSame(['2027.42/1234'], $handles->getArrayCopy());
+        } finally {
+            $this->assertTrue(uopz_unset_return('hdl_works'));
+        }
+    }
+
+    /** @return array<string, array{string}> */
+    public static function doiJsonHandleTypesProvider(): array {
+        return ['thesis' => ['thesis'], 'standard' => ['standard']];
+    }
+
     public function testBiorxivParserRejectsMalformedNestedFields(): void {
         $status = null;
         $this->assertNull(parse_biorxiv_publication_response(
