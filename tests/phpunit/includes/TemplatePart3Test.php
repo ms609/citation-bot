@@ -1299,7 +1299,7 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($prepared->get2('display-editors'));
     }
 
-    public function testEditorsRemovesEditorLast331(): void {
+    public function testEditorOverflowIsRemovedAndDisplayEditorsSet(): void {
         $text = '{{cite journal|editor29=dfasddsfadsd}}';
         $prepared = $this->prepare_citation($text);
         $prepared->add_if_new('editor-last33', 'SetIt');
@@ -1321,7 +1321,7 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame('1234–44', $prepared->get2('pages'));
     }
 
-    public function testAddPagesChecksPage1234(): void {
+    public function testSinglePageParameterIsPreserved(): void {
         $text = '{{Cite journal|page=1234}}';
         $prepared = $this->prepare_citation($text);
         $prepared->add_if_new('pages', '1230-1270');
@@ -1569,7 +1569,7 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($template->get2('issn'));
     }
 
-    public function testURLSChecksMr1234(): void {
+    public function testMathReviewsIdExtractedFromConferenceUrl(): void {
         $text = '{{cite journal|conference-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('1234', $template->get2('mr'));
@@ -1587,7 +1587,7 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame('1234', $template->get2('mr'));
     }
 
-    public function testURLSChecksMr12341234(): void {
+    public function testMathReviewsIdExtractedFromContributionAndArticleUrls(): void {
         $text = '{{cite journal|contributionurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('1234', $template->get2('mr'));
@@ -2287,7 +2287,7 @@ XML;
         $this->assertSame('10.1038/nphys806', $expanded->get2('doi'));
     }
 
-    public function testTidyBogusDOIs3316(): void {
+    public function testInformitDoiWithInvalidMetadataIsRemoved(): void {
         $text = '{{cite journal | doi=10.3316/informit.324214324123413412313|pmc=XXXXX}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
@@ -2301,7 +2301,7 @@ XML;
         $this->assertSame("{{#invoke:Cite|web}}", $expanded->parsed_text());
     }
 
-    public function testInvokeChecksCiteJournal1701972(): void {
+    public function testInvokeCiteWebConvertsToJournalAfterJstorLookup(): void {
         $text = "{{#invoke:Cite|web| jstor=1701972 |s2cid= <!-- --> }}";
         $expanded = $this->with_jstor_citoid_fixture('1701972', fn (): Template => $this->process_citation($text));
         $this->assertSame('{{#invoke:Cite|journal| jstor=1701972 |s2cid= <!-- --> |doi= 10.1126/science.242.4880.913 |last1= Labandeira |first1= Conrad C. |last2= Beall |first2= Bret S. |last3= Hueber |first3= Francis M. |title= Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec |journal= Science |date= 1988 |volume= 242 |issue= 4880 |pages= 913–916 }}', $expanded->parsed_text());

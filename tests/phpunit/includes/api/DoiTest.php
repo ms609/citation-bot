@@ -664,7 +664,7 @@ final class DoiTest extends testBaseClass {
         $this->assertSame("Life cycles of ''Phialella zappai'' n. Sp., ''Phialella fragilis'' and ''Phialella'' sp. (Cnidaria, Leptomedusae, Phialellidae) from central California", $prepared->get2('title'));
     }
 
-    public function testCrossRefAlternativeAPIChecksDate20121112TitleTheAnalectsOfConfuciusUrlDxDoiOrg10432497Doi10432497802037(): void {
+    public function testCrossrefFallbackPreservesExistingBookCitation(): void {
         $text = "{{Cite book |date=2012-11-12 |title=The Analects of Confucius |url=http://dx.doi.org/10.4324/9780203715246 |doi=10.4324/9780203715246|isbn=9780203715246 |last1=Estate |first1=The Arthur Waley |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
@@ -723,7 +723,7 @@ final class DoiTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testDoiExpansionChecksDoiCiteWebUrlFakeUrlDoi10111114(): void {
+    public function testDoiExtractionPreservesUnverifiedSourceUrl(): void {
         // Replace this test with a real URL (if one exists)
         $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
         $expanded = $this->prepare_citation($text);

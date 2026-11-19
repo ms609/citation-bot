@@ -573,7 +573,7 @@ JSON;
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testBadAuthorCiteJournalDoi101164Rccm200405RemovesAuthorRemovesAuthor1TitleGuidelinesForTheManagementJournalAmRespirCritCareMedVolume17(): void {
+    public function testInvalidFirstAuthorIsRemovedFromJournalCitation(): void {
         $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST|pmid=|pmc=|arxiv=}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('author1'));
@@ -593,7 +593,7 @@ JSON;
         $this->assertNull($expanded->get2('asin'));
     }
 
-    public function testAddASINCiteBookIsbn0226845494(): void {
+    public function testExistingIsbnPreventsAddingAsin(): void {
         $text = "{{Cite book |isbn=0226845494}}";
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('asin', 'X'));
@@ -623,7 +623,7 @@ JSON;
         $this->assertNull($expanded->get2('asin'));
     }
 
-    public function testAddASINAcceptsAsin0002TV08(): void {
+    public function testAlphanumericAsinRemainsAsin(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('asin', 'B0002TV0K8'));
@@ -728,7 +728,7 @@ JSON;
         $this->assertSame('Associated Press', $expanded->get2('agency'));
     }
 
-    public function testAPCiteWebUrlTheguardianScienceFebRemovesAuthorRemovesAuthor2DogAuthor1DogUrlTheguardianComScience2018F(): void {
+    public function testAssociatedPressAuthorIsRemovedWithoutAffectingOtherAuthors(): void {
         $text = '{{cite web|author1=Dog|author1-link=X|authorlink2=Z|author2=Associated Press |last3=M|first3=N |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('author2'));
@@ -1303,7 +1303,7 @@ JSON;
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicatesChecksYear2000(): void {
+    public function testRepeatedIdenticalYearParametersAreCollapsed(): void {
         $text = '{{citation|year=2000|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
@@ -1339,7 +1339,7 @@ JSON;
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
-    public function testDropDuplicatesChecksYear2000Year2001(): void {
+    public function testConflictingRepeatedYearsAreMarkedAsDuplicates(): void {
         $text = '{{citation|year=2000|year=2001|year=2000|year=2001|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|DUPLICATE_year=2000|DUPLICATE_year=2001|DUPLICATE_year=2000|DUPLICATE_year=2001|year=2000}}', $prepared->parsed_text());
@@ -1566,7 +1566,7 @@ JSON;
         $this->assertSame('The ATLAS Collaboration', $expanded->first_author());
     }
 
-    public function testLongAuthorListsChecksTitle1(): void {
+    public function testLongAuthorListLimitsDisplayedAuthorsWithoutDroppingNames(): void {
         // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
         $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
         $expanded = $this->process_citation($text);

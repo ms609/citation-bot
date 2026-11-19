@@ -274,7 +274,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('4444-10-07'));
     }
 
-    public function testTidyDateChecks1999090919990909221011(): void {
+    public function testTidyDateStripsTimeAndTimezoneFromIsoTimestamp(): void {
         $this->assertSame('1999-09-09', tidy_date('1999-09-09T22:10:11+08:00'));
     }
 
@@ -294,11 +294,11 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('23--'));
     }
 
-    public function testTidyDateChecks18003Feb1800(): void {
+    public function testTidyDateReturnsOnlyYearForHistoricDate(): void {
         $this->assertSame('1800', tidy_date('3 Feb 1800'));
     }
 
-    public function testTidyDateChecks5423Feb0542(): void {
+    public function testTidyDateHandlesEarlyYearWithLeadingZero(): void {
         $this->assertSame('542', tidy_date('3 Feb 0542'));
     }
 
@@ -891,7 +891,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame($test, $decoded);
     }
 
-    public function testVariousEncodesChecksIso885911(): void {
+    public function testSmartDecodeUsesRequestedThaiEncodingForJapaneseInput(): void {
         $test = "ショッピング";
         $decoded = smart_decode($test, "iso-8859-11", '');
         $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
@@ -902,7 +902,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('François', smart_decode($encoded, 'ISO-8859-1', ''));
     }
 
-    public function testVariousEncodesChecksXe382Xb7Xe3(): void {
+    public function testConvertToUtf8PreservesValidJapaneseText(): void {
         $input = "\xe3\x82\xb7\xe3\x83\xa7\xe3\x83\x83\xe3\x83\x94\xe3\x83\xb3\xe3\x82\xb0";
         $sample = 'ショッピング';
         $decoded = convert_to_utf8($input);
@@ -975,11 +975,11 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', clean_dates(''));
     }
 
-    public function testCleanDatesChecksAprilMay1995(): void {
+    public function testCleanDatesNormalizesMonthRangeDash(): void {
         $this->assertSame('April–May 1995', clean_dates('April-May 1995'));
     }
 
-    public function testCleanDatesChecksDecember72023(): void {
+    public function testCleanDatesInsertsCommaBeforeYear(): void {
         $this->assertSame('December 7, 2023', clean_dates('December 7 2023'));
     }
 

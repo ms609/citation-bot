@@ -776,7 +776,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('pmc-embargo-date'));
     }
 
-    public function testPMCEmbargoCiteJournalPmc1234567(): void {
+    public function testRejectsPastPmcEmbargoDatesButRetainsFutureDate(): void {
         // With pmc= present the future embargo date sticks, so the slot is
         // taken and the duplicate add is refused.
         $text = '{{Cite journal|pmc=PMC1234567}}';
@@ -1786,7 +1786,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('1111-222X', $expanded->get2('issn'));
     }
 
-    public function testTidyBadISSNCiteWeb1111222x(): void {
+    public function testIssnCheckDigitIsUppercasedInWebCitation(): void {
         $text = "{{Cite web|issn=1111-222x}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('issn');
@@ -1832,7 +1832,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertNull($expanded->get2('deadurl'));
     }
 
-    public function testTidyMonthCiteWebDateMarch2000(): void {
+    public function testRedundantMonthAndDayAreRemovedWhenDateExists(): void {
         $text = "{{cite web|date=March 2000|month=march|day=11}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('month');
@@ -2430,7 +2430,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testRandomISSNtestsCiteJournal16825845(): void {
+    public function testIssnRemainsUnchangedWhenLookupIsUnavailable(): void {
         $text = "{{cite journal|issn=1682-5845}}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text()); // We no longer have an API
