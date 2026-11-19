@@ -90,14 +90,14 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('jstor'));
     }
 
-    public function testJstorInDoi2(): void {
+    public function testJstorInDoiChecksJstor3111111PmidPmc(): void {
         $template = $this->prepare_citation('{{cite journal|jstor=3111111|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         $doi = '10.2307/3241423?junk';
         check_doi_for_jstor($doi, $template);
         $this->assertSame('3111111', $template->get2('jstor'));
     }
 
-    public function testJstorInDoi3(): void {
+    public function testJstorInDoiChecksJstor3111111PmidPmcCiteJournalJstor3111111(): void {
         $template = $this->prepare_citation('{{cite journal|jstor=3111111|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         $doi = '3241423';
         check_doi_for_jstor($doi, $template);
@@ -112,44 +112,44 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertFalse(doi_active('      '));
     }
 
-    public function testDOIWorks2(): void {
+    public function testDOIWorksAccepts101594PANGAEA667386(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1594/PANGAEA.667386'));
         $this->assertFalse(doi_active('10.1594/PANGAEA.667386'));
     }
 
-    public function testDOIWorks3a(): void {
+    public function testDOIWorksAccepts10110720569890(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1107/S2056989021000116'));
     }
 
-    public function testDOIWorks3b(): void {
+    public function testDOIWorksAccepts101126ScidipAdo5059(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
     }
 
-    public function testDOIWorks4a(): void {
+    public function testDOIWorksRejects101126ScidipCITATIONBOTPLACE(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(doi_works('10.1126/scidip.CITATION_BOT_PLACEHOLDER.ado5059'));
     }
 
-    public function testDOIWorks4b(): void {
+    public function testDOIWorksRejects101007SpringerreferenceAdo50(): void {
         $this->assertFalse(doi_works('10.1007/springerreference.ado5059'));
     }
 
-    public function testDOIWorks4c(): void {
+    public function testDOIWorksRejects101126ScidipAdo5059(): void {
         $this->assertFalse(doi_works('10.1126scidip.ado5059'));
     }
 
-    public function testDOIWorks4d(): void {
+    public function testDOIWorksRejects1234567893213(): void {
         $this->assertFalse(doi_works('123456789/32131423'));
     }
 
-    public function testDOIWorks4e(): void {
+    public function testDOIWorksRejectsDfasdfsdCITATIONBOTPLACEHOLD(): void {
         $this->assertFalse(doi_works('dfasdfsd/CITATION_BOT_PLACEHOLDER'));
     }
 
-    public function testDOIWorks4f(): void {
+    public function testDOIWorksRejectsDfadsfasf(): void {
         $this->assertFalse(doi_works('/dfadsfasf'));
     }
 
@@ -289,19 +289,19 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertFalse(doi_works('10.3316/informit.550258516430914'));
     }
 
-    public function testForDOIGettingFixed_2(): void {
+    public function testForDOIGettingFixedRejects103316Ielapa347150(): void {
         $this->assertFalse(doi_works('10.3316/ielapa.347150294724689'));
     }
 
-    public function testForDOIGettingFixed_3(): void {
+    public function testForDOIGettingFixedRejects103316Agispt199305(): void {
         $this->assertFalse(doi_works('10.3316/agispt.19930546'));
     }
 
-    public function testForDOIGettingFixed_4(): void {
+    public function testForDOIGettingFixedRejects103316Aeipt207729(): void {
         $this->assertFalse(doi_works('10.3316/aeipt.207729'));
     }
 
-    public function testForDOIGettingFixed_5(): void { // DO's, not DOIs
+    public function testForDOIGettingFixedRejects101002Was000204(): void { // DO's, not DOIs
         $this->assertFalse(doi_works('10.1002/was.00020423'));
     }
 
@@ -522,33 +522,33 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
     }
 
-    public function testBrokenDoiDetection1(): void {
+    public function testBrokenDoiDetectionRemovesDoiBrokenDateDoi103265NefrologiaPre2010TitleAcuteRenalFailureDueToMultPmid(): void {
         $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
     }
 
-    public function testBrokenDoiDetection2(): void {
+    public function testBrokenDoiDetectionKeepsDoiBrokenDateDoi103265NefrologiaNOTAREALDOTitleAcuteRenalFailureDueToMultPmid(): void {
         $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('doi-broken-date'));
     }
 
-    public function testBrokenDoiDetection3(): void {
+    public function testBrokenDoiDetectionRemovesDoiBrokenDateDoiPmidPmc(): void {
         $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertSame('<!-- MC Hammer says to not touch this -->', $expanded->get2('doi'));
     }
 
-    public function testBrokenDoiDetection4(): void {
+    public function testBrokenDoiDetectionRemovesDoiBrokenDateDoiMCHammerSaysToNotTouchThis(): void {
         $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertSame('{{MC Hammer says to not touch this}}', $expanded->get2('doi'));
     }
 
-    public function testBrokenDoiDetection5(): void {
+    public function testBrokenDoiDetectionChecksUrlThisIsNotRealCiteJournal(): void {
         $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $expanded->parsed_text());
@@ -568,19 +568,19 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('978-981-10-3179-3', $expanded->get2('isbn'));
     }
 
-    public function testDoiEndings1(): void {
+    public function testDoiEndingsChecksDoi10111114754983Doi10111114754983Pmid(): void {
         $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
     }
 
-    public function testDoiEndings2(): void {
+    public function testDoiEndingsChecksDoi10111114754983UrlOnlinelibraryWileyComDoi10Pmid(): void {
         $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
     }
 
-    public function test1093DoiStuff1(): void {
+    public function test1093DoiStuffRemovesUrlCiteWebDoi101093BADDDDDDDDBADDDDDDDJViaHose(): void {
         $text = '{{cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -592,7 +592,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('hose', $template->get2('work'));
     }
 
-    public function test1093DoiStuff2(): void {
+    public function test1093DoiStuffRemovesUrlCiteWebDoi101093BADDDDDDDDBADDDDDDDJWebsiteHose(): void {
         $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -604,7 +604,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('hose', $template->get2('work'));
     }
 
-    public function test1093DoiStuff3(): void {
+    public function test1093DoiStuffRemovesUrlCiteWebDoi101093BADDDDDDDDBADDDDDDDJWebsiteHoseWebsite(): void {
         $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -616,7 +616,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('hose', $template->get2('work'));
     }
 
-    public function test1093DoiStuff4(): void {
+    public function test1093DoiStuffRemovesUrlCiteWebDoi101093BADDDDDDDDBADDDDDDDJWebsiteKittens(): void {
         $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -628,7 +628,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('kittens via doggies', $template->get2('work'));
     }
 
-    public function test1093DoiStuff5(): void {
+    public function test1093DoiStuffRemovesUrlCiteJournalDoi101093BADDDDDDDDBADDDDDDDJViaHose(): void {
         $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -640,7 +640,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('Hose', $template->get2('journal'));
     }
 
-    public function test1093DoiStuff6(): void {
+    public function test1093DoiStuffRemovesUrlCiteJournalDoi101093BADDDDDDDDBADDDDDDDJWebsiteHose(): void {
         $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -652,7 +652,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('Hose', $template->get2('journal'));
     }
 
-    public function test1093DoiStuff7(): void {
+    public function test1093DoiStuffRemovesUrlCiteJournalDoi101093BADDDDDDDDBADDDDDDDJWebsiteHoseWebsite(): void {
         $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -664,7 +664,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('Hose', $template->get2('journal'));
     }
 
-    public function test1093DoiStuff8(): void {
+    public function test1093DoiStuffRemovesUrlCiteJournalDoi101093BADDDDDDDDBADDDDDDDJWebsiteKittens(): void {
         $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');

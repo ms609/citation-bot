@@ -431,7 +431,7 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('{{Cite journal| last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies | date=2009 | volume=7 | pages=11–20 }}', $expanded->parsed_text());
     }
 
-    public function testExpansion_doi_not_from_crossref_JaLC_Journal2(): void {
+    public function testExpansion_doi_not_from_crossref_JaLC_JournalChecksCiteJournal107875LeadingAuthor200(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
         $this->assertSame('{{Cite journal| last1=川崎 | first1=努 | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー | date=2013 | volume=2 }}', $expanded->parsed_text());
@@ -524,7 +524,7 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('Lisa Anne', $template->get2('first1'));
     }
 
-    public function testCrossRefAddSeries1(): void {
+    public function testCrossRefAddSeriesRemovesSeriesDoi1010631283310TitleTransientSemiMetallicLayerPmid(): void {
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('series'));
@@ -542,7 +542,7 @@ final class DoiTest extends testBaseClass {
         $this->assertTrue(isCrossRefReviewConfusion($template, $crossref, '10.1063/1.2833100'));
     }
 
-    public function testCrossRefAddSeries2(): void {
+    public function testCrossRefAddSeriesChecksDate2008Doi1010631283310TitleAIPConferenceProceedings(): void {
         // Kind of messed up, but "matches" enough to expand
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
@@ -646,13 +646,13 @@ final class DoiTest extends testBaseClass {
         }
     }
 
-    public function testBlankTypeFromDX1(): void {
+    public function testBlankTypeFromDXChecksDate2015Doi1014989Doctor1925Pmid(): void {
         $text = "{{cite book| doi=10.14989/doctor.k19250 |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame('2015', $prepared->get2('date'));
     }
 
-    public function testBlankTypeFromDX2(): void {
+    public function testBlankTypeFromDXChecksLast1CollinsDoi1026099Aacp5268Pmid(): void {
         $text = "{{Cite journal|doi=10.26099/aacp-5268|pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame('Collins', $prepared->get2('last1'));
@@ -664,19 +664,19 @@ final class DoiTest extends testBaseClass {
         $this->assertSame("Life cycles of ''Phialella zappai'' n. Sp., ''Phialella fragilis'' and ''Phialella'' sp. (Cnidaria, Leptomedusae, Phialellidae) from central California", $prepared->get2('title'));
     }
 
-    public function testCrossRefAlternativeAPI2(): void {
+    public function testCrossRefAlternativeAPIChecksDate20121112TitleTheAnalectsOfConfuciusUrlDxDoiOrg10432497Doi10432497802037(): void {
         $text = "{{Cite book |date=2012-11-12 |title=The Analects of Confucius |url=http://dx.doi.org/10.4324/9780203715246 |doi=10.4324/9780203715246|isbn=9780203715246 |last1=Estate |first1=The Arthur Waley |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testCrossRefAlternativeAPI3(): void {
+    public function testCrossRefAlternativeAPIChecksLastGalbacsFirstPeterTitleTheTheoryOfNewClassicalMacPublisherSpringer(): void {
         $text = "{{cite book |last=Galbács |first=Peter |title=The Theory of New Classical Macroeconomics. A Positive Critique |location=Heidelberg/New York/Dordrecht/London |publisher=Springer |year=2015 |isbn= 978-3-319-17578-2|doi=10.1007/978-3-319-17578-2 |series=Contributions to Economics |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testCrossRefAlternativeAPI4(): void {
+    public function testCrossRefAlternativeAPIChecksUrlTaylorfrancisComBooksEdit1TitleMediaAndSuicideInternationDate20171031PublisherRoutledge(): void {
         $text = "{{Cite book |url=https://www.taylorfrancis.com/books/edit/10.4324/9781351295246/media-suicide-thomas-niederkrotenthaler-steven-stack |title=Media and Suicide: International Perspectives on Research, Theory, and Policy |date=2017-10-31 |publisher=Routledge |isbn=978-1-351-29524-6 |editor-last=Niederkrotenthaler |editor-first=Thomas |location=New York |doi=10.4324/9781351295246 |editor-last2=Stack |editor-first2=Steven|pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
@@ -701,14 +701,14 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('10.1021/cen-v076n048.p024', $expanded->get2('doi'));
     }
 
-    public function testDoiExpansion1(): void {
+    public function testDoiExpansionChecksDoiCiteJournalPmidPmc(): void {
         $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract|pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('cite journal', $prepared->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $prepared->get2('doi'));
     }
 
-    public function testDoiExpansion2(): void {
+    public function testDoiExpansionChecksDoiCiteWebUrlOnlinelibraryWileyComDoi10(): void {
         $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
@@ -716,14 +716,14 @@ final class DoiTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testDoiExpansion3(): void {
+    public function testDoiExpansionKeepsUrlUrlLinkSpringerComArticle1010Doi101007BF002337Pmid(): void {
         // Recognize official DOI targets in URL with extra fragments - fall back to S2
         $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testDoiExpansion4(): void {
+    public function testDoiExpansionChecksDoiCiteWebUrlFakeUrlDoi10111114(): void {
         // Replace this test with a real URL (if one exists)
         $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
         $expanded = $this->prepare_citation($text);

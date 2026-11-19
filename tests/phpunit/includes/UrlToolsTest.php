@@ -94,37 +94,37 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('https://oxfordmusiconline.com/X/2134/1/1/1/1', $template->get2('url'));
     }
 
-    public function testGroveMusic1(): void {
+    public function testGroveMusicChecksUrlDoiOrg101093Gmo97TitleTatumArtHurJrJazzWebsiteGroveMusicOnlinePublisherOxfordUniversityPress(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |access-date=November 20, 2018 |url-access=subscription|via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 |access-date=November 20, 2018 |url-access=subscription|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
     }
 
-    public function testGroveMusic2(): void {
+    public function testGroveMusicChecksUrlDoiOrg101093Gmo97TitleTatumArtHurJrJazzWebsiteGroveMusicOnlinePublisherOxfordUniversityPressFirstVariant(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
     }
 
-    public function testGroveMusic3(): void {
+    public function testGroveMusicChecksUrlDoiOrg101093Gmo97TitleTatumArtHurJrJazzPublisherOxfordUniversityPressDate2002(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
     }
 
-    public function testGroveMusic4(): void {
+    public function testGroveMusicChecksUrlDoiOrg101093Gmo97TitleTatumArtHurJrJazzPublisherOxfordUniversityPressDate2002FirstVariant(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
     }
 
-    public function testGroveMusic5(): void {
+    public function testGroveMusicChecksUrlDoiOrg101093Gmo97TitleTatumArtHurJrJazzPublisherOxfordUniversityPressDate2002SecondVariant(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|via=The Dog Farm|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 |via=The Dog Farm|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
     }
 
-    public function testAmazonExpansion1(): void {
+    public function testAmazonExpansionChecksIsbnCiteWebUrlAmazonComOnOriginPhylaJameIsbnEmpty(): void {
         // A web citation of an Amazon listing cites the listing, so it is neither made into cite book nor stripped of its URL
         $text = '{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}';
         $expanded = $this->prepare_citation($text);
@@ -136,7 +136,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('2012-04-20', $expanded->get2('accessdate'));
     }
 
-    public function testAmazonExpansion2(): void {
+    public function testAmazonExpansionChecksIsbnCiteWebIsbnEmptyPublisherAmazon(): void {
         $text = '{{Cite web | chapter-url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}';
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
@@ -146,13 +146,13 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494', $expanded->get2('url'));
     }
 
-    public function testAmazonExpansion3(): void {
+    public function testAmazonExpansionChecksUrlAmazonComGoldToeMetropolitAccessDate20120420TitleGoldToeMenMetropolitanDres(): void {
         $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store | website=Amazon }}", $expanded->parsed_text());   // We do not touch this kind of URL other than adding website
     }
 
-    public function testAmazonExpansion4(): void {
+    public function testAmazonExpansionChecksIsbnCiteWebIsbnEmptyPublisherAmazonCiteWeb(): void {
         $text = '{{Cite web | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}';
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
@@ -163,7 +163,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494', $expanded->get2('url'));
     }
 
-    public function testAmazonExpansion5(): void {
+    public function testAmazonExpansionRemovesAsinExistsIsbnExists(): void {
         $text = '{{Cite book | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 |isbn=exists}}';
         $expanded = $this->prepare_citation($text);
         $this->assertNull($expanded->get2('asin'));
@@ -213,21 +213,21 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('https://junk', $template->get2('url'));
     }
 
-    public function testURLCleanUp2a(): void {
+    public function testURLCleanUpKeepsUrlUrlOrbitDtuDkEnPublications33Doi1234(): void {
         $text = '{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testURLCleanUp2b(): void {
+    public function testURLCleanUpRemovesUrlUrlOrbitDtuDkEnPublications33Doi1234Pmc312432(): void {
         $text = '{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|pmc=312432}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertNull($template->get2('url'));
     }
 
-    public function testURLCleanUp2c(): void {
+    public function testURLCleanUpRemovesUrlUrlOrbitDtuDkEnPublications33Doi1234(): void {
         $text = '{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|doi-access=free}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
@@ -423,70 +423,70 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('https://oxfordre.com/latinamericanhistory/XYZ', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford1(): void {
+    public function testAnonymizeOxfordChecksUrlOxforddnbComUrlOxforddnbComJsessionPrint(): void {
         $text = '{{cite web|url=https://www.oxforddnb.com/X;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.oxforddnb.com/X', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford2(): void {
+    public function testAnonymizeOxfordChecksUrlAnbOrgUrlAnbOrgJsessionPrint(): void {
         $text = '{{cite web|url=https://www.anb.org/x;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.anb.org/x', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford3(): void {
+    public function testAnonymizeOxfordChecksUrlOxfordartonlineComUrlOxfordartonlineComJsession(): void {
         $text = '{{cite web|url=https://www.oxfordartonline.com/Y;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.oxfordartonline.com/Y', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford4(): void {
+    public function testAnonymizeOxfordChecksUrlUkwhoswhoComUrlUkwhoswhoComJsessionPrint(): void {
         $text = '{{cite web|url=https://www.ukwhoswho.com/z;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.ukwhoswho.com/z', $template->get2('url'));
     }
 
-    public function testAnonymizeOxfor5(): void {
+    public function testAnonymizeOxforChecksUrlOxfordmusiconlineComUrlOxfordmusiconlineComJsessi(): void {
         $text = '{{cite web|url=https://www.oxfordmusiconline.com/z;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.oxfordmusiconline.com/z', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford6(): void {
+    public function testAnonymizeOxfordChecksUrlOxfordreComUrlOxfordreComJsessionPrint(): void {
         $text = '{{cite web|url=https://oxfordre.com/z;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://oxfordre.com/z', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford7(): void {
+    public function testAnonymizeOxfordChecksUrlOxfordaascComUrlOxfordaascComJsessionPrint(): void {
         $text = '{{cite web|url=https://oxfordaasc.com/z;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://oxfordaasc.com/z', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford8(): void {
+    public function testAnonymizeOxfordChecksUrlOxfordreferenceComUrlOxfordreferenceComJsession(): void {
         $text = '{{cite web|url=https://oxfordreference.com/z;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://oxfordreference.com/z', $template->get2('url'));
     }
 
-    public function testAnonymizeOxford9(): void {
+    public function testAnonymizeOxfordChecksUrlOxfordUniversitypressscholarshUrlOxfordUniversitypressschol(): void {
         $text = '{{cite web|url=https://oxford.universitypressscholarship.com/z;jsession?print}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://oxford.universitypressscholarship.com/z', $template->get2('url'));
     }
 
-    public function testOxforddnbDOIs1(): void {
+    public function testOxforddnbDOIsChecksDoi101093RefOdnb3336UrlOxforddnbComView101093RefDoi100001RubbishBotFailureTes(): void {
         $text = '{{cite web|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-33369|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
@@ -497,7 +497,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
     }
 
-    public function testOxforddnbDOIs2(): void {
+    public function testOxforddnbDOIsChecksDoi101093Odnb978019UrlOxforddnbComView101093OdnbDoi100001RubbishBotFailureTes(): void {
         $text = '{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
@@ -545,7 +545,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
     }
 
-    public function testGroveDOIs2(): void {
+    public function testGroveDOIsChecksDoi101093Gao978188UrlOxfordartonlineComGroveartDoi100001RubbishBotFailureTes(): void {
         $text = '{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7002085714|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -809,7 +809,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
     }
 
-    public function testUnPressScholDOIsType2(): void {
+    public function testUnPressScholDOIsTypeChecksDoi101093AcprofOso9780UrlOxfordUniversitypressscholPmid(): void {
         $text = '{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780199812295.001.0001/oso-9780199812295-chapter-7|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
@@ -830,7 +830,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('10.1093/oxfordhb/9780198824633.013.1', $template->get2('doi'));
     }
 
-    public function testConversionOfURL6a(): void {
+    public function testConversionOfURLAcceptsUrlUrlSearchProquestComDocview12Title(): void {
         $text = '{{cite web|url=http://search.proquest.com/docview/12341234|title=X}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
@@ -838,19 +838,19 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('{{ProQuest|12341234}}', $template->get2('id'));
     }
 
-    public function testConversionOfURL6b(): void {
+    public function testConversionOfURLRejectsUrlSearchProquestComDocview12Web(): void {
         $text = '{{cite web|url=http://search.proquest.com/docview/12341234}}';     // No title
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
     }
 
-    public function testConversionOfURL6c(): void {
+    public function testConversionOfURLRejectsUrlSearchProquestComDocview12TitleId(): void {
         $text = '{{cite web|url=http://search.proquest.com/docview/12341234|title=X|id=<!--- --->}}';       // Blocked by comment
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
     }
 
-    public function testConversionOfURL7(): void {
+    public function testConversionOfURLRejectsIdCITATIONBOTPLACEHOLDERCOMMENTUrlSearchProquestComDocview12IdCITATIONBOTPLACEHOLDERCOMM(): void {
         $text = '{{cite web|url=https://search.proquest.com/docview/12341234|id=CITATION_BOT_PLACEHOLDER_COMMENT|title=Xyz}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
@@ -858,7 +858,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('https://search.proquest.com/docview/12341234', $template->get2('url'));
     }
 
-    public function testConversionOfURL8(): void {
+    public function testConversionOfURLRejectsUrlCiteseerxIstPsuEduViewdocSummaUrlCiteseerxIstPsuEduViewdocSTitleXyz(): void {
         $text = '{{cite web|url=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.483.8892|title=Xyz|pmc=341322|doi-access=free|doi=10.0001/Rubbish_bot_failure_test}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
@@ -866,63 +866,63 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertNull($template->get2('citeseerx'));
     }
 
-    public function testConversionOfURL9(): void {
+    public function testConversionOfURLRejectsUrlUrlNcbiNlmNihGovEntrezEutilsETitleXyzPmc123456(): void {
         $text = '{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=123456}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
-    public function testConversionOfURL10(): void {
+    public function testConversionOfURLRejectsUrlUrlNcbiNlmNihGovEntrezEutilsETitleXyzPmc333333(): void {
         $text = '{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testConversionOfURL10B(): void {
+    public function testConversionOfURLRejectsUrlUrlNcbiNlmNihGovEntrezEutilsEPmid123456TitleXyz(): void {
         $text = '{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|pmid=123456|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
-    public function testConversionOfURL11(): void {
+    public function testConversionOfURLAcceptsUrlUrlZbmathOrgAn75113303TitleXyzPmc333333(): void {
         $text = '{{cite web|url=https://zbmath.org/?q=an:7511.33034|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
-    public function testConversionOfURL12(): void {
+    public function testConversionOfURLAcceptsUrlUrlOstiGovBiblio1760327TitleXyzPmc333333(): void {
         $text = '{{cite web|url=https://www.osti.gov/biblio/1760327-generic-advanced-computing-framework-executing-windows-based-dynamic-contingency-analysis-tool-parallel-cluster-machines|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
-    public function testConversionOfURL13(): void {
+    public function testConversionOfURLAcceptsUrlUrlZbmathOrgAn75113334TitleXyzPmc333333(): void {
         $text = '{{cite web|url=https://zbmath.org/?q=an:75.1133.34|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
-    public function testConversionOfURL14(): void {
+    public function testConversionOfURLAcceptsUrlUrlPapersSsrnComSol3PapersCfmTitleXyzPmc333333(): void {
         $text = '{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
-    public function testConversionOfURL15(): void {
+    public function testConversionOfURLAcceptsUrlUrlOstiGovEnergycitationsProdTitleXyzPmc333333(): void {
         $text = '{{cite web | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
-    public function testConversionOfURL2(): void {
+    public function testConversionOfURLAcceptsOclc1234UrlWorldcatOrgTitleStuffOclc1(): void {
         $text = '{{cite web|url=http://worldcat.org/title/stuff/oclc/1234}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
@@ -938,7 +938,7 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('cite web', $template->wikiname());
     }
 
-    public function testConversionOfURL2B(): void {
+    public function testConversionOfURLRejectsOclcWorldcatOrgTitleEditionOclc123UrlWorldcatOrgTitleEditionOcl(): void {
         $text = '{{cite web|url=http://worldcat.org/title/edition/oclc/1234}}'; // Edition
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());

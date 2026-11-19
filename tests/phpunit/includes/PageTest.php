@@ -102,22 +102,22 @@ final class PageTest extends testBaseClass {
         $this->assertGreaterThanOrEqual(7, mb_substr_count($source, '$this->text = safe_preg_replace_callback('));
     }
 
-    public function testPageChangeSummary1(): void {
+    public function testPageChangeSummaryChecksAlteredTemplateTypeEnWPUCBUseChapterChapterNameTitleBookName(): void {
         $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}{stuff}{{{Stuffy|dsafsdf}}}'); // Change to book from journal
         $this->assertSame('Altered template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary2(): void {
+    public function testPageChangeSummaryChecksMiscCitationTidyingEnWPUCBUseBook(): void {
         $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
         $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary31(): void {
+    public function testPageChangeSummaryChecksHttpOnlinelibraryWileyComDoiStrReplace(): void {
         $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
         $this->assertSame('Altered template type. Add: doi, pages, issue, volume, date, journal, title, authors 1-2. Changed bare reference to CS1/2. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', str_replace('s2cid, ', '', $page->edit_summary()));
     }
 
-    public function testPageChangeSummary32(): void { // Mixture of dropping chapter-url and moving URL to chapter-url. Bogus template content
+    public function testPageChangeSummaryChecksChapterUrlBooksGoogleComBooksIdTo0TitleIsbnXXX(): void { // Mixture of dropping chapter-url and moving URL to chapter-url. Bogus template content
         $page = $this->process_page('{{cite book|chapter=X|chapter-url= https://mathscinet.ams.org/mathscinet-getitem?mr=2320282|last1=X|last2=X|first1=X|first2=X |url= https://books.google.com/books?id=to0yXzq_EkQC&pg=PP154|title=Y|isbn=XXX|year=XXX}}');
         if (mb_strpos($page->parsed_text(), '| publisher=') === false) {
             $this->markTestSkipped('Google Books API did not respond (rate limit or outage)');
@@ -125,62 +125,62 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Add: mr, publisher, date. Removed parameters. Some additions/deletions were parameter name changes. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary4(): void {
+    public function testPageChangeSummaryChecksAlteredTemplateTypeEnWPUCBUseWeb(): void {
         $page = $this->process_page('{{cite web|<!-- comment --> journal=Journal Name}}'); // Comment BEFORE parameter
         $this->assertSame('Altered template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
         $this->assertSame('{{cite journal|<!-- comment --> journal=Journal Name}}', $page->parsed_text());
     }
 
-    public function testPageChangeSummary5(): void {
+    public function testPageChangeSummaryChecksAlteredTemplateTypeEnWPUCBUseWebCiteWebJournalJournalName(): void {
         $page = $this->process_page('{{cite web|journal<!-- comment -->=Journal Name}}'); // Comment AFTER parameter
         $this->assertSame('Altered template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
         $this->assertSame('{{cite journal|journal<!-- comment -->=Journal Name}}', $page->parsed_text());
     }
 
-    public function testPageChangeSummary7(): void {
+    public function testPageChangeSummaryChecksAddedZblEnWPUCBUseThisUrlZbmathOrgFormatCompleteAn1(): void {
         $page = $this->process_page('{{cite news|url=http://zbmath.org/?format=complete&q=an:1111.22222}}'); // Very little done to cite news
         $this->assertSame('Added zbl. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary8(): void {
+    public function testPageChangeSummaryChecksTitleMr1234Journal(): void {
         $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
         $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
         $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary9(): void {
+    public function testPageChangeSummaryChecksTitleMr1234JournalCiteJournalChapterurlHttpsMa(): void {
         $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
         $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
         $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary10(): void {
+    public function testPageChangeSummaryChecksTitleMr1234JournalFirstVariant(): void {
         $page = $this->process_page('{{cite journal|distribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
         $this->assertSame('{{cite journal|contribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
         $this->assertSame('Add: mr, contribution-url. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary11(): void {
+    public function testPageChangeSummaryChecksJournalRemovedAccessDateWithNoURLEn(): void {
         $page = $this->process_page('{{cite journal|accessdate=12 Nov 2000}}');
         $this->assertSame('Removed access-date with no URL. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary12(): void {
+    public function testPageChangeSummaryChecksTitleJournal(): void {
         $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
         $this->assertSame('Added url. Removed URL that duplicated identifier. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary13(): void {
+    public function testPageChangeSummaryChecksJournal(): void {
         $page = $this->process_page('{{cite journal|notestitle=X}}');
         $this->assertSame('Altered template type. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary14(): void {
+    public function testPageChangeSummaryChecksPages4455Journal(): void {
         $page = $this->process_page('{{cite journal|pages=44-55}}');
         $this->assertSame('Altered pages. Formatted [[WP:ENDASH|dashes]]. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testPageChangeSummary15(): void {
+    public function testPageChangeSummaryChecksTitleTestBookIssueSomeIssue(): void {
         $page = $this->process_page('{{cite book|title=Test Book|issue=Some Issue}}');
         $this->assertSame('Removed unsupported issue parameter from cite book. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
@@ -274,7 +274,7 @@ final class PageTest extends testBaseClass {
         $this->process_page($text);
     }
 
-    public function testVancNames1(): void {
+    public function testVancNamesChecksDoi101364OFS1992ThPmidPmcArxiv(): void {
         $in = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
         $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = Glaesemann GS, Hawk RM }}';
         $page = $this->process_page($in);
@@ -282,7 +282,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames2(): void {
+    public function testVancNamesChecksDoi101364OFS1992ThPmidPmcArxivAddAuthors12RemovedParameter(): void {
         $in = '{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
         $out = '{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
         $page = $this->process_page($in);
@@ -290,7 +290,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames3(): void {
+    public function testVancNamesChecksDoi101364OFS1992ThPmidPmcArxivFirstVariant(): void {
         $in = '{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
         $out = '{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
         $page = $this->process_page($in);
@@ -298,7 +298,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames4(): void {
+    public function testVancNamesChecksDoi101364OFS1992ThPmidPmcArxivSecondVariant(): void {
         $in = '{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
         $out = '{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
         $page = $this->process_page($in);
@@ -306,7 +306,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames5(): void {
+    public function testVancNamesChecksDoi101364OFS1992ThPmidPmcArxivThirdVariant(): void {
         $in = '{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
         $out = '{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
         $page = $this->process_page($in);
@@ -314,7 +314,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames6(): void {
+    public function testVancNamesChecksMiscCitationTidyingEnWPUCBUseDoi101364OFS1992ThPmidPmc(): void {
         $in = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = <!-- -- >}}';
         $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = <!-- -- >}}';
         $page = $this->process_page($in);
@@ -322,7 +322,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames7(): void {
+    public function testVancNamesChecksMiscCitationTidyingEnWPUCBUseDoi101364OFS1992ThPmidPmcMiscCitationTidyingEnWPUCBUs(): void {
         $in = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = SomeBadExistingData }}';
         $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = SomeBadExistingData }}';
         $page = $this->process_page($in);
@@ -432,7 +432,7 @@ final class PageTest extends testBaseClass {
         $this->assertFalse($page->write($api, "Testing bot write function"));
     }
 
-    public function testNobots2(): void {
+    public function testNobotsChecksUrlMathscinetAmsOrgMathscinetThesis(): void {
         $api = new WikipediaBot();
         $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
         $page = $this->process_page($text);
@@ -475,37 +475,37 @@ final class PageTest extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText0(): void {
+    public function testUrlReferencesWithTextChecksTitleAlbanBergWilhelmFliessAndTJournalTheMusicalTimesDate1983Volume124(): void {
         $text = "<ref>{{doi|10.2307/962034}}</ref>";
         $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertSame('<ref>{{cite journal | last1=Jarman | first1=Douglas | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | journal=The Musical Times | date=1983 | volume=124 | issue=1682 | pages=218–223 | doi=10.2307/962034 | jstor=962034 }}</ref>', $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText1(): void {
+    public function testUrlReferencesWithTextChecksTitleAlbanBergWilhelmFliessAndTJournalTheMusicalTimesDate1983Volume124TheMusicalTimes(): void {
         $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=|||||||||3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
         $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertSame('<ref>{{cite journal | last1=Jarman | first1=Douglas | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | journal=The Musical Times | date=1983 | volume=124 | issue=1682 | pages=218–223 | doi=10.2307/962034 | jstor=962034 | url=https://www.jstor.org/stable/962034 }}</ref>', $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText2(): void {
+    public function testUrlReferencesWithTextChecksComplexityStatesThe(): void {
         $text = "<ref>[[Murray Gell-Mann]] (1995) &quot;[http://onlinelibrary.wiley.com/doi/10.1002/cplx.6130010105/pdf What is complexity? Remarks on simplicity and complexity by the Nobel Prize-winning author of The Quark and the Jaguar]&quot; ''Complexity'' states the 'algorithmic information complexity' (AIC) of some string of bits is the shortest length computer program which can print out that string of bits.</ref>";
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText3(): void {
+    public function testUrlReferencesWithTextChecksTitleNoteOnTheTermBantuAsFirstJournalAfricanStudiesDate1968Volume27(): void {
         $text = "<ref>Raymond O. Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Silverstein | first1=Raymond O. | title=A note on the term "Bantu" as first used by W. H. I. Bleek | journal=African Studies | date=1968 | volume=27 | issue=4 | pages=211–212 | doi=10.1080/00020186808707298 | url=https://www.doi.org/10.1080/00020186808707298 }}</ref>', $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText4(): void { // Has [[ ]] in it
+    public function testUrlReferencesWithTextChecksBiodiversityAndConservation(): void { // Has [[ ]] in it
         $text = "<ref>[[Chandra Prakash Kala|Kala, C.P.]] and Ratajc, P. 2012.[https://rd.springer.com/article/10.1007/s10531-012-0246-x &quot;High altitude biodiversity of the Alps and the Himalayas: ethnobotany, plant distribution and conservation perspective&quot;.] ''Biodiversity and Conservation'', 21 (4): 1115–1126.</ref>";
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText5(): void {
+    public function testUrlReferencesWithTextChecksTitleHistoPhysiologyOfTheScentMJournalTheAnatomicalRecordDate2000Volume259(): void {
         $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
         $page = $this->process_page($text);
         $parsed = str_replace('| s2cid=9250632 ', '', $page->parsed_text());
@@ -516,69 +516,69 @@ final class PageTest extends testBaseClass {
         $this->assertSame('<ref>{{cite journal | last1=Stoeckelhuber | first1=Mechthild | last2=Sliwa | first2=Alexander | last3=Welsch | first3=Ulrich | title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus) | journal=The Anatomical Record | date=2000 | volume=259 | issue=3 | pages=312–326 | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X | pmid=10861364 | url=http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full }}</ref>', $parsed);
     }
 
-    public function testUrlReferencesWithText6(): void {
+    public function testUrlReferencesWithTextChecksTitleCanadianMulticulturalismAnJournalNationalismAndEthnicPolitiDate2015Volume21(): void {
         $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Ambrose | first1=Emma | last2=Mudde | first2=Cas | title=Canadian Multiculturalism and the Absence of the Far Right | journal=Nationalism and Ethnic Politics | date=2015 | volume=21 | issue=2 | pages=213–236 | doi=10.1080/13537113.2015.1032033 | url=http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 }}</ref>', str_replace('| s2cid=145773856 ', '', $page->parsed_text()));
     }
 
-    public function testUrlReferencesWithText7(): void {
+    public function testUrlReferencesWithTextChecksTitleEvolutionAsFactTheoryAndPaJournalEvolutionEducationAndOutreDate2008Volume1(): void {
         $text = "<ref>Gregory, T. Ryan. (2008). [https://link.springer.com/article/10.1007/s12052-007-0001-z ''Evolution as Fact, Theory, and Path'']. ''Evolution: Education and Outreach'' 1 (1): 46–52.</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Gregory | first1=T. Ryan | title=Evolution as Fact, Theory, and Path | journal=Evolution: Education and Outreach | date=2008 | volume=1 | pages=46–52 | doi=10.1007/s12052-007-0001-z | url=https://link.springer.com/article/10.1007/s12052-007-0001-z }}</ref>', str_replace('| s2cid=19788314 ', '', $page->parsed_text()));
     }
 
-    public function testUrlReferencesWithText8(): void {
+    public function testUrlReferencesWithTextChecksTitleImprovingComputerProgramReJournalCommunicationsOfTheACMDate1982Volume25(): void {
         $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Elshoff | first1=James L. | last2=Marcotty | first2=Michael | title=Improving computer program readability to aid modification | journal=Communications of the ACM | date=1982 | volume=25 | issue=8 | pages=512–521 | doi=10.1145/358589.358596 | url=http://doi.acm.org/10.1145/358589.358596 }}</ref>', str_replace('| s2cid=30026641 ', '', $page->parsed_text()));
     }
 
-    public function testUrlReferencesWithText9(): void { // Two "urls"
+    public function testUrlReferencesWithTextChecksSpecialInput(): void { // Two "urls"
         $text = "<ref>http James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText10(): void { // See also
+    public function testUrlReferencesWithTextChecksSpecialInputFirstVariant(): void { // See also
         $text = "<ref>See Also, James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText11(): void { // Two bad ones. Make sure we do not loop or anything
+    public function testUrlReferencesWithTextChecksSpecialInputSecondVariant(): void { // Two bad ones. Make sure we do not loop or anything
         $text = "<ref>See Also, James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $text = $text . $text;
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText12(): void {  // One that does not work and returns exact same text
+    public function testUrlReferencesWithTextChecksSpecialInputThirdVariant(): void {  // One that does not work and returns exact same text
         $text = "<ref>James L. Elshoff, Michael Marcotty, [http://fake.url/10.0001/Rubbish_bot_failure_test Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText13(): void {
+    public function testUrlReferencesWithTextChecksSpecialInputFourthVariant(): void {
         $text = "<ref></ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText14(): void {
+    public function testUrlReferencesWithTextChecksWebStrReplace(): void {
         $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{cite journal | last1=Elshoff | first1=James L. | last2=Marcotty | first2=Michael | title=Improving computer program readability to aid modification | journal=Communications of the ACM | date=1982 | volume=25 | issue=8 | pages=512–521 | doi=10.1145/358589.358596 | url=http://doi.acm.org/10.1145/358589.358596 }}</ref>', str_replace('| s2cid=30026641 ', '', $page->parsed_text()));
     }
 
-    public function testUrlReferencesWithText15(): void {
+    public function testUrlReferencesWithTextChecksHttpDoiAcmOrg101145(): void {
         $text = "<ref>[http://doi.acm.org/10.1145/358589.358596 http://doi.acm.org/10.1145/358589.3585964444]</ref>";
         $text = $text . $text;
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testUrlReferencesWithText16(): void {
+    public function testUrlReferencesWithTextAcceptsArxiv08060013ArXivAPIDidNotRespondRateLimPhysRevD78081701(): void {
         sleep(2); // TODO - why is this test so slow
         $text = "<ref>{{arxiv|0806.0013}}</ref>";
         $page = $this->process_page($text);
@@ -588,19 +588,19 @@ final class PageTest extends testBaseClass {
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'PhysRevD.78.081701'));
     }
 
-    public function testUrlReferencesWithText17(): void {
+    public function testUrlReferencesWithTextAcceptsIsbn97817826262997817826262(): void {
         $text = "<ref>{{isbn|9781782626299}}</ref>";
         $page = $this->process_page($text);
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), '978-1-78262-629-9'));
     }
 
-    public function testUrlReferencesWithText18(): void {
+    public function testUrlReferencesWithTextAcceptsHttpsDoiOrg10230796Jstor962034(): void {
         $text = "<ref>https://doi.org/10.2307/962034{{full}}</ref>";
         $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
-    public function testUrlReferencesWithText19(): void {
+    public function testUrlReferencesWithTextAcceptsHttpsDoiOrg10230796Jstor962034HttpsDoiOrg10230796(): void {
         $text = "<ref>https://doi.org/10.2307/962034{{Bare URL inline}}</ref>";
         $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
@@ -624,19 +624,19 @@ final class PageTest extends testBaseClass {
         $this->assertSame('1234', $expanded->get2('mr'));
     }
 
-    public function testNobots4(): void {
+    public function testNobotsChecksUrlMathscinetAmsOrgMathscinetThesisCiteThesisUrlHttpsMathscinet(): void {
         $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
         $page = $this->process_page($text);
         $this->assertSame('{{cite thesis| mr=1234 |url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());
     }
 
-    public function testNobots5(): void {
+    public function testNobotsChecksUrlMathscinetAmsOrgMathscinetThesisFirstVariant(): void {
         $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=none}}';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testNobots6(): void {
+    public function testNobotsChecksUrlMathscinetAmsOrgMathscinetThesisBotDirectiveForms(): void {
         $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=BobsCoolBot}}';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
@@ -717,7 +717,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testODNB1(): void {
+    public function testODNBChecksTitlePierrepointAlbert19051992CiteODNB(): void {
         $text = '{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} ', $page->parsed_text());
@@ -734,19 +734,19 @@ final class PageTest extends testBaseClass {
         $this->assertStringNotContainsString('ODNBsub', $page->edit_summary());
     }
 
-    public function testODNB2(): void {
+    public function testODNBChecksTitlePierrepointAlbert19051992CiteODNBCiteODNBTitlePierrepointAlbe(): void {
         $text = '{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} ', $page->parsed_text());
     }
 
-    public function testODNB3(): void {
+    public function testODNBChecksTitlePierrepointAlbert19051992CiteODNBFirstVariant(): void {
         $text = '{{Cite ODNB|title=Pierrepoint,_Albert,_(1905–1992)}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text()); // two underscores
     }
 
-    public function testODNB4(): void {
+    public function testODNBChecksTitlePierrepointAlbert19051992CiteODNBSecondVariant(): void {
         $text = '{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}}{{Yup}}{{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text()); // template in the way
@@ -817,7 +817,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testConvertURLSummary2(): void {
+    public function testConvertURLSummaryChecksLastHopkinsWeiseFirstJeffreyEllisDate20030901TitleAustralianInvolvementInThe(): void {
         $text = "{{cite web |last=Hopkins-Weise |first=Jeffrey Ellis |date=2003-09-01 |title=Australian Involvement in the New Zealand Wars of the 1840s and 1860s |type=MPhil. |chapter=Sydney Manufacture of Coehorn Mortars |publisher=University of Queensland |docket= |oclc= |url=https://espace.library.uq.edu.au/data/UQ_198457/the17900.pdf?Expires=1650241198&Key-Pair-Id=APKAJKNBJ4MJBJNC6NLQ&Signature=gEyFpad5YhGNqdoOeq-utC-RLOB7KujpHfPCaNrUj-9KgjhunuqaY6gX5TIIrPQigy4To58NDSqVyGgr4a2DUE9O6AaiO8RjnVG8LDJWrgZqykR0H4xO8rJAy5cnCaTvhFhyAbeJLP7cOrqSgUfyuXvNO46SxiNoW3QNP-futcvJi7hbCKhYVJmTjoPl0HdsNunU3238Y8t2U3eCBtITFfiWcLXuX4od8xDf9Hbpb0~JwsZhyRnhzN0gv8FvD2V2vTku-MYR5H8KzcPsl3ovlP9HZ74cnlQpBXv4XKjG~6LzCBYHsnbNPxHERYLwR1qjnlrKTSAVBrV3mZ05z9Z2jQ__ |access-date=2022-04-18|page=57}}";
         $page = $this->process_page($text);
         $this->assertSame('Altered template type. Added chapter-url. Removed or converted URL. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());

@@ -5,24 +5,24 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TextToolsTest extends testBaseClass {
 
-    public function testCapitalization1a(): void {
+    public function testCapitalizationChecksMolecularAndCellularBiology(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), true));
     }
 
-    public function testCapitalization1b(): void {
+    public function testCapitalizationChecksJournal(): void {
         $this->assertSame('z/Journal', title_capitalization(title_case('z/Journal'), true));
     }
 
-    public function testCapitalization1c(): void {
+    public function testCapitalizationChecksTheJournalOfJournals(): void {
         $this->assertSame('The Journal of Journals', title_capitalization('The Journal Of Journals', true));
     }
 
-    public function testCapitalization1d(): void {
+    public function testCapitalizationChecksJournalOfChemistry(): void {
         $this->assertSame('A Journal of Chemistry A', title_capitalization('A Journal of Chemistry A', true));
     }
 
-    public function testCapitalization1e(): void {
+    public function testCapitalizationChecksJournalOfChemistryJournalOfChemistry(): void {
         $this->assertSame('A Journal of Chemistry E', title_capitalization('A Journal of Chemistry E', true));
     }
 
@@ -53,23 +53,23 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('Журнал физической химии и техники', title_capitalization('Журнал физической химии и техники', true));
     }
 
-    public function testCapitalization2a(): void {
+    public function testCapitalizationChecksThisJournal(): void {
         $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', true));
     }
 
-    public function testCapitalization2b(): void {
+    public function testCapitalizationChecksThisJournalThisJournal(): void {
         $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', true));
     }
 
-    public function testCapitalization2c(): void {
+    public function testCapitalizationChecksTitleCapitalization(): void {
         $this->assertSame("THIS 'A' JOURNAL mittEilUngen", title_capitalization("THIS `A` JOURNAL mittEilUngen", true));
     }
 
-    public function testCapitalization3(): void {
+    public function testCapitalizationChecksJohsnonAndMe(): void {
         $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', true)); // Do not touch links
     }
 
-    public function testCapitalization4(): void {
+    public function testCapitalizationChecksThisIsRobertWWW(): void {
         $this->assertSame('This is robert WWW', title_capitalization('This is robert www', true));
     }
 
@@ -144,76 +144,76 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame("John's. A note", title_capitalization("John's. a note", true));
     }
 
-    public function testCapitalization5(): void {
+    public function testCapitalizationChecksThisIsRobertHttpEXAMPLECOMCASESENSITIVEPATH(): void {
         $this->assertSame('This is robert http://', title_capitalization('This is robert http://', true));
         $this->assertSame('HTTPS://EXAMPLE.COM/CASESENSITIVEPATH', title_capitalization('HTTPS://EXAMPLE.COM/CASESENSITIVEPATH', true));
     }
 
-    public function testCapitalization6(): void {
+    public function testCapitalizationChecksThisIsRobertWwwThisIsRobertWww(): void {
         $this->assertSame('This is robert www.', title_capitalization('This is robert www.', true));
     }
 
-    public function testCapitalization7(): void {
+    public function testCapitalizationChecksThisIsRobertWwwFirstVariant(): void {
         $this->assertSame('This is robert www-', title_capitalization('This is robert www-', true));
     }
 
-    public function testCapitalization8a(): void {
+    public function testCapitalizationChecksTheLasVegasTrip(): void {
         $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas.  Trip.', true));
     }
 
-    public function testCapitalization8b(): void {
+    public function testCapitalizationChecksTheLasVegasTripTheLasVegasTrip(): void {
         $this->assertSame('I the Las Vegas,  Trip.', title_capitalization('I the las Vegas,  Trip.', true));
     }
 
-    public function testCapitalization8c(): void {
+    public function testCapitalizationChecksTheLasVegasTripFirstVariant(): void {
         $this->assertSame('I the Las Vegas:  Trip.', title_capitalization('I the las Vegas:  Trip.', true));
     }
 
-    public function testCapitalization8d(): void {
+    public function testCapitalizationChecksTheLasVegasTripSecondVariant(): void {
         $this->assertSame('I the Las Vegas;  Trip.', title_capitalization('I the las Vegas;  Trip.', true));
     }
 
-    public function testCapitalization8e(): void {
+    public function testCapitalizationChecksTheLasVegasTripThirdVariant(): void {
         $this->assertSame('I the las Vegas...Trip.', title_capitalization('I the las Vegas...Trip.', true));
     }
 
-    public function testCapitalization9(): void {
+    public function testCapitalizationChecksSAGEOpen(): void {
         $this->assertSame('SAGE Open', title_capitalization('Sage Open', true));
     }
 
-    public function testCapitalization10(): void {
+    public function testCapitalizationChecksCATitleCapitalization(): void {
         $this->assertSame('CA', title_capitalization('Ca', true));
     }
 
-    public function testCapitalization11(): void {
+    public function testCapitalizationChecksTheSeriesAndQu(): void {
         $this->assertSame('The Series A and B qu', title_capitalization('The Series a and b qu', true));
     }
 
-    public function testCapitalization12(): void {
+    public function testCapitalizationChecksPENInternational(): void {
         $this->assertSame('PEN International', title_capitalization('Pen International', true));
     }
 
-    public function testCapitalization13(): void {
+    public function testCapitalizationChecksTimeOff(): void {
         $this->assertSame('Time Off', title_capitalization('Time off', true));
     }
 
-    public function testCapitalization14(): void {
+    public function testCapitalizationChecksITProfessional(): void {
         $this->assertSame('IT Professional', title_capitalization('It Professional', true));
     }
 
-    public function testCapitalization15(): void {
+    public function testCapitalizationChecksJOM(): void {
         $this->assertSame('JOM', title_capitalization('Jom', true));
     }
 
-    public function testFrenchCapitalization1(): void {
+    public function testFrenchCapitalizationChecksTitleCapitalizationTitleCase(): void {
         $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), true));
     }
 
-    public function testFrenchCapitalization2(): void {
+    public function testFrenchCapitalizationChecksEvaporationTitleCapitalizationTitleCase(): void {
         $this->assertSame("Phénomènes d'Évaporation d'Hydrologie", title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), true));
     }
 
-    public function testFrenchCapitalization3(): void {
+    public function testFrenchCapitalizationChecksHydrologiePhenomenesHydrologieTitleCapitalization(): void {
         $this->assertSame("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica", title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", true));
     }
 
@@ -224,7 +224,7 @@ final class TextToolsTest extends testBaseClass {
                             title_capitalization("ITS Keep case of its Its and ITS", true));
     }
 
-    public function testTidyDate1(): void {
+    public function testTidyDateChecks2014Maanantai14Heinakuuta2014201204202012420(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
         $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
@@ -233,7 +233,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
     }
 
-    public function testTidyDate2(): void {
+    public function testTidyDateChecks201401240124201416010620111130(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('2014-01-24', tidy_date('01/24/2014 16:01:06'));
         $this->assertSame('2011-11-30', tidy_date('30/11/2011 12:52:08'));
@@ -243,7 +243,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
     }
 
-    public function testTidyDate3(): void {
+    public function testTidyDateChecks20161003TidyDate(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('-0001-11-30T00:00:00+00:00'));
         $this->assertSame('', tidy_date('22/22/2010'));  // That is not valid date code
@@ -251,13 +251,13 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('2016-10-03', tidy_date('3 October, 2016')); // evil comma
     }
 
-    public function testTidyDate4(): void {
+    public function testTidyDateChecks22October199922September201999102220000922September22October1999(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('22 October 1999 – 22 September 2000', tidy_date('1999-10-22 - 2000-09-22'));
         $this->assertSame('22 September – 22 October 1999', tidy_date('1999-09-22 - 1999-10-22'));
     }
 
-    public function testTidyDate5(): void {
+    public function testTidyDateChecks19691231TidyDate(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('Invalid'));
         $this->assertSame('', tidy_date('1/1/0001'));
@@ -266,7 +266,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('19xx'));
     }
 
-    public function testTidyDate6(): void {
+    public function testTidyDateChecks19691231TidyDateTidyDate(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('2000 1999-1998'));
         $this->assertSame('1969-12-31', tidy_date('1969-12-31'));
@@ -274,35 +274,35 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('4444-10-07'));
     }
 
-    public function testTidyDate7(): void {
+    public function testTidyDateChecks1999090919990909221011(): void {
         $this->assertSame('1999-09-09', tidy_date('1999-09-09T22:10:11+08:00'));
     }
 
-    public function testTidyDate7b(): void {
+    public function testTidyDateChecks20011111Dafdsafsd20011111(): void {
         $this->assertSame('2001-11-11', tidy_date('dafdsafsd    2001-11-11'));
     }
 
-    public function testTidyDate8(): void {
+    public function testTidyDateChecks200003273272000DafdsafsdDafdsafsd(): void {
         $this->assertSame('2000-03-27', tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
     }
 
-    public function testTidyDate8b(): void {
+    public function testTidyDateChecks20000327Dafdsafsd3272000(): void {
         $this->assertSame('2000-03-27', tidy_date('dafdsafsd3/27/2000'));
     }
 
-    public function testTidyDate8c(): void {
+    public function testTidyDateChecksTidyDate(): void {
         $this->assertSame('', tidy_date('23--'));
     }
 
-    public function testTidyDate55(): void {
+    public function testTidyDateChecks18003Feb1800(): void {
         $this->assertSame('1800', tidy_date('3 Feb 1800'));
     }
 
-    public function testTidyDate56(): void {
+    public function testTidyDateChecks5423Feb0542(): void {
         $this->assertSame('542', tidy_date('3 Feb 0542'));
     }
 
-    public function testTidyDate57(): void {
+    public function testTidyDateChecksTidyDateTidyDate(): void {
         $this->assertSame('', tidy_date('-0003-10-22'));
     }
 
@@ -324,20 +324,20 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('2005', tidy_date_inside('0/0/2005'));
     }
 
-    public function testTidyDateFutureRejection1(): void {
+    public function testTidyDateFutureRejectionChecks4Days(): void {
         new TestPage(); // Fill page name with test name for debugging
         // Event dates more than three days ahead should be rejected.
         $future_date = date('Y-m-d', strtotime('+4 days'));
         $this->assertSame('', tidy_date($future_date, false));
     }
 
-    public function testTidyDateFutureRejection2(): void {
+    public function testTidyDateFutureRejectionChecks1Year(): void {
         // Access/archive event dates a year ahead should be rejected.
         $future_date = date('Y-m-d', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_date, false));
     }
 
-    public function testTidyDateFutureAcceptance2(): void {
+    public function testTidyDateFutureAcceptanceDistinguishes2Days(): void {
         // Test date 2 days in the future (should be accepted)
         $two_days_future = date('Y-m-d', strtotime('+2 days'));
         $this->assertNotSame('', tidy_date($two_days_future));
@@ -400,7 +400,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertTrue(titles_are_similar('DSFrHdseyJhgdtyhTSFDhge5safdsfasdfa', '��D��S��F��r��H��d��s��e��y��J��h��g��d��t��y��h��T��S��F��D��h��g��e��5��s��a��f��d��s��f��a��s��d��f��a��'));
     }
 
-    public function test_titles_are_similar_junk2(): void {
+    public function test_titles_are_similar_junkRejectsEulerianNumbers(): void {
         $x = 'Eulerian Numbers';
         $this->assertFalse(str_i_same($x, $x));
     }
@@ -419,22 +419,22 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('exampletitle', titles_simple('Example Title (Third Edition)'));
     }
 
-    public function testArrowAreQuotes1(): void {
+    public function testArrowAreQuotesChecksThisThat(): void {
         $text = "This » That";
         $this->assertSame($text, straighten_quotes($text, true));
     }
 
-    public function testArrowAreQuotes2(): void {
+    public function testArrowAreQuotesChecksSpecialInput(): void {
         $text = "X«Y»Z";
         $this->assertSame('X"Y"Z', straighten_quotes($text, true));
     }
 
-    public function testArrowAreQuotes3(): void {
+    public function testArrowAreQuotesChecksThisThatThisThat(): void {
         $text = "This › That";
         $this->assertSame($text, straighten_quotes($text, true));
     }
 
-    public function testArrowAreQuotes4(): void {
+    public function testArrowAreQuotesChecksSpecialInputFirstVariant(): void {
         $text = "X‹Y›Z";
         $this->assertSame("X'Y'Z", straighten_quotes($text, true));
     }
@@ -443,63 +443,63 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame("X'Y'Z", straighten_quotes('X&lsaquo;Y&rsaquo;Z', true));
     }
 
-    public function testArrowAreQuotes5(): void {
+    public function testArrowAreQuotesChecksThisThatFirstVariant(): void {
         $text = "This » That";
         $this->assertSame($text, straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes6(): void {
+    public function testArrowAreQuotesChecksSpecialInputSecondVariant(): void {
         $text = "X«Y»Z";
         $this->assertSame($text, straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes7(): void {
+    public function testArrowAreQuotesChecksThisThatSecondVariant(): void {
         $text = "This › That";
         $this->assertSame($text, straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes8(): void {
+    public function testArrowAreQuotesChecksSpecialInputThirdVariant(): void {
         $text = "X‹Y›Z";
         $this->assertSame("X'Y'Z", straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes9(): void {
+    public function testArrowAreQuotesChecksSpecialInputFourthVariant(): void {
         $text = "«XY»Z";
         $this->assertSame($text, straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes10(): void {
+    public function testArrowAreQuotesChecksSpecialInputFifthVariant(): void {
         $text = "«XY»Z";
         $this->assertSame('"XY"Z', straighten_quotes($text, true));
     }
 
-    public function testArrowAreQuotes11(): void {
+    public function testArrowAreQuotesChecksSpecialInputSixthVariant(): void {
         $text = "«Y»";
         $this->assertSame('"Y"', straighten_quotes($text, true));
     }
 
-    public function testArrowAreQuotes12(): void {
+    public function testArrowAreQuotesChecksSpecialInputSeventhVariant(): void {
         $text = "‹Y›";
         $this->assertSame("'Y'", straighten_quotes($text, true));
     }
 
-    public function testArrowAreQuotes13(): void {
+    public function testArrowAreQuotesChecksSpecialInputEighthVariant(): void {
         $text = "«Y»";
         $this->assertSame('"Y"', straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes14(): void {
+    public function testArrowAreQuotesChecksSpecialInputNinthVariant(): void {
         $text = "‹Y›";
         $this->assertSame("'Y'", straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes15(): void {
+    public function testArrowAreQuotesChecksLastronauteDuVoxPopDeGuyNant(): void {
         new TestPage(); // Fill page name with test name for debugging
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
         $this->assertSame($text, straighten_quotes($text, false));
     }
 
-    public function testArrowAreQuotes16(): void {
+    public function testArrowAreQuotesChecksLastronauteDuVoxPopDeGuyNantLastronaute(): void {
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
         $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
     }
@@ -611,12 +611,12 @@ final class TextToolsTest extends testBaseClass {
      *
      * @todo - should do more than just give up and wrap in nowiki
      */
-    public function testMathInTitle1(): void {
+    public function testMathInTitleChecksSpecialInput(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $this->assertSame($text_math, sanitize_string($text_math));
     }
 
-    public function testMathInTitle2(): void {
+    public function testMathInTitleChecksSpecialInputFirstVariant(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         // After MathML conversion, <mrow> tags are stripped, leaving just the content
         // Note: title_capitalization doesn't capitalize normal sentence case text, only ALL CAPS
@@ -624,7 +624,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame($expected, wikify_external_text($text_math));
     }
 
-    public function testMathInTitle3(): void {
+    public function testMathInTitleChecksSi37GifElsevierComXmlXocsDtd3Org2001XMLSchema3Org2001XMLSchemaInstance(): void {
         $text_mml = 'Spectroscopic analysis of the candidate <mml:math altimg="si37.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>ß</mml:mi></mml:mrow></mml:math> Cephei star <mml:math altimg="si37.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>s</mml:mi></mml:mrow></mml:math> Cas: Atmospheric characterization and line-profile variability';
         // After MathML conversion, content is properly converted to LaTeX
         // Note: title_capitalization doesn't capitalize normal sentence case text, only ALL CAPS
@@ -699,35 +699,35 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame($text, sanitize_string($text));
     }
 
-    public function testTrailingPeriods1(): void {
+    public function testTrailingPeriodsChecksInThe(): void {
         $this->assertSame('In the X.Y.', wikify_external_text('In the X.Y.'));
     }
 
-    public function testTrailingPeriods2(): void {
+    public function testTrailingPeriodsChecksInTheInThe(): void {
         $this->assertSame('In the X. Y.', wikify_external_text('In the X. Y.'));
     }
 
-    public function testTrailingPeriods3(): void {
+    public function testTrailingPeriodsChecksInTheAnd(): void {
         $this->assertSame('In the X. And Y', wikify_external_text('In the X. and Y.'));
     }
 
-    public function testTrailingPeriods4(): void {
+    public function testTrailingPeriodsChecksSpecialInput(): void {
         $this->assertSame('A.B.C.', wikify_external_text('A.B.C.'));
     }
 
-    public function testTrailingPeriods5(): void {
+    public function testTrailingPeriodsChecksBlahy(): void {
         $this->assertSame('Blahy', wikify_external_text('Blahy.'));
     }
 
-    public function testTrailingPeriods6(): void {
+    public function testTrailingPeriodsChecksBlahyBlahy(): void {
         $this->assertSame('Blahy', wikify_external_text('Blahy............'));
     }
 
-    public function testTrailingPeriods7(): void {
+    public function testTrailingPeriodsChecksBlahyFirstVariant(): void {
         $this->assertSame('Blahy.', wikify_external_text('Blahy....... ....'));
     }
 
-    public function testTrailingPeriods8(): void {
+    public function testTrailingPeriodsChecksDfadsfdsHoser(): void {
         $this->assertSame('Dfadsfds Hoser......', wikify_external_text('Dfadsfds Hoser..... . .'));
     }
 
@@ -746,7 +746,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame("'''A'''", wikify_external_text('<Emphasis Type="Bold">A</Emphasis>'));
     }
 
-    public function testEm2(): void {
+    public function testEmChecksSpecialInput(): void {
         $this->assertSame("''A''", wikify_external_text('<em>A</em>'));
     }
 
@@ -794,7 +794,7 @@ final class TextToolsTest extends testBaseClass {
         );
     }
 
-    public function testCapitalization_lots_more2(): void {
+    public function testCapitalization_lots_moreChecksNeuroforumEGEMs(): void {
         $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), true));
         $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), true));
         $this->assertSame('X eFood', title_capitalization(title_case('X Efood'), true));
@@ -806,7 +806,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('X JABS : Journal of Applied Biological Sciences', title_capitalization(title_case('X Jabs : Journal of Applied Biological Sciences'), true));
     }
 
-    public function testCapitalization_lots_more3(): void {
+    public function testCapitalization_lots_moreChecksLaTrobeMERIP(): void {
         $this->assertSame('X La Trobe', title_capitalization(title_case('X La Trobe'), true));
         $this->assertSame('X MERIP', title_capitalization(title_case('X Merip'), true));
         $this->assertSame('X mSystems', title_capitalization(title_case('X MSystems'), true));
@@ -814,14 +814,14 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('X PNAS', title_capitalization(title_case('X Pnas'), true));
     }
 
-    public function testCapitalization_lots_more4(): void {
+    public function testCapitalization_lots_moreChecksSrpArhCelokLekTimeOutLondon(): void {
         $this->assertSame('X Srp Arh Celok Lek', title_capitalization(title_case('X SRP Arh Celok Lek'), true));
         $this->assertSame('X Time Out London', title_capitalization(title_case('X Time out London'), true));
         $this->assertSame('X z/Journal', title_capitalization(title_case('X Z/journal'), true));
         $this->assertSame('X ZooKeys', title_capitalization(title_case('X zookeys'), true));
     }
 
-    public function testCapitalization_lots_more5(): void {
+    public function testCapitalization_lots_moreChecksWwwExampleComCaseSensitivePath(): void {
         $this->assertSame('Www', title_case('www'));
         $this->assertSame('www.', title_case('www.'));
         $this->assertSame('http://', title_case('http://'));
@@ -830,7 +830,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('Hello There', title_case('hello there'));
     }
 
-    public function testCapitalization_lots_more6(): void {
+    public function testCapitalization_lots_moreChecksTheDOSIsFaster(): void {
         $this->assertSame('The DOS is Faster', title_capitalization('The DOS is Faster', true));
         $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster', true));
         $this->assertSame('The DoS is Faster', title_capitalization('The DoS is Faster', true));
@@ -843,7 +843,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('dOs', title_capitalization('dOs', true));
     }
 
-    public function testCapitalization_lots_more7(): void {
+    public function testCapitalization_lots_moreChecksAIDSBioScienceBioResources(): void {
         $this->assertSame('AIDS', title_capitalization('Aids', true));
         $this->assertSame('BioScience', title_capitalization('Bioscience', true));
         $this->assertSame('BioResources', title_capitalization('Bioresources', true));
@@ -873,25 +873,25 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('Río de la Plata, Argentina', title_capitalization('Río de la Plata, Argentina', true));
     }
 
-    public function testRestorItalicsRegex1(): void {
+    public function testRestorItalicsRegexChecksTitleDoi107717Peerj7240(): void {
         $text = "{{cite journal|doi=10.7717/peerj.7240 }}";
         $template = $this->process_citation($text);
         $this->assertSame("''Ngwevu intloko'': A new early sauropodomorph dinosaur from the Lower Jurassic Elliot Formation of South Africa and comments on cranial ontogeny in ''Massospondylus carinatus''", $template->get2('title'));
     }
 
-    public function testRestorItalicsRegex2(): void {
+    public function testRestorItalicsRegexChecksTitleDoi107717Peerj4224(): void {
         $text = "{{cite journal|doi=10.7717/peerj.4224 }}";
         $template = $this->process_citation($text);
         $this->assertSame("A revised cranial description of ''Massospondylus carinatus'' Owen (Dinosauria: Sauropodomorpha) based on computed tomographic scans and a review of cranial characters for basal Sauropodomorpha", $template->get2('title'));
     }
 
-    public function testVariousEncodes2(): void {
+    public function testVariousEncodesChecksSpecialInput(): void {
         $test = "ショッピング";
         $decoded = smart_decode($test, 'UTF-8', '');
         $this->assertSame($test, $decoded);
     }
 
-    public function testVariousEncodes3(): void {
+    public function testVariousEncodesChecksIso885911(): void {
         $test = "ショッピング";
         $decoded = smart_decode($test, "iso-8859-11", '');
         $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
@@ -902,21 +902,21 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('François', smart_decode($encoded, 'ISO-8859-1', ''));
     }
 
-    public function testVariousEncodes1(): void {
+    public function testVariousEncodesChecksXe382Xb7Xe3(): void {
         $input = "\xe3\x82\xb7\xe3\x83\xa7\xe3\x83\x83\xe3\x83\x94\xe3\x83\xb3\xe3\x82\xb0";
         $sample = 'ショッピング';
         $decoded = convert_to_utf8($input);
         $this->assertSame($sample, $decoded);
     }
 
-    public function testVariousEncodes4(): void {
+    public function testVariousEncodesChecksIso88591(): void {
         $sample = "2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£¤¥¦§¨©ª«¬SHY®¯Bx°±²³´µ¶·¸¹º»¼½¾¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
         $urlencoded_iso_8859_1 = '2xSP%21%23%24%25%26%27%28%29%2A%2B%2C-.%2F3x0123456789%3A%3B%3C%3D%3E%3F4x%40ABCDEFGHIJKLMNO5xPQRSTUVWXYZ%5B%5C%5D%5E_6x%60abcdefghijklmno7xpqrstuvwxyz%7B%7C%7D%7E8x9xAxNBSP%A1%A2%A3%A4%A5%A6%A7%A8%A9%AA%AB%ACSHY%AE%AFBx%B0%B1%B2%B3%B4%B5%B6%B7%B8%B9%BA%BB%BC%BD%BE%BFCx%C0%C1%C2%C3%C4%C5%C6%C7%C8%C9%CA%CB%CC%CD%CE%CFDx%D0%D1%D2%D3%D4%D5%D6%D7%D8%D9%DA%DB%DC%DD%DE%DFEx%E0%E1%E2%E3%E4%E5%E6%E7%E8%E9%EA%EB%EC%ED%EE%EFFx%F0%F1%F2%F3%F4%F5%F6%F7%F8%F9%FA%FB%FC%FD%FE%FF';
         $decoded = mb_convert_encoding(urldecode($urlencoded_iso_8859_1), "UTF-8", "iso-8859-1");
         $this->assertSame($sample, $decoded);
     }
 
-    public function testVariousEncodes5(): void {
+    public function testVariousEncodesChecksWINDOWS1252(): void {
         $test = "2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£€20AC¥Š0160§š0161©ª«¬SHY®¯Bx°±²³Ž017Dµ¶·ž017E¹º»Œ0152œ0153Ÿ0178¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
         $string_utf8_urlencoded = "2xSP%21%23%24%25%26%27%28%29%2A%2B%2C-.%2F3x0123456789%3A%3B%3C%3D%3E%3F4x%40ABCDEFGHIJKLMNO5xPQRSTUVWXYZ%5B%5C%5D%5E_6x%60abcdefghijklmno7xpqrstuvwxyz%7B%7C%7D%7E8x9xAxNBSP%C2%A1%C2%A2%C2%A3%E2%82%AC20AC%C2%A5%C5%A00160%C2%A7%C5%A10161%C2%A9%C2%AA%C2%AB%C2%ACSHY%C2%AE%C2%AFBx%C2%B0%C2%B1%C2%B2%C2%B3%C5%BD017D%C2%B5%C2%B6%C2%B7%C5%BE017E%C2%B9%C2%BA%C2%BB%C5%920152%C5%930153%C5%B80178%C2%BFCx%C3%80%C3%81%C3%82%C3%83%C3%84%C3%85%C3%86%C3%87%C3%88%C3%89%C3%8A%C3%8B%C3%8C%C3%8D%C3%8E%C3%8FDx%C3%90%C3%91%C3%92%C3%93%C3%94%C3%95%C3%96%C3%97%C3%98%C3%99%C3%9A%C3%9B%C3%9C%C3%9D%C3%9E%C3%9FEx%C3%A0%C3%A1%C3%A2%C3%A3%C3%A4%C3%A5%C3%A6%C3%A7%C3%A8%C3%A9%C3%AA%C3%AB%C3%AC%C3%AD%C3%AE%C3%AFFx%C3%B0%C3%B1%C3%B2%C3%B3%C3%B4%C3%B5%C3%B6%C3%B7%C3%B8%C3%B9%C3%BA%C3%BB%C3%BC%C3%BD%C3%BE%C3%BF";
         $string_utf8 = urldecode($string_utf8_urlencoded);
@@ -930,22 +930,22 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame($string_utf8_coverted_to_windows1252, $string_windows1252);
     }
 
-    public function testVariousEncodes6(): void {
+    public function testVariousEncodesChecksISO2022JP(): void {
         $test = "ア イ ウ エ オ カ キ ク ケ コ ガ ギ グ ゲ ゴ サ シ ス セ ソ ザ ジ ズ ゼ ゾ タ チ ツ テ ト ダ ヂ ヅ デ ド ナ ニ ヌ ネ ノ ハ ヒ フ ヘ ホ バ ビ ブ ベ ボ パ ピ プ ペ ポ マ ミ ム メ モ ヤ ユ ヨ ラ リ ル レ ロ ワ ヰ ヱ ヲ";
         $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "ISO-2022-JP", "UTF-8")));
     }
 
-    public function testVariousEncodes7(): void {
+    public function testVariousEncodesChecksSpecialInputEUCCN(): void {
         $test = "说文解字简称说文是由东汉经学家文字学家许慎编著的语文工具书著作是中国最早的系统分析汉字字形和考究字源的语文辞书也是世界上最早的字典之说文解字内容共十五卷其中前十四卷为文字解说字头以小篆书写此书编著时首次对“六书做出了具体的解释逐字解释字体来源第十五卷为叙目记录汉字的产生发展功用结构等方面的问题以及作者创作的目的说文解字是最早的按部首编排的汉语字典全书共分个部首收字9353另有“重文即异体字个共10516字说文解字原书作于汉和帝永元十二年100到安帝建光元年（121年）宋太宗雍熙三年年宋太宗命徐铉句中正葛湍王惟恭等同校说文解字分成上下共三十卷奉敕雕版流布后代研究说文多以此版为蓝本如清代段玉裁注释本即用此版说文为底稿而加以注释[1]说文解字是科学文字学和文献语言学的奠基之作在中国语言学史上有重要的地位历代对于说文解字都有许多学者研究清朝时研究最为兴盛段玉裁的说文解字注朱骏声的说文通训定声桂馥的说文解字义证王筠的说文释例说文句读尤备推崇四人也获尊称为说文四大家";
         $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-CN", "UTF-8")));
     }
 
-    public function testVariousEncodes8(): void {
+    public function testVariousEncodesChecksSpecialInputEUCKR(): void {
         $test = "당신 이름이 무엇입니까 이름이 키얀인 어린 소년을 만나보세요. 그러나 그는 다른 많은 이름도 가지고 있습니다. 당신은 얼마나 많은 이름을 가지고 있습니까?";
         $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-KR", "UTF-8")));
     }
 
-    public function testVariousEncodes9(): void {
+    public function testVariousEncodesChecksSmartDecodeUtf8SigUserDefined(): void {
         $this->assertSame('', smart_decode('test', 'utf-8-sig', 'http'));
         $this->assertSame('', smart_decode('test', 'x-user-defined', 'http'));
     }
@@ -954,44 +954,44 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
     }
 
-    public function testRestoreItalics1(): void {
+    public function testRestoreItalicsChecksBuitreraptorGonzalezorum(): void {
         $this->assertSame('Buitreraptor gonzalezorum', restore_italics('Buitreraptor gonzalezorum'));
     }
 
-    public function testRestoreItalics2(): void {
+    public function testRestoreItalicsChecksBuitreraptorGonzalezorumCaBuitreraptorGonzalezorumX(): void {
         $this->assertSame("Ca ''Buitreraptor gonzalezorum'' X", restore_italics('CaBuitreraptor gonzalezorumX'));
     }
 
-    public function testRestoreItalics3(): void {
+    public function testRestoreItalicsChecksBuitreraptorGonzalezorumXXXX(): void {
         $this->assertSame('Buitreraptor gonzalezorumXXXX', restore_italics('Buitreraptor gonzalezorumXXXX'));
     }
 
-    public function testRestoreItalics4(): void {
+    public function testRestoreItalicsChecksTyrannotitanChubutensisRestoreItalics(): void {
         $this->assertSame("To a ''Tyrannotitan chubutensis''-", restore_italics("To aTyrannotitan chubutensis-"));
     }
 
-    public function testCleanDates1(): void {
+    public function testCleanDatesChecksCleanDates(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('', clean_dates(''));
     }
 
-    public function testCleanDates2(): void {
+    public function testCleanDatesChecksAprilMay1995(): void {
         $this->assertSame('April–May 1995', clean_dates('April-May 1995'));
     }
 
-    public function testCleanDates3(): void {
+    public function testCleanDatesChecksDecember72023(): void {
         $this->assertSame('December 7, 2023', clean_dates('December 7 2023'));
     }
 
-    public function testCleanDates4(): void {
+    public function testCleanDatesChecks8December2022(): void {
         $this->assertSame('8 December 2022', clean_dates('8 December 2022.'));
     }
 
-    public function testCleanDates5(): void {
+    public function testCleanDatesChecks8December202208December2022(): void {
         $this->assertSame('8 December 2022', clean_dates('08 December 2022'));
     }
 
-    public function testCleanDates6(): void {
+    public function testCleanDatesChecksNovember21981MondayNovember21981(): void {
         $this->assertSame('November 2, 1981', clean_dates('Monday, November 2, 1981'));
     }
 
@@ -1001,42 +1001,42 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame($out, mb_substr_replace($in, 'X', 3, 1));
     }
 
-    public function testTitles10(): void {
+    public function testTitlesChecksAbCdEf(): void {
         $junk = "(ab)(cd) (ef)";
         $this->assertSame('(ab)(cd) (Ef)', title_capitalization($junk, true));
     }
 
-    public function testTitles11(): void {
+    public function testTitlesChecksSpecialInput(): void {
         $junk = "ac's";
         $this->assertSame("Ac's", title_capitalization($junk, true));
     }
 
-    public function testTitles12(): void {
+    public function testTitlesChecksThisDesDoggyDes(): void {
         $junk = "This Des Doggy Des";
         $this->assertSame("This des Doggy Des", title_capitalization($junk, true));
     }
 
-    public function testTitles13(): void {
+    public function testTitlesChecksNowAndThen(): void {
         $junk = "Now and Then";
         $this->assertSame("Now and Then", title_capitalization($junk, true));
     }
 
-    public function testTitleRoman1(): void {
+    public function testTitleRomanChecksPartXVIDogs(): void {
         $junk = 'A Part xvi: Dogs';
         $this->assertSame('A Part XVI: Dogs', title_capitalization($junk, true));
     }
 
-    public function testTitleRoman2(): void {
+    public function testTitleRomanChecksPartXVIDogsPartXviDogs(): void {
         $junk = 'A Part xvi Dogs';
         $this->assertSame('A Part XVI Dogs', title_capitalization($junk, true));
     }
 
-    public function testTitleRoman3(): void {
+    public function testTitleRomanChecksDogsVII(): void {
         $junk = 'Dogs Vii';
         $this->assertSame('Dogs VII', title_capitalization($junk, true));
     }
 
-    public function testTitleRoman4(): void {
+    public function testTitleRomanChecksVIIDogs(): void {
         $junk = 'Vii: Dogs';
         $this->assertSame('VII: Dogs', title_capitalization($junk, true));
     }
@@ -1067,203 +1067,203 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame($junk, addISBNdashes($junk));
     }
 
-    public function testCleanDatesXtra1(): void {
+    public function testCleanDatesXtraChecksDateFebruary2000DateFebruARY2000(): void {
         $text = '{{cite journal|date=FebruARY 2000}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('February 2000', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra2(): void {
+    public function testCleanDatesXtraChecksDate18002000Date18002000(): void {
         $text = '{{cite journal|date=1800-2000}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1800–2000', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra3(): void {
+    public function testCleanDatesXtraChecksDateJanuaryFebruary2001DateJanuaryFEBRUARY2001(): void {
         $text = '{{cite journal|date=January-FEBRUARY 2001}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('January–February 2001', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra4(): void {
+    public function testCleanDatesXtraChecksDateJanuary1999February2000DateJanuary1999February2000(): void {
         $text = '{{cite journal|date=January 1999-February 2000}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('January 1999 – February 2000', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra5(): void {
+    public function testCleanDatesXtraChecksDateSpring2000DateSpring2000(): void {
         $text = '{{cite journal|date=Spring, 2000}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Spring 2000', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra6(): void {
+    public function testCleanDatesXtraChecksDateMay32000DateMay032000(): void {
         $text = '{{cite journal|date=May 03 2000}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('May 3, 2000', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra6b(): void {
+    public function testCleanDatesXtraChecksDateMay32000DateMay032000CiteJournalDateMay032000(): void {
         $text = '{{cite journal|date=May 03, 2000}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('May 3, 2000', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra7(): void {
+    public function testCleanDatesXtraChecksDateMay31980DateMay31980(): void {
         $text = '{{cite journal|date=May 3 1980}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('May 3, 1980', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra8(): void {
+    public function testCleanDatesXtraChecksDate2010DateCollected2010(): void {
         $text = '{{cite journal|date=Collected 2010}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('2010', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra9(): void {
+    public function testCleanDatesXtraChecksDateMarch1980Date198003(): void {
         $text = '{{cite journal|date=1980-03}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('March 1980', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra10(): void {
+    public function testCleanDatesXtraChecksDate199913Date199913(): void {
         $text = '{{cite journal|date=1999-13}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1999-13', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra11(): void {
+    public function testCleanDatesXtraChecksDateDate00011130(): void {
         $text = '{{cite journal|date=0001-11-30}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra12(): void {
+    public function testCleanDatesXtraChecksDate1960Date1960Ed(): void {
         $text = '{{cite journal|date=1960/ed}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1960', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra13a(): void {
+    public function testCleanDatesXtraChecksDate1960DateFirstPublished1960(): void {
         $text = '{{cite journal|date=First published 1960}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1960', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra13b(): void {
+    public function testCleanDatesXtraChecksDate1960DateFirstPublishedIn1960(): void {
         $text = '{{cite journal|date=First published in 1960}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1960', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra13c(): void {
+    public function testCleanDatesXtraChecksDate1960DateFirstPublishedIn1960CiteJournalDateFirstPublishe(): void {
         $text = '{{cite journal|date=First published in: 1960}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1960', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra14(): void {
+    public function testCleanDatesXtraChecksDateSpring2021DateEffectiveSpring2021(): void {
         $text = '{{cite journal|date=Effective spring 2021}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Spring 2021', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra15a(): void {
+    public function testCleanDatesXtraChecksDate20012002Date20012002(): void {
         $text = '{{cite journal|date=2001 & 2002}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('2001–2002', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra15b(): void {
+    public function testCleanDatesXtraChecksDate20012002Date2001And2002(): void {
         $text = '{{cite journal|date=2001 and 2002}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('2001–2002', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra15c(): void {
+    public function testCleanDatesXtraChecksDate20012003Date20012003(): void {
         $text = '{{cite journal|date=2001 & 2003}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('2001 & 2003', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra15d(): void {
+    public function testCleanDatesXtraChecksDate2001And2004Date2001And2004(): void {
         $text = '{{cite journal|date=2001 and 2004}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('2001 and 2004', $prepared->get2('date'));
     }
 
-    public function testCleanDatesXtra16(): void {
+    public function testCleanDatesXtraChecksDateSummer19943333DateSummer19943333(): void {
         $text = '{{cite journal|date=Summer, 1994-3333}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Summer 1994–3333', $prepared->get2('date'));
     }
 
-    public function testConvertingISBN10intoISBN13_1(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn97809749009Isbn0974900907Url(): void {
         $text = "{{cite book|isbn=0-9749009-0-7|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-0-9749009-0-2', $prepared->get2('isbn'));  // Convert with dashes
     }
 
-    public function testConvertingISBN10intoISBN13_2(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn97809749009Isbn97809749009Url(): void {
         $text = "{{cite book|isbn=978-0-9749009-0-2|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-0-9749009-0-2', $prepared->get2('isbn'));  // Unchanged with dashes
     }
 
-    public function testConvertingISBN10intoISBN13_3(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn9780974900902Isbn9780974900902Url(): void {
         $text = "{{cite book|isbn=9780974900902|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('9780974900902', $prepared->get2('isbn'));    // Unchanged without dashes
     }
 
-    public function testConvertingISBN10intoISBN13_4(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn9780974900902Isbn0974900907Url(): void {
         $text = "{{cite book|isbn=0974900907|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-0974900902', $prepared->get2('isbn'));   // Convert without dashes
     }
 
-    public function testConvertingISBN10intoISBN13_5(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn97818430916Isbn184309164Url(): void {
         $text = "{{cite book|isbn=1-84309-164-X|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-1-84309-164-6', $prepared->get2('isbn'));  // Convert with dashes and a big X
     }
 
-    public function testConvertingISBN10intoISBN13_6(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn9781843091646Isbn184309164Url(): void {
         $text = "{{cite book|isbn=184309164x|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-1843091646', $prepared->get2('isbn'));   // Convert without dashes and a tiny x
     }
 
-    public function testConvertingISBN10intoISBN13_7(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbnHelloBrotherIsbnHelloBrother(): void {
         $text = "{{cite book|isbn=Hello Brother}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Hello Brother', $prepared->get2('isbn')); // Rubbish unchanged
     }
 
-    public function testConvertingISBN10intoISBN13_8(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn1843091649783Isbn1843091649783(): void {
         $text = "{{cite book|isbn=184309164x 978324132412}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('184309164x 978324132412', $prepared->get2('isbn'));  // Do not dash between multiple ISBNs
     }
 
-    public function testConvertingISBN10intoISBN13_9(): void {
+    public function testConvertingISBN10intoISBN13ChecksIsbn0974900907UrlYear2019(): void {
         $text = "{{cite book|isbn=0-9749009-0-7|url=<!-- -->|year=2019}}";
         $page = $this->process_page($text);
         $this->assertSame('Altered isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testJournalCapitalization2(): void {
+    public function testJournalCapitalizationChecksJournalEJournalJournalEJournal(): void {
         $expanded = $this->process_citation("{{Cite journal|journal=eJournal}}");
         $this->assertSame('eJournal', $expanded->get2('journal'));
     }
 
-    public function testJournalCapitalization3(): void {
+    public function testJournalCapitalizationChecksJournalEJournalJournalEJournalCiteJournalJournalEJournal(): void {
         $expanded = $this->process_citation("{{Cite journal|journal=EJournal}}");
         $this->assertSame('eJournal', $expanded->get2('journal'));
     }
 
-    public function testJournalCapitalization4(): void {
+    public function testJournalCapitalizationChecksJournalEJournalJournalEjournalEJournal(): void {
         $expanded = $this->process_citation("{{Cite journal|journal=ejournal}}");
         $this->assertSame('eJournal', $expanded->get2('journal'));
     }
