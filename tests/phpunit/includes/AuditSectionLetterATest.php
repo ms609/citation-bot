@@ -109,8 +109,6 @@ final class AuditSectionLetterATest extends testBaseClass {
         $this->assertSame('Methods: A New Approach', title_capitalization('Methods: A New Approach', true));
     }
 
-
-
     // ---- Unicode, punctuation, and grammatical capitalization cases ----
 
     #[DataProvider('preservedLabels')]
