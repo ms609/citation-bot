@@ -16,6 +16,7 @@ final class AuditTitleSimilarityObscureTest extends testBaseClass {
     public static function differentWorks(): array {
         $long = str_repeat('Experimental observations of complex systems ', 8);
         $unicode = str_repeat('Études des phénomènes moléculaires ', 10);
+        $prefix = str_repeat('Études moléculaires et réactions biologiques ', 8);
         return [
             'first of two Arabic numbers' => ['Volume 2 Chapter 8', 'Volume 3 Chapter 8'],
             'second of two Arabic numbers' => ['Volume 2 Chapter 8', 'Volume 2 Chapter 9'],
@@ -40,6 +41,14 @@ final class AuditTitleSimilarityObscureTest extends testBaseClass {
             'plural equivalence never overrides numbering' => ['Part 1 Studies', 'Part 2 Study'],
             'plural equivalence never overrides section letter' => ['Section A Studies', 'Section B Study'],
             'plural equivalence cannot ignore other word changes' => ['Civil Society Studies', 'Medical Society Study'],
+            'two section labels, second differs' => ['Section A Part 1 Methods', 'Section A Part 2 Methods'],
+            'two numbers, first differs' => ['Volume 2 Chapter 7', 'Volume 3 Chapter 7'],
+            'two numbers, second differs' => ['Volume 2 Chapter 7', 'Volume 2 Chapter 8'],
+            'roman versus arabic different values' => ['Section IV Methods', 'Section 5 Methods'],
+            'non-ascii long label mismatch' => [$prefix . 'Section A', $prefix . 'Section B'],
+            'non-ascii long number mismatch' => [$prefix . 'Part 1', $prefix . 'Part 2'],
+            'unicode punctuation does not erase number' => ['Étude — Part 1', 'Étude — Part 2'],
+            'entity encoded space does not erase number' => ['Volume&nbsp;2 Methods', 'Volume 3 Methods'],
         ];
     }
 
@@ -63,6 +72,11 @@ final class AuditTitleSimilarityObscureTest extends testBaseClass {
             'case studies singular/plural' => ['Case Studies', 'Case Study'],
             'policy singular/plural' => ['Urban Policies', 'Urban Policy'],
             'unicode prefix before English plural' => ['Résumé Studies', 'Résumé Study'],
+            'roman and arabic number with accent' => ['Étude Section IV', 'Étude Section 4'],
+            'roman and arabic second number' => ['Volume 2 Part IV', 'Volume 2 Part 4'],
+            'unicode diacritic variant' => ['Étude moléculaire', 'Etude moleculaire'],
+            'HTML nonbreaking space' => ['Section&nbsp;IV Methods', 'Section 4 Methods'],
+            'nonroman ordinary word' => ['Mix of Colours', 'Mix of Colors'],
         ];
     }
 
@@ -83,44 +97,6 @@ final class AuditTitleSimilarityObscureTest extends testBaseClass {
             'unlabeled Roman-looking token' => ['Civil Studies', 'Civix Studies', null],
             'no numbers' => ['Quantum Mechanics', 'Classical Mechanics', null],
             'one missing number' => ['Part 1 Methods', 'Part Methods', null],
-        ];
-    }
-
-    // ---- bidirectional title similarity regressions ----
-
-    #[DataProvider('differentTitles')]
-    public function testDistinctWorksStayDistinctInEitherOrder(string $a, string $b): void {
-        $this->assertFalse(titles_are_similar($a, $b));
-        $this->assertFalse(titles_are_similar($b, $a));
-    }
-
-    public static function differentTitles(): array {
-        $prefix = str_repeat('Études moléculaires et réactions biologiques ', 8);
-        return [
-            'two section labels, second differs' => ['Section A Part 1 Methods', 'Section A Part 2 Methods'],
-            'two numbers, first differs' => ['Volume 2 Chapter 7', 'Volume 3 Chapter 7'],
-            'two numbers, second differs' => ['Volume 2 Chapter 7', 'Volume 2 Chapter 8'],
-            'roman versus arabic different values' => ['Section IV Methods', 'Section 5 Methods'],
-            'non-ascii long label mismatch' => [$prefix . 'Section A', $prefix . 'Section B'],
-            'non-ascii long number mismatch' => [$prefix . 'Part 1', $prefix . 'Part 2'],
-            'unicode punctuation does not erase number' => ['Étude — Part 1', 'Étude — Part 2'],
-            'entity encoded space does not erase number' => ['Volume&nbsp;2 Methods', 'Volume 3 Methods'],
-        ];
-    }
-
-    #[DataProvider('equivalentTitles')]
-    public function testEquivalentWorksRemainSimilarInEitherOrder(string $a, string $b): void {
-        $this->assertTrue(titles_are_similar($a, $b));
-        $this->assertTrue(titles_are_similar($b, $a));
-    }
-
-    public static function equivalentTitles(): array {
-        return [
-            'roman and arabic number with accent' => ['Étude Section IV', 'Étude Section 4'],
-            'roman and arabic second number' => ['Volume 2 Part IV', 'Volume 2 Part 4'],
-            'unicode diacritic variant' => ['Étude moléculaire', 'Etude moleculaire'],
-            'HTML nonbreaking space' => ['Section&nbsp;IV Methods', 'Section 4 Methods'],
-            'nonroman ordinary word' => ['Mix of Colours', 'Mix of Colors'],
         ];
     }
 

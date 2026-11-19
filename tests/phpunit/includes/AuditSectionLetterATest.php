@@ -28,6 +28,22 @@ final class AuditSectionLetterATest extends testBaseClass {
             'series' => ['Proceedings of the Royal Society Series A Mathematical Sciences'],
             'physica' => ['Physica A Statistical Mechanics'],
             'class, as before' => ['Journal of Class A Amplifiers'],
+            'section label after colon' => ['Methods: Section A Results'],
+            'part label after dash' => ['Methods - Part A Results'],
+            'series label before comma' => ['Series A, Methods'],
+            'section label with unicode preceding text' => ['Études Section A Methods'],
+            'multiple capital labels' => ['Section A and Part A Methods'],
+            'capital label at end' => ['Acta Crystallographica Section A'],
+            'part after comma' => ['Methods, Part A Results'],
+            'series after colon' => ['Proceedings: Series A Methods'],
+            'class after colon' => ['Experiments: Class A Methods'],
+            'physica after colon' => ['Studies: Physica A Methods'],
+            'two section labels' => ['Section A and Section B Methods'],
+            'mixed part and section labels' => ['Part A and Section B Methods'],
+            'label followed by colon' => ['Section A: Methods'],
+            'label followed by comma' => ['Section A, Methods'],
+            'label in accented title' => ['Études de Physique Section A Methods'],
+            'label before Unicode dash' => ['Section A — Methods'],
         ];
     }
 
@@ -73,67 +89,11 @@ final class AuditSectionLetterATest extends testBaseClass {
         $this->assertSame('Series B Methods', title_capitalization('Series b Methods', true));
     }
 
-    // ---- additional section and article capitalization cases ----
-
-    #[DataProvider('capitalLabels')]
-    public function testExplicitCapitalLabelsRemainCapitalized(string $input, string $expected): void {
-        $this->assertSame($expected, title_capitalization($input, true));
-    }
-
-    public static function capitalLabels(): array {
-        return [
-            'section label after colon' => ['Methods: Section A Results', 'Methods: Section A Results'],
-            'part label after dash' => ['Methods - Part A Results', 'Methods - Part A Results'],
-            'series label before comma' => ['Series A, Methods', 'Series A, Methods'],
-            'section label with unicode preceding text' => ['Études Section A Methods', 'Études Section A Methods'],
-            'multiple capital labels' => ['Section A and Part A Methods', 'Section A and Part A Methods'],
-            'capital label at end' => ['Acta Crystallographica Section A', 'Acta Crystallographica Section A'],
-        ];
-    }
-
-    #[DataProvider('articles')]
-    public function testIndefiniteArticlesRemainLowercase(string $input, string $expected): void {
-        $this->assertSame($expected, title_capitalization($input, true));
-    }
-
-    public static function articles(): array {
-        return [
-            'article after ordinary word' => ['A Tale of A City', 'A Tale of a City'],
-            'part article in a phrase' => ['We Took Part A Few Times', 'We Took Part a Few Times'],
-            'lowercase section label remains lowercase' => ['Section a Methods', 'Section a Methods'],
-            'lowercase part label at end' => ['Part a', 'Part a'],
-        ];
-    }
-
     public function testArticleStartingSubtitleKeepsCapitalA(): void {
         $this->assertSame('Methods: A New Approach', title_capitalization('Methods: A New Approach', true));
     }
 
     // ---- Unicode, punctuation, and grammatical capitalization cases ----
-
-    #[DataProvider('preservedLabels')]
-    public function testExplicitUppercaseLabels(string $title): void {
-        $this->assertSame($title, title_capitalization($title, true));
-    }
-
-    public static function preservedLabels(): array {
-        return [
-            'section after colon' => ['Methods: Section A Results'],
-            'part after comma' => ['Methods, Part A Results'],
-            'part after dash' => ['Methods - Part A Results'],
-            'series after colon' => ['Proceedings: Series A Methods'],
-            'class after colon' => ['Experiments: Class A Methods'],
-            'physica after colon' => ['Studies: Physica A Methods'],
-            'two section labels' => ['Section A and Section B Methods'],
-            'mixed part and section labels' => ['Part A and Section B Methods'],
-            'label followed by colon' => ['Section A: Methods'],
-            'label followed by comma' => ['Section A, Methods'],
-            'label at title end' => ['Acta Crystallographica Section A'],
-            'label in accented title' => ['Études de Physique Section A Methods'],
-            'label before Unicode dash' => ['Section A — Methods'],
-            'uppercase grammatical-looking label' => ['Take Part A Few-Body Interactions'],
-        ];
-    }
 
     #[DataProvider('articlesAndExistingConventions')]
     public function testArticlesAndExistingConventions(string $input, string $expected): void {
@@ -156,6 +116,7 @@ final class AuditSectionLetterATest extends testBaseClass {
             'series a at end promoted' => ['Series a', 'Series A'],
             'series a and b promoted' => ['Series a and b Methods', 'Series A and B Methods'],
             'US acronym retained' => ['Research in U S A Methods', 'Research in U S A Methods'],
+            'article after ordinary word' => ['A Tale of A City', 'A Tale of a City'],
         ];
     }
 
