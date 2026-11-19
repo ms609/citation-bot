@@ -23,38 +23,38 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame($text_out, $prepared->parsed_text());
     }
 
-    public function testLotsOfFloaters3(): void {
+    public function testLotsOfFloatersCiteJournal9780306406157SetsIsbnTo9780306(): void {
         $text_in = "{{cite journal| 978-0-306-40615-7 }}";
         $prepared = $this->prepare_citation($text_in);
         $this->assertSame('978-0-306-40615-7', $prepared->get2('isbn'));
     }
 
-    public function testLotsOfFloaters4(): void {
+    public function testLotsOfFloatersCiteJournal13Numbers(): void {
         $text_in = "{{cite journal| 123-4567-8901123 }}"; // 13 numbers
         $prepared = $this->prepare_citation($text_in);
         $this->assertSame($text_in, $prepared->parsed_text());
     }
 
-    public function testLotsOfFloaters5(): void {
+    public function testLotsOfFloatersCiteJournal11Numbers(): void {
         $text_in = "{{cite journal| 12345678901 }}"; // 11 numbers
         $prepared = $this->prepare_citation($text_in);
         $this->assertSame($text_in, $prepared->parsed_text());
     }
 
-    public function testLotsOfFloaters6(): void {
+    public function testLotsOfFloatersCiteJournalUrlCnnSetsAccessDateTo24November2020(): void {
         $text_in = "{{cite journal| url=http://www.cnn.com | accessdate 24 Nov 2020}}";
         $prepared = $this->prepare_citation($text_in);
         $this->assertSame('24 November 2020', $prepared->get2('access-date'));
         $this->assertNull($prepared->get2('accessdate'));
     }
 
-    public function testLotsMagazines_1(): void {
+    public function testLotsMagazinesCiteJournalJournalTheNewYorker(): void {
         $text_in = "{{cite journal| journal=The New Yorker}}";
         $prepared = $this->process_citation($text_in);
         $this->assertSame('{{cite magazine| magazine=The New Yorker}}', $prepared->parsed_text());
     }
 
-    public function testLotsMagazines_2(): void {
+    public function testLotsMagazinesCiteJournalPeriodicalTheEconomist(): void {
         $text_in = "{{cite journal| periodical=The Economist}}";
         $prepared = $this->process_citation($text_in);
         $this->assertSame('{{cite news| newspaper=The Economist}}', $prepared->parsed_text());
@@ -78,7 +78,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("{{cite news}}", $expanded->parsed_text());
     }
 
-    public function testTemplateConvertComplex2a(): void {
+    public function testTemplateConvertComplexCiteDocumentCiteDocument(): void {
         $text = "{{cite document}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{cite document}}", $expanded->parsed_text());
@@ -103,7 +103,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('doi-broken-date'));
     }
 
-    public function testTemplateConvertComplex2b(): void {
+    public function testTemplateConvertComplexCiteDocumentCiteJournalConvertsToCiteJournal(): void {
         $text = "{{cite document|journal=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite journal", $expanded->wikiname());
@@ -121,7 +121,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("cite book", $expanded->wikiname());
     }
 
-    public function testTemplateConvertComplex2c(): void {
+    public function testTemplateConvertComplexCiteDocumentCiteDocumentResultCiteDocument(): void {
         $text = "{{Cite document}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite document}}", $expanded->parsed_text());
@@ -151,19 +151,19 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("cite book", $expanded->wikiname());
     }
 
-    public function testPureGarbage1(): void {
+    public function testPureGarbageCiteJournalTitleBloombergAreYouA(): void {
         $text = "{{cite journal|title=Bloomberg - Are you a robot?}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{cite journal|title=}}", $expanded->parsed_text());
     }
 
-    public function testPureGarbage2(): void {
+    public function testPureGarbageCiteJournalTitleWaybackMachine(): void {
         $text = "{{cite journal|title=Wayback Machine}}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testPureGarbage3(): void {
+    public function testPureGarbageCiteJournalTitleWaybackMachineSetsTitle(): void {
         $text = "{{cite journal|title=Wayback Machine|archive-url=XXX}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('', $expanded->get2('title'));
@@ -182,14 +182,14 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('title'));
     }
 
-    public function testTitleOfNone1(): void {
+    public function testTitleOfNoneCiteWebNone(): void {
         $text = "{{Cite web|title=none}}";// none is a magic flag
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('url', 'https://www.apple.com/'));
         $this->assertNull($expanded->get2('url'));
     }
 
-    public function testTitleOfNone2(): void {
+    public function testTitleOfNoneCiteWebNoneTitleNone(): void {
         $text = "{{Cite web|title=None}}";
         $expanded = $this->make_citation($text); // None is not a magic flag
         $this->assertTrue($expanded->add_if_new('url', 'https://www.apple.com/'));
@@ -250,7 +250,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('www.cnn.com', $expanded->get2('website'));
     }
 
-    public function testCleanUpTemplates1(): void {
+    public function testCleanUpTemplatesCitewebCiteWeb(): void {
         $text = "{{Citeweb}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite web}}", $expanded->parsed_text());
@@ -271,7 +271,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
-    public function testCleanUpTemplates2(): void {
+    public function testCleanUpTemplatesCitewebCiteWebPage2(): void {
         $text = "{{Citeweb|page=2}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite web|page=2}}", $expanded->parsed_text());
@@ -286,7 +286,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("{{Citation|page=2}}", $expanded->parsed_text());
     }
 
-    public function testCleanUpTemplates3(): void {
+    public function testCleanUpTemplatesCitewebCiteWebPage2ResultCiteWebPage2(): void {
         $text = "{{Citeweb |page=2}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite web |page=2}}", $expanded->parsed_text());
@@ -301,7 +301,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("{{Citation |page=2}}", $expanded->parsed_text());
     }
 
-    public function testCleanUpTemplates4(): void {
+    public function testCleanUpTemplatesCiteWebCiteWebPage2CapitalizedTemplate(): void {
         $text = "{{Cite   web |p=2}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite web |page=2}}", $expanded->parsed_text());
@@ -319,7 +319,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('10.1007/s00214-007-0303-9', $expanded->get2('doi'));
     }
 
-    public function testJstorExpansion3(): void {
+    public function testJstorExpansionCiteWebUrlJstorStable101017SetsJstorTo101017S0022381613000030(): void {
         $text = "{{Cite web | url = http://www.jstor.org/stable/10.1017/s0022381613000030}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('10.1017/s0022381613000030', $prepared->get2('jstor'));
@@ -350,7 +350,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('url'));
     }
 
-    public function testDropBadData2(): void {
+    public function testDropBadDataCiteJournalTitleNoTitleFoundRemovesVolume(): void {
         // Offline regression: invalid existing fields must be cleaned while
         // Citoid metadata enriches the citation. testDropBadData() still checks
         // the same JSTOR article through the live service.
@@ -406,7 +406,7 @@ JSON;
         $this->assertSame('n/a', $other->get2('volume'));
     }
 
-    public function testDropBadData3(): void {
+    public function testDropBadDataCiteJournalDoi10106350088162(): void {
         $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $expanded->forget('s2cid');
@@ -414,43 +414,43 @@ JSON;
         $this->assertSame($text, $expanded->parsed_text()); // Bad title blocks cross-ref
     }
 
-    public function testDropBadData4a(): void {
+    public function testDropBadDataCitationLastArchive(): void {
         $text = "{{citation|last=Archive|first2=Get author RSS}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation}}', $expanded->parsed_text());
     }
 
-    public function testDropBadData4b(): void {
+    public function testDropBadDataCitationLastArchiveLastArchive(): void {
         $text = "{{citation|last=Archive|first2=Email the|last2=Author}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation}}', $expanded->parsed_text());
     }
 
-    public function testDropBadData5(): void {
+    public function testDropBadDataCitationLastPublished(): void {
         $text = "{{citation|last=Published|first=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
     }
 
-    public function testDropBadData5a(): void {
+    public function testDropBadDataCitationLastPublishedLastPublished(): void {
         $text = "{{citation|last=Published|first1=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
     }
 
-    public function testDropBadData5b(): void {
+    public function testDropBadDataCitationLast1Published(): void {
         $text = "{{citation|last1=Published|first=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
     }
 
-    public function testDropBadData5c(): void {
+    public function testDropBadDataCitationLast1PublishedLast1Published(): void {
         $text = "{{citation|last1=Published|first1=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
     }
 
-    public function testBrokenDoiUrlRetention1(): void {
+    public function testBrokenDoiUrlRetentionCiteJournal101093LawEpilRemovesDoiBrokenDate(): void {
         $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
@@ -458,7 +458,7 @@ JSON;
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testBrokenDoiUrlRetention2(): void {
+    public function testBrokenDoiUrlRetentionCiteJournalOuplawView101093RemovesDoi(): void {
         // Newer code does not even add it
         $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
@@ -466,7 +466,7 @@ JSON;
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testBrokenDoiUrlRetention3(): void {
+    public function testBrokenDoiUrlRetentionCiteJournalOupZoolinneanAdvanceArticleSetsDoiTo101093Zoolinnean(): void {
         // valid 10.1098 DOI in contrast to evil ones
         $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
@@ -474,7 +474,7 @@ JSON;
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testBrokenDoiUrlRetention4(): void {
+    public function testBrokenDoiUrlRetentionCiteJournalWileyJournal101111RemovesDoi(): void {
         // This is an ISSN only doi: it is valid but we do not add those, but leave url too
         $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
@@ -489,39 +489,39 @@ JSON;
         $this->assertSame($doi, $expanded->get2('doi'));
     }
 
-    public function testBrokenDoiUrlChanges1(): void {
+    public function testBrokenDoiUrlChangesCiteJournal100001RubbishBotSetsDoiTo101111J(): void {
         $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=12-31-1999|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get2('doi'));
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testBrokenDoiUrlChanges2(): void {
+    public function testBrokenDoiUrlChangesCiteJournal10117515257541(): void {
         // The following URL is "broken" since it is not escaped properly.  The cite template displays and links it wrong too.
         $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testBrokenDoiUrlChanges3(): void {
+    public function testBrokenDoiUrlChangesCiteJournal1014928Amstec23(): void {
         $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';    // This also troublesome DOI
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testChangeNothing1(): void {
+    public function testChangeNothingCiteJournalDoi101111J1471(): void {
         $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x|pages=<!-- -->|title=<!-- -->|journal=<!-- -->|volume=<!-- -->|issue=<!-- -->|year=<!-- -->|authors=<!-- -->|pmid=<!-- -->|url=<!-- -->|s2cid=<!-- -->}}';
         $expanded = $this->process_page($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testChangeNothing2(): void {
+    public function testChangeNothingCiteJournalDoi100001RubbishBot(): void {
         $text = '{{cite journal | doi=10.0001/Rubbish_bot_failure_test | doi-broken-date = <!-- not broken and the bot is wrong --> }}';
         $expanded = $this->process_page($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testChangeNothing3(): void {
+    public function testChangeNothingCiteJournalJournalNatureTitleWithoutCaps(): void {
         $text = '{{cite journal |title=The tumbling rotational state of 1I/‘Oumuamua<!-- do not change odd punctuation--> |journal=Nature title without caps <!-- Deny Citation Bot-->    |pages=383-386 <!-- do not change the dash--> }}';
         $expanded = $this->process_page($text);
         $this->assertSame($text, $expanded->parsed_text());
@@ -543,57 +543,57 @@ JSON;
         $this->assertNull($expanded->get2('via'));
     }
 
-    public function testLoseViaDup1(): void {
+    public function testLoseViaDupCitationSomeJournalRemovesVia(): void {
         $text = '{{citation|work=Some Journal|via=Some Journal}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('via'));
     }
 
-    public function testLoseViaDup2(): void {
+    public function testLoseViaDupCitationSomeJournalRemovesViaPublisherSomeJournal(): void {
         $text = '{{citation|publisher=Some Journal|via=Some Journal}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('via'));
     }
 
-    public function testLoseViaDup3(): void {
+    public function testLoseViaDupCitationSomeJournalRemovesViaNewspaperSomeJournal(): void {
         $text = '{{citation|newspaper=Some Journal|via=Some Journal}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('via'));
     }
 
-    public function testJustBrackets1(): void {
+    public function testJustBracketsCiteBookTitleW(): void {
         $text = '{{cite book|title=[[W|12px|alt=W]]}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testJustBrackets2(): void {
+    public function testJustBracketsCiteBookTitleFileExamplePng(): void {
         $text = '{{cite book|title=[[File:Example.png|thumb|upright|alt=Example alt text|Example caption]]}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testBadAuthor2(): void {
+    public function testBadAuthorCiteJournalDoi101164Rccm200405RemovesAuthor1(): void {
         $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST|pmid=|pmc=|arxiv=}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('author1'));
     }
 
-    public function testRemoveASIN1(): void {
+    public function testRemoveASINCiteBookB0002tv0k8PreservesAsin(): void {
         $text = "{{Cite book | asin=B0002TV0K8 |isbn=}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('B0002TV0K8', $expanded->get2('asin'));
         $this->assertSame('', $expanded->get2('isbn')); // Empty, not non-existent
     }
 
-    public function testRemoveASIN2(): void {
+    public function testRemoveASINCiteBookIsbn0226845494PreservesIsbn(): void {
         $text = "{{Cite book | asin=0226845494 |isbn=0226845494}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('0226845494', $expanded->get2('isbn'));
         $this->assertNull($expanded->get2('asin'));
     }
 
-    public function testAddASIN1(): void {
+    public function testAddASINCiteBookIsbn0226845494(): void {
         $text = "{{Cite book |isbn=0226845494}}";
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('asin', 'X'));
@@ -601,14 +601,14 @@ JSON;
         $this->assertNull($expanded->get2('asin'));
     }
 
-    public function testAddASIN2(): void {
+    public function testAddASINCiteBook63Code(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('asin', '6300000000')); // 63.... code
         $this->assertSame('6300000000', $expanded->get2('asin'));
     }
 
-    public function testAddASIN3(): void {
+    public function testAddASINCiteBookNotAnIsbnAtAll(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('asin', 'BNXXXXXXXX')); // Not an ISBN at all
@@ -631,7 +631,7 @@ JSON;
         $this->assertNull($expanded->get2('isbn'));
     }
 
-    public function testAddASIN6(): void {
+    public function testAddASINCiteBookXxxxxx(): void {
         $text = "{{Cite book|asin=xxxxxx}}";
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('asin', 'ABC'));
@@ -639,7 +639,7 @@ JSON;
         $this->assertNull($expanded->get2('isbn'));
     }
 
-    public function testAddASIN7(): void {
+    public function testAddASINCiteBookNotAnIsbnAndNot(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('asin', '12345')); // Not an ISBN, and not ten characters
@@ -680,7 +680,7 @@ JSON;
         $this->assertNull($template->get2('type'));
     }
 
-    public function testHDLasDOIThing1(): void {
+    public function testHDLasDOIThingCiteJournal201000100(): void {
         $text = '{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
@@ -688,7 +688,7 @@ JSON;
         $this->assertNotNull($template->get2('url'));
     }
 
-    public function testHDLasDOIThing2(): void {
+    public function testHDLasDOIThingCiteJournal201000100Doi201000100(): void {
         $text = '{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100.pdf|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
@@ -702,25 +702,25 @@ JSON;
         $this->assertNull($expanded->get2('journal')); // Doi returns exact same name for journal as series
     }
 
-    public function testEmptyCoauthor_1(): void {
+    public function testEmptyCoauthorCiteJournalEmptyCoauthor(): void {
         $text = '{{Cite journal|pages=2| coauthor= |coauthors= }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
     }
 
-    public function testEmptyCoauthor_2(): void {
+    public function testEmptyCoauthorCiteJournalEmptyCoauthorResultCiteJournalPages2(): void {
         $text = '{{Cite journal|pages=2| coauthor=}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
     }
 
-    public function testEmptyCoauthor_3(): void {
+    public function testEmptyCoauthorCiteJournalEmptyCoauthors(): void {
         $text = '{{Cite journal|pages=2| coauthors=}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
     }
 
-    public function testAP_1(): void {
+    public function testAPCiteWebUrlTheguardianScienceFebRemovesAuthor(): void {
         $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('author'));
@@ -728,7 +728,7 @@ JSON;
         $this->assertSame('Associated Press', $expanded->get2('agency'));
     }
 
-    public function testAP_2(): void {
+    public function testAPCiteWebUrlTheguardianScienceFebRemovesAuthor2(): void {
         $text = '{{cite web|author1=Dog|author1-link=X|authorlink2=Z|author2=Associated Press |last3=M|first3=N |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('author2'));
@@ -764,138 +764,138 @@ JSON;
         $this->assertSame('New york TiMES', $expanded->get2('work'));
     }
 
-    public function testRemoveWikilinks0(): void {
+    public function testRemoveWikilinksCiteJournalTitlePureEvilPreservesTitle(): void {
         $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
         $this->assertSame('[[Pure Evil]]', $expanded->get2('title'));
         $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil|Pure Evil]]}}");  // Bot bug made these for a while
         $this->assertSame('[[Pure Evil]]', $expanded->get2('title'));
     }
 
-    public function testRemoveWikilinks1(): void {
+    public function testRemoveWikilinksCiteJournalAuthor1PureEvilPreservesAuthor1(): void {
         $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil]]}}");
         $this->assertSame('[[Pure Evil]]', $expanded->get2('author1'));
         $this->assertNull($expanded->get2('author1-link')); // No longer needs to be done
     }
 
-    public function testRemoveWikilinks1b(): void {
+    public function testRemoveWikilinksCiteJournalAuthor1PureAndEvilPreservesAuthor1(): void {
         $expanded = $this->process_citation("{{Cite journal|author1=[[Pure]] and [[Evil]]}}");
         $this->assertSame('[[Pure]] and [[Evil]]', $expanded->get2('author1'));
     }
 
-    public function testRemoveWikilinks1c(): void {
+    public function testRemoveWikilinksCiteJournalAuthor1PureEvilSetsAuthor1ToPureEvilApproximate(): void {
         $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil|Approximate Physics]]}}");
         $this->assertSame('[[Pure Evil|Approximate Physics]]', $expanded->get2('author1'));
         $this->assertNull($expanded->get2('author1-link'));
     }
 
-    public function testRemoveWikilinks2(): void {
+    public function testRemoveWikilinksCiteJournalJournalPureEvilPreservesJournal(): void {
         $expanded = $this->process_citation("{{Cite journal|journal=[[Pure Evil]]}}");
         $this->assertSame('[[Pure Evil]]', $expanded->get2('journal')); // leave fully linked journals
     }
 
-    public function testRemoveWikilinks2b(): void {
+    public function testRemoveWikilinksCiteJournalJournalPureAndEvilSetsJournalToPureAndEvil(): void {
         $expanded = $this->process_citation("{{Cite journal|journal=[[Pure]] and [[Evil]]}}");
         $this->assertSame('Pure and Evil', $expanded->get2('journal'));
     }
 
-    public function testRemoveWikilinks2c(): void {
+    public function testRemoveWikilinksCiteJournalJournalDarkLordOfTheSetsJournalToDarkLordOf(): void {
         $expanded = $this->process_citation("{{Cite journal|journal=Dark Lord of the Sith [[Pure Evil]]}}");
         $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get2('journal'));
     }
 
-    public function testRemoveWikilinks2d(): void {
+    public function testRemoveWikilinksCiteJournalTitlePureEvilPreservesTitleTitlePureEvil(): void {
         $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
         $this->assertSame('[[Pure Evil]]', $expanded->get2('title'));
         $this->assertNull($expanded->get2('title-link'));
     }
 
-    public function testRemoveWikilinks2e(): void {
+    public function testRemoveWikilinksCiteJournalJournalJournalOfTheRoyalPreservesJournal(): void {
         $expanded = $this->process_citation("{{cite journal |journal= Journal of the [[Royal Asiatic Society Hong Kong Branch]]}}");
         $this->assertSame('Journal of the [[Royal Asiatic Society Hong Kong Branch]]', $expanded->get2('journal'));
     }
 
-    public function testRemoveWikilinks3(): void {
+    public function testRemoveWikilinksCiteJournalTitlePureEvilSetsTitleToPureEvilApproximate(): void {
         $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil|Approximate Physics]]}}");
         $this->assertSame('[[Pure Evil|Approximate Physics]]', $expanded->get2('title'));
         $this->assertNull($expanded->get2('title-link'));
     }
 
-    public function testRemoveWikilinks3b(): void {
+    public function testRemoveWikilinksCiteJournalTitleDarkLordOfTheSetsTitleToDarkLordOf(): void {
         $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
         $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get2('title'));
     }
 
-    public function testRemoveWikilinks3c(): void {
+    public function testRemoveWikilinksCiteJournalTitleDarkLordOfTheSetsTitleToDarkLordOfTitleDarkLordOf(): void {
         $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil}}");
         $this->assertSame('Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil', $expanded->get2('title'));
         $this->assertNull($expanded->get2('title-link'));
     }
 
-    public function testRemoveWikilinks3d(): void {
+    public function testRemoveWikilinksCiteJournalTitlePureEvilSetsTitleToPureEvil(): void {
         $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil] }}");
         $this->assertSame('Pure Evil', $expanded->get2('title'));
         $this->assertNull($expanded->get2('title-link'));
     }
 
-    public function testRemoveWikilinks4(): void {
+    public function testRemoveWikilinksCiteJournalTitlePureEvilSetsTitleToPureEvilTitlePureEvil(): void {
         $expanded = $this->process_citation("{{Cite journal|title=[Pure Evil]]}}");
         $this->assertSame('Pure Evil', $expanded->get2('title'));
     }
 
-    public function testRemoveWikilinks4b(): void {
+    public function testRemoveWikilinksCiteJournalTitleDarkLordOfThePreservesTitle(): void {
         $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith]] Pure Evil}}");
         $this->assertSame('Dark Lord of the [[Sith]] Pure Evil', $expanded->get2('title'));
         $this->assertNull($expanded->get2('title-link'));
     }
 
-    public function testRemoveWikilinks4c(): void {
+    public function testRemoveWikilinksCiteJournalJournalBulletinDuMusUmSetsJournalToBulletinDuMus(): void {
         $expanded = $this->process_citation("{{cite journal|journal=[[Bulletin du Muséum national d’Histoire naturelle, Paris]]}}");
         $this->assertSame("[[Bulletin du Muséum national d'Histoire naturelle, Paris]]", $expanded->get2('journal'));
     }
 
-    public function testRemoveWikilinks4d(): void {
+    public function testRemoveWikilinksCiteJournalJournalBulletinDuMusUmSetsJournalToBulletinDuMusJournalBulletinDuMus(): void {
         $expanded = $this->process_citation("{{cite journal|journal=[[Bulletin du Muséum national d’Histoire naturelle, Paris|Hose]]}}");
         $this->assertSame("[[Bulletin du Muséum national d'Histoire naturelle, Paris|Hose]]", $expanded->get2('journal'));
     }
 
-    public function testRemoveWikilinks5(): void {
+    public function testRemoveWikilinksCiteJournalLast1PureEvilSetsLast1ToPureEvil(): void {
         $expanded = $this->process_citation("{{Cite journal|last1=[[Pure Evil]]}}");
         $this->assertSame('Pure Evil', $expanded->get2('last1'));
         $this->assertSame('Pure Evil', $expanded->get2('author1-link'));
     }
 
-    public function testRemoveWikilinks5b(): void {
+    public function testRemoveWikilinksCiteJournalLast1PureEvilSetsLast1ToApproximatePhysics(): void {
         $expanded = $this->process_citation("{{Cite journal|last1=[[Pure Evil|Approximate Physics]]}}");
         $this->assertSame('Approximate Physics', $expanded->get2('last1'));
         $this->assertSame('Pure Evil', $expanded->get2('author1-link'));
     }
 
-    public function testRemoveWikilinks6(): void {
+    public function testRemoveWikilinksCiteJournalLast2PureEvilSetsLast2ToPureEvil(): void {
         $expanded = $this->process_citation("{{Cite journal|last2=[[Pure Evil]]}}");
         $this->assertSame('Pure Evil', $expanded->get2('last2'));
         $this->assertSame('Pure Evil', $expanded->get2('author2-link'));
     }
 
-    public function testRemoveWikilinks6b(): void {
+    public function testRemoveWikilinksCiteJournalLast2PureEvilSetsLast2ToApproximatePhysics(): void {
         $expanded = $this->process_citation("{{Cite journal|last2=[[Pure Evil|Approximate Physics]]}}");
         $this->assertSame('Approximate Physics', $expanded->get2('last2'));
         $this->assertSame('Pure Evil', $expanded->get2('author2-link'));
         $this->assertFalse($expanded->add_if_new('author2-link', 'will not add'));
     }
 
-    public function testRemoveWikilinks7(): void {
+    public function testRemoveWikilinksCiteJournalLast1PureEvilAndHoserPreservesLast1(): void {
         $expanded = $this->process_citation("{{Cite journal|last1=[[Pure Evil]] and [[Hoser]]}}");
         $this->assertSame('[[Pure Evil]] and [[Hoser]]', $expanded->get2('last1'));
         $this->assertNull($expanded->get2('author1-link'));
     }
 
-    public function testRemoveWikilinks7b(): void {
+    public function testRemoveWikilinksCiteJournalLast1PureRemovesAuthor1Link(): void {
         $expanded = $this->process_citation("{{Cite journal|last1=[[Pure {{!}} Evil]]}}");
         $this->assertNull($expanded->get2('author1-link'));
         $this->assertSame('[[Pure {{!}} Evil]]', $expanded->get2('last1'));
     }
 
-    public function testRemoveWikilinks7c(): void {
+    public function testRemoveWikilinksCiteJournalUrlDsfasdfdsRemovesLast(): void {
         $text = "{{Cite journal|last=[[Nelarine Cornelius|Cornelius]]|first= [[Nelarine Cornelius|Nelarine]]|last2= Todres|first2= Mathew|last3= Janjuha-Jivraj|first3= Shaheena|last4= Woods|first4= Adrian|last5= Wallace|first5= James|date= 2008|title= Corporate Social Responsibility and the Social Enterprise|jstor= 25482219|journal= Journal of Business Ethics|volume= 81|issue= 2|pages= 355–370|doi= 10.1007/s10551-007-9500-7|s2cid= 154580752|url = <!-- dsfasdfds -->|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('last'));
@@ -905,39 +905,39 @@ JSON;
         $this->assertSame('Nelarine Cornelius', $expanded->get2('author1-link'));
     }
 
-    public function testRemoveWikilinks8(): void {
+    public function testRemoveWikilinksCiteJournalTitlePureEvilAndPureSetsTitleToPureEvilAnd(): void {
         $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil and Pure Evil and Pure Evil]] and Hoser}}");
         $this->assertSame('[[Pure Evil and Pure Evil and Pure Evil|Pure Evil and Pure Evil and Pure Evil and Hoser]]', $expanded->get2('title'));
         $this->assertNull($expanded->get2('title-link'));
     }
 
-    public function testWebsiteAsJournal_1(): void {
+    public function testWebsiteAsJournalCiteJournalFoobarSetsWebsiteToFoobar(): void {
         $text = '{{Cite journal | journal=www.foobar.com}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('www.foobar.com', $expanded->get2('website'));
         $this->assertNull($expanded->get2('journal'));
     }
 
-    public function testWebsiteAsJournal_2(): void {
+    public function testWebsiteAsJournalCiteJournalFoobarSetsUrlToFoobar(): void {
         $text = '{{Cite journal | journal=https://www.foobar.com}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('https://www.foobar.com', $expanded->get2('url'));
         $this->assertNull($expanded->get2('journal'));
     }
 
-    public function testWebsiteAsJournal_3(): void {
+    public function testWebsiteAsJournalCiteJournalWwwFoobarCom(): void {
         $text = '{{Cite journal | journal=[www.foobar.com]}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testDropArchiveDotOrg_1(): void {
+    public function testDropArchiveDotOrgCiteJournalPublisherArchiveOrgRemovesPublisher(): void {
         $text = '{{Cite journal | publisher=archive.org}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('publisher'));
     }
 
-    public function testDropArchiveDotOrg_2(): void {
+    public function testDropArchiveDotOrgCiteJournalUrlHttpFakeUrlNotPreservesUrl(): void {
         $text = '{{Cite journal | website=archive.org|url=http://fake.url/NOT_REAL}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('http://fake.url/NOT_REAL', $expanded->get2('url'));
@@ -1039,7 +1039,7 @@ JSON;
         $this->assertNull($expanded->get2('first2'));
     }
 
-    public function testMisspeltParameters1(): void {
+    public function testMisspeltParametersCiteJournalYear2017(): void {
         $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|year= 2017.}}";
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('author')); ## Check: the parameter might be broken down into last1, first1 etc
@@ -1048,7 +1048,7 @@ JSON;
         $this->assertNotNull($this->getDateAndYear($expanded));
     }
 
-    public function testMisspeltParameters2(): void {
+    public function testMisspeltParametersCiteJournalYear2017AhtourSXHu(): void {
         $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutel=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|year= 2017.}}";
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('author')); ## Check: the parameter might be broken down into last1, first1 etc
@@ -1057,19 +1057,19 @@ JSON;
         $this->assertNotNull($this->getDateAndYear($expanded));
     }
 
-    public function testMisspeltParameters4(): void {
+    public function testMisspeltParametersCiteBookCiteBookAuthorlinkX(): void {
         $text = "{{cite book|authorlinux=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{cite book|authorlink=X}}', $expanded->parsed_text());
     }
 
-    public function testMisspeltParameters5(): void {
+    public function testMisspeltParametersCiteBookCiteBookAuthorlink33X(): void {
         $text = "{{cite book|authorlinks33=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{cite book|authorlink33=X}}', $expanded->parsed_text());
     }
 
-    public function testId2Param1(): void {
+    public function testId2ParamCiteBookIsbn9780306SetsIsbnTo9780306(): void {
         $text = '{{cite book |id=ISBN 978-0-306-40615-7, DOI 10.0001/Rubbish_bot_failure_test, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
         $expanded = $this->process_citation($text);
         $this->assertSame('978-0-306-40615-7', $expanded->get2('isbn'));
@@ -1081,26 +1081,26 @@ JSON;
         $this->assertSame(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
     }
 
-    public function testId2Param2(): void {
+    public function testId2ParamCiteBookArxivSetsArxivTo12345678(): void {
         $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('1234.5678', $expanded->get2('arxiv'));
     }
 
-    public function testId2Param3(): void {
+    public function testId2ParamCiteBookArxivSetsArxivToZzzz1234567(): void {
         $text = '{{cite book | id={{arxiv|zzzz|1234567}} }}';
         $expanded = $this->process_citation($text);
         $this->assertSame('zzzz/1234567', $expanded->get2('arxiv'));
     }
 
-    public function testId2Param4(): void {
+    public function testId2ParamCiteBookArxivSetsArxivToZzzz1234567IdArxiv(): void {
         $text = '{{cite book | id={{arxiv|zzzz|1234567}} {{arxiv|zzzz|1234567}} }}'; // Two of the same thing
         $expanded = $this->process_citation($text);
         $this->assertSame('zzzz/1234567', $expanded->get2('arxiv'));
         $this->assertSame('{{cite book | arxiv=zzzz/1234567 }}', $expanded->parsed_text());
     }
 
-    public function testId2Param5(): void {
+    public function testId2ParamCiteBookPages12(): void {
         $text = '{{cite book|pages=1-2|id={{arxiv|zzzz|1234567}}}}{{cite book|pages=1-3|id={{arxiv|zzzz|1234567}}}}'; // Two of the same sub-template, but in different templates
         $expanded = $this->process_page($text);
         $this->assertSame('{{cite book|pages=1–2|arxiv=zzzz/1234567 }}{{cite book|pages=1–3|arxiv=zzzz/1234567 }}', $expanded->parsed_text());
@@ -1114,21 +1114,21 @@ JSON;
         $this->assertNull($expanded->get2('arxiv'));
     }
 
-    public function testNestedTemplates1(): void {
+    public function testNestedTemplatesCiteBookPages12(): void {
         $text = '{{cite book|pages=1-2| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} | id={{cite book|pages=1-3| {{cnn|{{fox|{{msnbc}}|{{local}}|test}} | hello }} {{tester}} {{ random {{ inside {{tester}} }} }}  }} |  cool stuff | not cool}}}}';
         $expanded = $this->process_citation($text);
         $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testNestedTemplates2(): void {
+    public function testNestedTemplatesCiteBookPages12QuoteSeeCiteBook(): void {
         $text = '{{cite book|quote=See {{cite book|pages=1-2|quote=See {{cite book|pages=1-4}}}}|pages=1-3}}';
         $expanded = $this->process_citation($text);
         $text = str_replace("-", "–", $text); // Should not change anything other than upgrade dashes
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testDropPostscript1(): void {
+    public function testDropPostscriptCitationEmptyPostscript(): void {
         $text = '{{citation|postscript=}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
