@@ -8,9 +8,9 @@ use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 final class MiscToolsTest extends testBaseClass {
 
     #[DoesNotPerformAssertions]
-    public function testcheck_memory_usage(): void {
+    public function testCheckMemoryUsageCanBeCalled(): void {
         new TestPage(); // Fill page name with test name for debugging
-        check_memory_usage('testcheck_memory_usage');
+        check_memory_usage('testCheckMemoryUsageCanBeCalled');
     }
 
     #[DoesNotPerformAssertions]
@@ -30,7 +30,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testCovertUrl2Chapter2(): void {
+    public function testArchivePageZeroUrlStaysInUrlOnBookConversion(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/0}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');
@@ -39,7 +39,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testCovertUrl2Chapter3(): void {
+    public function testArchivePageOneUrlStaysInUrlOnBookConversion(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/1}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');
@@ -48,7 +48,7 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testCovertUrl2Chapter4(): void {
+    public function testArchivePagePathStaysInUrlOnBookConversion(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');

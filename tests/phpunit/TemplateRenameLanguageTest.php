@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
  * process and loads setup.php itself with the wanted wiki_base, since
  * WIKI_BASE is fixed at bootstrap time.
  */
-final class templateRenameLanguageTest extends PHPUnit\Framework\TestCase {
+final class TemplateRenameLanguageTest extends PHPUnit\Framework\TestCase {
 
     private static function boot_sr_wiki(): void {
         putenv('PUBLIC_BASE_URL=https://citations.toolforge.org');

@@ -5,7 +5,7 @@ Then navigate to the repository root (the directory containing `composer.json`).
 
 Then, run the following command:
 
-    php vendor/bin/phpunit tests/phpunit/includes/parameterTest.php
+    php vendor/bin/phpunit tests/phpunit/includes/ParameterTest.php
 
 ## Running the Full Test Suite
 
@@ -38,4 +38,4 @@ To run the tests on Toolforge, first:
 Then install dependencies and run:
 
     composer install
-    php vendor/bin/phpunit tests/phpunit/includes/parameterTest.php
+    php vendor/bin/phpunit tests/phpunit/includes/ParameterTest.php

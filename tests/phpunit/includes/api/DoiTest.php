@@ -695,7 +695,7 @@ final class DoiTest extends testBaseClass {
         $this->assertSame("10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U", $expanded->get2('doi'));
     }
 
-    public function testNewsdDOI(): void {
+    public function testNewsDoiUrlStripsSessionId(): void {
         $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024;jsessionid=222|pmid=<!-- -->|pmc=<!-- -->}}"; // Also check jsesssion removal
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1021/cen-v076n048.p024', $expanded->get2('doi'));

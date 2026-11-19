@@ -18,7 +18,7 @@ require_once dirname(__DIR__, 2) . '/src/includes/constants/translations.php';
  *
  * Deliberately does NOT extend testBaseClass, which would load setup.php for 'en'.
  */
-final class newWikisNonLatinTextTest extends PHPUnit\Framework\TestCase {
+final class NewWikisNonLatinTextTest extends PHPUnit\Framework\TestCase {
 
     /** @return array<string, array{string, string, string, string, string, string}> wiki, script, title, journal, last, first */
     public static function nativeText(): array {

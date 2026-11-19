@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
-final class mathToolsTest extends testBaseClass {
+final class MathToolsTest extends testBaseClass {
     public function testParseDecimalIntegerAcceptsCompleteIntegerStrings(): void {
         $this->assertSame(12, parse_decimal_integer('12'));
         $this->assertSame(12, parse_decimal_integer('  0012  '));

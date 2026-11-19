@@ -8,7 +8,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
-final class zoteroTest extends testBaseClass {
+final class ZoteroTest extends testBaseClass {
 
     public function testZoteroRetryDelayUsesBoundedBackoff(): void {
         $this->assertSame(100000, Zotero::retry_delay_microseconds(-1));

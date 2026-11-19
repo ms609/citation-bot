@@ -17,7 +17,7 @@ require_once dirname(__DIR__, 2) . '/src/includes/constants/translations.php';
  *
  * Deliberately does NOT extend testBaseClass, which would load setup.php for 'en'.
  */
-final class templateRenameNewWikisTest extends PHPUnit\Framework\TestCase {
+final class TemplateRenameNewWikisTest extends PHPUnit\Framework\TestCase {
 
     /** @return array<string, array{string}> */
     public static function newWikis(): array {

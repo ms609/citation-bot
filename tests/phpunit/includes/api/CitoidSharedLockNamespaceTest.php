@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
-final class CitoidPatch13SharedLockTest extends testBaseClass {
+final class CitoidSharedLockNamespaceTest extends testBaseClass {
     /** @var array<string, string|false> */
     private array $saved_environment = [];
     /** @var array<string> */

@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
  * does NOT extend testBaseClass, so that CI and HTML_OUTPUT stay undefined
  * until the page itself defines them.  No network access is used.
  */
-final class killBigJobPageBranchesTest extends PHPUnit\Framework\TestCase {
+final class KillBigJobPageBranchesTest extends PHPUnit\Framework\TestCase {
 
     private function prepareRequest(string $method, ?int $user_id, ?string $session_token): string {
         putenv('PUBLIC_BASE_URL=https://citations.toolforge.org');

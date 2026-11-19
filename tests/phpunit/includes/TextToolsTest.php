@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
-final class textToolsTest extends testBaseClass {
+final class TextToolsTest extends testBaseClass {
 
     public function testCapitalization1a(): void {
         new TestPage(); // Fill page name with test name for debugging
