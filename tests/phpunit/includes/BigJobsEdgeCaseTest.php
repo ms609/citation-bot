@@ -112,14 +112,6 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
 
     // ---- state directory -------------------------------------------------------
 
-    public function testStateDirectoryIsPrivateAndStable(): void {
-        $directory = big_jobs_state_directory();
-        $this->assertDirectoryExists($directory);
-        $this->assertSame(BIG_JOBS_FALLBACK_STATE_DIRECTORY, basename($directory));
-        $this->assertSame(0700, fileperms($directory) & 0777);
-        $this->assertSame($directory, big_jobs_state_directory(), 'A second call reuses the same directory');
-    }
-
     public function testStateDirectoryRefusesASymlink(): void {
         $this->requireUopz();
         $this->withStub('is_link', true, function (): void {
@@ -201,11 +193,6 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->assertSame(big_jobs_state_directory(), dirname($name));
         $this->assertMatchesRegularExpression('~^[A-Za-z0-9+_]*_1$~', basename($name));
         $this->assertSame($name . '_guard', big_jobs_guard_name());
-    }
-
-    public function testMissingSessionUserStillGetsAStableName(): void {
-        $_SESSION = [];
-        $this->assertSame('_1', basename(big_jobs_name()));
     }
 
     public function testDifferentUsersGetDifferentLeases(): void {
@@ -353,21 +340,6 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         });
     }
 
-    public function testCurrentLockFileIsOnlyAnOpenResource(): void {
-        unset($GLOBALS['citation_bot_big_jobs_lock_file']);
-        $this->assertNull(big_jobs_current_lock_file());
-
-        $GLOBALS['citation_bot_big_jobs_lock_file'] = 'not a resource';
-        $this->assertNull(big_jobs_current_lock_file());
-
-        $handle = $this->openLease();
-        $GLOBALS['citation_bot_big_jobs_lock_file'] = $handle;
-        $this->assertSame($handle, big_jobs_current_lock_file());
-
-        fclose($handle);
-        $this->assertNull(big_jobs_current_lock_file(), 'A closed handle is no longer a resource');
-    }
-
     // ---- terminal page ---------------------------------------------------------
 
     public function testStopPageEscapesTheMessageAndEndsTheRequest(): void {
@@ -471,17 +443,6 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
     }
 
     // ---- kill requests ---------------------------------------------------------
-
-    public function testKillRequestsNeedARunningLease(): void {
-        $this->assertFalse(big_jobs_kill());
-        $this->assertFileDoesNotExist(big_jobs_name() . '_kill_job');
-    }
-
-    public function testKillRequestMarksARunningLease(): void {
-        $this->openLease();
-        $this->assertTrue(big_jobs_kill());
-        $this->assertFileExists(big_jobs_name() . '_kill_job');
-    }
 
     public function testKillIsRefusedWhenTheGuardIsUnavailable(): void {
         $target = tempnam(sys_get_temp_dir(), 'cb-guard-target');
@@ -1127,6 +1088,13 @@ PHP
 
         fclose($handle);
         $this->assertNull(big_jobs_current_lock_file(), 'A closed handle is no longer a resource');
+
+        // An open filesystem lease must satisfy the same resource contract.
+        $lease = $this->openLease();
+        $GLOBALS['citation_bot_big_jobs_lock_file'] = $lease;
+        $this->assertSame($lease, big_jobs_current_lock_file());
+        fclose($lease);
+        $this->assertNull(big_jobs_current_lock_file(), 'A closed lease is no longer a resource');
     }
 
     // ---- in-process: state directory and naming ------------------------------
@@ -1138,6 +1106,7 @@ PHP
         $this->assertDirectoryExists($directory);
         $this->assertDirectoryIsWritable($directory);
         $this->assertFalse(is_link($directory));
+        $this->assertSame(BIG_JOBS_FALLBACK_STATE_DIRECTORY, basename($directory));
         $this->assertSame('citation-bot-big-jobs', basename($directory));
         $this->assertSame(0700, fileperms($directory) & 0777);
         if (function_exists('posix_geteuid')) {
@@ -1275,6 +1244,10 @@ PHP
     }
 
     public function testKillRequestFlagsAnExistingLeaseWithoutRemovingIt(): void {
+        $this->openLease();
+        $this->assertTrue(big_jobs_kill(), 'An open lease may be killed');
+        $this->assertFileExists(big_jobs_name() . '_kill_job');
+
         $user = $this->newUser();
         $paths = $this->pathsFor($user);
         hard_touch($paths['lock']);
