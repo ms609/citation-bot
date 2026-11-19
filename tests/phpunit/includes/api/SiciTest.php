@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
-final class siciTest extends testBaseClass {
+final class SiciTest extends testBaseClass {
     public function testSiciExtraction1(): void {
         $text = '{{cite journal|url=http://fake.url/9999-9999(2002)152[0215:XXXXXX]2.0.CO;2}}';
         $expanded = $this->process_citation($text);

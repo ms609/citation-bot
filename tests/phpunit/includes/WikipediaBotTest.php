@@ -8,7 +8,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
-final class wikipediaBotTest extends testBaseClass {
+final class WikipediaBotTest extends testBaseClass {
 
     #[DoesNotPerformAssertions]
     public function testCoverageFixer(): void {

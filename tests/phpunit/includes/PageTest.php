@@ -9,7 +9,7 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
-final class pageTest extends testBaseClass {
+final class PageTest extends testBaseClass {
 
     public function testPageDetailsParserRejectsMalformedResponses(): void {
         $this->assertNull(page_details_from_api_response(null));

@@ -6,7 +6,7 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 /**
  * Some of these are unit tests that poke specific functions that do not require actually connecting to adsabs
  */
-final class bibcodeTest extends testBaseClass {
+final class BibcodeTest extends testBaseClass {
     public function testAdsabsApi(): void {
         $this->requires_bibcode(function (): void {
             $bibcodes = [

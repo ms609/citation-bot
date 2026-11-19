@@ -13,7 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('citoid-regression')]
-final class citoidOfflineCoverageTest extends testBaseClass {
+final class CitoidOfflineCoverageTest extends testBaseClass {
     /**
      * Exercise the complete malformed-field guard before metadata reaches a
      * citation template. Invalid data must not silently become citation text.

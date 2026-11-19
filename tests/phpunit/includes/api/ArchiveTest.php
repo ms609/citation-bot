@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
-final class archiveTest extends testBaseClass {
+final class ArchiveTest extends testBaseClass {
 
     public function testArchiveUrlAllowListAcceptsKnownServices(): void {
         $this->assertTrue(archive_url_is_allowed('https://web.archive.org/web/20200101000000/https://example.com/'));

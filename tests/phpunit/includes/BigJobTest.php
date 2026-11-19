@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 require_once dirname(__DIR__, 3) . '/src/includes/big_jobs.php';
 
-final class bigJobTest extends testBaseClass {
+final class BigJobTest extends testBaseClass {
 
     public function testName(): void {
         $previous_user = $_SESSION['citation_bot_user_id'] ?? null;

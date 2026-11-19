@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
  * never defined. Deliberately does NOT extend testBaseClass, which would
  * define those constants and hide the failure this guards against.
  */
-final class killBigJobPageTest extends PHPUnit\Framework\TestCase {
+final class KillBigJobPageTest extends PHPUnit\Framework\TestCase {
 
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]

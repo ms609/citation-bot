@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
 require_once dirname(__DIR__) . '/testBaseClass.php';
 
-final class generate_templateTest extends testBaseClass {
+final class GenerateTemplateTest extends testBaseClass {
 
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]

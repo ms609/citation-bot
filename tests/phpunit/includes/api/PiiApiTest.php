@@ -5,7 +5,7 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
 use PHPUnit\Framework\Attributes\Group;
 
-final class piiAPITest extends testBaseClass {
+final class PiiApiTest extends testBaseClass {
 
     /**
      * Stub only the cURL transport: the production PII lookup and XML

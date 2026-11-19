@@ -5,7 +5,7 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 
-final class pubmedTest extends testBaseClass {
+final class PubMedTest extends testBaseClass {
     public function testTitleFallbackRejectsDifferentWorkWithShortChineseWords(): void {
         $template = $this->make_citation('{{cite journal|title=肺癌 治疗 指南|last=Smith|year=2019}}');
         $queries = [];

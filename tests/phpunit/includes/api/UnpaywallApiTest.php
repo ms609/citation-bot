@@ -5,7 +5,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
-final class unpaywallApiTest extends testBaseClass {
+final class UnpaywallApiTest extends testBaseClass {
 
     public function testUnpaywallParserAcceptsExpectedShape(): void {
         $result = parse_unpaywall_response(

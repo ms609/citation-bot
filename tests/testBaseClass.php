@@ -97,6 +97,13 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::block_zotero();
     }
 
+    // ParaTest does not guarantee the order in which test files execute.
+    #[\PHPUnit\Framework\Attributes\AfterClass]
+    public static function releaseCachesAfterTestClass(): void {
+        HandleCache::free_memory();
+        AdsAbsControl::free_memory();
+    }
+
     protected function requires_secrets(callable $function): void {
         if ($this->testing_skip_wiki) {
             $this->markTestSkipped('Skipping part/all of a test because of no wiki secrets');

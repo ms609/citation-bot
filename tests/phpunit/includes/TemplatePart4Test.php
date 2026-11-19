@@ -9,7 +9,7 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 
-final class templatePart4Test extends testBaseClass { // Lower case "t" to run later in test suite
+final class TemplatePart4Test extends testBaseClass {
 
     public function testCommentOnlyPostscriptIsRemoved(): void {
         $text = '{{cite web|postscript = <!-- A comment only --> }}';

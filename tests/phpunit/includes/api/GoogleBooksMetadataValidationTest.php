@@ -7,7 +7,7 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 
-final class GoogleBooksCoveragePatch12Test extends testBaseClass {
+final class GoogleBooksMetadataValidationTest extends testBaseClass {
     /** @return array<string, array{string}> */
     public static function unusableGoogleDateProvider(): array {
         return [

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
-final class googleBooksTest extends testBaseClass {
+final class GoogleBooksTest extends testBaseClass {
     public function testRejectedFragmentSearchKeepsExistingBookTarget(): void {
         $book = 'https://books.google.com/books?id=12345';
         foreach (['#dq=ISBN123', '#q=inauthor%3AName', '#q=subject%3Achemistry'] as $fragment) {

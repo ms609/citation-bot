@@ -12,7 +12,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 require_once dirname(__DIR__) . '/testBaseClass.php';
 require_once dirname(__DIR__, 2) . '/src/includes/GadgetApi.php';
 
-final class gadgetapiTest extends testBaseClass {
+final class GadgetApiTest extends testBaseClass {
 
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]

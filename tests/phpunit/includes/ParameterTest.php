@@ -8,7 +8,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
-final class parameterTest extends testBaseClass {
+final class ParameterTest extends testBaseClass {
     public function testExplicitNumericParametersSurvivePreparation(): void {
         foreach ([
             '0=foo',

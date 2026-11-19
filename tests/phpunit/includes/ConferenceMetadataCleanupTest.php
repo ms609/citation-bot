@@ -7,7 +7,7 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 
-final class MiscToolsCoveragePatch11Test extends testBaseClass {
+final class ConferenceMetadataCleanupTest extends testBaseClass {
     /**
      * These are independently parsed citations. The real DOI is treated as
      * already verified and queried so the cleanup cannot call CrossRef.

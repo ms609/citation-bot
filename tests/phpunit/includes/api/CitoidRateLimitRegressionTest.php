@@ -13,7 +13,7 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('citoid-regression')]
-final class citoidRateLimitRegressionTest extends testBaseClass {
+final class CitoidRateLimitRegressionTest extends testBaseClass {
     /** @var list<string> */
     private array $test_directories = [];
 
