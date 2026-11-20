@@ -30,8 +30,8 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     static $ch_ieee;
     if ($ch_dx === null) {
         $time = (float) run_type_mods(1, 3, 3, 3, 3);
-        $ch_dx = bot_curl_init($time, [], 2 * 1024 * 1024);
-        $ch_doi = bot_curl_init($time, [], 2 * 1024 * 1024);
+        $ch_dx = bot_curl_init($time, [], 8 * 1024 * 1024);
+        $ch_doi = bot_curl_init($time, [], 8 * 1024 * 1024);
     }
     // Now that we have expanded URLs, try to lose them
     foreach ($templates as $template) {
