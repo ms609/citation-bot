@@ -571,6 +571,7 @@ const DOI_FREE_PREFIX = [
     '10.1093/asjof',
     '10.1093/bjro',
     '10.1093/bjsopen',
+    '10.1093/dnares',
     '10.1093/ehjopen',
     '10.1093/gji',
     '10.1093/hropen',
