@@ -521,7 +521,7 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
 
     $result = @curl_exec($ch);  // phpcs:ignore
     $size_context = bot_curl_size_limit_log_context()[$ch];
-    if ($size_context['oversize'] !== null) {
+    if ($size_context['oversize'] !== null && $size_context['caller'] !== 'get_headers_array') {
         // The effective URL is reliable after the transfer (also after a
         // redirect or progress-callback abort), unlike during a callback.
         bot_debug_log(bot_curl_size_limit_message(
