@@ -370,6 +370,13 @@ final class OfflineEndpointTest extends TestCase {
         }
     }
 
+    public function testTemplateGeneratorRejectsDuplicateQueryFields(): void {
+        $response = $this->request('/tools/generate_template.php?doi=first&doi=second');
+
+        $this->assertSame(400, $response['status']);
+        $this->assertStringContainsString('Exactly one parameter must be passed', $response['body']);
+    }
+
     public function testMalformedUtf8PageNameIsRejectedBeforeConfirmation(): void {
         $response = $this->request('/tools/process_page.php?page=caf%E9');
         $this->assertSame(400, $response['status']);

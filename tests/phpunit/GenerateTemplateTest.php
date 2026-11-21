@@ -30,7 +30,8 @@ final class GenerateTemplateTest extends testBaseClass {
         }, true);
         try {
             ob_start();
-            $_GET = ['jstor' => '373737'];
+            $_SERVER['QUERY_STRING'] = '&&jstor=373737&&';
+            parse_str($_SERVER['QUERY_STRING'], $_GET);
             require dirname(__DIR__, 2) . '/src/generate_template.php';
             $body = (string) ob_get_contents();
         } finally {
@@ -53,6 +54,7 @@ final class GenerateTemplateTest extends testBaseClass {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to observe the endpoint exit');
         }
+        $_SERVER['QUERY_STRING'] = $query;
         parse_str($query, $_GET);
         $response_ended = new RuntimeException('Template generator exited');
         /** @psalm-suppress UnusedFunctionCall */
@@ -90,6 +92,7 @@ final class GenerateTemplateTest extends testBaseClass {
         return [
             'missing' => ['', 'Exactly one parameter must be passed'],
             'multiple' => ['doi=10.1000%2F1234&pmid=12345', 'Exactly one parameter must be passed'],
+            'duplicate encoded key' => ['doi=first&%64oi=second', 'Exactly one parameter must be passed'],
             'array' => ['doi%5B%5D=123', 'Invalid parameter type'],
             'invalid UTF-8' => ['doi=%FFabc', 'Invalid UTF-8'],
             'too short' => ['jstor=1', 'Unset parameter'],

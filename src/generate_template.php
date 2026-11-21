@@ -19,10 +19,25 @@ function die_in_template(string $err, int $http_status): never {
     exit(0);
 }
 
+// PHP collapses repeated scalar keys in $_GET. Count fields before that
+// normalization, using the same separators as the PHP query parser.
+$query = $_SERVER['QUERY_STRING'] ?? null;
+if (is_string($query)) {
+    $separators = (string) ini_get('arg_separator.input');
+    $query_bytes = mb_strlen($query, '8bit');
+    $field_start = strspn($query, $separators);
+    $field_end = $field_start + strcspn($query, $separators, $field_start);
+    $after_separators = $field_end + strspn($query, $separators, $field_end);
+    if ($field_start === $query_bytes || $after_separators !== $query_bytes) {
+        die_in_template('Exactly one parameter must be passed', 400);
+    }
+}
+unset($query);
+
 if (count($_GET) !== 1) {
     die_in_template('Exactly one parameter must be passed', 400);
 }
-$param = array_keys($_GET)[0];
+$param = array_key_first($_GET);
 $value = $_GET[$param];
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
