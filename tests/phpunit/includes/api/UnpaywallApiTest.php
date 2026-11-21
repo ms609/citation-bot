@@ -188,13 +188,38 @@ final class UnpaywallApiTest extends testBaseClass {
         }
     }
 
-    public function testOpenAccessLookup1(): void {
-        $this->assertNull(null);
-        /* TODO - find an example of a DOI that is free on PMC, but not DOI
-        $text = '{{cite journal|doi=10.1136/bmj.327.7429.1459}}';
-        $expanded = $this->process_citation($text);
-        $this->assertSame('300808', $expanded->get2('pmc'));
-        */
+    public function testUnpaywallAddsPmcIdentifierFromRepositoryLocation(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Unpaywall');
+        }
+        $doi = '10.1000/pmc-fixture';
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+        $json = '{"best_oa_location":{"host_type":"repository","evidence":"oa repository",' .
+            '"url_for_landing_page":"https://pmc.ncbi.nlm.nih.gov/articles/PMC300808/"}}';
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('curl_getinfo', 200);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', $json);
+        // The URL extractor also checks the existing DOI and enriches PMC.
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('doi_works', true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('query_pmc_api', null);
+        try {
+            $this->assertSame('got one', get_unpaywall_url($template, $doi));
+            $this->assertSame('300808', $template->get2('pmc'));
+            $this->assertNull($template->get2('url'));
+            $this->assertSame($doi, $template->get2('doi'));
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('query_pmc_api');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('doi_works');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('curl_getinfo');
+        }
     }
 
     public function testOpenAccessLookup3(): void {
