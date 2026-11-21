@@ -1285,11 +1285,12 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
         $this->assertTrue(big_run_try_acquire(5, 'webform', $base, self::NOW)[0]);
     }
 
-    public function testRecoveryResetClearsLiveLeasesAndKeepsEachBackup(): void {
+    public function testRecoveryResetClearsExpiredLeasesAndKeepsEachBackup(): void {
         $base = $this->newBase();
-        big_run_try_acquire(10, 'webform', $base, self::NOW);
-        $first = big_run_recovery_reset($base, self::NOW);
-        $second = big_run_recovery_reset($base, self::NOW);
+        $this->assertTrue(big_run_try_acquire(10, 'webform', $base, self::NOW)[0]);
+        $after_expiry = self::NOW + big_run_stale_timeout_seconds() + 1;
+        $first = big_run_recovery_reset($base, $after_expiry);
+        $second = big_run_recovery_reset($base, $after_expiry);
         $this->assertTrue($first['ok']);
         $this->assertTrue($second['ok']);
         $this->assertNotSame($first['backup_path'], $second['backup_path']);

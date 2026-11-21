@@ -287,6 +287,7 @@ function request_rate_limit_log_failure(string $bucket, string $reason): void {
 
 const BIG_RUN_STATE_FILE = 'big-run.json';
 const BIG_RUN_LOCK_FILE = 'big-run.lock';
+const BIG_RUN_WORKER_LOCK_FILE = 'big-run-workers.lock';
 const BIG_RUN_STATE_MAX_BYTES = 65536;
 const BIG_RUN_PAGE_THRESHOLD = 4;
 const BIG_RUN_DISCOVERY_RAW_PROBE_LIMIT = 25;
@@ -472,13 +473,13 @@ function big_run_lock_path(string $base_directory): string {
 }
 
 /** @return resource|false */
-function big_run_open_lock_handle(string $base_directory) {
+function big_run_open_lock_handle(string $base_directory, string $filename = BIG_RUN_LOCK_FILE) {
     $state_directory = big_run_prepare_state_directory($base_directory);
     if ($state_directory === null) {
         return false;
     }
 
-    $lock_path = $state_directory . DIRECTORY_SEPARATOR . BIG_RUN_LOCK_FILE;
+    $lock_path = $state_directory . DIRECTORY_SEPARATOR . $filename;
     if (is_link($lock_path)) {
         return false;
     }
@@ -996,8 +997,9 @@ function big_run_recovery_backup_path(string $state_path): ?string {
 /**
  * Operator-requested shared-state reset.
  *
- * Caller should drain/quiesce bulk workers first. The permanent lock is held
- * across backup + reset. Any existing regular snapshot is renamed to a
+ * Require exclusive ownership of the lifetime lock before touching the
+ * snapshot, then hold the state lock across backup and reset. Any existing
+ * regular snapshot is renamed to a
  * timestamped same-directory backup before an atomically written fresh state
  * is installed. On write failure the old snapshot is restored when possible.
  *
@@ -1023,8 +1025,8 @@ function big_run_recovery_reset(
     }
 
     $state_path = big_run_state_path($base_directory);
-    $lock_result = big_run_acquire_state_lock($base_directory, $lock_attempts);
-    if ($lock_result['status'] === 'open_failed') {
+    $worker_lock = big_run_open_lock_handle($base_directory, BIG_RUN_WORKER_LOCK_FILE);
+    if ($worker_lock === false) {
         return [
             'ok' => false,
             'reason' => 'lock_open_failed',
@@ -1032,18 +1034,30 @@ function big_run_recovery_reset(
             'backup_path' => null,
         ];
     }
-    if ($lock_result['status'] === 'busy') {
-        return [
-            'ok' => false,
-            'reason' => 'lock_busy',
-            'state_path' => $state_path,
-            'backup_path' => null,
-        ];
-    }
 
-    $lock_handle = $lock_result['handle'];
+    $lock_handle = null;
     $backup_path = null;
     try {
+        if (!@flock($worker_lock, LOCK_EX | LOCK_NB, $would_block)) {
+            return [
+                'ok' => false,
+                'reason' => $would_block ? 'workers_active' : 'lock_open_failed',
+                'state_path' => $state_path,
+                'backup_path' => null,
+            ];
+        }
+
+        $lock_result = big_run_acquire_state_lock($base_directory, $lock_attempts);
+        if ($lock_result['status'] !== 'locked') {
+            return [
+                'ok' => false,
+                'reason' => $lock_result['status'] === 'busy' ? 'lock_busy' : 'lock_open_failed',
+                'state_path' => $state_path,
+                'backup_path' => null,
+            ];
+        }
+        $lock_handle = $lock_result['handle'];
+        $now = big_run_resolve_now($now);
         if (is_link($state_path)) {
             return [
                 'ok' => false,
@@ -1064,6 +1078,16 @@ function big_run_recovery_reset(
                 ];
             }
 
+            [, , $entries, $state_valid] = big_run_read_state_file($state_path, $now);
+            if ($state_valid && big_run_prune_stale_entries($entries, $now) !== []) {
+                return [
+                    'ok' => false,
+                    'reason' => 'leases_active',
+                    'state_path' => $state_path,
+                    'backup_path' => null,
+                ];
+            }
+
             $backup_path = big_run_recovery_backup_path($state_path);
             if ($backup_path === null || !@rename($state_path, $backup_path)) {
                 return [
@@ -1076,7 +1100,6 @@ function big_run_recovery_reset(
             @chmod($backup_path, 0600);
         }
 
-        $now = big_run_resolve_now($now);
         if (
             !big_run_store_state_file(
                 $state_path,
@@ -1122,7 +1145,10 @@ function big_run_recovery_reset(
             'backup_path' => $backup_path,
         ];
     } finally {
-        big_run_release_state_lock($lock_handle);
+        if ($lock_handle !== null) {
+            big_run_release_state_lock($lock_handle);
+        }
+        fclose($worker_lock);
     }
 }
 
@@ -1766,13 +1792,28 @@ function big_run_release(string $entry_id, ?string $base_directory = null): void
     }
 }
 
-function big_run_set_current_entry(string $entry_id, ?string $base_directory = null, ?float $now = null): void {
+/**
+ * @param string $entry_id
+ * @param string|null $base_directory
+ * @param float|null $now
+ * @param resource|null $worker_lock
+ */
+function big_run_set_current_entry(
+    string $entry_id,
+    ?string $base_directory = null,
+    ?float $now = null,
+    $worker_lock = null
+): void {
     $now = big_run_resolve_now($now);
-    $GLOBALS['citation_bot_big_run_current'] = [
+    $current = [
         'entry_id' => $entry_id,
         'base_directory' => $base_directory,
         'last_heartbeat_attempt' => $now,
     ];
+    if ($worker_lock !== null) {
+        $current['worker_lock'] = $worker_lock;
+    }
+    $GLOBALS['citation_bot_big_run_current'] = $current;
 }
 
 function big_run_clear_current_entry(?string $entry_id = null): void {
@@ -1782,6 +1823,10 @@ function big_run_clear_current_entry(?string $entry_id = null): void {
     }
     if ($entry_id !== null && ($current['entry_id'] ?? null) !== $entry_id) {
         return;
+    }
+    $worker_lock = $current['worker_lock'] ?? null;
+    if (is_resource($worker_lock)) {
+        fclose($worker_lock);
     }
     unset($GLOBALS['citation_bot_big_run_current']);
 }

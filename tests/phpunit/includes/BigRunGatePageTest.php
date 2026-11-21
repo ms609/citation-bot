@@ -136,7 +136,8 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', true);
 
-            gate_big_run(5, 'category', 'SomeUser', null, 100.0);
+            $entry = gate_big_run(5, 'category', 'SomeUser', null, 100.0);
+            $this->assertNotNull($entry);
 
             $state_path =
                 $this->base_directory .
@@ -152,6 +153,9 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
             $this->assertIsArray($state);
             $this->assertSame(392.0, $state['tokens']);
             $this->assertCount(1, $state['entries']);
+            $this->assertSame('workers_active', big_run_recovery_reset($this->base_directory, 100.0, 1)['reason']);
+            release_big_run_lease($entry, $this->base_directory);
+            $this->assertTrue(big_run_recovery_reset($this->base_directory, 100.0, 1)['ok']);
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
@@ -361,6 +365,7 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
             $this->assertIsArray($entry);
             $this->assertSame('probe', $entry['phase'] ?? null);
             $this->assertSame(400.0, $state['tokens'] ?? null);
+            $this->assertSame('workers_active', big_run_recovery_reset($this->base_directory, 100.0, 1)['reason']);
 
             $this->assertSame(
                 $entry_id,
@@ -375,6 +380,7 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
             $this->assertIsArray($entry);
             $this->assertSame('discovery', $entry['phase'] ?? null);
             $this->assertSame(400.0, $state['tokens'] ?? null);
+            $this->assertSame('workers_active', big_run_recovery_reset($this->base_directory, 101.0, 1)['reason']);
 
             $this->assertSame(
                 $entry_id,
