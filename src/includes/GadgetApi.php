@@ -36,6 +36,15 @@ function gadget_api_validate_request(array $post): array {
     $originalText = $post['text'];
     $editSummary = $post['summary'];
 
+    // Preserve the character allowance for text using up to three UTF-8
+    // bytes per code point, while bounding the bytes passed to the parser.
+    if (mb_strlen($originalText, '8bit') > 450000) {
+        throw new GadgetApiRequestException('page_too_large', 400);
+    }
+    if (mb_strlen($editSummary, '8bit') > 3000) {
+        throw new GadgetApiRequestException('summary_too_large', 400);
+    }
+
     if (!mb_check_encoding($originalText, 'UTF-8') ||
         !mb_check_encoding($editSummary, 'UTF-8')
     ) {
