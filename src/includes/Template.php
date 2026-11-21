@@ -3289,12 +3289,16 @@ final class Template
         $param_occurrences = [];
         $duplicated_parameters = [];
         $duplicate_identical = [];
+        $duplicate_optional_names = [];
 
         foreach ($this->param as $pointer => $par) {
             // Leave explicit numeric arguments in order. Unnamed arguments
             // can refer to the same position and MediaWiki resolves precedence.
             if ($par->param !== '' && !ctype_digit($par->param) && isset($param_occurrences[$par->param])) {
                 $duplicate_pos = $param_occurrences[$par->param];
+                if (in_array($par->param, ['id', 'year'], true)) {
+                    $duplicate_optional_names[$par->param] = true;
+                }
                 if ($par->val === '') {
                     $par->val = $this->param[$duplicate_pos]->val;
                 } elseif ($this->param[$duplicate_pos]->val === '') {
@@ -3318,6 +3322,12 @@ final class Template
             } else {
                 $this->param[$the_dup]->param = str_ireplace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
                 report_modification("Marking duplicate parameter: " . echoable($this->param[$the_dup]->param));
+            }
+        }
+        foreach (array_keys($duplicate_optional_names) as $name) {
+            $last = $param_occurrences[$name];
+            if ($this->param[$last]->val === '') {
+                unset($this->param[$last]);
             }
         }
 
@@ -5709,6 +5719,11 @@ final class Template
                         return;
                     }
                     $this->set('isbn', safe_preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
+                    if (!isbn_valid($this->get('isbn'))) {
+                        // Preserve a published invalid ISBN for manual verification.
+                        // It cannot justify a template conversion or displacing an ASIN.
+                        return;
+                    }
                     $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn'), false));
                     if (
                         ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') &&
