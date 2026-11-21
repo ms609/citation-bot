@@ -46,14 +46,20 @@ if (!in_array($param, VALID_PARAMS, true)) {
     die_in_template('Unexpected parameter passed', 400);
 }
 
-$retry_after = request_rate_limit_consume_layered(
-    'generate-template',
-    GENERATE_TEMPLATE_RATE_LIMIT_CAPACITY,
-    GENERATE_TEMPLATE_RATE_LIMIT_REFILL_PER_SECOND,
-    GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_CAPACITY,
-    GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_REFILL_PER_SECOND,
-    is_string($_SERVER['REMOTE_ADDR'] ?? null) ? $_SERVER['REMOTE_ADDR'] : null
-);
+try {
+    $retry_after = request_rate_limit_consume_layered(
+        'generate-template',
+        GENERATE_TEMPLATE_RATE_LIMIT_CAPACITY,
+        GENERATE_TEMPLATE_RATE_LIMIT_REFILL_PER_SECOND,
+        GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_CAPACITY,
+        GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_REFILL_PER_SECOND,
+        is_string($_SERVER['REMOTE_ADDR'] ?? null) ? $_SERVER['REMOTE_ADDR'] : null,
+        require_storage: true
+    );
+} catch (RequestRateLimitStorageException) {
+    @header('Cache-Control: no-store');
+    die_in_template('Request limiting is temporarily unavailable. Please try again shortly.', 503);
+}
 if ($retry_after !== null) {
     @header('Retry-After: ' . $retry_after);
     @header('Cache-Control: no-store');

@@ -30,7 +30,8 @@ try {
         GADGET_API_RATE_LIMIT_REFILL_PER_SECOND,
         GADGET_API_CLIENT_RATE_LIMIT_CAPACITY,
         GADGET_API_CLIENT_RATE_LIMIT_REFILL_PER_SECOND,
-        is_string($_SERVER['REMOTE_ADDR'] ?? null) ? $_SERVER['REMOTE_ADDR'] : null
+        is_string($_SERVER['REMOTE_ADDR'] ?? null) ? $_SERVER['REMOTE_ADDR'] : null,
+        require_storage: true
     );
     if ($retry_after !== null) {
         @header('Retry-After: ' . $retry_after);
@@ -69,6 +70,9 @@ try {
     unset($newText, $editSummary);
 
     echo json_encode($result, JSON_THROW_ON_ERROR);
+} catch (RequestRateLimitStorageException) {
+    @header('Cache-Control: no-store');
+    gadget_api_error('rate_limit_unavailable', 503);
 } catch (GadgetApiRequestException $exception) {
     // Discard every buffer opened by this request; leave caller/server buffers intact.
     while (ob_get_level() > $gadget_initial_ob_level) {

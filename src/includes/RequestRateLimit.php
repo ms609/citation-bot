@@ -16,6 +16,9 @@ const GENERATE_TEMPLATE_RATE_LIMIT_REFILL_PER_SECOND = 0.5;
 const GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_CAPACITY = 10;
 const GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_REFILL_PER_SECOND = 0.25;
 
+final class RequestRateLimitStorageException extends RuntimeException {
+}
+
 function request_rate_limit_base_directory(): string {
     $env_val = getenv('PHP_RATE_LIMIT_DIRECTORY');
     if (is_string($env_val) && $env_val !== '') {
@@ -80,6 +83,7 @@ function request_rate_limit_client_bucket(
  * exhausted its own allowance from continuing to drain the shared bucket.
  * A request must pass both limits.
  *
+ * @throws RequestRateLimitStorageException When required storage fails.
  * @return int|null Retry-After seconds when limited; null when allowed.
  */
 function request_rate_limit_consume_layered(
@@ -90,8 +94,10 @@ function request_rate_limit_consume_layered(
     float $client_refill_per_second,
     ?string $remote_address,
     ?string $base_directory = null,
-    ?float $now = null
+    ?float $now = null,
+    bool $require_storage = false
 ): ?int {
+    $required_endpoint = $require_storage ? $bucket : null;
     $client_bucket = request_rate_limit_client_bucket($bucket, $remote_address);
     if ($client_bucket !== null) {
         $client_retry_after = request_rate_limit_consume(
@@ -99,7 +105,8 @@ function request_rate_limit_consume_layered(
             $client_capacity,
             $client_refill_per_second,
             $base_directory,
-            $now
+            $now,
+            $required_endpoint
         );
         if ($client_retry_after !== null) {
             return $client_retry_after;
@@ -111,7 +118,8 @@ function request_rate_limit_consume_layered(
         $global_capacity,
         $global_refill_per_second,
         $base_directory,
-        $now
+        $now,
+        $required_endpoint
     );
 }
 
@@ -121,7 +129,8 @@ function request_rate_limit_consume_layered(
  * State is stored in a small locked file so PHP workers in the same container
  * share one limiter without requiring Redis or a database.
  *
- * Storage failures fail open to avoid taking the tool offline. Lock contention
+ * Storage failures fail open for legacy callers and throw when an endpoint
+ * requires working storage. Lock contention
  * fails closed briefly so a request storm cannot bypass the limiter by making
  * many PHP workers race for the same bucket.
  *
@@ -132,7 +141,8 @@ function request_rate_limit_consume(
     int $capacity,
     float $refill_per_second,
     ?string $base_directory = null,
-    ?float $now = null
+    ?float $now = null,
+    ?string $required_endpoint = null
 ): ?int {
     if (preg_match('~\A[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}\z~D', $bucket) !== 1) {
         throw new InvalidArgumentException('Invalid rate-limit bucket name.');
@@ -149,27 +159,30 @@ function request_rate_limit_consume(
 
     $base_directory ??= request_rate_limit_base_directory();
     if ($base_directory === '') {
-        request_rate_limit_log_failure($bucket, 'temporary directory is empty');
+        request_rate_limit_storage_failure($bucket, 'temporary directory is empty', $required_endpoint);
         return null;
     }
 
     $state_directory = big_run_prepare_state_directory($base_directory);
     if ($state_directory === null) {
-        request_rate_limit_log_failure($bucket, 'unsafe or unavailable state directory');
+        request_rate_limit_storage_failure($bucket, 'unsafe or unavailable state directory', $required_endpoint);
         return null;
     }
 
     $handle = request_rate_limit_open_state_handle($state_directory, $bucket);
     if ($handle === false) {
-        request_rate_limit_log_failure($bucket, 'unsafe or unavailable state file');
+        request_rate_limit_storage_failure($bucket, 'unsafe or unavailable state file', $required_endpoint);
         return null;
     }
 
     $locked = false;
     try {
         // Do not let an attack fill PHP workers with processes waiting on the lock.
-        $locked = @flock($handle, LOCK_EX | LOCK_NB);
+        $locked = @flock($handle, LOCK_EX | LOCK_NB, $would_block);
         if (!$locked) {
+            if (!$would_block && $required_endpoint !== null) {
+                request_rate_limit_storage_failure($bucket, 'unable to lock state', $required_endpoint);
+            }
             return 1;
         }
 
@@ -177,29 +190,40 @@ function request_rate_limit_consume(
         $tokens = (float) $capacity;
         $updated = $now;
 
-        if (@rewind($handle)) {
-            $raw_state = stream_get_contents($handle);
-            if (is_string($raw_state) && $raw_state !== '') {
-                $state = json_decode($raw_state, true);
+        // A serialized token bucket contains only two numbers.
+        $raw_state = @rewind($handle) ? @stream_get_contents($handle, 1025) : false;
+        if ($raw_state === false) {
+            request_rate_limit_storage_failure($bucket, 'unable to read state', $required_endpoint);
+        } elseif ($raw_state !== '') {
+            $state = mb_strlen($raw_state, '8bit') <= 1024 ? json_decode($raw_state, true) : null;
+            $valid = false;
+            if (
+                is_array($state) &&
+                isset($state['tokens'], $state['updated']) &&
+                is_numeric($state['tokens']) &&
+                is_numeric($state['updated'])
+            ) {
+                $saved_tokens = (float) $state['tokens'];
+                $saved_updated = (float) $state['updated'];
                 if (
-                    is_array($state) &&
-                    isset($state['tokens'], $state['updated']) &&
-                    is_numeric($state['tokens']) &&
-                    is_numeric($state['updated'])
+                    is_finite($saved_tokens) &&
+                    is_finite($saved_updated) &&
+                    $saved_tokens >= 0.0 &&
+                    $saved_updated >= 0.0
                 ) {
-                    $saved_tokens = (float) $state['tokens'];
-                    $saved_updated = (float) $state['updated'];
-                    if (
-                        is_finite($saved_tokens) &&
-                        is_finite($saved_updated) &&
-                        $saved_tokens >= 0.0 &&
-                        $saved_updated >= 0.0
-                    ) {
-                        $tokens = min((float) $capacity, $saved_tokens);
-                        // If the wall clock moved backward, resume from "now".
-                        $updated = min($now, $saved_updated);
-                    }
+                    $valid = true;
+                    $tokens = min((float) $capacity, $saved_tokens);
+                    // If the wall clock moved backward, resume from "now".
+                    $updated = min($now, $saved_updated);
                 }
+            }
+            if (!$valid && $required_endpoint !== null) {
+                // Repair conservatively. New requests can use the normal refill
+                // once storage is healthy again.
+                if (!request_rate_limit_store_state($handle, 0.0, $now)) {
+                    request_rate_limit_storage_failure($bucket, 'unable to persist state', $required_endpoint);
+                }
+                request_rate_limit_storage_failure($bucket, 'invalid stored state', $required_endpoint);
             }
         }
 
@@ -220,7 +244,7 @@ function request_rate_limit_consume(
         }
 
         if (!request_rate_limit_store_state($handle, $tokens, $now)) {
-            request_rate_limit_log_failure($bucket, 'unable to persist state');
+            request_rate_limit_storage_failure($bucket, 'unable to persist state', $required_endpoint);
         }
 
         return $retry_after;
@@ -263,6 +287,17 @@ function request_rate_limit_debug_log(string $message): void {
     }
 
     error_log($message);
+}
+
+function request_rate_limit_storage_failure(string $bucket, string $reason, ?string $required_endpoint): void {
+    if ($required_endpoint !== null) {
+        // Use the endpoint name even when the failed bucket belongs to a
+        // specific client, so operators can aggregate failures by endpoint.
+        error_log('Citation Bot rate limiter (' . $required_endpoint . '): ' . $reason . '; returning 503.');
+        throw new RequestRateLimitStorageException($reason);
+    }
+
+    request_rate_limit_log_failure($bucket, $reason);
 }
 
 function request_rate_limit_log_failure(string $bucket, string $reason): void {
@@ -691,7 +726,7 @@ function big_run_log_failure(string $reason, string $effect = 'bulk_admission_cl
         return;
     }
     $reported[$key] = true;
-    big_run_log('infrastructure_failure', ['reason' => $reason, 'effect' => $effect]);
+    error_log('Citation Bot big-run gate: ' . $reason . ' (' . $effect . ').');
 }
 
 /**
