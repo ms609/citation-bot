@@ -305,12 +305,21 @@ final class Template
 
     /** Re-assemble parsed template into string */
     public function parsed_text(): string {
-        if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
-            if ($this->has('title') || $this->has('chapter') || ($this->has('journal') && $this->get('volume') . $this->get('issue') !== '' && $this->page() !== '' && $this->year() !== '')) {
-                report_action("Converted Bare reference to template: " . echoable(mb_trim(base64_decode($this->get(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))))));
-                $this->quietly_forget(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
-            } else {
-                return base64_decode($this->get(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
+        $marker = 'citation_bot_placeholder_bare_url';
+        if ($this->has_but_maybe_blank($marker)) {
+            $reference = base64_decode($this->get($marker), true);
+            if ($reference !== false && $reference !== '' && mb_check_encoding($reference, 'UTF-8')) {
+                if (!$this->has('title') && !$this->has('chapter') &&
+                    !($this->has('journal') && $this->get('volume') . $this->get('issue') !== '' && $this->page() !== '' && $this->year() !== '')
+                ) {
+                    return $reference;
+                }
+                report_action("Converted Bare reference to template: " . echoable(mb_trim($reference)));
+            }
+
+            // Dropping this internal marker must leave citation links and fields intact.
+            while (($key = $this->get_param_key($marker)) !== null) {
+                unset($this->param[$key]);
             }
         }
         $this->name = str_replace('#invoke:#invoke:', '#invoke:', $this->name); // TODO - find where/why

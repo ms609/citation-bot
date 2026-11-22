@@ -101,6 +101,29 @@ final class PageCs2ModeTest extends testBaseClass {
         ];
     }
 
+    public function testBareReferenceRestoresUnicodeText(): void {
+        $reference = 'https://example.test/Édition/東京';
+        $template = $this->make_citation('{{cite web|url=' . $reference .
+            '|citation_bot_placeholder_bare_url=' . base64_encode($reference) . '}}');
+        $this->assertSame($reference, $template->parsed_text());
+    }
+
+    public function testCompletedBareReferenceKeepsCitationFieldsAcrossSerializations(): void {
+        $reference = 'https://example.test/Édition/東京';
+        $citation = '{{cite web|url=' . $reference . '|title=Édition de Tokyo';
+        $template = $this->make_citation($citation . '|citation_bot_placeholder_bare_url=' . base64_encode($reference) . '}}');
+        $this->assertSame($citation . '}}', $template->parsed_text());
+        $this->assertSame($citation . '}}', $template->parsed_text());
+    }
+
+    public function testBareReferenceKeepsCitationWhenRestorationFails(): void {
+        foreach (['', 'invalid!', base64_encode("Caf\xE9")] as $encoded) {
+            $citation = '{{cite web|url=https://example.test/source';
+            $template = $this->make_citation($citation . '|citation_bot_placeholder_bare_url=' . $encoded . '}}');
+            $this->assertSame($citation . '}}', $template->parsed_text());
+        }
+    }
+
     public function testNestedParametersDoNotSetTheOuterCitationMode(): void {
         $text = $this->five_citations() . '{{cite web|title={{example|mode=cs2}}}}';
         $this->assertFalse($this->cs2_mode_of($text));
