@@ -305,6 +305,15 @@ final class BotCurlTest extends testBaseClass {
         $this->assertStringNotContainsString('some-value', bot_curl_loggable_url($url));
     }
 
+    public function testOversizeCurlLogTruncatesAtUtf8Boundary(): void {
+        $prefix = 'https://example.test/';
+        $url = $prefix . str_repeat('界', 500);
+        $logged = bot_curl_loggable_url($url);
+        $this->assertSame($prefix . str_repeat('界', 334), $logged);
+        $this->assertTrue(mb_check_encoding($logged, 'UTF-8'));
+        $this->assertLessThanOrEqual(1024, mb_strlen($logged, '8bit'));
+    }
+
     public function testCurlLimitRecordsFirstOversizeProgressEvent(): void {
         $ch = bot_curl_init(1.0, [], 1000);
         $this->assertSame(0, curl_limit_page_size($ch, 0, 0, 0, 0));
