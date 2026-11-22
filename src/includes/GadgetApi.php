@@ -42,15 +42,15 @@ function gadget_api_validate_request(array $post): array {
         throw new GadgetApiRequestException('invalid_utf8', 400);
     }
 
-    if (mb_strlen($originalText) < 6) {
+    if (mb_strlen($originalText, 'UTF-8') < 6) {
         throw new GadgetApiRequestException('page_too_small', 400);
     }
 
-    if (mb_strlen($originalText) > 150000) {
+    if (mb_strlen($originalText, 'UTF-8') > 150000) {
         throw new GadgetApiRequestException('page_too_large', 400);
     }
 
-    if (mb_strlen($editSummary) > 1000) {
+    if (mb_strlen($editSummary, 'UTF-8') > 1000) {
         throw new GadgetApiRequestException('summary_too_large', 400);
     }
 
