@@ -1619,6 +1619,35 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertFalse($expanded->add_if_new('location', 'Goodbye dead'));
     }
 
+    public function testFinalTidyRepairsBareHostAndKeepsArchive(): void {
+        $template = $this->make_citation('{{cite web|title=Test|url=example.test|' .
+            'archive-url=https://web.archive.org/web/20200101000000/https://example.test|archive-date=2020-01-01}}');
+        $template->final_tidy();
+        $this->assertSame('https://example.test', $template->get2('url'));
+        $this->assertSame('https://web.archive.org/web/20200101000000/https://example.test', $template->get2('archive-url'));
+
+        $literal = $this->make_citation('{{cite web|title=Test|url=((example.test))}}');
+        $literal->final_tidy();
+        $this->assertSame('((example.test))', $literal->get3('url'));
+    }
+
+    public function testFinalTidyDropsOnlyRedundantPlainArticleNumberUrl(): void {
+        $url = 'https://example.test/paper';
+        $redundant = $this->make_citation('{{cite journal|url=' . $url . '|article-number=' . $url . '}}');
+        $redundant->final_tidy();
+        $this->assertNull($redundant->get2('article-number'));
+        $this->assertSame($url, $redundant->get2('url'));
+
+        $override = $url . ' # # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #';
+        $annotated = $this->make_citation('{{cite journal|url=' . $url . '|article-number=' . $override . '}}');
+        $annotated->final_tidy();
+        $this->assertSame($override, $annotated->get2('article-number'));
+
+        $literal = $this->make_citation('{{cite journal|url=' . $url . '|article-number=((' . $url . '))}}');
+        $literal->final_tidy();
+        $this->assertSame('((' . $url . '))', $literal->get3('article-number'));
+    }
+
     public function testAddExitingThingsAcceptsCiteWebWebsiteSpringerZone(): void {
         $text = "{{Cite web}}";
         $expanded = $this->make_citation($text);

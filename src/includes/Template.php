@@ -7956,6 +7956,15 @@ final class Template
                 }
             }
 
+            // A bare DNS hostname can be repaired without fetching a page or
+            // discarding any part of the editor's URL. Leave other forms for review.
+            $url = $this->get3('url');
+            if (preg_match('~\.[a-z]{2,63}\z~i', $url) === 1 &&
+                filter_var($url, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) !== false
+            ) {
+                $this->set('url', 'https://' . $url);
+            }
+
             $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
             if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)$~', $this->get('doi'), $matches)) {
                 if ($matches[1] === $this->get('volume')) {
@@ -8102,8 +8111,18 @@ final class Template
             }
         }
 
-        // Check for existing URLs in non-URL parameters and warn the user
+        // Discard a plain URL in article-number only when the citation already
+        // has that same link. A different link may be the only usable source.
         if ($this->should_be_processed() && !empty($this->param)) {
+            $article_number = $this->get3('article-number');
+            if ($article_number === $this->get3('url') &&
+                preg_match('~^https?://~i', $article_number) === 1 &&
+                url_valid($article_number) &&
+                $article_number === $this->get_without_comments_and_placeholders('article-number')
+            ) {
+                $this->forget('article-number');
+            }
+
             foreach ($this->param as $p) {
                 $param_name = $p->param;
                 $value = $p->val;
