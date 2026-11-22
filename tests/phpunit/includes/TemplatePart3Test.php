@@ -2308,6 +2308,62 @@ XML;
         $this->assertSame('cite journal', $expanded->wikiname());
     }
 
+    #[\PHPUnit\Framework\Attributes\DataProvider('invokeJournalSpellings')]
+    public function testInvokeJournalProcessesDoiAccessAndPmcEmbargo(string $invocation): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub citation lookups');
+        }
+
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => null,
+            'get_entrez_xml' => null,
+            'bot_curl_exec_withFalse' => static function (): never {
+                throw new LogicException('Unexpected network request while expanding a journal invocation');
+            },
+        ];
+        foreach ($stubs as $function => $result) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($function, $result, $result instanceof Closure);
+        }
+        try {
+            $opening = '<ref>{{' . $invocation . '|';
+            $fields = 'title=The cavefish genome reveals candidate genes for eye loss|journal=Nature Communications' .
+                      '|doi=10.1038/ncomms6307|pmid=25329095|pmc=4218959';
+            $text = $opening . $fields . '|pmc-embargo-date=November 18, 2020}}</ref>';
+            $expanded = $this->process_page($text)->parsed_text();
+
+            $this->assertStringStartsWith($opening, $expanded);
+            $this->assertStringContainsString('|doi-access=free', $expanded);
+            $this->assertStringContainsString('|pmc=4218959', $expanded);
+            $this->assertStringNotContainsString('|pmc-embargo-date=', $expanded);
+        } finally {
+            foreach (array_keys($stubs) as $function) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($function);
+            }
+        }
+    }
+
+    /** @return array<string, array{string}> */
+    public static function invokeJournalSpellings(): array {
+        return [
+            'compact' => ['#invoke:Cite|journal'],
+            'space before pipe' => ['#invoke:cite |journal'],
+            'space after pipe' => ['#invoke:Cite| journal'],
+            'spaces on both sides' => ['#invoke:Cite | journal '],
+            'space after colon' => ['#invoke: Cite|journal'],
+            'tabs and newline' => ["#invoke:Cite\t|\njournal\t"],
+        ];
+    }
+
+    public function testInvokeJournalIgnoresOtherModulesAndUnknownFunctions(): void {
+        $text = '<ref>{{#invoke:Other |journal|pmc=4218959|pmc-embargo-date=November 18, 2020}}</ref>' .
+                '<ref>{{#invoke:Cite |unknown|pmc=4218959|pmc-embargo-date=November 18, 2020}}</ref>';
+        $this->assertSame($text, $this->process_page($text)->parsed_text());
+    }
+
     public function testInvokeChecksTitleCiteBook(): void {
         $text = "<ref>{{#invoke:cite|title=X}}{{#invoke:Cite|book|title=X}}{{Cite book|title=X}}{{#invoke:Cite|book|title=X}}{{#invoke:Cite|book | title=X}}{{#invoke:Cite|book |title=X}}{{#invoke:Cite|book| title=X}}<ref>";
         $page = $this->process_page($text);
