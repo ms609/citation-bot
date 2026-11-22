@@ -3281,6 +3281,17 @@ final class Template
         }
     }
 
+    private static function duplicate_parameter_value(string $name, string $value): string {
+        // Apply NFC to plain citation metadata. Keep the original wikitext and
+        // leave embedded markup, URLs and identifiers outside this normalization.
+        $is_display_text = in_array($name, THINGS_THAT_ARE_TITLES, true) ||
+            in_array($name, WORK_ALIASES, true) || in_array($name, FLATTENED_AUTHOR_PARAMETERS, true);
+        if ($is_display_text && strpbrk($value, '<>{}[]#') === false && !str_contains($value, '://')) {
+            $value = normalize_unicode_nfc($value);
+        }
+        return mb_strtolower(mb_trim($value));
+    }
+
     private function use_unnamed_params(): void {
         if (empty($this->param)) {
             return;
@@ -3301,7 +3312,8 @@ final class Template
                     $this->param[$duplicate_pos]->val = $par->val;
                 }
                 array_unshift($duplicated_parameters, $duplicate_pos);
-                array_unshift($duplicate_identical, mb_strtolower(mb_trim($par->val)) === mb_strtolower(mb_trim($this->param[$duplicate_pos]->val))); // Drop duplicates that differ only by case
+                array_unshift($duplicate_identical, self::duplicate_parameter_value($par->param, $par->val) ===
+                    self::duplicate_parameter_value($par->param, $this->param[$duplicate_pos]->val));
             }
             $param_occurrences[$par->param] = $pointer;
         }
