@@ -490,15 +490,15 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testGitpullSubprocessDoesNotInheritApplicationSecrets(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/gitpull.php');
+        $source = file_get_contents(__DIR__ . '/../../../src/includes/DeploymentGit.php');
         $this->assertIsString($source);
         if (!is_string($source)) {
-            throw new RuntimeException('Unable to read gitpull.php.');
+            throw new RuntimeException('Unable to read DeploymentGit.php.');
         }
 
         $this->assertStringNotContainsString('shell_exec(', $source);
         $this->assertStringContainsString(
-            "\$command = ['/usr/bin/git', '-C', dirname(__DIR__), ...\$arguments];",
+            "\$command = ['/usr/bin/git', '-C', \$repository, ...\$arguments];",
             $source
         );
         $this->assertStringContainsString('proc_open(', $source);
@@ -509,7 +509,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         );
         $runner_start = mb_strpos(
             $source,
-            'function gitpull_run_git(array $arguments): array'
+            'function gitpull_run_git(array $arguments, string $repository): array'
         );
         $this->assertIsInt($environment_start);
         $this->assertIsInt($runner_start);
@@ -538,6 +538,35 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         ] as $secret_name) {
             $this->assertStringNotContainsString($secret_name, $environment_source);
         }
+    }
+
+    public function testGitOutputIsBoundedAndSafeToDisplay(): void {
+        require_once dirname(__DIR__, 3) . '/src/includes/DeploymentGit.php';
+        if (!is_executable('/usr/bin/git')) {
+            $this->markTestSkipped('Deployment uses /usr/bin/git');
+        }
+        $directory = dirname(__DIR__, 3);
+        $value = "Résumé\t東京\x1b\x07\x7f\xc2\x9b\x9b" . str_repeat('x', 1024);
+        $output = gitpull_run_git(['-c', 'test.value=' . $value, 'config', '--get', 'test.value'], $directory);
+        $this->assertSame(0, $output['status']);
+        $this->assertStringStartsWith("Résumé\t東京", $output['output']);
+        $this->assertTrue(mb_check_encoding($output['output'], 'UTF-8'));
+        $this->assertDoesNotMatchRegularExpression('~[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]~u', $output['output']);
+
+        // Git appends a newline, bringing the captured output to exactly the limit.
+        $value = str_repeat('x', GITPULL_MAX_COMMAND_OUTPUT_BYTES - 1);
+        $exact = gitpull_run_git(['-c', 'test.value=' . $value, 'config', '--get', 'test.value'], $directory);
+        $this->assertSame(0, $exact['status']);
+        $this->assertSame($value . "\n", $exact['output']);
+
+        $value = str_repeat('x', GITPULL_MAX_COMMAND_OUTPUT_BYTES + 4096);
+        $long = gitpull_run_git(['-c', 'test.value=' . $value, 'config', '--get', 'test.value'], $directory);
+        $this->assertSame(0, $long['status']);
+        $this->assertSame(str_repeat('x', GITPULL_MAX_COMMAND_OUTPUT_BYTES) . "\n[Git output truncated]\n", $long['output']);
+
+        $failure = gitpull_run_git(['--unknown-option-for-test'], $directory);
+        $this->assertNotSame(0, $failure['status']);
+        $this->assertStringContainsString('--unknown-option-for-test', $failure['output']);
     }
 
     public function testGitpullUsesAdvisoryLockAndPropagatesGitFailures(): void {

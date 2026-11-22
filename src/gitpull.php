@@ -13,6 +13,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/env.php';
 
 require_once __DIR__ . '/includes/DeployToken.php';
+require_once __DIR__ . '/includes/DeploymentGit.php';
 require_once __DIR__ . '/includes/PublicConfig.php';
 
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
@@ -140,70 +141,6 @@ function gitpull_browser_form(string $message, int $status): never {
     gitpull_page($message, true, $status, $nonce);
 }
 
-/**
- * Build the deliberately small environment inherited by Git subprocesses.
- *
- * env.php populates the PHP process with OAuth credentials, API keys, and the
- * deployment token. Git does not need those values, so do not pass the parent
- * environment through wholesale.
- *
- * @return array<string, string>
- */
-function gitpull_process_environment(): array {
-    $environment = [
-        'PATH' => '/usr/bin:/bin',
-        'LC_CTYPE' => 'en_US.UTF-8',
-        'LC_ALL' => 'en_US.UTF-8',
-        'LANG' => 'en_US.UTF-8',
-        'TMPDIR' => '/tmp',
-    ];
-    return $environment;
-}
-
-/**
- * Run Git without a shell and without inheriting application credentials.
- *
- * @param array<int, string> $arguments
- * @return array{output: string, status: int}
- */
-function gitpull_run_git(array $arguments): array {
-    $command = ['/usr/bin/git', '-C', dirname(__DIR__), ...$arguments];
-    $output_stream = tmpfile();
-    if (!is_resource($output_stream)) {
-        return ['output' => 'Unable to create Git command output stream.', 'status' => 1];
-    }
-
-    $pipes = [];
-
-    /** @psalm-suppress ForbiddenCode */
-    $process = proc_open( // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found
-        $command,
-        [
-            0 => ['file', '/dev/null', 'r'],
-            1 => $output_stream,
-            2 => $output_stream,
-        ],
-        $pipes,
-        null,
-        gitpull_process_environment()
-    );
-
-    if (!is_resource($process)) {
-        fclose($output_stream);
-        return ['output' => 'Unable to start Git command.', 'status' => 1];
-    }
-
-    $status = proc_close($process);
-    rewind($output_stream);
-    $output = stream_get_contents($output_stream);
-    fclose($output_stream);
-
-    return [
-        'output' => is_string($output) ? $output : '',
-        'status' => $status,
-    ];
-}
-
 clearstatcache(true, LOCK_FILE);
 
 $deployToken = (string) @getenv('DEPLOY_TOKEN');
@@ -293,7 +230,7 @@ if (!@flock($lockHandle, LOCK_EX | LOCK_NB)) {
 $git_status = 200;
 try {
     // gitpull_page() escapes output with htmlspecialchars, so keep raw here.
-    $fetch = gitpull_run_git(['fetch', '--all']);
+    $fetch = gitpull_run_git(['fetch', '--all'], dirname(__DIR__));
     $git_hub = $fetch['output'];
     if ($fetch['status'] !== 0) {
         $git_status = 500;
@@ -303,7 +240,7 @@ try {
             ".\n" .
             $git_hub;
     } else {
-        $reset = gitpull_run_git(['reset', '--hard', 'origin/master']);
+        $reset = gitpull_run_git(['reset', '--hard', 'origin/master'], dirname(__DIR__));
         if ($reset['status'] !== 0) {
             $git_status = 500;
             $git_hub .=
