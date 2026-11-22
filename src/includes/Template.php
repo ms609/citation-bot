@@ -156,7 +156,8 @@ final class Template
         if ($pipe_pos) {
             $name = mb_trim(mb_substr($text, 2, $pipe_pos - 2));
             if (mb_strpos($name, '#invoke:') === 0) {
-                if (mb_strpos($name, ' ') !== false) {
+                $module = mb_trim(mb_substr($name, mb_strlen('#invoke:')));
+                if (mb_strpos($module, ' ') !== false) {
                     $pipe_pos = false;
                 } else {
                     $pipe_pos = mb_strpos($text, '|', $pipe_pos + 2);
@@ -4681,6 +4682,10 @@ final class Template
      */
     public function wikiname(): string {
         $name = mb_trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+        if (str_starts_with($name, '#invoke:')) {
+            // Normalize Module:Cite spacing for lookup while preserving the wikitext.
+            $name = safe_preg_replace('~\A#invoke:\s*cite\s*\|\s*~u', 'cite|', $name);
+        }
         $name = mb_trim(str_replace('#invoke:', '', $name));
         $name = str_replace('|', ' ', $name);
         // Exact-name aliases only; leave locale mappings and special cases below.
