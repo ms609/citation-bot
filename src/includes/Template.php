@@ -6178,7 +6178,9 @@ final class Template
                     $this->get('url') === 'https://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') . '/' ||
                     $this->get('url') === 'http://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') . '/'
                     ) {
-                        $this->forget('url');
+                        if ($this->blank_other_than_comments(['archive-url', 'archiveurl'])) {
+                            $this->forget('url');
+                        }
                     }
                     if ($this->wikiname() !== 'cite ssrn') {
                         $this->change_name_to('cite journal', false);
