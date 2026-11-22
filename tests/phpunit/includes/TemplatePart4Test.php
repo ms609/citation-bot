@@ -1710,6 +1710,58 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertSame('san diego union tribune', $template->get2('work'));
     }
 
+    public function testCiteNewsSectionBecomesDepartmentInPage(): void {
+        $citation = '{{cite news |last1=Hind |first1=Andrew |last2=da Silva |first2=Maria'
+            . ' |title=Visit to Cobalt has a silver lining |date=May 15, 2008 |work=[[Toronto Star]]'
+            . ' |section=Travel Section |url=https://www.thestar.com/Travel/article/424925'
+            . '|archive-url=https://web.archive.org/web/20080517220925/http://www.thestar.com/Travel/article/424925'
+            . '|url-status=dead|archive-date=May 17, 2008}}';
+        $text = 'Further reading<ref>' . $citation . '</ref>';
+        $expected = str_replace('|section=', '|department=', $text);
+
+        $this->assertSame($expected, $this->process_page($text)->parsed_text());
+        $this->assertSame($expected, $this->process_page($expected)->parsed_text());
+    }
+
+    public function testCiteNewsSectionCanReplaceAnEmptyDepartment(): void {
+        $text = '{{cite news|title=Local news|newspaper=Daily News|section=OBITUARIES|department=}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('OBITUARIES', $template->get2('department'));
+        $this->assertNull($template->get2('section'));
+    }
+
+    public function testCiteNewsSectionKeepsAnEditorCommentOnEmptyDepartment(): void {
+        $text = 'Text<ref>{{cite news|title=Local news|section=Travel|<!-- verify the section -->department=}}</ref>';
+        $this->assertSame($text, $this->process_page($text)->parsed_text());
+    }
+
+    /** @return array<string, array{string}> */
+    public static function citeNewsSectionsToKeep(): array {
+        return [
+            'existing department' => ['{{cite news|title=Local news|section=Travel|department=Features}}'],
+            'existing title note' => ['{{cite news|title=Local news|section=Travel|title-note=Features}}'],
+            'populated duplicate department' => ['{{cite news|title=Local news|section=Travel|department=|department=Features}}'],
+            'conflicting sections' => ['{{cite news|title=Local news|section=Travel|section=Features}}'],
+            'section link' => ['{{cite news|title=Local news|section=Travel|section-url=https://example.com/travel}}'],
+            'chapter link alias' => ['{{cite news|title=Local news|section=Travel|chapter-url=https://example.com/travel}}'],
+            'section format' => ['{{cite news|title=Local news|section=Travel|section-format=PDF}}'],
+            'section translation' => ['{{cite news|title=Local news|section=Travel|trans-section=Voyages}}'],
+            'section in another script' => ['{{cite news|title=Local news|section=Travel|script-section=ja:旅行}}'],
+            'numeric locator' => ['{{cite news|title=Local news|section=2.3}}'],
+            'unrecognized label' => ['{{cite news|title=Local news|section=Special Reports Section}}'],
+            'missing article title' => ['{{cite news|newspaper=Daily News|section=Travel}}'],
+            'book section' => ['{{cite book|title=Collected Essays|section=Travel}}'],
+        ];
+    }
+
+    #[DataProvider('citeNewsSectionsToKeep')]
+    public function testCiteNewsSectionRenameLeavesAmbiguousCitationsAlone(string $text): void {
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('section');
+        $this->assertSame($text, $template->parsed_text());
+    }
+
     public function testTidyNYTandWorksRemovesPublisherNewYorkTimesWebsitePublisherTheNewYorkTimesSubscriptioWebsiteNewYorkTimesWebsite(): void {
         $text = "{{cite web|publisher=the new york times (subscription required)|website=new york times website}}";
         $template = $this->make_citation($text);

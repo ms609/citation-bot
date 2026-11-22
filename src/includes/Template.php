@@ -6617,6 +6617,44 @@ final class Template
                     }
                     return;
 
+                case 'section':
+                    if (
+                        $param !== 'section' || WIKI_BASE !== 'en' || $this->wikiname() !== 'cite news' ||
+                        $this->blank(['title', 'script-title'])
+                    ) {
+                        return;
+                    }
+
+                    // CS1 ignores section in cite news. Only move recognizable newspaper department names.
+                    $section = safe_preg_replace('~ section\z~', '', mb_strtolower($this->get($param)));
+                    if (!in_array($section, [...DEPARTMENTS, 'obituaries'], true)) {
+                        return;
+                    }
+
+                    $related_fields = [
+                        'department', 'title-note', 'DUPLICATE_section', 'book-title', 'isbn',
+                        'chapter', 'contribution', 'article', 'entry', ...CHAPTER_URL_ALIASES, 'section-url-access',
+                        'chapter-format', 'contribution-format', 'article-format', 'entry-format', 'section-format',
+                        'script-chapter', 'script-contribution', 'script-article', 'script-entry', 'script-section',
+                        'trans-chapter', 'trans-contribution', 'trans-article', 'trans-entry', 'trans-section',
+                    ];
+                    $section_count = 0;
+                    foreach ($this->param as $parameter) {
+                        if ($parameter->param === 'section') {
+                            ++$section_count;
+                        } elseif (
+                            in_array($parameter->param, $related_fields, true) &&
+                            ($parameter->val !== '' ||
+                                mb_stripos($parameter->pre . $parameter->eq, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== false)
+                        ) {
+                            return;
+                        }
+                    }
+                    if ($section_count === 1) {
+                        $this->rename($param, 'department');
+                    }
+                    return;
+
                 case 'series':
                     if (str_equivalent($this->get($param), $this->get('work'))) {
                         $this->forget('work');
