@@ -212,6 +212,32 @@ final class GadgetApiTest extends testBaseClass {
         );
     }
 
+    public function testGadgetAcceptsMultibyteFieldsAtByteLimits(): void {
+        $text = str_repeat('文', 150000);
+        $summary = str_repeat('文', 1000);
+
+        $this->assertSame([$text, $summary], gadget_api_validate_request([
+            'text' => $text,
+            'summary' => $summary,
+        ]));
+    }
+
+    public function testGadgetRejectsPageOneByteOverLimitWithinCharacterLimit(): void {
+        $this->assertGadgetRequestFailure(
+            ['text' => str_repeat('文', 149999) . '😀', 'summary' => ''],
+            'page_too_large',
+            400
+        );
+    }
+
+    public function testGadgetRejectsSummaryOneByteOverLimitWithinCharacterLimit(): void {
+        $this->assertGadgetRequestFailure(
+            ['text' => 'normal text', 'summary' => str_repeat('文', 999) . '😀'],
+            'summary_too_large',
+            400
+        );
+    }
+
     public function testGadgetRejectsInvalidUtf8(): void {
         $this->assertGadgetRequestFailure(
             [
