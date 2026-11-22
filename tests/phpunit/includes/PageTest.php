@@ -99,7 +99,10 @@ final class PageTest extends testBaseClass {
             0,
             mb_substr_count($source, '$this->text = preg_replace_callback(')
         );
-        $this->assertGreaterThanOrEqual(7, mb_substr_count($source, '$this->text = safe_preg_replace_callback('));
+        $this->assertStringContainsString(
+            '$this->text = safe_preg_replace_callback($regex, $replacement, $this->text);',
+            $source
+        );
     }
 
     public function testPageChangeSummaryChecksAlteredTemplateTypeEnWPUCBUseChapterChapterNameTitleBookName(): void {
