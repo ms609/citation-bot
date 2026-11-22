@@ -64,7 +64,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     set_time_limit(120);
     /* idx is also the index into the template array */
     foreach ($ids as $idx => $value) {
-        if (!preg_match('~^\d+$~', $value) || $value === '1' || $value === '0') {
+        if (!pmid_valid($value) || $value === '1') {
             unset($ids[$idx]);
         }
     }

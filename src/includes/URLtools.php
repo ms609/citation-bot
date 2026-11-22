@@ -110,7 +110,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
             } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
                 report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
                 $template->set($url_type, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif (str_ireplace('insights.ovid.com/pubmed', '', $url) !== $url && $template->has('pmid')) {
+            } elseif (str_ireplace('insights.ovid.com/pubmed', '', $url) !== $url && pmid_valid($template->get('pmid'))) {
                 report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
                 $template->forget($url_type);
             } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org', '', $url) !== $url) {
@@ -1589,6 +1589,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     bot_debug_log("PMC oops");
                     return false;
                 }
+                if (!pmc_valid($new_pmc)) {
+                    return false;
+                }
                 if (!$url_sent) {
                     if (mb_stripos($url, ".pdf") !== false) {
                         $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
@@ -1610,6 +1613,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
 
             } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=(\d+)$~', $url, $match)) {
                 $pos_pmid = $match[1];
+                if (!pmid_valid($pos_pmid)) {
+                    return false;
+                }
                 $old_pmid = $template->get('pmid');
                 if ($old_pmid === $pos_pmid) {
                     if (!$url_sent && $template->blank_other_than_comments(['archive-url', 'archiveurl'])) {
@@ -1625,7 +1631,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     report_warning(echoable($url) . ' does not match PMID of ' . echoable($old_pmid));
                 }
                 return false;
-            } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=.*$~', $url) && ($template->has('pmid') || $template->has('pmc'))) {
+            } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=.*$~', $url) &&
+                (pmid_valid($template->get('pmid')) || pmc_valid($template->get('pmc')))
+            ) {
                 report_info('Dropped non-specific pubmed search URL, since PMID is present');
                 $template->forget($url_type);
                 return false;
@@ -1642,6 +1650,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                         $update_url($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
                     }
                     return false; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
+                }
+                if (!pmid_valid($match[1])) {
+                    return false;
                 }
                 if ($template->blank('pmid')) {
                     report_modification("Converting URL to PMID parameter");
@@ -1694,6 +1705,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
         } elseif (mb_stripos($url, 'europepmc.org') !== false) {
             if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match) ||
                     preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
+                if (!pmc_valid($match[1])) {
+                    return false;
+                }
                 if ($template->wikiname() === 'cite web') {
                     $template->change_name_to('cite journal');
                 }
@@ -1705,6 +1719,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 }
                 return $template->add_if_new('pmc', $match[1]);
             } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/(?:abstract|articles?)/med/(\d{4,})~i", $url, $match)) {
+                if (!pmid_valid($match[1])) {
+                    return false;
+                }
                 if ($template->wikiname() === 'cite web') {
                     $template->change_name_to('cite journal');
                 }
