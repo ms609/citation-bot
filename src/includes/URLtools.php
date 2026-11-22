@@ -738,15 +738,33 @@ function citation_urls_equivalent(string $left, string $right): bool {
     if (!is_array($left_parts) || !is_array($right_parts)) {
         return false;
     }
-    foreach (['scheme', 'host'] as $component) {
-        if (isset($left_parts[$component])) {
-            $left_parts[$component] = mb_strtolower($left_parts[$component]);
-        }
-        if (isset($right_parts[$component])) {
-            $right_parts[$component] = mb_strtolower($right_parts[$component]);
-        }
+    if (isset($left_parts['scheme'])) {
+        $left_parts['scheme'] = mb_strtolower($left_parts['scheme'], 'UTF-8');
+    }
+    if (isset($right_parts['scheme'])) {
+        $right_parts['scheme'] = mb_strtolower($right_parts['scheme'], 'UTF-8');
+    }
+    if (isset($left_parts['host'])) {
+        $left_parts['host'] = citation_url_host_key($left_parts['host']);
+    }
+    if (isset($right_parts['host'])) {
+        $right_parts['host'] = citation_url_host_key($right_parts['host']);
     }
     return $left_parts === $right_parts;
+}
+
+function citation_url_host_key(string $host): string {
+    if (function_exists('idn_to_ascii') && preg_match('~[^\x00-\x7f]~', $host) === 1 && mb_check_encoding($host, 'UTF-8')) {
+        $ascii = idn_to_ascii(
+            $host,
+            IDNA_NONTRANSITIONAL_TO_ASCII | IDNA_USE_STD3_RULES | IDNA_CHECK_BIDI | IDNA_CHECK_CONTEXTJ,
+            INTL_IDNA_VARIANT_UTS46
+        );
+        if ($ascii !== false) {
+            return $ascii;
+        }
+    }
+    return mb_strtolower($host, 'UTF-8');
 }
 
 function not_an_archive_url_clean(Template $template, string $param): void {

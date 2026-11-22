@@ -153,6 +153,26 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame('', $template->get('volume'));
     }
 
+    public function testCitationUrlEquivalenceNormalizesOnlyTheIdnHost(): void {
+        if (!function_exists('idn_to_ascii')) {
+            $this->markTestSkipped('The intl extension is required for IDN comparison');
+        }
+        $unicode = 'https://bücher.example/Café?q=Café#Café';
+        $ascii = 'https://XN--BCHER-KVA.example/Café?q=Café#Café';
+        $this->assertTrue(citation_urls_equivalent($unicode, $ascii));
+        $this->assertFalse(citation_urls_equivalent($unicode, str_replace('/Café', "/Cafe\u{0301}", $ascii)));
+        $this->assertFalse(citation_urls_equivalent($unicode, str_replace('?q=Café', '?q=café', $ascii)));
+        $this->assertFalse(citation_urls_equivalent($unicode, str_replace('#Café', '#café', $ascii)));
+        $this->assertFalse(citation_urls_equivalent('https://faß.example/', 'https://fass.example/'));
+        $this->assertFalse(citation_urls_equivalent($unicode, str_replace('.example/', '.example:8443/', $ascii)));
+        $this->assertNull(normalize_public_host('bücher.example'));
+    }
+
+    public function testCitationUrlValidatorRequiresUtf8(): void {
+        $this->assertTrue(url_valid('https://bücher.example/Café'));
+        $this->assertFalse(url_valid("https://example.test/Caf\xE9"));
+    }
+
     public function testInternationalPageRangeDoesNotDiscardSpecificPage(): void {
         foreach (['١٠–٢٠', '１２–２０', '№9', 'Ⅻ'] as $candidate) {
             $template = $this->make_citation('{{cite journal|title=Example article|journal=Example Journal|page=12}}');

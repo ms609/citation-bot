@@ -2217,8 +2217,8 @@ function has_unexpanded_cms_token(string $value): bool {
  * (RFC 3986 scheme syntax), and non-empty content after the scheme.
  */
 function url_valid(string $value): bool {
-    if (preg_match('~\s|[[:cntrl:]]~u', $value) === 1) {
-        return false; // CS1 rejects URLs containing whitespace or control characters
+    if (preg_match('~\s|[[:cntrl:]]~u', $value) !== 0) {
+        return false; // Reject whitespace, control characters and invalid UTF-8.
     }
     if (preg_match('~^[a-zA-Z][a-zA-Z0-9+.\-]*:~', $value, $scheme_match) !== 1) {
         return false; // must begin with a scheme
