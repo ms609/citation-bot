@@ -178,6 +178,23 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertFalse(citation_urls_equivalent('https://example.org/Part1', 'https://example.org/part1'));
     }
 
+    public function testCitationDuplicatesUseNfcForPlainMetadataOnly(): void {
+        $template = $this->prepare_citation(
+            "{{cite journal|title=Café|title=Cafe\u{0301}|journal=Études|journal=E\u{0301}tudes|" .
+            "last1=García|last1=Garci\u{0301}a|id=Café|id=Cafe\u{0301}}}"
+        );
+        $this->assertNull($template->get2('DUPLICATE_title'));
+        $this->assertNull($template->get2('DUPLICATE_journal'));
+        $this->assertNull($template->get2('DUPLICATE_last1'));
+        $this->assertStringContainsString("title=Cafe\u{0301}", $template->parsed_text());
+        $this->assertSame('Café', $template->get('DUPLICATE_id'));
+
+        $links = $this->prepare_citation(
+            "{{cite journal|title=[https://example.test/Café Book]|title=[https://example.test/Cafe\u{0301} Book]}}"
+        );
+        $this->assertSame('[https://example.test/Café Book]', $links->get('DUPLICATE_title'));
+    }
+
     public function testCitoidChecksScriptTitleBeforeEnriching(): void {
         $url = 'https://www.jstor.org/stable/1234567';
         foreach (['Different article', '東京大学の研究'] as $result_title) {
