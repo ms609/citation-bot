@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/WikiThings.php';       // @codeCoverageIgnoreStart
+require_once __DIR__ . '/WikitextWorkBudget.php';
 require_once __DIR__ . '/Template.php';
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/api/APIdoi.php';
@@ -91,7 +92,7 @@ class Page {
     private static bool $told_fast = false;
     protected static string $last_title = '';
 
-    public function __construct() {
+    public function __construct(private readonly ?WikitextWorkBudget $work_budget = null) {
         $this->construct_modifications_array();
         if (!self::$told_fast) {
             if (!SLOW_MODE) {
@@ -190,6 +191,7 @@ class Page {
     }
 
     public function parse_text(string $text): void {
+        $this->work_budget?->preflight($text);
         $this->construct_modifications_array(); // Could be new page
         $this->text = $text;
         $this->start_text = $this->text;
@@ -252,6 +254,17 @@ class Page {
         }
     }
 
+    /**
+     * @param string $regex
+     * @param callable(array<string>):string $replacement
+     */
+    private function replace_bare_references(string $regex, callable $replacement): void {
+        if ($this->work_budget !== null) {
+            $replacement = $this->work_budget->boundConversions($this->text, $replacement);
+        }
+        $this->text = safe_preg_replace_callback($regex, $replacement, $this->text);
+    }
+
     private function convert_bare_references(): void {
         $citation_count = mb_substr_count($this->text, '{{cite ') +
             mb_substr_count($this->text, '{{Cite ') +
@@ -261,42 +274,38 @@ class Page {
         // PLAIN URLS Converted to Templates
         $template_type = $this->cs2_mode ? 'citation' : 'cite web';
         // Ones like <ref>http://www.../....{{full|date=April 2016}}</ref> (?:full) so we can add others easily
-        $this->text = safe_preg_replace_callback(
+        $this->replace_bare_references(
             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
             static function (array $matches) use ($template_type): string {
                 return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
-            },
-            $this->text
+            }
         );
         // Ones like <ref>http://www.../....{{Bare URL inline|date=April 2016}}</ref>
-        $this->text = safe_preg_replace_callback(
+        $this->replace_bare_references(
             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
             static function (array $matches) use ($template_type): string {
                 return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
-            },
-            $this->text
+            }
         );
         // Ones like <ref>http://www.../....</ref>; <ref>[http://www.../....]</ref>     Also, allow a trailing period, space+period, or comma
-        $this->text = safe_preg_replace_callback(
+        $this->replace_bare_references(
             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)[ \,\.]*\]?[\s\.\,]*)(<\s*?\/\s*?ref(?:\s*)>)~i",
             static function (array $matches) use ($template_type): string {
                 return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
-            },
-            $this->text
+            }
         );
         // Ones like <ref>[http://www... http://www...]</ref>
-        $this->text = safe_preg_replace_callback(
+        $this->replace_bare_references(
             "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
             static function (array $matches) use ($template_type): string {
                 if ($matches[4] === $matches[6]) {
                     return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[4]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[8];
                 }
                 return $matches[0];
-            },
-            $this->text
+            }
         );
         // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
-        $this->text = safe_preg_replace_callback(
+        $this->replace_bare_references(
             // like <ref>{{doi|10.1244/abc}}</ref>
             "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
             static function (array $matches): string {
@@ -305,23 +314,21 @@ class Page {
                     $type = mb_strtolower($identifier[1]) === 'arxiv' ? 'cite arxiv' : 'cite book';
                 }
                 return $matches[1] . '{{' . $type . ' | id=' . $matches[2] . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[3];
-            },
-            $this->text
+            }
         );
         // PLAIN DOIS Converted to templates
-        $this->text = safe_preg_replace_callback(
+        $this->replace_bare_references(
             // like <ref>10.1244/abc</ref>
             "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
             static function (array $matches): string {
                 return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[3];
-            },
-            $this->text
+            }
         );
         if (
             ($ref_count < 2) ||
             (($citation_count / $ref_count) >= 0.5)
         ) {
-            $this->text = safe_preg_replace_callback(
+            $this->replace_bare_references(
                 // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
                 // also without titles on the urls
                 "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
@@ -343,8 +350,7 @@ class Page {
                         return $matches[0];
                     }
                     return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6];
-                },
-                $this->text
+                }
             );
         }
     }
@@ -656,6 +662,7 @@ class Page {
         unset($nowiki);
         $this->replace_object($comments);
         unset($comments);
+        $this->work_budget?->scan($this->text);
         set_time_limit(120);
 
         if (mb_stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
@@ -951,7 +958,15 @@ class Page {
 
         $preg_ok = true;
         foreach ($regexp_in as $regexp) {
-            while ($preg_ok = preg_match($regexp, $text, $match)) {
+            while (true) {
+                $this->work_budget?->scan($text);
+                $preg_ok = preg_match($regexp, $text, $match);
+                if (!$preg_ok) {
+                    break;
+                }
+                if ($class === Template::class) {
+                    $this->work_budget?->recordTemplate($match[0]);
+                }
                 $obj = new $class();
                 try {
                     $obj->parse_text($match[0]);
@@ -962,9 +977,11 @@ class Page {
                 }
                 /** @var non-empty-string $separator */
                 $separator = $match[0];
+                $placeholder = sprintf($placeholder_text, $i);
+                $this->work_budget?->checkReplacement($text, $separator, $placeholder);
                 $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
                 unset($separator, $text, $match);
-                $text = implode(sprintf($placeholder_text, $i), $exploded);
+                $text = implode($placeholder, $exploded);
                 $i++;
                 unset($exploded);
                 $objects[] = $obj;
@@ -974,7 +991,15 @@ class Page {
         if ($preg_ok === false && isset($regexp) && is_string($regexp)) {
             // @codeCoverageIgnoreStart
             $regexp = str_replace('~su', '~s', $regexp);
-            while ($preg_ok = preg_match($regexp, $text, $match)) { // try last most powerful REGEX without unicode
+            while (true) { // try last most powerful REGEX without unicode
+                $this->work_budget?->scan($text);
+                $preg_ok = preg_match($regexp, $text, $match);
+                if (!$preg_ok) {
+                    break;
+                }
+                if ($class === Template::class) {
+                    $this->work_budget?->recordTemplate($match[0]);
+                }
                 $obj = new $class();
                 try {
                     $obj->parse_text($match[0]);
@@ -985,9 +1010,11 @@ class Page {
                 }
                 /** @var non-empty-string $separator */
                 $separator = $match[0];
+                $placeholder = sprintf($placeholder_text, $i);
+                $this->work_budget?->checkReplacement($text, $separator, $placeholder);
                 $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
                 unset($separator, $text, $match);
-                $text = implode(sprintf($placeholder_text, $i), $exploded);
+                $text = implode($placeholder, $exploded);
                 $i++;
                 unset($exploded);
                 $objects[] = $obj;
@@ -996,6 +1023,11 @@ class Page {
         }
 
         if ($preg_ok === false) { // Something went wrong.  Often from bad wiki-text.
+            if ($this->work_budget !== null && in_array(preg_last_error(), [
+                PREG_BACKTRACK_LIMIT_ERROR, PREG_RECURSION_LIMIT_ERROR, PREG_JIT_STACKLIMIT_ERROR,
+            ], true)) {
+                throw new WikitextTooComplexException();
+            }
             gc_collect_cycles(); // @codeCoverageIgnoreStart
             $this->page_error = true;
             report_minor_error('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
@@ -1022,7 +1054,11 @@ class Page {
             $reverse = array_reverse($objects);
             foreach ($reverse as $obj) {
                 --$i;
-                $this->text = str_ireplace(sprintf(constant($obj::class . '::PLACEHOLDER_TEXT'), $i), $obj->parsed_text(), $this->text); // Case insensitive, since placeholder might get title case, etc.
+                $placeholder = sprintf(constant($obj::class . '::PLACEHOLDER_TEXT'), $i);
+                $replacement = $obj->parsed_text();
+                $this->work_budget?->checkReplacement($this->text, $placeholder, $replacement, case_insensitive: true);
+                // A placeholder may have been changed to title case.
+                $this->text = str_ireplace($placeholder, $replacement, $this->text);
             }
         }
     }
@@ -1046,7 +1082,7 @@ class Page {
      *
      * @return Generator<int, array{string, array<string, string>, int}>
      */
-    private static function page_template_settings(string $text): Generator {
+    private function page_template_settings(string $text): Generator {
         $text = remove_comments($text);
         $frames = [];
         $position = 0;
@@ -1058,6 +1094,7 @@ class Page {
                 if ($current !== null) {
                     $frames[$current]['nested'] = true;
                 }
+                $this->work_budget?->checkDepth(count($frames) + 1);
                 $frames[] = [
                     'closing' => strtr($token, '{[', '}]'),
                     'offset' => $offset,
@@ -1121,7 +1158,7 @@ class Page {
         $has_allow_list = false;
         $allowed_by_list = false;
         $cs1_optout = false;
-        foreach (self::page_template_settings($text) as [$name, $params]) {
+        foreach ($this->page_template_settings($text) as [$name, $params]) {
             if ($name === 'nobots') {
                 return [false, false];
             }
@@ -1189,7 +1226,7 @@ class Page {
         $first_config = PHP_INT_MAX;
         $cs2_count = 0;
         $has_cs1 = false;
-        foreach (self::page_template_settings($this->text) as [$name, $params, $offset]) {
+        foreach ($this->page_template_settings($this->text) as [$name, $params, $offset]) {
             $mode = $params['mode'] ?? '';
             if ($name === 'cs1 config' && ($mode === 'cs1' || $mode === 'cs2') && $offset < $first_config) {
                 $first_config = $offset;

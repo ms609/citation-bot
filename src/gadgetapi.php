@@ -43,7 +43,7 @@ try {
 
     //Expand text from postvars
     ob_start(); // Capture stray output from construction/parsing/expansion so it cannot corrupt the JSON response
-    $page = new Page();
+    $page = new Page(new WikitextWorkBudget());
     $page->parse_text($originalText);
     $page->expand_text();
     ob_end_clean();
@@ -88,6 +88,10 @@ try {
         if (!@ob_end_clean()) {
             break;
         }
+    }
+    if ($exception instanceof WikitextTooComplexException) {
+        gadget_api_error('page_too_complex', 422);
+        return;
     }
     if (function_exists('bot_debug_log')) {
         bot_debug_log('gadgetapi failure: ' . $exception::class . ': ' . $exception->getMessage());

@@ -223,6 +223,91 @@ final class GadgetApiTest extends testBaseClass {
         );
     }
 
+    public function testWikitextPreflightAllowsProtectedSyntaxAndMultilingualText(): void {
+        $text = str_repeat('引用の出典。', 9000) . "\n"
+            . '<nowiki>' . str_repeat('{{', 100) . '</nowiki>'
+            . '{{cite web|title={{lang|ja|引用}}}}';
+        $page = new Page(new WikitextWorkBudget());
+        $page->parse_text($text);
+
+        $this->assertSame($text, $page->parsed_text());
+    }
+
+    public function testWikitextBudgetCountsWikilinkFramesDuringExpansion(): void {
+        $page = new Page(new WikitextWorkBudget());
+        $page->parse_text(str_repeat('[[', 49) . 'Page' . str_repeat(']]', 49));
+        $this->expectException(WikitextTooComplexException::class);
+        $page->expand_text();
+    }
+
+    public function testWikitextPreflightRejectsExcessiveSiblingTemplates(): void {
+        $this->expectException(WikitextTooComplexException::class);
+        (new WikitextWorkBudget())->preflight(str_repeat('{{example}}', 1201));
+    }
+
+    public function testWikitextBudgetRejectsExcessiveFieldsBeforeTemplateParsing(): void {
+        $page = new Page(new WikitextWorkBudget());
+        $page->parse_text('{{example' . str_repeat('|field=value', 257) . '}}');
+
+        $this->expectException(WikitextTooComplexException::class);
+        $page->extract_object(Template::class);
+    }
+
+    public function testWikitextTemplateByteBudgetIncludesMultibyteContent(): void {
+        $content = str_repeat('界', 21844);
+        $budget = new WikitextWorkBudget();
+        $budget->recordTemplate('{{' . $content . '}}');
+
+        $this->expectException(WikitextTooComplexException::class);
+        $budget->recordTemplate('{{' . $content . 'x}}');
+    }
+
+    public function testBareReferenceConversionChecksCumulativeOutputBytes(): void {
+        $convert = (new WikitextWorkBudget())->boundConversions(
+            str_repeat('a', 1024 * 1024 - 2),
+            static fn (array $matches): string => str_replace('a', '文', $matches[0])
+        );
+        $this->assertSame('文', $convert(['a']));
+        $this->expectException(WikitextTooComplexException::class);
+        $convert(['a']);
+    }
+
+    public function testWikitextBudgetChecksRestoredSizeBeforeReplacement(): void {
+        $budget = new WikitextWorkBudget();
+        $this->expectException(WikitextTooComplexException::class);
+        $budget->checkReplacement(
+            str_repeat('Placeholder ', 1000),
+            'placeholder',
+            str_repeat('x', 1100),
+            case_insensitive: true
+        );
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetReturnsPageTooComplexBeforeExpansion(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required for offline gadget validation');
+        }
+        $this->assertTrue(uopz_set_return('request_rate_limit_consume_layered', null));
+        $this->assertTrue(uopz_set_return(Page::class, 'expand_text', static function (): never {
+            throw new LogicException('Preflight should stop before expansion');
+        }, true));
+        try {
+            $text = str_repeat('{{example|', 49) . 'citation' . str_repeat('}}', 49);
+            $response = $this->runGadgetEndpoint(['text' => $text, 'summary' => ''], 'https://en.wikipedia.org');
+
+            $this->assertSame(422, $response['status']);
+            $this->assertSame(
+                ['error' => 'page_too_complex'],
+                json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+            );
+        } finally {
+            $this->assertTrue(uopz_unset_return(Page::class, 'expand_text'));
+            $this->assertTrue(uopz_unset_return('request_rate_limit_consume_layered'));
+        }
+    }
+
     public function testGadgetAcceptsMinimumPageSize(): void {
         [$text, $summary] = gadget_api_validate_request([
             'text' => '123456',
