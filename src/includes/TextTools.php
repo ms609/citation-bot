@@ -1876,7 +1876,7 @@ function arxiv_id_valid(string $value): bool {
  * Validate a PubMed identifier: one to eight digits.
  */
 function pmid_valid(string $value): bool {
-    if (preg_match('~^\d{1,8}$~', $value) !== 1) {
+    if (preg_match('~\A[0-9]{1,8}\z~', $value) !== 1) {
         return false;
     }
     return intval($value) >= 1;
@@ -1887,7 +1887,7 @@ function pmid_valid(string $value): bool {
  * a leading "PMC" prefix (which CS1 renders as a maintenance category).
  */
 function pmc_valid(string $value): bool {
-    if (preg_match('~^[Pp][Mm][Cc](\d+)$~', $value, $match) === 1) {
+    if (preg_match('~\A[Pp][Mm][Cc]([0-9]+)\z~', $value, $match) === 1) {
         $value = $match[1];
     }
     return pmid_valid($value);

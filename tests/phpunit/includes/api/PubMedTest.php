@@ -6,6 +6,76 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class PubMedTest extends testBaseClass {
+    public function testMalformedExistingPmidCannotRemoveAnArchivedUrl(): void {
+        $url = 'https://pubmed.ncbi.nlm.nih.gov/123456789/';
+        $archive = 'https://web.archive.org/web/20241013000000/' . $url;
+        $template = $this->prepare_citation('{{cite web|title=Article|pmid=123456789|url=' . $url .
+            '|archive-url=' . $archive . '|archive-date=2024-10-13}}');
+
+        $this->assertNull($template->get2('pmid'));
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame($url, $template->get2('url'));
+        $this->assertSame($archive, $template->get2('archive-url'));
+    }
+
+    public function testExistingPubmedIdentifiersAreNormalizedOrRemoved(): void {
+        $template = $this->make_citation('{{cite journal|pmc=pMc1234567|pmid=000}}');
+        $template->tidy_parameter('pmc');
+        $template->tidy_parameter('pmid');
+        $this->assertSame('1234567', $template->get2('pmc'));
+        $this->assertNull($template->get2('pmid'));
+
+        $malformed = $this->make_citation('{{cite journal|pmc=garbagePMC1234567}}');
+        $malformed->tidy_parameter('pmc');
+        $this->assertNull($malformed->get2('pmc'));
+
+        $protected = $this->make_citation('{{cite journal|pmid=bad # # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #}}');
+        $protected->tidy_parameter('pmid');
+        $this->assertSame('bad # # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #', $protected->get2('pmid'));
+    }
+
+    public function testMalformedEuropePmcUrlRemainsInTheCitation(): void {
+        $url = 'https://europepmc.org/articles/PMC123456789';
+        $archive = 'https://web.archive.org/web/20241013000000/' . $url;
+        $template = $this->prepare_citation('{{cite web|title=Article|url=' . $url .
+            '|archive-url=' . $archive . '|archive-date=2024-10-13}}');
+
+        $this->assertNull($template->get2('pmc'));
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame($url, $template->get2('url'));
+        $this->assertSame($archive, $template->get2('archive-url'));
+    }
+
+    public function testEntrezOnlyRequestsValidNumericIdentifiers(): void {
+        $template = $this->make_citation('{{cite journal}}');
+        $templates = array_fill(0, 6, $template);
+        $queries = [];
+        $this->assertTrue(uopz_set_return('get_entrez_xml', static function (string $database, string $ids) use (&$queries): SimpleXMLElement {
+            $queries[] = [$database, $ids];
+            return new SimpleXMLElement('<eSummaryResult/>');
+        }, true));
+        try {
+            $ids = ['0', '000', 'abc', '123456789', '1941451', '1'];
+            query_pmid_api($ids, $templates);
+            query_pmc_api($ids, $templates);
+        } finally {
+            $this->assertTrue(uopz_unset_return('get_entrez_xml'));
+        }
+        $this->assertSame([['pubmed', '1941451'], ['pmc', '1941451']], $queries);
+    }
+
+    public function testPrepareStillRecoversPmidFromUrlInIdentifierField(): void {
+        $this->assertTrue(uopz_set_return('get_entrez_xml', new SimpleXMLElement('<eSummaryResult/>')));
+        $this->assertTrue(uopz_set_return('get_doi_from_crossref', null));
+        try {
+            $template = $this->prepare_citation('{{cite journal|pmid=https://pubmed.ncbi.nlm.nih.gov/1941451/}}');
+        } finally {
+            $this->assertTrue(uopz_unset_return('get_entrez_xml'));
+            $this->assertTrue(uopz_unset_return('get_doi_from_crossref'));
+        }
+        $this->assertSame('1941451', $template->get2('pmid'));
+    }
+
     public function testTitleFallbackRejectsDifferentWorkWithShortChineseWords(): void {
         $template = $this->make_citation('{{cite journal|title=肺癌 治疗 指南|last=Smith|year=2019}}');
         $queries = [];

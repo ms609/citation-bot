@@ -305,8 +305,8 @@ final class ConstantsTest extends testBaseClass {
             );
             // Things that the data quality code deletes
             $text = str_replace(
-                ['| PMC = Z123Z ', '| arxiv = Z123Z ', '| bibcode = Z123Z ', '| eprint = Z123Z ', '| pmc = Z123Z '],
-                ['', '', '', '', ''],
+                ['| PMC = Z123Z ', '| arxiv = Z123Z ', '| bibcode = Z123Z ', '| eprint = Z123Z ', '| pmc = Z123Z ', '| PMID = Z123Z ', '| pmid = Z123Z '],
+                ['', '', '', '', '', '', ''],
                 $text
             );
             if ($prepared->get('doi') === 'Z123Z') {

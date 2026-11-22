@@ -3336,7 +3336,7 @@ final class Template
         $this->this_array = [$this];
         $pmid = $this->get('pmid');
         $pmc = $this->get('pmc');
-        if ($pmid) {
+        if (pmid_valid($pmid)) {
             report_action('Checking ' . pubmed_link('pmid', $pmid) . ' for more details');
             query_pmid_api([$pmid], $this->this_array);
         } elseif ($pmc) {
@@ -6216,7 +6216,7 @@ final class Template
                     return;
 
                 case 'pmc':
-                    if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
+                    if (preg_match('~\Apmc([0-9]+)\z~i', $this->get($param), $matches)) {
                         $this->set($param, $matches[1]);
                     }
                     $value = $this->identifier_tidy_value($param);
@@ -6224,8 +6224,10 @@ final class Template
                         return;
                     }
                     if (!pmc_valid($value)) {
-                        report_forget("Removing malformed PMC identifier: " . echoable($value));
-                        $this->forget($param);
+                        if (preg_match(REGEXP_IS_URL, $value) !== 1) {
+                            report_forget("Removing malformed PMC identifier: " . echoable($value));
+                            $this->forget($param);
+                        }
                         return;
                     }
                     if ($this->wikiname() !== 'cite ssrn') {
@@ -6234,7 +6236,16 @@ final class Template
                     return;
 
                 case 'pmid':
-                    if ($this->blank($param)) {
+                    $value = $this->identifier_tidy_value($param);
+                    if ($value === null) {
+                        return;
+                    }
+                    if (!pmid_valid($value)) {
+                        // prepare() can recover an identifier from a URL pasted in this field.
+                        if (preg_match(REGEXP_IS_URL, $value) !== 1) {
+                            report_forget("Removing malformed PMID identifier: " . echoable($value));
+                            $this->forget($param);
+                        }
                         return;
                     }
                     if ($this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') ||
