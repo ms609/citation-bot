@@ -613,7 +613,7 @@ function build_matrix(): array {
         ['URL-form jstor normalized in tidy', '{{cite journal |title=X |journal=J |jstor=https://www.jstor.org/stable/123}}', 'pass'],
         ['GAP generic title in input survives tidy', '{{cite journal |title=No Title |journal=J}}', 'gap'],
         ['GAP generic name in input survives tidy', '{{cite journal |title=X |journal=J |last1=CNN}}', 'gap'],
-        ['GAP malformed url in input survives tidy', '{{cite web |url=example.com |title=X}}', 'gap'],
+        ['Bare hostname gets a URL scheme', '{{cite web |url=example.com |title=X}}', 'pass'],
     ];
 }
 
