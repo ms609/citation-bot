@@ -1546,7 +1546,7 @@ function tidy_date_inside(string $string): string {
         }
         // PHP fills in day 1 for bare year/month forms. Keep that inferred day out.
         if ($parsed_date['day'] === 1 && !publication_date_has_explicit_day($string)) {
-            return date('F Y', $time);
+            return MONTH_SEASONS[$parsed_date['month'] - 1] . ' ' . (string) $year;
         }
         return sprintf('%04d-%02d-%02d', $year, $parsed_date['month'], $parsed_date['day']);
     }

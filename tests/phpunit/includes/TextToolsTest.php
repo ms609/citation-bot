@@ -278,6 +278,20 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('1999-09-09', tidy_date('1999-09-09T22:10:11+08:00'));
     }
 
+    public function testTidyDatePreservesTheWrittenMonthAndYearAcrossTimezones(): void {
+        $original_timezone = date_default_timezone_get();
+        try {
+            foreach (['UTC', 'Pacific/Honolulu', 'Pacific/Kiritimati'] as $timezone) {
+                date_default_timezone_set($timezone);
+                $this->assertSame('May 2020', tidy_date('May 2020 00:30 +1400'), $timezone);
+                $this->assertSame('January 2020', tidy_date('2020-01 00:30 +1400'), $timezone);
+                $this->assertSame('2020-01-01', tidy_date('2020-01-01T00:30:00+14:00'), $timezone);
+            }
+        } finally {
+            date_default_timezone_set($original_timezone);
+        }
+    }
+
     public function testTidyDateChecks20011111Dafdsafsd20011111(): void {
         $this->assertSame('2001-11-11', tidy_date('dafdsafsd    2001-11-11'));
     }
