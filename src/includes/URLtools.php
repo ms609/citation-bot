@@ -1612,7 +1612,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 $pos_pmid = $match[1];
                 $old_pmid = $template->get('pmid');
                 if ($old_pmid === $pos_pmid) {
-                    if (!$url_sent) {
+                    if (!$url_sent && $template->blank_other_than_comments(['archive-url', 'archiveurl'])) {
                         report_forget("Existing PubMed URL resulting from equivalent PMID; dropping URL");
                         $template->forget($url_type);
                     }
@@ -1646,7 +1646,8 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 if ($template->blank('pmid')) {
                     report_modification("Converting URL to PMID parameter");
                 }
-                if (!$url_sent) {
+                // Keep the original link with its archive, even when another URL survives.
+                if (!$url_sent && $template->blank_other_than_comments(['archive-url', 'archiveurl'])) {
                     $combined_fields_for_oclc_check = $template->get('work') . $template->get('website') . $template->get('publisher');
                     if ($template->has_good_free_copy()) {
                         $template->forget($url_type);

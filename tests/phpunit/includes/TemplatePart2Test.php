@@ -3189,6 +3189,36 @@ final class TemplatePart2Test extends testBaseClass {
         }
     }
 
+    public function testPubmedDeduplicationPreservesTheArchivedUrl(): void {
+        $url = 'https://pubmed.ncbi.nlm.nih.gov/1941451/';
+        $archive = 'https://web.archive.org/web/20241013000000/' . $url;
+        foreach (['archive-url', 'archiveurl'] as $alias) {
+            $template = $this->prepare_citation('{{cite book|title=Book|chapter=Chapter|' .
+                'chapter-url=https://example.test/chapter|pmid=1941451|url=' . $url .
+                '|' . $alias . '=' . $archive . '|archive-date=2024-10-13|url-status=dead}}');
+            $this->assertSame($url, $template->get2('url'));
+            $this->assertSame('https://example.test/chapter', $template->get2('chapter-url'));
+            $this->assertSame($archive, $template->get2($alias));
+            $this->assertSame('2024-10-13', $template->get2('archive-date'));
+            $this->assertSame('dead', $template->get2('url-status'));
+        }
+
+        $unarchived = $this->prepare_citation('{{cite journal|title=Article|pmid=1941451|url=' . $url . '}}');
+        $this->assertNull($unarchived->get2('url'));
+    }
+
+    public function testLegacyPubmedDeduplicationPreservesArchiveWithoutAnotherUrl(): void {
+        $url = 'https://www.ncbi.nlm.nih.gov/pubmed/?term=1941451';
+        $archive = 'https://web.archive.org/web/20241013000000/' . $url;
+        $template = $this->prepare_citation('{{cite journal|title=Article|pmid=1941451|url=' . $url .
+            '|archive-url=' . $archive . '|archive-date=2024-10-13|url-status=dead}}');
+
+        $this->assertSame($url, $template->get2('url'));
+        $this->assertSame($archive, $template->get2('archive-url'));
+        $this->assertSame('2024-10-13', $template->get2('archive-date'));
+        $this->assertSame('dead', $template->get2('url-status'));
+    }
+
     public function testBad1093UrlFallbackRequiresPublisher(): void {
         $text = '{{cite web |url=https://example.com |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |via=hose |title=Harness title}}';
         $template = $this->make_citation($text);
