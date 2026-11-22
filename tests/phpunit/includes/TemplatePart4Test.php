@@ -2875,11 +2875,23 @@ final class TemplatePart4Test extends testBaseClass {
         HandleCache::$cache_active['10.9999/cookie.commit'] = true;
         $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.9999/cookie.commit}}';
         $template = $this->make_citation($text);
+        $template->last_searched_doi = '10.9999/cookie.commit';
         $template->prepare();
         $this->assertNull($template->get2('title'));
-        $template->add_if_new('title', 'Rebuilt title');
-        $template->add_if_new('journal', 'Rebuilt Journal');
-        $template->finalize_cookie_absent_citation();
+        $record = new SimpleXMLElement('<query><doi>10.9999/COOKIE.COMMIT</doi><article_title>Rebuilt title</article_title>' .
+            '<journal_title>Rebuilt Journal</journal_title><contributors/></query>');
+        $this->assertTrue(uopz_set_return('query_crossref', $record));
+        $this->assertTrue(uopz_set_return('query_crossref_newapi', (object) [
+            'DOI' => '10.9999/wrong-record',
+            'title' => ['Title from another work'],
+        ]));
+        try {
+            $templates = [$template];
+            query_doi_api(['10.9999/cookie.commit'], $templates);
+        } finally {
+            $this->assertTrue(uopz_unset_return('query_crossref_newapi'));
+            $this->assertTrue(uopz_unset_return('query_crossref'));
+        }
         $this->assertSame('Rebuilt title', $template->get2('title'));
         $this->assertSame('Rebuilt Journal', $template->get2('journal'));
         $this->assertSame('10.9999/cookie.commit', $template->get2('doi'));
@@ -3003,14 +3015,74 @@ final class TemplatePart4Test extends testBaseClass {
         $template = $this->make_citation($text);
         $template->prepare();
         $this->assertFalse($template->had_initial_author());
-        $template->add_if_new('title', 'Rebuilt title');
-        $template->add_if_new('journal', 'Rebuilt Journal');
-        $template->add_if_new('last1', 'Doe');
+        process_doi_json($template, '10.9999/cookie.authored', [
+            'DOI' => '10.9999/cookie.authored',
+            'type' => 'article-journal',
+            'title' => 'Rebuilt title',
+            'container-title' => 'Rebuilt Journal',
+            'author' => [['family' => 'Smith', 'given' => 'John']],
+        ]);
         $template->finalize_cookie_absent_citation();
         $this->assertSame('Rebuilt title', $template->get2('title'));
-        $this->assertSame('Doe', $template->get2('last1'));
+        $this->assertSame('Smith', $template->get2('last1'));
         $this->assertNull($template->get2('url'));
         $this->assertTrue($template->modifications()['cookie_absent']);
+    }
+
+    public function testCookieAbsentCannotBeRebuiltFromAnIndependentPmid(): void {
+        $doi = '10.9999/cookie.independent';
+        HandleCache::$cache_good[$doi] = true;
+        HandleCache::$cache_active[$doi] = true;
+        $url = 'https://journals.sagepub.com/action/cookieAbsent';
+        $template = $this->prepare_citation('{{cite journal|title=Study of red flowers|last1=Smith|' .
+            'journal=Original Journal|url=' . $url . '|doi=' . $doi . '|pmid=9876543}}');
+        $record = new SimpleXMLElement('<eSummaryResult><DocSum><Id>9876543</Id>' .
+            '<Item Name="Title">Different study from PubMed</Item><Item Name="FullJournalName">Other Journal</Item>' .
+            '<Item Name="AuthorList"><Item Name="Author">Doe J</Item></Item></DocSum></eSummaryResult>');
+        $this->assertTrue(uopz_set_return('query_crossref', null));
+        $this->assertTrue(uopz_set_return('expand_doi_with_dx', null));
+        $this->assertTrue(uopz_set_return('get_entrez_xml', $record));
+        try {
+            $templates = [$template];
+            query_doi_api([$doi], $templates);
+            query_pmid_api(['9876543'], $templates);
+            $template->finalize_cookie_absent_citation();
+        } finally {
+            $this->assertTrue(uopz_unset_return('get_entrez_xml'));
+            $this->assertTrue(uopz_unset_return('expand_doi_with_dx'));
+            $this->assertTrue(uopz_unset_return('query_crossref'));
+        }
+        $this->assertSame($url, $template->get2('url'));
+        $this->assertSame('Study of red flowers', $template->get2('title'));
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertFalse($template->modifications()['cookie_absent']);
+    }
+
+    /** @return iterable<string, array{string, string, string}> */
+    public static function cookieAbsentConflictingMetadata(): iterable {
+        yield 'wrong returned DOI' => ['10.9999/cookie.wrong', 'Study of red flowers', 'Smith'];
+        yield 'different title' => ['10.9999/cookie.identity', 'History of early radio', 'Smith'];
+        yield 'different author' => ['10.9999/cookie.identity', 'Study of red flowers', 'Doe'];
+    }
+
+    #[DataProvider('cookieAbsentConflictingMetadata')]
+    public function testCookieAbsentRestoresOriginalWhenDoiMetadataConflicts(string $record_doi, string $title, string $surname): void {
+        $doi = '10.9999/cookie.identity';
+        HandleCache::$cache_good[$doi] = true;
+        HandleCache::$cache_active[$doi] = true;
+        $text = '{{cite journal|title=Study of red flowers|last1=Smith|journal=Original Journal|' .
+            'url=https://journals.sagepub.com/action/cookieAbsent|doi=' . $doi . '}}';
+        $template = $this->prepare_citation($text);
+        process_doi_json($template, $doi, [
+            'DOI' => $record_doi,
+            'type' => 'article-journal',
+            'title' => $title,
+            'container-title' => 'Replacement Journal',
+            'author' => [['family' => $surname, 'given' => 'John']],
+        ]);
+        $template->finalize_cookie_absent_citation();
+        $this->assertSame($text, $template->parsed_text());
+        $this->assertFalse($template->modifications()['cookie_absent']);
     }
 
     public function testCookieAbsentCleanupDoesNotRetargetTemplate(): void {

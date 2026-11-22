@@ -14,7 +14,9 @@ const NO_CHAPTER_ADD = ['citation', 'cite web', 'cite news', 'cite magazine', 'c
  */
 function query_doi_api(array $_ids, array &$templates): void { // $id not used yet  // Pointer to save memory
     foreach ($templates as $template) {
-        expand_by_doi($template);
+        expand_by_doi($template, $template->cookie_absent_rebuild_pending());
+        // Settle the rebuild before independent identifiers can supply metadata.
+        $template->finalize_cookie_absent_citation();
     }
     return;
 }
@@ -41,6 +43,13 @@ function expand_by_doi(Template $template, bool $force = false): void {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
             if (in_array(mb_strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
+                return;
+            }
+            if (!$template->accept_cookie_absent_doi_metadata(
+                (string) $crossRef->doi,
+                (string) $crossRef->article_title,
+                (string) $crossRef->volume_title
+            )) {
                 return;
             }
             if ($template->has('title') && mb_trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
@@ -119,6 +128,10 @@ function expand_by_doi(Template $template, bool $force = false): void {
             }
 
             $crossRefNewAPI = query_crossref_newapi($doi);
+            $crossref_rest_doi = doi_json_scalar($crossRefNewAPI->DOI ?? null) ?? '';
+            if ($template->cookie_absent_rebuild_pending() && !str_i_same($crossref_rest_doi, $doi)) {
+                $crossRefNewAPI = new stdClass();
+            }
             $crossref_type = $crossRefNewAPI->type ?? '';
             $journal_title = (string) $crossRef->journal_title;
             if (
@@ -139,6 +152,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     $new_title .= ": " . (string) $crossRefNewAPI->subtitle[0];
                 }
                 $new_title = str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $new_title);
+                $template->accept_cookie_absent_doi_metadata($crossref_rest_doi, $new_title);
             } else {
                 $new_title = '';
             }
@@ -415,6 +429,17 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $container_title = $container_title[0] ?? null;
     }
     $container_title = doi_json_scalar($container_title) ?? '';
+    $title = $json['title'] ?? null;
+    if (is_array($title)) {
+        $title = count($title) === 1 ? ($title[0] ?? null) : null;
+    }
+    if (!$template->accept_cookie_absent_doi_metadata(
+        doi_json_scalar($json['DOI'] ?? $json['doi'] ?? null) ?? '',
+        doi_json_scalar($title) ?? '',
+        in_array($type, ['book', 'monograph', 'edited-book', 'reference-book', 'chapter', 'book-chapter', 'book-section'], true) ? $container_title : ''
+    )) {
+        return;
+    }
     if (
         in_array($type, ['article-journal', 'journal-article'], true) &&
         conference_citation_conflicts_with_journal($template, $container_title)
