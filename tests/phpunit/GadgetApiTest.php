@@ -233,6 +233,22 @@ final class GadgetApiTest extends testBaseClass {
         $this->assertSame('', $summary);
     }
 
+    public function testGadgetCountsUtf8CharactersWithADifferentInternalEncoding(): void {
+        $saved_encoding = mb_internal_encoding();
+        mb_internal_encoding('ISO-8859-1');
+        try {
+            $request = ['text' => str_repeat('界', 6), 'summary' => str_repeat('界', 1000)];
+            $this->assertSame(array_values($request), gadget_api_validate_request($request));
+            $this->assertGadgetRequestFailure(
+                ['text' => str_repeat('界', 5), 'summary' => ''],
+                'page_too_small',
+                400
+            );
+        } finally {
+            mb_internal_encoding($saved_encoding);
+        }
+    }
+
     public function testGadgetAcceptsMaximumSummarySize(): void {
         [$text, $summary] = gadget_api_validate_request([
             'text' => 'normal text',
@@ -310,6 +326,10 @@ final class GadgetApiTest extends testBaseClass {
             'zero expansion with summary' => [
                 '0', 'Existing summary', 200,
                 ['expandedtext' => '0', 'editsummary' => 'Existing summary | Use this tool| #UCB_Gadget '],
+            ],
+            'multilingual citation' => [
+                'Café 東京 😀', 'Résumé', 200,
+                ['expandedtext' => 'Café 東京 😀', 'editsummary' => 'Résumé | Use this tool| #UCB_Gadget '],
             ],
             'empty expansion' => ['', 'Existing summary', 500, ['error' => 'internal_error']],
         ];

@@ -32,16 +32,16 @@ if (!is_string($param) || !is_string($value)) {
 if (!mb_check_encoding($param, 'UTF-8') || !mb_check_encoding($value, 'UTF-8')) {
     die_in_template('Invalid UTF-8 parameter data', 400);
 }
-if (mb_strlen($value) < 3) {
+if (mb_strlen($value, 'UTF-8') < 3) {
     die_in_template('Unset parameter error', 400);
 }
-if (mb_strlen($value) > 100) {
+if (mb_strlen($value, 'UTF-8') > 100) {
     die_in_template('Excessive parameter error', 400);
 }
 if ((mb_strpos($value, "'") !== false) || (mb_strpos($value, '"') !== false) || (mb_strpos($value, "|") !== false) || (mb_strpos($value, " ") !== false)) {
     die_in_template('Invalid parameter value error', 400);
 }
-$param = mb_strtolower($param);
+$param = mb_strtolower($param, 'UTF-8');
 if (!in_array($param, VALID_PARAMS, true)) {
     die_in_template('Unexpected parameter passed', 400);
 }

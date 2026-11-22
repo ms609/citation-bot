@@ -448,8 +448,8 @@ final class EncodingBoundaryTest extends testBaseClass {
             ],
             'generate_template.php' => [
                 "mb_check_encoding(\$value, 'UTF-8')",
-                "mb_strlen(\$value) < 3",
-                "mb_strlen(\$value) > 100",
+                "mb_strlen(\$value, 'UTF-8') < 3",
+                "mb_strlen(\$value, 'UTF-8') > 100",
             ],
             'includes/RequestRateLimit.php' => [
                 "mb_rtrim(\$base_directory, \"/\\\\\", '8bit')",
