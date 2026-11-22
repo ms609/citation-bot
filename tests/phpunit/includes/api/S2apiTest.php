@@ -135,13 +135,24 @@ final class S2apiTest extends testBaseClass {
         $this->assertSame('1090322', $template->get2('s2cid'));
     }
 
-    public function testSemanticscholar3b(): void {
-        $this->sleep_S2();
-        $license = get_semanticscholar_license('1090322');
-        if ($license === null) { // null = rate-limited/outage, not "no DOI"
-            $this->markTestSkipped('Semantic Scholar API did not respond converting S2CID to DOI (rate limit or outage)');
+    public function testSemanticScholarLookupReturnsExplicitOpenAccessStatus(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Semantic Scholar');
         }
-        $this->assertNotNull($license);  // TODO get correct value
+        foreach ([
+            ['{"isOpenAccess":true}', true],
+            ['{"isOpenAccess":false}', false],
+            ['{"isOpenAccess":"false"}', null],
+        ] as [$response, $expected]) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return('bot_curl_exec_withFalse', $response);
+            try {
+                $this->assertSame($expected, get_semanticscholar_license('1090322'));
+            } finally {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return('bot_curl_exec_withFalse');
+            }
+        }
     }
 
     public function testSemanticscholar3c(): void {
