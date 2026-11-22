@@ -187,8 +187,8 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 $series_title === '' &&
                 str_starts_with($doi, '10.1117/12.') &&
                 $doi_type === 'proceedings-article' &&
-                isset($crossRefNewAPI->{'container-title'}[0]) &&
-                $crossRefNewAPI->{'container-title'}[0] === 'SPIE Proceedings'
+                is_array($crossRefNewAPI->{'container-title'} ?? null) &&
+                ($crossRefNewAPI->{'container-title'}[0] ?? null) === 'SPIE Proceedings'
             ) {
                 $series_title = 'Proceedings of SPIE';
             }

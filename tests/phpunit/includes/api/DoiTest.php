@@ -777,6 +777,57 @@ final class DoiTest extends testBaseClass {
         $this->assertSame("Kopera", $template->get2('editor-last1'));
     }
 
+    #[DataProvider('malformedSpieRestContainerTitles')]
+    public function testSpieExpansionContinuesWithMalformedRestContainerTitle(mixed $container_title): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $record = new SimpleXMLElement(
+            '<query><article_title>Fixture paper</article_title><volume>6505</volume><year>2007</year></query>'
+        );
+        $response = json_encode([
+            'status' => 'ok',
+            'message' => [
+                'type' => 'proceedings-article',
+                'title' => ['Fixture paper'],
+                'container-title' => $container_title,
+            ],
+        ], JSON_THROW_ON_ERROR);
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'bot_curl_exec' => $response,
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=10.1117/12.703370}}');
+            expand_by_doi($template, true);
+
+            $this->assertSame('Fixture paper', $template->get('title'));
+            $this->assertSame('6505', $template->get('volume'));
+            $this->assertSame('', $template->get('series'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function malformedSpieRestContainerTitles(): array {
+        return [
+            'object' => [new stdClass()],
+            'scalar' => ['SPIE Proceedings'],
+            'nested array' => [[['SPIE Proceedings']]],
+            'missing title' => [null],
+        ];
+    }
+
     public function testSpieProceedingsSeriesFromCrossrefContainer(): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub Crossref');
