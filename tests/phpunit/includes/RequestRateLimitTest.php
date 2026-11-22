@@ -237,6 +237,39 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
+    public function testStrictLimiterRejectsBadStateAndResumesAfterRefill(): void {
+        $directory = big_run_prepare_state_directory($this->base_directory);
+        $this->assertIsString($directory);
+        $path = $directory . '/strict.json';
+        foreach (['{', '{"tokens":1,"updated":1}' . str_repeat(' ', 1024)] as $bad_state) {
+            $this->assertNotFalse(file_put_contents($path, $bad_state));
+            try {
+                request_rate_limit_consume('strict', 2, 1.0, $this->base_directory, 100.0, 'strict');
+                $this->fail('Expected corrupt state to reject the current request');
+            } catch (RequestRateLimitStorageException $exception) {
+                $this->assertSame('invalid stored state', $exception->getMessage());
+            }
+            $this->assertSame(1, request_rate_limit_consume('strict', 2, 1.0, $this->base_directory, 100.0, 'strict'));
+            $this->assertNull(request_rate_limit_consume('strict', 2, 1.0, $this->base_directory, 101.0, 'strict'));
+        }
+    }
+
+    public function testStrictLimiterPreservesRemainingTokenWhileContended(): void {
+        $this->assertNull(request_rate_limit_consume('strict-lock', 2, 1.0, $this->base_directory, 100.0, 'strict'));
+        $state_path = $this->base_directory . '/' . REQUEST_RATE_LIMIT_STATE_DIRECTORY . '/strict-lock.json';
+        $handle = fopen($state_path, 'r+');
+        $this->assertIsResource($handle);
+        try {
+            $this->assertTrue(flock($handle, LOCK_EX | LOCK_NB));
+            $this->assertSame(1, request_rate_limit_consume('strict-lock', 2, 1.0, $this->base_directory, 100.0, 'strict'));
+        } finally {
+            fclose($handle);
+        }
+
+        $this->assertNull(request_rate_limit_consume('strict-lock', 2, 1.0, $this->base_directory, 100.0, 'strict'));
+        $this->assertSame(1, request_rate_limit_consume('strict-lock', 2, 1.0, $this->base_directory, 100.0, 'strict'));
+    }
+
     public function testCorruptStateRecoversToFreshBucket(): void {
         $state_directory =
             $this->base_directory .

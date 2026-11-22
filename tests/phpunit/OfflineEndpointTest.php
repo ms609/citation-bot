@@ -339,6 +339,30 @@ final class OfflineEndpointTest extends TestCase {
         $this->assertArrayNotHasKey('location', $response['headers']);
     }
 
+    public function testEndpointsReturnServiceUnavailableWhenLimiterStorageIsUnavailable(): void {
+        $directory = self::$root . '/citation-bot-rate-limit';
+        $blocked = $directory . '-offline';
+        $this->assertTrue(rename($directory, $blocked));
+        try {
+            $this->assertNotFalse(file_put_contents($directory, 'not a directory'));
+            $json = $this->request('/tools/gadgetapi.php', [
+                'text' => '{{cite journal|title=An example citation}}',
+                'summary' => '',
+            ], ['Origin: https://en.wikipedia.org']);
+            $this->assertSame(503, $json['status']);
+            $this->assertSame('no-store', $json['headers']['cache-control']);
+            $this->assertSame(['error' => 'rate_limit_unavailable'], json_decode($json['body'], true, 512, JSON_THROW_ON_ERROR));
+
+            $html = $this->request('/tools/generate_template.php?jstor=373737');
+            $this->assertSame(503, $html['status']);
+            $this->assertSame('no-store', $html['headers']['cache-control']);
+            $this->assertStringContainsString('Request limiting is temporarily unavailable', $html['body']);
+        } finally {
+            unlink($directory);
+            rename($blocked, $directory);
+        }
+    }
+
     public function testThrottledEndpointsReturnRetryAfterBeforeExpansion(): void {
         $directory = self::$root . '/citation-bot-rate-limit';
         $gadget = fopen($directory . '/gadgetapi.json', 'c+');
