@@ -86,6 +86,9 @@ final class Template
     private ?string $cookie_absent_original_name = null;
     /** @var array<string>|null */
     private ?array $cookie_absent_initial_author_params = null;
+    private string $cookie_absent_original_surname = '';
+    /** @var list<string> */
+    private array $cookie_absent_doi_titles = [];
 
     /**
      * Remove unsupported bioRxiv/medRxiv fields, preserving author/editor
@@ -470,6 +473,9 @@ final class Template
             }
             $this->cookie_absent_original_name = $this->name;
             $this->cookie_absent_initial_author_params = $this->initial_author_params();
+            $this->cookie_absent_original_surname = $this->first_surname();
+            // An earlier DOI lookup may have rejected the unstripped placeholder title.
+            $this->last_searched_doi = '';
             // had_initial_author() blocks API author re-adds, so the stripped
             // citation must report no initial authors; restored on rollback.
             $this->initial_author_params_set([]);
@@ -507,6 +513,37 @@ final class Template
         }
     }
 
+    public function cookie_absent_rebuild_pending(): bool {
+        return $this->cookie_absent_original_parameters !== null;
+    }
+
+    public function accept_cookie_absent_doi_metadata(string $record_doi, string ...$titles): bool {
+        if (!$this->cookie_absent_rebuild_pending()) {
+            return true;
+        }
+        $record_doi = mb_trim($record_doi);
+        if ($record_doi === '' || !str_i_same($record_doi, $this->get_without_comments_and_placeholders('doi'))) {
+            return false;
+        }
+        foreach ($titles as $title) {
+            $title = mb_trim($title);
+            if ($title !== '' && !str_i_same($title, 'none')) {
+                $this->cookie_absent_doi_titles[] = $title;
+            }
+        }
+        return true;
+    }
+
+    private function cookie_absent_matches_rebuilt_title(string $title): bool {
+        foreach (['title', ...CHAPTER_ALIASES] as $param) {
+            $rebuilt = $this->get_without_comments_and_placeholders($param);
+            if ($rebuilt !== '' && titles_are_similar($title, $rebuilt)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private function cookie_absent_rebuild_succeeded(): bool {
         $present = [];
         $title = '';
@@ -523,6 +560,33 @@ final class Template
             }
         }
         if ($title === '' || str_i_same($title, 'none')) {
+            return false;
+        }
+        $has_verified_title = false;
+        foreach ($this->cookie_absent_doi_titles as $doi_title) {
+            if ($this->cookie_absent_matches_rebuilt_title($doi_title)) {
+                $has_verified_title = true;
+                break;
+            }
+        }
+        if (!$has_verified_title) {
+            return false;
+        }
+        foreach ($this->cookie_absent_original_parameters ?? [] as $parameter) {
+            if (!str_i_same($parameter->param, 'title')) {
+                continue;
+            }
+            $original = $this->cookie_absent_parameter_value($parameter);
+            if ($original !== '' && !$this->is_cookie_absent_url($original) &&
+                !in_array(mb_strtolower($original), ['none', 'sage journals', 'sage journals: discover world-class research', ...ALWAYS_BAD_TITLES], true) &&
+                !$this->cookie_absent_matches_rebuilt_title($original)
+            ) {
+                return false;
+            }
+        }
+        if ($this->cookie_absent_original_surname !== '' &&
+            !str_equivalent($this->cookie_absent_original_surname, $this->first_surname())
+        ) {
             return false;
         }
         foreach ([...WORK_ALIASES, ...ALL_URL_TYPES, ...CHAPTER_ALIASES, 'book-title', 'isbn', 'publisher'] as $context_param) {
@@ -561,6 +625,8 @@ final class Template
             $this->cookie_absent_original_parameters = null;
             $this->cookie_absent_original_name = null;
             $this->cookie_absent_initial_author_params = null;
+            $this->cookie_absent_original_surname = '';
+            $this->cookie_absent_doi_titles = [];
             $this->mod_cookie_absent = true;
             report_modification('Removing cookieAbsent citation placeholders and rebuilding from the DOI');
             return;
@@ -576,6 +642,8 @@ final class Template
         $this->cookie_absent_original_parameters = null;
         $this->cookie_absent_original_name = null;
         $this->cookie_absent_initial_author_params = null;
+        $this->cookie_absent_original_surname = '';
+        $this->cookie_absent_doi_titles = [];
     }
 
     public function prepare(): void {
