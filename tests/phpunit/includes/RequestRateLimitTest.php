@@ -1734,6 +1734,39 @@ PHP;
         $this->assertSame(123.0, $result['tokens']);
     }
 
+    public function testBigRunRecoveryResetRefusesLiveWorkerWithUnreadableSnapshot(): void {
+        $this->writeBigRunState('{not-json');
+        $worker_lock = big_run_open_lock_handle($this->base_directory, BIG_RUN_WORKER_LOCK_FILE);
+        $this->assertIsResource($worker_lock);
+        try {
+            $this->assertTrue(flock($worker_lock, LOCK_SH | LOCK_NB));
+            $result = big_run_recovery_reset($this->base_directory, 100.0, 1);
+            $this->assertFalse($result['ok']);
+            $this->assertSame('workers_active', $result['reason']);
+            $this->assertNull($result['backup_path']);
+            $this->assertSame('{not-json', file_get_contents($this->bigRunStatePath()));
+        } finally {
+            fclose($worker_lock);
+        }
+
+        $this->assertTrue(big_run_recovery_reset($this->base_directory, 100.0, 1)['ok']);
+    }
+
+    public function testBigRunRecoveryResetRefusesUnexpiredProbeUntilLeaseAgesOut(): void {
+        $lease = big_run_try_acquire_probe($this->base_directory, 100.0);
+        $this->assertTrue($lease[0]);
+        $before = file_get_contents($this->bigRunStatePath());
+
+        $result = big_run_recovery_reset($this->base_directory, 101.0, 1);
+        $this->assertFalse($result['ok']);
+        $this->assertSame('leases_active', $result['reason']);
+        $this->assertNull($result['backup_path']);
+        $this->assertSame($before, file_get_contents($this->bigRunStatePath()));
+
+        $later = 101.0 + big_run_stale_timeout_seconds();
+        $this->assertTrue(big_run_recovery_reset($this->base_directory, $later, 1)['ok']);
+    }
+
     public function testBigRunRecoveryResetPreservesSnapshotAndWritesFreshState(): void {
         $raw = '{not-json';
         $this->writeBigRunState($raw);

@@ -188,9 +188,11 @@ not reorder FastCGI requests after they reach the web server.
   `INVALID SHARED STATE (...)` log line while bulk admission remains
   fail-closed. Diagnose with `php tools/reset_big_run_state.php --check`.
   After draining/quiescing bulk workers, recover with
-  `php tools/reset_big_run_state.php --reset`. Reset holds the permanent
-  `big-run.lock`, rejects unsafe paths or lock contention, preserves any
-  existing regular snapshot as a timestamped same-directory `.recovery-*`
+  `php tools/reset_big_run_state.php --reset`. Reset exclusively locks
+  `big-run-workers.lock` to exclude active web workers and new admissions.
+  Under the permanent state lock, it also refuses to clear readable snapshots
+  with unexpired leases. It preserves any existing regular snapshot as a
+  timestamped same-directory `.recovery-*`
   backup, and atomically installs an empty state with a full token bucket.
   Automatic corruption recovery remains intentionally disabled. A manual HTTP
   recovery endpoint is available at `reset_big_run_state.php`; it uses the same
@@ -198,7 +200,8 @@ not reorder FastCGI requests after they reach the web server.
   Password AutoFill-friendly form, and `X-Deploy-Token` automation header as
   `gitpull.php`. Reset is POST-only and requires explicit drain/quiesce
   confirmation. The CLI path remains preferred.
-  Do not delete `big-run.lock`.
+  Do not delete either lock file. Drain the web service before deploying this
+  change so workers running the old code cannot overlap the new lock protocol.
 
 Implementation lives in `src/includes/RequestRateLimit.php`; web admission and
 response buffering are in `src/includes/WebTools.php`; bounded discovery is in

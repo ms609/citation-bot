@@ -435,7 +435,7 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
 
         $entry_id = gate_big_run_probe('category', 'alice', $this->base_directory, self::NOW);
         $this->assertIsString($entry_id);
-        $this->assertSame([['big_run_release', $entry_id, $this->base_directory]], $registered);
+        $this->assertSame([['release_big_run_lease', $entry_id, $this->base_directory]], $registered);
         $this->assertSame($entry_id, $GLOBALS['citation_bot_big_run_current']['entry_id']);
         $this->assertSame($this->base_directory, $GLOBALS['citation_bot_big_run_current']['base_directory']);
 
@@ -505,7 +505,7 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
 
         $entry_id = gate_big_run_discovery('category', 'alice', $this->base_directory, self::NOW);
         $this->assertIsString($entry_id);
-        $this->assertSame([['big_run_release', $entry_id, $this->base_directory]], $registered);
+        $this->assertSame([['release_big_run_lease', $entry_id, $this->base_directory]], $registered);
         $this->assertSame($entry_id, $GLOBALS['citation_bot_big_run_current']['entry_id']);
 
         ob_start();
@@ -565,7 +565,7 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
 
         $fresh = gate_big_run(5, 'webform', 'alice', $this->base_directory, self::NOW);
         $this->assertIsString($fresh);
-        $this->assertSame([['big_run_release', $fresh, $this->base_directory]], $registered);
+        $this->assertSame([['release_big_run_lease', $fresh, $this->base_directory]], $registered);
         $this->assertSame($fresh, $GLOBALS['citation_bot_big_run_current']['entry_id']);
 
         $discovery = gate_big_run_discovery('category', 'bob', $this->base_directory, self::NOW);
@@ -633,7 +633,7 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         );
         $this->assertStringContainsString('Done all 6 pages: 3 changed, 3 unchanged, 0 failed.', $body);
         $this->assertCount(1, $registered, 'The final gate registered exactly one release');
-        $this->assertSame('big_run_release', $registered[0][0]);
+        $this->assertSame('release_big_run_lease', $registered[0][0]);
         $entry_id = $registered[0][1];
         $this->assertIsString($entry_id);
         $this->assertSame('ok', big_run_heartbeat_status($entry_id, $this->base_directory));

@@ -378,6 +378,41 @@ function big_run_render_busy_page(string $reason, ?int $active_count, ?int $retr
 }
 
 /**
+ * Keep a shared lifetime lock before acquiring any admission lease. Recovery
+ * takes this lock exclusively before touching the snapshot.
+ *
+ * @return resource
+ */
+function big_run_web_worker_lock(?string $base_directory) {
+    $base_directory ??= request_rate_limit_base_directory();
+    $handle = $base_directory === '' ? false : big_run_open_lock_handle($base_directory, BIG_RUN_WORKER_LOCK_FILE);
+    if ($handle !== false) {
+        if (@flock($handle, LOCK_SH | LOCK_NB, $would_block)) {
+            return $handle;
+        }
+        fclose($handle);
+        if (!$would_block) {
+            big_run_log_failure('unable to lock worker file');
+        }
+    } else {
+        big_run_log_failure('unable to open worker lock file');
+    }
+    big_run_render_busy_page('retry_later', null, 2);
+    exit(0); // @codeCoverageIgnore
+}
+
+/**
+ * @param string $entry_id
+ * @param string|null $base_directory
+ * @param float|null $now
+ * @param resource $worker_lock
+ */
+function big_run_track_web_lease(string $entry_id, ?string $base_directory, ?float $now, $worker_lock): void {
+    big_run_set_current_entry($entry_id, $base_directory, $now, $worker_lock);
+    register_shutdown_function('release_big_run_lease', $entry_id, $base_directory);
+}
+
+/**
  * Acquire the small discovery-probe semaphore before the first remote
  * category/linked-page API call. Probe leases spend no tokens.
  */
@@ -391,16 +426,17 @@ function gate_big_run_probe(
         return null;
     }
 
+    $worker_lock = big_run_web_worker_lock($base_directory);
     $result = big_run_try_acquire_probe($base_directory, $now);
     if (!$result[0]) {
+        fclose($worker_lock);
         big_run_render_busy_page((string) ($result[3] ?? 'probe_full'), $result[4], $result[1]);
         exit(0); // @codeCoverageIgnore
     }
 
     $entry_id = $result[2];
     if ($entry_id !== null) {
-        register_shutdown_function('big_run_release', $entry_id, $base_directory);
-        big_run_set_current_entry($entry_id, $base_directory, $now);
+        big_run_track_web_lease($entry_id, $base_directory, $now, $worker_lock);
     }
     return $entry_id;
 }
@@ -436,16 +472,17 @@ function gate_big_run_discovery(
         return null;
     }
 
+    $worker_lock = big_run_web_worker_lock($base_directory);
     $result = big_run_try_acquire_discovery($base_directory, $now);
     if (!$result[0]) {
+        fclose($worker_lock);
         big_run_render_busy_page((string) ($result[3] ?? 'total_full'), $result[4], $result[1]);
         exit(0); // @codeCoverageIgnore
     }
 
     $entry_id = $result[2];
     if ($entry_id !== null) {
-        register_shutdown_function('big_run_release', $entry_id, $base_directory);
-        big_run_set_current_entry($entry_id, $base_directory, $now);
+        big_run_track_web_lease($entry_id, $base_directory, $now, $worker_lock);
     }
     return $entry_id;
 }
@@ -496,6 +533,7 @@ function gate_big_run(
         return null;
     }
 
+    $worker_lock = null;
     $charge_tokens = !big_run_is_token_exempt($run_type, $username);
     if ($discovery_entry_id !== null) {
         $result = big_run_try_promote(
@@ -507,6 +545,7 @@ function gate_big_run(
             $charge_tokens
         );
     } else {
+        $worker_lock = big_run_web_worker_lock($base_directory);
         $result = big_run_try_acquire(
             $page_count,
             $run_type,
@@ -518,13 +557,15 @@ function gate_big_run(
 
     if ($result[0]) {
         $entry_id = $result[2] ?? $discovery_entry_id;
-        if ($entry_id !== null && $discovery_entry_id === null) {
-            register_shutdown_function('big_run_release', $entry_id, $base_directory);
-            big_run_set_current_entry($entry_id, $base_directory, $now);
+        if ($entry_id !== null && $worker_lock !== null) {
+            big_run_track_web_lease($entry_id, $base_directory, $now, $worker_lock);
         }
         return $entry_id;
     }
 
+    if ($worker_lock !== null) {
+        fclose($worker_lock);
+    }
     if ($discovery_entry_id !== null) {
         big_run_clear_current_entry($discovery_entry_id);
     }

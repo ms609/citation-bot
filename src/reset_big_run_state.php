@@ -258,7 +258,7 @@ if ($confirm_reset !== 'yes') {
 
 $result = big_run_recovery_reset();
 if (!$result['ok']) {
-    $status = ($result['reason'] ?? null) === 'lock_busy' ? 409 : 503;
+    $status = in_array($result['reason'], ['lock_busy', 'workers_active', 'leases_active'], true) ? 409 : 503;
     big_run_recovery_response(
         'Big-run state reset failed (' . (string) ($result['reason'] ?? 'unknown') . ').',
         $status,
