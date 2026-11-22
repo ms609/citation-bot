@@ -1520,6 +1520,13 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('5', clean_volume('5(2)'));
     }
 
+    public function testCleanVolumeKeepsUnicodeAndRecognizesUnicodeLabels(): void {
+        $this->assertSame('Ⅲ', clean_volume('Ⅲ'));
+        $this->assertSame('12–13', clean_volume('12–13 (3)'));
+        $this->assertSame('3', clean_volume("№\u{00A0}3"));
+        $this->assertSame('4', clean_volume("Vol.\u{00A0}4"));
+    }
+
     public function testCleanVolumeNovemberReturnsEmpty(): void {
         $this->assertSame('', clean_volume('november'));
     }
