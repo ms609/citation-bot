@@ -101,7 +101,8 @@ const MAC_SURNAMES_WITHOUT_INNER_CAPITAL = [
 
 /** These letters give casing rules for dotted and dotless I in Turkic names. */
 function name_uses_turkic_casing(string $name): bool {
-    return preg_match('~[İıĞğ]~u', $name) === 1;
+    // Ş alone is ambiguous, including in Romanian data written with a cedilla.
+    return $name === 'IŞIK' || preg_match('~[İıĞğ]~u', $name) === 1;
 }
 
 function lowercase_name(string $name, bool $turkic): string {

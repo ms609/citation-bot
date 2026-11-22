@@ -26,6 +26,7 @@ final class NameToolsEdgeCaseTest extends testBaseClass {
             'İSMAİL SMITH' => 'İsmail Smith',
             'ŞTIRBU' => 'Ştirbu',
             'IONIŞ' => 'Ioniş',
+            'SMITH-IŞIK' => 'Smith-Işık',
         ] as $source => $expected) {
             $this->assertSame($expected, format_surname($source));
             $this->assertSame($expected, format_forename($source));
