@@ -195,7 +195,8 @@ function bot_curl_loggable_url(string $url): string {
         $safe .= '?' . implode('&', $keys);
     }
     // Keep log lines bounded even for malformed or attacker-controlled URLs.
-    return mb_substr(str_replace(["\r", "\n"], ['\\r', '\\n'], $safe), 0, 1024, '8bit');
+    $safe = str_replace(["\r", "\n"], ['\\r', '\\n'], $safe);
+    return mb_strcut(mb_scrub($safe, 'UTF-8'), 0, 1024, 'UTF-8');
 }
 
 function bot_curl_size_limit_message(
