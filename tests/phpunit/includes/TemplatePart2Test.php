@@ -940,7 +940,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('DUPLICATE_URL'));
         $text = '{{Cite journal|id=|id=|id=|id=|id=|id=|id=|id=|id=|id=|id=|id=}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|id=}}', $template->parsed_text());
+        $this->assertSame('{{Cite journal}}', $template->parsed_text());
     }
 
     public function testDropSep(): void {
@@ -2597,6 +2597,26 @@ final class TemplatePart2Test extends testBaseClass {
         // The parameter should still be there (we don't remove it)
         $this->assertSame('https://www.example.com/', $template->get2('article-number'));
         // A warning should have been generated (captured by report_warning)
+    }
+
+    public function testInvalidExistingIsbnDoesNotDisplaceAsin(): void {
+        $text = '{{cite web|title=Test|isbn=978-0-306-40615-8|asin=B000000001}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('isbn');
+        $this->assertSame($text, $template->parsed_text());
+    }
+
+    public function testPrepareDropsEmptyDuplicatesAndKeepsActualValues(): void {
+        $empty = $this->prepare_citation('{{cite journal|title=Test|id=|id=|year=|year=}}');
+        $this->assertSame('{{cite journal|title=Test}}', $empty->parsed_text());
+
+        $populated = $this->prepare_citation('{{cite journal|title=Test|id=|id=Catalog record|year=1999|year=}}');
+        $this->assertSame('Catalog record', $populated->get2('id'));
+        $this->assertSame('1999', $populated->get2('year'));
+
+        $comment = '# # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #';
+        $annotated = $this->prepare_citation('{{cite journal|title=Test|year=|year=' . $comment . '}}');
+        $this->assertSame($comment, $annotated->get2('year'));
     }
 
     public function testSeriesMisspellingCorrectedWhenAdding(): void {

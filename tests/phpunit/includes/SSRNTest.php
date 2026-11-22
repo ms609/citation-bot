@@ -192,7 +192,7 @@ final class SSRNTest extends testBaseClass {
             ['web_bibcode', '{{cite web|bibcode=2024Test....12.3456A|title=Test}}', 'cite web'],
             ['web_jstor', '{{cite web|jstor=12345|title=Test}}', 'cite journal'],
             ['web_oclc', '{{cite web|oclc=12345678|title=Test}}', 'cite web'],
-            ['web_isbn', '{{cite web|isbn=978-0-19-123456-7|title=Test}}', 'cite book'],
+            ['web_isbn', '{{cite web|isbn=978-0-306-40615-7|title=Test}}', 'cite book'],
         ];
         foreach ($cases as $c) {
             $prepared = $this->prepare_citation($c[1]);

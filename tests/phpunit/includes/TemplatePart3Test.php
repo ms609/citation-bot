@@ -1251,7 +1251,7 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($expanded->get2('DUPLICATE_year'));
         $text = '{{cite web|year=|year=|year=|year=|year=}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{cite web|year=}}', $expanded->parsed_text());
+        $this->assertSame('{{cite web}}', $expanded->parsed_text());
     }
 
     public function testBadPMIDSearch(): void { // Matches a PMID search
