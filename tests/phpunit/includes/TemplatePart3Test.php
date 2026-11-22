@@ -2324,6 +2324,7 @@ XML;
             },
         ];
         foreach ($stubs as $function => $result) {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_set_return($function, $result, $result instanceof Closure);
         }
         try {
@@ -2339,6 +2340,7 @@ XML;
             $this->assertStringNotContainsString('|pmc-embargo-date=', $expanded);
         } finally {
             foreach (array_keys($stubs) as $function) {
+                /** @psalm-suppress UnusedFunctionCall */
                 uopz_unset_return($function);
             }
         }
