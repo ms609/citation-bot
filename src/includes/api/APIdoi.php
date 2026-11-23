@@ -39,7 +39,11 @@ function expand_by_doi(Template $template, bool $force = false): void {
         $template->add_if_new('jstor', mb_substr($doi, 8));
     }
     $spie_volume_title = '';
-    if ($doi && ($force || $template->incomplete())) {
+    $expand = $doi !== '' && ($force || $template->incomplete());
+    $is_spie_doi = str_starts_with(mb_strtolower($doi), '10.1117/12.');
+    $check_spie_book = $is_spie_doi && $template->wikiname() === 'cite book' &&
+        ($template->blank('series') || $template->blank('publisher'));
+    if ($expand || $check_spie_book) {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
             if (in_array(mb_strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
@@ -133,6 +137,32 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 $crossRefNewAPI = new stdClass();
             }
             $crossref_type = $crossRefNewAPI->type ?? '';
+            $container_titles = $crossRefNewAPI->{'container-title'} ?? null;
+            $is_spie_proceedings = $is_spie_doi && $crossref_type === 'proceedings-article' &&
+                str_i_same($crossref_rest_doi, $doi) && is_array($container_titles) &&
+                ($container_titles[0] ?? null) === 'SPIE Proceedings';
+            $record_volume_title = $spie_volume_title;
+            if ($is_spie_proceedings) {
+                if (is_string($container_titles[1] ?? null) && mb_trim($container_titles[1]) !== '') {
+                    $record_volume_title = $container_titles[1];
+                }
+                $record_volume = parse_decimal_integer(doi_json_scalar($crossRefNewAPI->volume ?? null) ?? '') ??
+                    parse_decimal_integer((string) $crossRef->volume);
+                $citation_volume = parse_decimal_integer($template->get_without_comments_and_placeholders('volume'));
+                if ($record_volume !== null && $record_volume > 0 && $citation_volume !== null &&
+                    $citation_volume > 0 && $record_volume !== $citation_volume) {
+                    report_warning('SPIE proceedings volume ' . (string) $record_volume . ' conflicts with citation volume ' .
+                        (string) $citation_volume . ' for doi:' . doi_link($doi));
+                    return;
+                }
+            }
+            if (!$expand) {
+                if ($is_spie_proceedings) {
+                    add_spie_proceedings_book_fields($template, $record_volume_title, $crossRefNewAPI->publisher ?? null);
+                }
+                spie_add_verified_volume_editors($template, $doi);
+                return;
+            }
             $journal_title = (string) $crossRef->journal_title;
             if (
                 ($crossref_type === 'journal-article' || ($crossref_type === '' && $journal_title !== '')) &&
@@ -196,17 +226,12 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref');
                 }
             }
-            $series_title = (string) $crossRef->series_title;
-            if (
-                $series_title === '' &&
-                str_starts_with($doi, '10.1117/12.') &&
-                $doi_type === 'proceedings-article' &&
-                is_array($crossRefNewAPI->{'container-title'} ?? null) &&
-                ($crossRefNewAPI->{'container-title'}[0] ?? null) === 'SPIE Proceedings'
-            ) {
-                $series_title = 'Proceedings of SPIE';
+            if ($is_spie_proceedings && ($template->wikiname() === 'cite book' ||
+                ($work_aliases_are_blank && $template->has('chapter')))) {
+                add_spie_proceedings_book_fields($template, $record_volume_title, $crossRefNewAPI->publisher ?? null);
+            } else {
+                $template->add_if_new('series', (string) $crossRef->series_title, 'crossref');
             }
-            $template->add_if_new('series', $series_title, 'crossref');
             if (mb_strpos($doi, '10.7817/jameroriesoci') === false || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
                 $template->add_if_new("year", (string) $crossRef->year, 'crossref');
             }
@@ -275,13 +300,25 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (isset($crossRefNewAPI->{"article-number"})) {
                 $template->add_if_new("article-number", (string) $crossRefNewAPI->{"article-number"});
             }
-        } else {
+        } elseif ($expand) {
             report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
             expand_doi_with_dx($template, $doi);
         }
     }
     spie_add_verified_volume_editors($template, $doi, $spie_volume_title);
     return;
+}
+
+function add_spie_proceedings_book_fields(Template $template, string $volume_title, mixed $publisher): void {
+    if (!in_array($template->wikiname(), ['cite book', 'cite journal', 'cite web', 'citation'], true) ||
+        $volume_title === '' || !titles_are_similar($template->get_without_comments_and_placeholders('title'), $volume_title)) {
+        return;
+    }
+    // OpenURL often repeats the volume title in its series field.
+    $template->add_if_new('series', 'Proceedings of SPIE', 'crossref');
+    if (is_string($publisher) && str_i_same(mb_trim($publisher), 'SPIE')) {
+        $template->add_if_new('publisher', 'SPIE', 'crossref');
+    }
 }
 
 function parse_crossref_xml_response(string $raw_xml): ?SimpleXMLElement {

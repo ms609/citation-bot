@@ -788,6 +788,7 @@ final class DoiTest extends testBaseClass {
         $response = json_encode([
             'status' => 'ok',
             'message' => [
+                'DOI' => '10.1117/12.703370',
                 'type' => 'proceedings-article',
                 'title' => ['Fixture paper'],
                 'container-title' => $container_title,
@@ -844,6 +845,7 @@ final class DoiTest extends testBaseClass {
             'doi_active' => true,
             'query_crossref' => $record,
             'query_crossref_newapi' => (object) [
+                'DOI' => $doi,
                 'type' => 'proceedings-article',
                 'title' => [$chapter],
                 'container-title' => ['SPIE Proceedings', $title],
@@ -873,6 +875,168 @@ final class DoiTest extends testBaseClass {
                 uopz_unset_return($name);
             }
         }
+    }
+
+    /**
+     * @param string $citation
+     * @param bool $older_record
+     * @param array<string, mixed> $rest_overrides
+     * @param string $expected_series
+     * @param string $expected_publisher
+     * @param bool $expect_same_citation
+     */
+    #[DataProvider('spieProceedingsBookMetadataCases')]
+    public function testSpieProceedingsBookMetadata(string $citation, bool $older_record, array $rest_overrides,
+        string $expected_series, string $expected_publisher, bool $expect_same_citation): void {
+        if ($older_record) {
+            $doi = '10.1117/12.956078';
+            $volume_title = 'Optics in Missile Engineering';
+            $paper_title = '&lt;title&gt;Scattering From Infrared Missile Domes&lt;/title&gt;';
+            $volume = '0133';
+            $year = '1978';
+            $first_page = '71';
+            $last_page = '77';
+        } else {
+            $doi = '10.1117/12.611774';
+            $volume_title = 'UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II';
+            $paper_title = 'Preliminary design of the Wide-Field Infrared Survey Explorer (WISE)';
+            $volume = '5899';
+            $year = '2005';
+            $first_page = '58990R';
+            $last_page = '';
+        }
+        // Both OpenURL records file the volume title in series_title.
+        $record = new SimpleXMLElement('<query><doi>' . $doi . '</doi><series_title>' . $volume_title .
+            '</series_title><volume_title>' . $volume_title . '</volume_title><article_title>' .
+            htmlspecialchars($paper_title, ENT_XML1, 'UTF-8') . '</article_title><volume>' . $volume .
+            '</volume><year>' . $year . '</year><first_page>' . $first_page . '</first_page><last_page>' .
+            $last_page . '</last_page></query>');
+        $rest = (object) array_replace([
+            'DOI' => $doi,
+            'type' => 'proceedings-article',
+            'title' => [$paper_title],
+            'container-title' => ['SPIE Proceedings', $volume_title],
+            'publisher' => 'SPIE',
+            'volume' => $volume,
+        ], $rest_overrides);
+        $warnings = [];
+        $this->with_function_stubs([
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => $rest,
+            'report_warning' => static function (string $message) use (&$warnings): void {
+                $warnings[] = $message;
+            },
+        ], function () use ($citation, $expected_series, $expected_publisher, $expect_same_citation, &$warnings): void {
+            $template = $this->make_citation($citation);
+            if ($template->has('isbn')) {
+                $this->assertFalse($template->incomplete());
+            }
+            $before = $template->parsed_text();
+            $volume = $template->get('volume');
+            $pages = $template->get('pages');
+            $chapter_url = $template->get('chapter-url');
+            $archive_url = $template->get('archive-url');
+            $editor_last = $template->get('editor-last');
+            $templates = [$template];
+            query_doi_api([$template->get('doi')], $templates);
+            $template->final_tidy();
+
+            $this->assertSame($expected_series, $template->get('series'));
+            $this->assertSame($expected_publisher, $template->get('publisher'));
+            if ($volume === '17') {
+                $this->assertStringContainsString('SPIE proceedings volume 133 conflicts with citation volume 17', implode("\n", $warnings));
+            }
+            if ($expect_same_citation) {
+                $this->assertSame($before, $template->parsed_text());
+            } else {
+                $this->assertSame('cite book', $template->wikiname());
+                $this->assertNotSame('', $template->get('chapter'));
+            }
+            if ($volume !== '') {
+                $this->assertSame($volume, $template->get('volume'));
+                $this->assertSame($pages, $template->get('pages'));
+            }
+            $this->assertSame($chapter_url, $template->get('chapter-url'));
+            $this->assertSame($archive_url, $template->get('archive-url'));
+            $this->assertSame($editor_last, $template->get('editor-last'));
+        });
+    }
+
+    /** @return array<string, array{string, bool, array<string, mixed>, string, string, bool}> */
+    public static function spieProceedingsBookMetadataCases(): array {
+        $wise = '{{cite book|title=UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II' .
+            '|chapter=Preliminary design of the Wide-Field Infrared Survey Explorer (WISE)' .
+            '|volume=5899|pages=262–273|date=10 August 2005|doi=10.1117/12.611774' .
+            '|editor-last=MacEwen|editor-first=Howard A.' .
+            '|chapter-url=http://wise.ssl.berkeley.edu/documents/WISESPIE_SanDiego05.pdf' .
+            '|archive-url=https://web.archive.org/web/20090521083142/http://wise.ssl.berkeley.edu/documents/WISESPIE_SanDiego05.pdf' .
+            '|archive-date=21 May 2009|url-status=live';
+        $optics = '{{cite book|title=Optics in Missile Engineering|chapter=Scattering from Infrared Missile Domes' .
+            '|year=1978|doi=10.1117/12.956078';
+        return [
+            'WISE book' => [$wise . '}}', false, [], 'Proceedings of SPIE', 'SPIE', false],
+            'WISE DOI only' => ['{{cite journal|doi=10.1117/12.611774}}', false, [], 'Proceedings of SPIE', 'SPIE', false],
+            'WISE with populated journal' => [
+                '{{cite journal|title=Preliminary design of the Wide-field Infrared Survey Explorer (WISE)' .
+                '|journal=Uv/Optical/Ir Space Telescopes: Innovative Technologies and Concepts II' .
+                '|volume=5899|pages=262–273|date=10 August 2005|doi=10.1117/12.611774}}', false, [], '', '', true,
+            ],
+            'otherwise complete book' => [$wise . '|isbn=9780819458933|last1=Mainzer|last2=Eisenhardt|display-authors=1}}',
+                false, [], 'Proceedings of SPIE', 'SPIE', false],
+            '1978 proceedings with unpadded volume' => [$optics . '|volume=133|pages=71–77}}',
+                true, [], 'Proceedings of SPIE', 'SPIE', false],
+            '1978 book with journal locators' => [$optics . '|volume=17|page=647}}', true, [], '', '', true],
+            '1978 journal with proceedings DOI' => [
+                '{{cite journal|title=Scattering from infrared missile domes|journal=Opt. Eng.' .
+                '|series=Optics in Missile Engineering|year=1978|volume=17|page=647|doi=10.1117/12.956078}}',
+                true, [], 'Optics in Missile Engineering', '', true,
+            ],
+            'explicit metadata' => [$wise . '|series=SPIE Conference Proceedings|publisher=[[SPIE]]}}',
+                false, [], 'SPIE Conference Proceedings', '[[SPIE]]', true],
+            'comment-protected metadata' => [$wise . '|series=<!-- keep blank -->|publisher=<!-- keep blank -->}}',
+                false, [], '<!-- keep blank -->', '<!-- keep blank -->', true],
+            'mismatched REST DOI' => [$wise . '}}', false, ['DOI' => '10.1117/12.956078'], '', '', true],
+            'missing REST DOI' => [$wise . '}}', false, ['DOI' => null], '', '', true],
+            'wrong REST work type' => [$wise . '}}', false, ['type' => 'journal-article'], '', '', true],
+            'malformed REST publisher' => [$wise . '}}', false, ['publisher' => ['SPIE']], 'Proceedings of SPIE', '', false],
+            'conflicting book title' => [str_replace('title=UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II',
+                'title=Unrelated Volume', $wise) . '}}', false, [], '', '', true],
+        ];
+    }
+
+    public function testSpieJournalArticleKeepsJournalMetadata(): void {
+        $doi = '10.1117/12.7972298';
+        $title = 'Scattering from Infrared Missile Domes';
+        $record = new SimpleXMLElement('<query><article_title>' . $title . '</article_title>' .
+            '<journal_title>Optical Engineering</journal_title><volume>17</volume><year>1978</year>' .
+            '<first_page>647</first_page><last_page>651</last_page></query>');
+        $this->with_function_stubs([
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) [
+                'DOI' => $doi,
+                'type' => 'journal-article',
+                'title' => [$title],
+                'container-title' => ['Optical Engineering'],
+                'publisher' => 'SPIE-Intl Soc Optical Eng',
+                'volume' => '17',
+            ],
+        ], function () use ($doi, $title): void {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template);
+            $template->final_tidy();
+
+            $this->assertSame('cite journal', $template->wikiname());
+            $this->assertSame($title, $template->get('title'));
+            $this->assertSame('Optical Engineering', $template->get('journal'));
+            $this->assertSame('17', $template->get('volume'));
+            $this->assertSame('647–651', $template->get('pages'));
+            $this->assertSame('', $template->get('series'));
+            $this->assertSame('', $template->get('publisher'));
+        });
     }
 
     public function testSpieCrossrefVolumeTitleFallbackPreservesPaperCitation(): void {
