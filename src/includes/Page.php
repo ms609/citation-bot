@@ -465,7 +465,7 @@ class Page {
                 $this_template->rename('chapterurl', 'chapter-url');
             } elseif ($this_template->wikiname() === 'cite magazine' || $this_template->wikiname() === 'cite periodical') {
                 $our_templates_slight[] = $this_template;
-                if ($this_template->blank('magazine') && $this_template->has('work')) {
+                if ($this_template->blank('magazine') && !$this_template->blank_other_than_comments('work')) {
                     $this_template->rename('work', 'magazine');
                 }
                 if ($this_template->has('magazine')) {

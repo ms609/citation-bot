@@ -1508,7 +1508,7 @@ JSON;
         $text = '{{citation|work=|chapter=Keep work in Citation template}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
-        $this->assertSame('{{citation|work=|chapter=Keep work in Citation template}}', $prepared->parsed_text());
+        $this->assertSame('{{citation|chapter=Keep work in Citation template}}', $prepared->parsed_text());
     }
 
     public function testWorkParamterChecksWorkWorkShouldBecomeJournalJournal(): void {
@@ -1529,7 +1529,17 @@ JSON;
         $text = '{{cite journal|work=}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
-        $this->assertSame('{{cite journal|journal=}}', $prepared->parsed_text());
+        $this->assertSame('{{cite journal}}', $prepared->parsed_text());
+    }
+
+    public function testEmptyWorkAndIdAreOmittedAfterPageExpansion(): void {
+        foreach (['cite journal', 'cite magazine', 'citation'] as $type) {
+            $prefix = '{{' . $type . '|title=Study';
+            $this->assertSame($prefix . '}}', $this->process_page($prefix . '|work= |id=}}')->parsed_text());
+            foreach (['|work=<!-- keep -->|id=Catalog record', '|work<!-- keep -->=|id<!-- keep -->=', '|id=((0))'] as $fields) {
+                $this->assertSame($prefix . $fields . '}}', $this->process_page($prefix . $fields . '}}')->parsed_text());
+            }
+        }
     }
 
     public function testOrigYearHandling(): void {

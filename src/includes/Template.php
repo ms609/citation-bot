@@ -648,6 +648,15 @@ final class Template
 
     public function prepare(): void {
         set_time_limit(120);
+        foreach ($this->param as $key => $parameter) {
+            if (($parameter->param === 'id' ||
+                    ($parameter->param === 'work' && in_array($this->wikiname(), ['cite journal', 'cite magazine', 'citation'], true))) &&
+                mb_trim($parameter->val) === '' &&
+                !str_contains($parameter->parsed_text(), 'CITATION_BOT_PLACEHOLDER')
+            ) {
+                unset($this->param[$key]);
+            }
+        }
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
             // Clean up bad data
             if (in_array(mb_strtolower($this->get('title')), ALWAYS_BAD_TITLES, true)) {
@@ -701,7 +710,8 @@ final class Template
                 }
                 // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
                 foreach ($this->param as $key => $p) {
-                    if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true)) {
+                    if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true) &&
+                        !str_contains($p->parsed_text(), 'CITATION_BOT_PLACEHOLDER')) {
                         unset($this->param[$key]);
                     }
                 }
@@ -838,7 +848,8 @@ final class Template
                     }
                 }
             }
-        } elseif ($this->wikiname() === 'cite magazine' && $this->blank('magazine') && $this->has_but_maybe_blank('work')) {
+        } elseif ($this->wikiname() === 'cite magazine' && $this->blank('magazine') &&
+            !$this->blank_other_than_comments('work')) {
             // This is all we do with cite magazine
             $this->rename('work', 'magazine');
         }
@@ -7153,7 +7164,7 @@ final class Template
                         $work_becomes = 'encyclopedia';
                     }
 
-                    if ($this->has_but_maybe_blank($param) && $this->blank($work_becomes)) {
+                    if (!$this->blank_other_than_comments($param) && $this->blank($work_becomes)) {
                         if ($work_becomes === 'encyclopedia' && $this->wikiname() === 'cite web') {
                             $this->change_name_to('cite encyclopedia');
                         }
@@ -7849,14 +7860,14 @@ final class Template
                 $this->tidy_parameter('chapter');
             }
             // "Work is a troublesome parameter
-            if ($this->has_but_maybe_blank('work') && $this->blank('work')) {
-                // Have work=, but it is blank
+            $work_key = $this->get_param_key('work');
+            if ($work_key !== null && $this->blank('work') &&
+                !str_contains($this->param[$work_key]->parsed_text(), 'CITATION_BOT_PLACEHOLDER')
+            ) {
                 if ($this->has('journal') || $this->has('newspaper') || $this->has('magazine') || $this->has('periodical') || $this->has('website')) {
                     $this->forget('work'); // Delete if we have alias
-                } elseif ($this->wikiname() === 'cite web') {
-                    $this->forget('work'); // The likelihood of this being a good thing to add is very low
-                } elseif ($this->wikiname() === 'cite journal') {
-                    $this->rename('work', 'journal');
+                } elseif (in_array($this->wikiname(), ['cite web', 'cite journal', 'citation'], true)) {
+                    $this->forget('work');
                 }
             }
             if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
@@ -8185,7 +8196,8 @@ final class Template
                 }
                 // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
                 foreach ($this->param as $key => $p) {
-                    if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true)) {
+                    if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true) &&
+                        !str_contains($p->parsed_text(), 'CITATION_BOT_PLACEHOLDER')) {
                         unset($this->param[$key]);
                     }
                 }
@@ -8289,7 +8301,8 @@ final class Template
                 }
                 // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
                 foreach ($this->param as $key => $p) {
-                    if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true)) {
+                    if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true) &&
+                        !str_contains($p->parsed_text(), 'CITATION_BOT_PLACEHOLDER')) {
                         unset($this->param[$key]);
                     }
                 }
