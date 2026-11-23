@@ -193,6 +193,54 @@ final class Zotero {
         return false;
     }
 
+    public static function verify_cnn_byline(Template $template): void {
+        $url = $template->get3('url');
+        if (in_array($template->get('url-status'), BAD_URL_STATUS, true) ||
+            $url !== $template->get_without_comments_and_placeholders('url') ||
+            preg_match(REGEXP_IS_URL, $url) !== 1
+        ) {
+            return;
+        }
+
+        $items = ExternalApiResponseGuard::decodeJson(self::zotero_request($url));
+        if (is_array($items) && count($items) === 1 && ($items[0] ?? null) instanceof stdClass &&
+            self::normalize_zotero_result($items[0], $url)
+        ) {
+            self::apply_verified_cnn_byline($template, $items[0], $url);
+        }
+    }
+
+    private static function apply_verified_cnn_byline(Template $template, stdClass $result, string $url): void {
+        $slots = $template->cnn_byline_slots();
+        if ($slots === [] || ($result->itemType ?? '') !== 'newspaperArticle' ||
+            !is_string($result->url ?? null) || !isset($result->title) ||
+            !citation_urls_equivalent($template->get('url'), $url) ||
+            !citation_urls_equivalent($result->url, $url) ||
+            !str_i_same(normalize_unicode_nfc(mb_trim($result->title)), normalize_unicode_nfc(mb_trim($template->get('title'))))
+        ) {
+            return;
+        }
+
+        $slot = 0;
+        foreach ($result->creators ?? [] as $creator) {
+            if (($creator->creatorType ?? '') !== 'author') {
+                continue;
+            }
+            ++$slot;
+            $name = mb_trim($creator->name ?? '');
+            $last = mb_trim($creator->lastName ?? '');
+            if (isset($result->author) && array_values(array_filter($result->author[$slot - 1] ?? [], static fn (string $part): bool => mb_trim($part) !== '')) !== ['CNN']) {
+                continue;
+            }
+            if (mb_trim($creator->firstName ?? '') === '' &&
+                (($name === 'CNN' && in_array($last, ['', 'CNN'], true)) ||
+                    ($name === '' && $last === 'CNN' && in_array($creator->fieldMode ?? null, [1, '1'], true)))
+            ) {
+                $template->use_verified_cnn_byline($slot);
+            }
+        }
+    }
+
     private static function record_zotero_failure(): void {
         self::$zotero_failures_count += 1;
         if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
@@ -1176,6 +1224,8 @@ final class Zotero {
             report_info("Citoid/Zotero title did not match existing citation for URL " . echoable($url));
             return;
         }
+
+        self::apply_verified_cnn_byline($template, $result, $url);
 
         if (!isset($result->title)) {
             $the_url = mb_substr(echoable(mb_substr($url, 0, 500)), 0, 600); // Limit length
