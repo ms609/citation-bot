@@ -3213,6 +3213,41 @@ final class Template
         return false;
     }
 
+    /** @return list<int> CNN surname fields that can be safely moved after verification. */
+    public function cnn_byline_slots(): array {
+        if ($this->wikiname() !== 'cite news' || !$this->has('title') ||
+            !$this->blank(['vauthors', 'authors']) ||
+            preg_match('~\Ahttps?://(?:(?:www|edition)\.)?cnn\.com/~i', $this->get3('url')) !== 1
+        ) {
+            return [];
+        }
+
+        $slots = [];
+        foreach ($this->param as $p) {
+            if ($p->val !== 'CNN' || preg_match('~\Alast([1-9][0-9]*)?\z~', $p->param, $match) !== 1 ||
+                str_contains($p->parsed_text(), 'CITATION_BOT_PLACEHOLDER')
+            ) {
+                continue;
+            }
+            $slot = (int) ($match[1] ?? 1);
+            if (isset(AUTHOR_PARAMETERS[$slot]) &&
+                count(array_filter($this->param, static fn (Parameter $field): bool =>
+                    in_array($field->param, AUTHOR_PARAMETERS[$slot], true))) === 1
+            ) {
+                $slots[] = $slot;
+            }
+        }
+        return $slots;
+    }
+
+    public function use_verified_cnn_byline(int $slot): void {
+        if (!in_array($slot, $this->cnn_byline_slots(), true)) {
+            return;
+        }
+        $suffix = $slot === 1 && $this->get3('last') === 'CNN' ? '' : (string) $slot;
+        $this->rename('last' . $suffix, 'author' . $suffix, '((CNN))');
+    }
+
     public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing, bool $literal_name = false): void {
         if (!$add_even_if_existing && ($this->had_initial_author() || $this->had_initial_editor())) {
             return;

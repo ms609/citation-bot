@@ -1364,6 +1364,59 @@ final class ZoteroTest extends testBaseClass {
         ];
     }
 
+    public function testPageExpansionUsesVerifiedCnnBylineWithoutOtherMetadata(): void {
+        if (!SLOW_MODE) {
+            $this->markTestSkipped('URL lookup is disabled in fast mode');
+        }
+
+        $url = 'https://www.cnn.com/2026/11/23/example';
+        $response = json_encode([[
+            'itemType' => 'newspaperArticle', 'title' => 'Study', 'url' => $url, 'date' => '2026-11-23',
+            'creators' => [['creatorType' => 'author', 'name' => 'CNN']],
+        ]], JSON_THROW_ON_ERROR);
+        $this->assertTrue(uopz_set_return(Zotero::class, 'zotero_request', static function (string $requested) use ($url, $response): string {
+            \PHPUnit\Framework\Assert::assertSame($url, $requested);
+            return $response;
+        }, true));
+        try {
+            $text = '{{cite news|title=Study|url=' . $url . '|last1=CNN}}';
+            $expected = str_replace('|last1=CNN', '|author1=((CNN))', $text);
+            $this->assertSame($expected, $this->process_page($text)->parsed_text());
+        } finally {
+            $this->assertTrue(uopz_unset_return(Zotero::class, 'zotero_request'));
+        }
+    }
+
+    public function testVerifiedCnnBylineMovesOnlyAnUnambiguousAuthorSlot(): void {
+        $url = 'https://www.cnn.com/2026/11/23/example';
+        $prefix = '{{cite news|title=Study|url=' . $url;
+        $cnn = ['creatorType' => 'author', 'name' => 'CNN'];
+        $smith = ['creatorType' => 'author', 'firstName' => 'A', 'lastName' => 'Smith'];
+        $metadata = ['itemType' => 'newspaperArticle', 'title' => 'Study', 'url' => $url, 'publicationTitle' => 'CNN'];
+        foreach ([
+            ['|last1=CNN', [$cnn], [], 'last1', 'author1', '((CNN))'],
+            ['|last=CNN', [$cnn], [], 'last', 'author', '((CNN))'],
+            ['|last1=Smith|first1=A|last2=CNN', [$smith, $cnn], [], 'last2', 'author2', '((CNN))'],
+            ['|last1=CNN', [], [], 'last1', 'author1', null],
+            ['|last1=CNN', [$cnn], ['url' => ['href' => $url]], 'last1', 'author1', null],
+            ['|last1=CNN', [$cnn + ['lastName' => 'Smith']], [], 'last1', 'author1', null],
+            ['|last1=CNN', [$cnn], ['author' => [['Alice', 'Smith']]], 'last1', 'author1', null],
+            ['|last1=CNN', [$cnn], ['author' => [['', 'CNN']]], 'last1', 'author1', '((CNN))'],
+            ['|last1=CNN', [$cnn], ['url' => $url . '/other'], 'last1', 'author1', null],
+            ['|last1=CNN', [$cnn], ['title' => 'Unrelated study'], 'last1', 'author1', null],
+            ['|last1=CNN|first1=A', [$cnn], [], 'last1', 'author1', null],
+            ['|last1=CNN|author1=Someone Else', [$cnn], [], 'last1', 'author1', 'Someone Else'],
+            ['|last1=((CNN))', [$cnn], [], 'last1', 'author1', null],
+        ] as [$fields, $creators, $overrides, $surname, $author, $expected]) {
+            $template = $this->make_citation($prefix . $fields . '}}');
+            $original = $template->get3($surname);
+            $response = json_encode([$overrides + $metadata + ['creators' => $creators]], JSON_THROW_ON_ERROR);
+            Zotero::process_zotero_response($response, $template, $url, 0);
+            $this->assertSame($expected ?? '', $template->get3($author), $fields);
+            $this->assertSame($expected === '((CNN))' ? '' : $original, $template->get3($surname), $fields);
+        }
+    }
+
     public function testSameNameDifferentRolesPreserved(): void {
         // Same name in different roles must not collapse: author vs editor
         // use separate counters and both must be kept, while a repeat within

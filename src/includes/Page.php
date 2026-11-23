@@ -525,6 +525,8 @@ class Page {
                 if (($the_url !== $new_url) || $this_template->blank('title') || ($this_template->has('via') && $this_template->blank(WORK_ALIASES))) {
                      $array_of_template = [$this_template];
                      $this->expand_templates_from_identifier('url', $array_of_template);
+                } elseif (SLOW_MODE && $this_template->cnn_byline_slots() !== []) {
+                    Zotero::verify_cnn_byline($this_template);
                 }
             }
         }
