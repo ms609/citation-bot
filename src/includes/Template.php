@@ -8076,12 +8076,8 @@ final class Template
                 }
             }
 
-            // A bare DNS hostname can be repaired without fetching a page or
-            // discarding any part of the editor's URL. Leave other forms for review.
             $url = $this->get3('url');
-            if (preg_match('~\.[a-z]{2,63}\z~i', $url) === 1 &&
-                filter_var($url, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) !== false
-            ) {
+            if (citation_url_has_bare_hostname($url)) {
                 $this->set('url', 'https://' . $url);
             }
 

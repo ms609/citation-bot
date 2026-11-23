@@ -1670,6 +1670,30 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('((example.test))', $literal->get3('url'));
     }
 
+    public function testSchemeLessCitationUrlKeepsTheEntireLink(): void {
+        $this->with_function_stubs(['bot_curl_exec' => '', 'bot_curl_exec_withFalse' => false], function (): void {
+            foreach ([
+                'example.test/Paper?q=1#Figure',
+                'www.example.test/Paper%2FPart?q=One#Two',
+                'example.test?Q=One#Two',
+                'example.test#Figure',
+            ] as $url) {
+                $text = '{{cite web|title=Study|url=' . $url . '}}';
+                $expected = '{{cite web|title=Study|url=https://' . $url . '}}';
+                $this->assertSame($expected, $this->process_citation($text)->parsed_text());
+                $this->assertSame($expected, $this->process_citation($expected)->parsed_text());
+            }
+            foreach ([
+                './example.test/Paper', 'folder/Paper', '//example.test/Paper', 'example.test in prose',
+                'http://example.test/Paper', 'ftp://example.test/Paper', 'example.test:8080/Paper',
+                '((example.test/Paper))', 'example.test/Paper<!-- keep -->',
+            ] as $url) {
+                $text = '{{cite web|title=Study|url=' . $url . '}}';
+                $this->assertSame($text, $this->process_page($text)->parsed_text());
+            }
+        });
+    }
+
     public function testFinalTidyDropsOnlyRedundantPlainArticleNumberUrl(): void {
         $url = 'https://example.test/paper';
         $redundant = $this->make_citation('{{cite journal|url=' . $url . '|article-number=' . $url . '}}');
