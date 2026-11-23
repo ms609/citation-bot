@@ -2687,6 +2687,42 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame($comment, $annotated->get2('year'));
     }
 
+    public function testRecognizedBookWorkMovesOnlyToAvailableSeries(): void {
+        $series = 'Lecture Notes in Mathematics';
+        $prefix = '{{cite book|title=Study';
+        foreach ([
+            '|work=' . $series => '|series=' . $series,
+            '|work=' . $series . '|series=' => '|series=' . $series,
+            '|work=' . $series . '|series=' . $series => '|series=' . $series,
+            '|work=' . $series . '|series=Other Series' => '|work=' . $series . '|series=Other Series',
+            '|work=' . $series . '|series=<!-- review -->' => '|work=' . $series . '|series=<!-- review -->',
+            '|work=((' . $series . '))' => '|work=((' . $series . '))',
+            '|work<!-- review -->=' . $series => '|work<!-- review -->=' . $series,
+            '|work=' . $series . '|publisher=' . $series . '|series=Other Series' => '|work=' . $series . '|publisher=' . $series . '|series=Other Series',
+            '|work=Other Work' => '|work=Other Work',
+        ] as $input => $expected) {
+            $this->assertSame($prefix . $expected . '}}', $this->process_page($prefix . $input . '}}')->parsed_text());
+        }
+    }
+
+    public function testBookSeriesMoveOnlyWarnsAboutConflictingWork(): void {
+        $warnings = [];
+        $this->assertTrue(uopz_set_hook('report_warning', static function (string $warning) use (&$warnings): void {
+            if (str_contains($warning, 'unsupported parameter |work=')) {
+                $warnings[] = $warning;
+            }
+        }));
+        try {
+            $text = '{{cite book|title=Study|work=Lecture Notes in Mathematics';
+            $this->process_page($text . '}}');
+            $this->assertSame([], $warnings);
+            $this->process_page($text . '|series=Another Series}}');
+            $this->assertCount(1, $warnings);
+        } finally {
+            $this->assertTrue(uopz_unset_hook('report_warning'));
+        }
+    }
+
     public function testSeriesMisspellingCorrectedWhenAdding(): void {
         // Test that misspelling is corrected when adding new series parameter
         $text = "{{cite book|title=Test}}";
