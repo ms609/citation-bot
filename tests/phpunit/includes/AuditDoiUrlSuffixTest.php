@@ -35,6 +35,96 @@ final class AuditDoiUrlSuffixTest extends testBaseClass {
         }
     }
 
+    #[DataProvider('existingDoiQueryProvider')]
+    public function testExistingDoiQueryRepair(?bool $original_status, ?bool $candidate_status, string $expected_doi, bool $verified): void {
+        $candidate = '10.1234/example';
+        $original = $candidate . '?utm_source=example&seq=6';
+        $checks = [];
+        $this->with_function_stubs([
+            'doi_works' => static function (string $doi) use ($original, $candidate, $original_status, $candidate_status, &$checks): ?bool {
+                $checks[] = $doi;
+                return match ($doi) {
+                    $original => $original_status,
+                    $candidate => $candidate_status,
+                    default => false,
+                };
+            },
+        ], function () use ($original, $candidate, $original_status, $expected_doi, $verified, &$checks): void {
+            $template = $this->make_citation('{{cite journal |doi=' . $original . ' |doi-broken-date=2020-01-01}}');
+            $this->assertSame($verified, $template->verify_doi());
+            $this->assertSame($expected_doi, $template->get2('doi'));
+            if ($verified) {
+                $this->assertNull($template->get2('doi-broken-date'));
+            } elseif ($original_status === null) {
+                $this->assertSame('2020-01-01', $template->get2('doi-broken-date'));
+            } else {
+                $this->assertNotNull($template->get2('doi-broken-date'));
+            }
+            $this->assertSame($original, reset($checks));
+            $this->assertSame($original_status === false, in_array($candidate, $checks, true));
+        });
+    }
+
+    /** @return array<string, array{?bool, ?bool, string, bool}> */
+    public static function existingDoiQueryProvider(): array {
+        $original = '10.1234/example?utm_source=example&seq=6';
+        return [
+            'registered shorter DOI' => [false, true, '10.1234/example', true],
+            'registered literal question mark' => [true, true, $original, true],
+            'original lookup unavailable' => [null, true, $original, false],
+            'candidate lookup unavailable' => [false, null, $original, false],
+            'neither form resolves' => [false, false, $original, false],
+        ];
+    }
+
+    public function testExistingDoiQueryDoesNotTakePrecedenceOverPunctuationRepair(): void {
+        $doi = '10.1234/example?suffix=registered';
+        $this->with_function_stubs([
+            'doi_works' => static fn (string $identifier): bool => in_array($identifier, [$doi, '10.1234/example'], true),
+        ], function () use ($doi): void {
+            $template = $this->make_citation('{{cite journal |doi=' . $doi . '.}}');
+            $this->assertTrue($template->verify_doi());
+            $this->assertSame($doi, $template->get2('doi'));
+        });
+    }
+
+    public function testExistingDoiQueryCannotSupplyAnUnrelatedDoi(): void {
+        $doi = '10.1234/chapter';
+        $other = '10.9999/unrelated';
+        $this->with_function_stubs([
+            'doi_works' => static fn (string $identifier): bool => in_array($identifier, [$doi, $other], true),
+        ], function () use ($doi, $other): void {
+            $template = $this->make_citation('{{cite journal |doi=' . $doi . '?related=' . $other . '}}');
+            $this->assertTrue($template->verify_doi());
+            $this->assertSame($doi, $template->get2('doi'));
+        });
+    }
+
+    public function testExistingDoiQueryIsRepairedDuringTidy(): void {
+        $doi = '10.1234/example';
+        $this->with_function_stubs([
+            'doi_works' => static fn (string $identifier): bool => $identifier === $doi,
+        ], function () use ($doi): void {
+            $template = $this->make_citation('{{cite journal |doi=' . $doi . ' ?utm_source=example&seq=6}}');
+            $template->tidy_parameter('doi');
+            $this->assertSame($doi, $template->get2('doi'));
+            $this->assertNull($template->get2('doi-broken-date'));
+        });
+    }
+
+    public function testExistingDoiQueryRepairRespectsAnInlineComment(): void {
+        $doi = '10.1234/example';
+        $protected_doi = $doi . '?utm_source=example # # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #';
+        $this->with_function_stubs([
+            'doi_works' => static fn (string $identifier): bool => $identifier === $doi,
+        ], function () use ($protected_doi): void {
+            $template = $this->make_citation('{{cite journal |doi=' . $protected_doi . ' |doi-broken-date=2020-01-01}}');
+            $this->assertFalse($template->verify_doi());
+            $this->assertSame($protected_doi, $template->get2('doi'));
+            $this->assertNotNull($template->get2('doi-broken-date'));
+        });
+    }
+
     /**
      * @return array<string, array{string, string}>
      */

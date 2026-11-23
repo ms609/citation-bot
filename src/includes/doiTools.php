@@ -673,6 +673,15 @@ function get_possible_dois(string $doi): array {
             // Or is this extra punctuation copied in?
             $trial[] = mb_substr($doi, 0, -1);
     }
+    // A pasted query can itself contain another DOI. Do not offer that DOI
+    // (or other pieces of the query) as a replacement for the cited work.
+    if (preg_match('~^(10\.[0-9]{4,9}/[^\s?]+)\s*\?[^=&?#\s]+=~u', $doi, $match) === 1) {
+        if (doi_works($doi) !== false) {
+            return [$doi];
+        }
+        $trial[] = $match[1];
+        return $trial;
+    }
     if (mb_substr($doi, -4) === '</a>' || mb_substr($doi, -4) === '</A>') {
         $trial[] = mb_substr($doi, 0, -4);
     }

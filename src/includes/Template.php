@@ -8458,7 +8458,9 @@ final class Template
                 $try = "10." . $match[1];
             }
             if (doi_works($try)) {
-                $this->set('doi', $try);
+                if ($doi !== $try && !$this->set('doi', $try)) {
+                    continue;
+                }
                 $this->doi_valid = true;
                 foreach (DOI_BROKEN_ALIASES as $alias) {
                     $this->forget($alias);
