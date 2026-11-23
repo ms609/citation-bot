@@ -43,7 +43,7 @@ final class TemplatePart2Test extends testBaseClass {
         $text = "{{cite journal|work=}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
-        $this->assertSame( "{{cite journal|journal=}}", $template->parsed_text());
+        $this->assertSame( '{{cite journal}}', $template->parsed_text());
     }
 
     public function testTidyChapterTitleSeries(): void {
@@ -322,7 +322,7 @@ final class TemplatePart2Test extends testBaseClass {
         $text = "{{cite magazine|work=}}";
         $template = $this->make_citation($text);
         $template->prepare();
-        $this->assertSame( "{{cite magazine|magazine=}}", $template->parsed_text());
+        $this->assertSame( '{{cite magazine}}', $template->parsed_text());
     }
 
     public function testTidyChapterTitleSeriesCiteJournalXyzPreservesTitle(): void {

@@ -7804,8 +7804,8 @@ final class Template
             ) {
                 if ($this->has('journal') || $this->has('newspaper') || $this->has('magazine') || $this->has('periodical') || $this->has('website')) {
                     $this->forget('work'); // Delete if we have alias
-                } elseif ($this->wikiname() === 'cite web') {
-                    $this->forget('work'); // The likelihood of this being a good thing to add is very low
+                } elseif (in_array($this->wikiname(), ['cite web', 'cite journal', 'citation'], true)) {
+                    $this->forget('work');
                 }
             }
             if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
