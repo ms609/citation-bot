@@ -888,43 +888,9 @@ final class DoiTest extends testBaseClass {
     #[DataProvider('spieProceedingsBookMetadataCases')]
     public function testSpieProceedingsBookMetadata(string $citation, bool $older_record, array $rest_overrides,
         string $expected_series, string $expected_publisher, bool $expect_same_citation): void {
-        if ($older_record) {
-            $doi = '10.1117/12.956078';
-            $volume_title = 'Optics in Missile Engineering';
-            $paper_title = '&lt;title&gt;Scattering From Infrared Missile Domes&lt;/title&gt;';
-            $volume = '0133';
-            $year = '1978';
-            $first_page = '71';
-            $last_page = '77';
-        } else {
-            $doi = '10.1117/12.611774';
-            $volume_title = 'UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II';
-            $paper_title = 'Preliminary design of the Wide-Field Infrared Survey Explorer (WISE)';
-            $volume = '5899';
-            $year = '2005';
-            $first_page = '58990R';
-            $last_page = '';
-        }
-        // Both OpenURL records file the volume title in series_title.
-        $record = new SimpleXMLElement('<query><doi>' . $doi . '</doi><series_title>' . $volume_title .
-            '</series_title><volume_title>' . $volume_title . '</volume_title><article_title>' .
-            htmlspecialchars($paper_title, ENT_XML1, 'UTF-8') . '</article_title><volume>' . $volume .
-            '</volume><year>' . $year . '</year><first_page>' . $first_page . '</first_page><last_page>' .
-            $last_page . '</last_page></query>');
-        $rest = (object) array_replace([
-            'DOI' => $doi,
-            'type' => 'proceedings-article',
-            'title' => [$paper_title],
-            'container-title' => ['SPIE Proceedings', $volume_title],
-            'publisher' => 'SPIE',
-            'volume' => $volume,
-        ], $rest_overrides);
         $warnings = [];
         $this->with_function_stubs([
-            'doi_works' => true,
-            'doi_active' => true,
-            'query_crossref' => $record,
-            'query_crossref_newapi' => $rest,
+            ...self::spieProceedingsStubs($older_record, $rest_overrides),
             'report_warning' => static function (string $message) use (&$warnings): void {
                 $warnings[] = $message;
             },
@@ -964,6 +930,53 @@ final class DoiTest extends testBaseClass {
         });
     }
 
+    /**
+     * @param bool $older_record
+     * @param array<string, mixed> $rest_overrides
+     * @param ?string $openurl_volume
+     * @return array<string, mixed>
+     */
+    private static function spieProceedingsStubs(bool $older_record = false, array $rest_overrides = [], ?string $openurl_volume = null): array {
+        if ($older_record) {
+            $doi = '10.1117/12.956078';
+            $volume_title = 'Optics in Missile Engineering';
+            $paper_title = '&lt;title&gt;Scattering From Infrared Missile Domes&lt;/title&gt;';
+            $volume = '0133';
+            $year = '1978';
+            $first_page = '71';
+            $last_page = '77';
+        } else {
+            $doi = '10.1117/12.611774';
+            $volume_title = 'UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II';
+            $paper_title = 'Preliminary design of the Wide-Field Infrared Survey Explorer (WISE)';
+            $volume = '5899';
+            $year = '2005';
+            $first_page = '58990R';
+            $last_page = '';
+        }
+        // Both OpenURL records file the volume title in series_title.
+        $record = new SimpleXMLElement('<query><doi>' . $doi . '</doi><series_title>' . $volume_title .
+            '</series_title><volume_title>' . $volume_title . '</volume_title><article_title>' .
+            htmlspecialchars($paper_title, ENT_XML1, 'UTF-8') . '</article_title><volume>' .
+            htmlspecialchars($openurl_volume ?? $volume, ENT_XML1, 'UTF-8') .
+            '</volume><year>' . $year . '</year><first_page>' . $first_page . '</first_page><last_page>' .
+            $last_page . '</last_page></query>');
+        $rest = (object) array_replace([
+            'DOI' => $doi,
+            'type' => 'proceedings-article',
+            'title' => [$paper_title],
+            'container-title' => ['SPIE Proceedings', $volume_title],
+            'publisher' => 'SPIE',
+            'volume' => $volume,
+        ], $rest_overrides);
+        return [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => $rest,
+        ];
+    }
+
     /** @return array<string, array{string, bool, array<string, mixed>, string, string, bool}> */
     public static function spieProceedingsBookMetadataCases(): array {
         $wise = '{{cite book|title=UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II' .
@@ -978,11 +991,6 @@ final class DoiTest extends testBaseClass {
         return [
             'WISE book' => [$wise . '}}', false, [], 'Proceedings of SPIE', 'SPIE', false],
             'WISE DOI only' => ['{{cite journal|doi=10.1117/12.611774}}', false, [], 'Proceedings of SPIE', 'SPIE', false],
-            'WISE with populated journal' => [
-                '{{cite journal|title=Preliminary design of the Wide-field Infrared Survey Explorer (WISE)' .
-                '|journal=Uv/Optical/Ir Space Telescopes: Innovative Technologies and Concepts II' .
-                '|volume=5899|pages=262–273|date=10 August 2005|doi=10.1117/12.611774}}', false, [], '', '', true,
-            ],
             'otherwise complete book' => [$wise . '|isbn=9780819458933|last1=Mainzer|last2=Eisenhardt|display-authors=1}}',
                 false, [], 'Proceedings of SPIE', 'SPIE', false],
             '1978 proceedings with unpadded volume' => [$optics . '|volume=133|pages=71–77}}',
@@ -1003,6 +1011,234 @@ final class DoiTest extends testBaseClass {
             'malformed REST publisher' => [$wise . '}}', false, ['publisher' => ['SPIE']], 'Proceedings of SPIE', '', false],
             'conflicting book title' => [str_replace('title=UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II',
                 'title=Unrelated Volume', $wise) . '}}', false, [], '', '', true],
+        ];
+    }
+
+    private const string WISE_PAPER = 'Preliminary design of the Wide-field Infrared Survey Explorer (WISE)';
+    private const string WISE_VOLUME = 'UV/Optical/IR Space Telescopes: Innovative Technologies and Concepts II';
+    private const string WISE_JOURNAL = 'Uv/Optical/Ir Space Telescopes: Innovative Technologies and Concepts II';
+
+    public function testSpieConvertsReportedWiseCitationAndPreservesItsFields(): void {
+        $paper_url = 'http://wise.ssl.berkeley.edu/documents/WISESPIE_SanDiego05.pdf';
+        $fields = [
+            'last1' => 'Mainzer', 'first1' => 'Amanda K.', 'last2' => 'Eisenhardt', 'first2' => 'Peter',
+            'last3' => 'Wright', 'first3' => 'Edward L.', 'last4' => 'Liu', 'first4' => 'Feng-Chuan',
+            'last5' => 'Irace', 'first5' => 'William', 'last6' => 'Heinrichsen', 'first6' => 'Ingolf',
+            'last7' => 'Cutri', 'first7' => 'Roc', 'last8' => 'Duval', 'first8' => 'Valerie',
+            'editor-last' => 'MacEwen', 'editor-first' => 'Howard A.',
+            'date' => '10 August 2005', 'volume' => '5899', 'pages' => '262–273',
+            'arxiv' => 'astro-ph/0508246', 'bibcode' => '2005SPIE.5899..262M',
+            'doi' => '10.1117/12.611774', 's2cid' => '118977552',
+            'archive-url' => 'https://web.archive.org/web/20090521083142/' . $paper_url,
+            'archive-date' => '21 May 2009', 'access-date' => '5 March 2010', 'url-status' => 'live',
+        ];
+        $citation = '{{cite journal|title=' . self::WISE_PAPER . '|journal=' . self::WISE_JOURNAL .
+            '|series=Proceedings of the SPIE – ' . self::WISE_VOLUME . '|url=' . $paper_url;
+        foreach ($fields as $field => $value) {
+            $citation .= '|' . $field . '=' . $value;
+        }
+        $this->with_function_stubs([
+            ...self::spieProceedingsStubs(),
+            'bot_curl_exec' => '',
+        ], function () use ($citation, $fields, $paper_url): void {
+            $template = $this->process_citation($citation . '}}');
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame(self::WISE_PAPER, $template->get('chapter'));
+            $this->assertSame(self::WISE_VOLUME, $template->get('title'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('SPIE', $template->get('publisher'));
+            $this->assertSame($paper_url, $template->get('chapter-url'));
+            $this->assertSame('', $template->get('url'));
+            $this->assertSame('', $template->get('journal'));
+            foreach ($fields as $field => $value) {
+                $this->assertSame($value, $template->get($field), $field);
+            }
+            $this->assertSame($template->parsed_text(), $this->process_citation($template->parsed_text())->parsed_text());
+        });
+    }
+
+    public function testSpieConvertsJournalWithEscapedCrossrefPaperTitle(): void {
+        $citation = '{{cite journal|title=Scattering from infrared missile domes|journal=Optics in Missile Engineering' .
+            '|series=Optics in Missile Engineering|volume=133|pages=71–77|year=1978|doi=10.1117/12.956078}}';
+        $this->with_function_stubs(self::spieProceedingsStubs(true), function () use ($citation): void {
+            $template = $this->make_citation($citation);
+            expand_by_doi($template);
+            $template->final_tidy();
+
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame('Scattering from infrared missile domes', $template->get('chapter'));
+            $this->assertSame('Optics in Missile Engineering', $template->get('title'));
+            $this->assertSame('133', $template->get('volume'));
+            $this->assertSame('71–77', $template->get('pages'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('SPIE', $template->get('publisher'));
+        });
+    }
+
+    public function testSpieConversionPreservesLinkedVolumeAndExistingPublisher(): void {
+        $this->with_function_stubs(self::spieProceedingsStubs(), function (): void {
+            $linked_volume = '[[Proceedings volume 5899|' . self::WISE_JOURNAL . ']]';
+            $template = $this->make_citation('{{cite journal|title=' . self::WISE_PAPER . '|journal=' . $linked_volume .
+                '|doi=10.1117/12.611774|series=SPIE Conference Proceedings|publisher=[[SPIE]]}}');
+            expand_by_doi($template);
+            $template->final_tidy();
+
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame($linked_volume, $template->get('title'));
+            $this->assertSame('SPIE Conference Proceedings', $template->get('series'));
+            $this->assertSame('[[SPIE]]', $template->get('publisher'));
+        });
+    }
+
+    public function testSpieConversionImportsMissingBookFieldsWithoutJournalIssue(): void {
+        $record = new SimpleXMLElement('<query><article_title>' . self::WISE_PAPER . '</article_title>' .
+            '<volume_title>' . self::WISE_VOLUME . '</volume_title><volume>5899</volume><year>2005</year>' .
+            '<journal_title>SPIE Proceedings</journal_title><issue>2</issue><first_page>58990R</first_page>' .
+            '<contributors><contributor contributor_role="author"><surname>Mainzer</surname>' .
+            '<given_name>Amanda K.</given_name></contributor></contributors></query>');
+        $this->with_function_stubs([
+            ...self::spieProceedingsStubs(),
+            'query_crossref' => $record,
+        ], function (): void {
+            $template = $this->make_citation('{{cite journal|title=' . self::WISE_PAPER .
+                '|journal=' . self::WISE_JOURNAL . '|doi=10.1117/12.611774}}');
+            expand_by_doi($template);
+            $template->final_tidy();
+
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame('5899', $template->get('volume'));
+            $this->assertSame('2005', $template->get('date'));
+            $this->assertSame('Mainzer', $template->get('last1'));
+            $this->assertSame('', $template->get('journal'));
+            $this->assertSame('', $template->get('issue'));
+        });
+    }
+
+    #[DataProvider('spieCrossrefVolumeConflicts')]
+    public function testSpieDeclinesExpansionWhenCrossrefVolumeNumbersConflict(string $citation, bool $complete = false): void {
+        $warnings = [];
+        $this->with_function_stubs([
+            ...self::spieProceedingsStubs(false, [], '17'),
+            'report_warning' => static function (string $message) use (&$warnings): void {
+                $warnings[] = $message;
+            },
+        ], function () use ($citation, $complete, &$warnings): void {
+            $template = $this->make_citation($citation);
+            $this->assertSame(!$complete, $template->incomplete());
+            $before = $template->parsed_text();
+            expand_by_doi($template);
+            $this->assertSame($before, $template->parsed_text());
+            $this->assertStringContainsString('Crossref REST volume 5899 conflicts with OpenURL volume 17', implode("\n", $warnings));
+        });
+    }
+
+    /** @return array<string, array{string, 1?: bool}> */
+    public static function spieCrossrefVolumeConflicts(): array {
+        $journal = '{{cite journal|title=' . self::WISE_PAPER . '|journal=' . self::WISE_JOURNAL . '|doi=10.1117/12.611774';
+        $book = '{{cite book|chapter=' . self::WISE_PAPER . '|title=' . self::WISE_VOLUME . '|doi=10.1117/12.611774';
+        return [
+            'journal without a volume' => [$journal . '}}'],
+            'journal with the REST volume' => [$journal . '|volume=5899}}'],
+            'journal with the OpenURL volume' => [$journal . '|volume=17}}'],
+            'book without a volume' => [$book . '}}'],
+            'book eligible for series and publisher only' => [
+                $book . '|volume=5899|pages=262–273|date=2005|isbn=9780819458933|last1=Mainzer|last2=Eisenhardt|display-authors=1}}',
+                true,
+            ],
+            'DOI only' => ['{{cite journal|doi=10.1117/12.611774}}'],
+        ];
+    }
+
+    #[DataProvider('spieCrossrefVolumeFallbacks')]
+    public function testSpieConversionImportsVerifiedCrossrefVolume(mixed $rest_volume, string $openurl_volume, string $expected_volume): void {
+        $this->with_function_stubs(self::spieProceedingsStubs(false, ['volume' => $rest_volume], $openurl_volume), function () use ($expected_volume): void {
+            $template = $this->make_citation('{{cite journal|title=' . self::WISE_PAPER .
+                '|journal=' . self::WISE_JOURNAL . '|doi=10.1117/12.611774}}');
+            expand_by_doi($template);
+            $template->final_tidy();
+
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame($expected_volume, $template->get('volume'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('SPIE', $template->get('publisher'));
+        });
+    }
+
+    /** @return array<string, array{mixed, string, string}> */
+    public static function spieCrossrefVolumeFallbacks(): array {
+        return [
+            'numeric agreement with padding and an integer REST value' => [5899, '05899', '5899'],
+            'REST volume only' => ['5899', '', '5899'],
+            'OpenURL volume only' => [null, '5899', '5899'],
+            'malformed REST volume' => [['17'], '5899', '5899'],
+            'boolean REST volume' => [true, '5899', '5899'],
+            'zero REST volume' => ['0', '5899', '5899'],
+            'negative REST volume' => ['-17', '5899', '5899'],
+            'zero OpenURL volume' => ['5899', '0', '5899'],
+            'non-numeric suffix in OpenURL volume' => ['5899', '17A', '5899'],
+            'out-of-range OpenURL volume' => ['5899', str_repeat('9', 25), '5899'],
+            'neither source supplies a usable volume' => [null, '17A', ''],
+        ];
+    }
+
+    public function testSpiePageProcessingLeavesVolumeUnsetWhenCrossrefSourcesConflict(): void {
+        $this->with_function_stubs([
+            ...self::spieProceedingsStubs(false, [], '17'),
+            'bot_curl_exec' => '',
+        ], function (): void {
+            $template = $this->process_citation('{{cite journal|title=' . self::WISE_PAPER . '|journal=' . self::WISE_JOURNAL .
+                '|pages=262–273|doi=10.1117/12.611774}}');
+
+            $this->assertSame('cite journal', $template->wikiname());
+            $this->assertSame('', $template->get('volume'));
+            $this->assertSame('', $template->get('series'));
+            $this->assertSame('', $template->get('publisher'));
+            $this->assertSame('262–273', $template->get('pages'));
+        });
+    }
+
+    /**
+     * @param array<string, string> $fields
+     * @param array<string, mixed> $rest
+     */
+    #[DataProvider('spieJournalConversionConflicts')]
+    public function testSpieJournalConversionDeclinesConflictingEvidence(array $fields, array $rest = []): void {
+        $citation = '{{cite journal';
+        foreach (array_replace([
+            'title' => self::WISE_PAPER, 'journal' => self::WISE_JOURNAL, 'volume' => '5899',
+            'pages' => '262–273', 'date' => '10 August 2005', 'doi' => '10.1117/12.611774',
+        ], $fields) as $field => $value) {
+            $citation .= '|' . $field . '=' . $value;
+        }
+        $this->with_function_stubs(self::spieProceedingsStubs(false, $rest), function () use ($citation): void {
+            $template = $this->make_citation($citation . '}}');
+            $before = $template->parsed_text();
+            expand_by_doi($template);
+
+            $this->assertSame($before, $template->parsed_text());
+        });
+    }
+
+    /** @return array<string, array{array<string, string>, 1?: array<string, mixed>}> */
+    public static function spieJournalConversionConflicts(): array {
+        return [
+            'different paper' => [['title' => 'An unrelated paper', 'series' => self::WISE_VOLUME]],
+            'different volume title' => [['journal' => 'An unrelated journal']],
+            'different volume number' => [['volume' => '17']],
+            'ambiguous volume' => [['volume' => '5899A']],
+            'duplicate work alias' => [['work' => 'Another work']],
+            'existing journal translation' => [['trans-journal' => 'Translated journal title']],
+            'existing chapter alias' => [['contribution' => 'Existing contribution']],
+            'protected chapter' => [['chapter' => '<!-- keep blank -->']],
+            'competing chapter URL' => [['url' => 'https://example.org/paper.pdf', 'chapter-url' => 'https://example.org/other.pdf']],
+            'paper title link' => [['title-link' => 'Wide-field Infrared Survey Explorer']],
+            'journal-only issue' => [['issue' => '2']],
+            'different composite series' => [['series' => 'Proceedings of the SPIE – Another Volume']],
+            'different REST DOI' => [[], ['DOI' => '10.1117/12.956078']],
+            'different REST volume title' => [[], ['container-title' => ['SPIE Proceedings', 'Another Volume']]],
+            'missing REST container data' => [[], ['container-title' => null]],
+            'malformed REST paper title' => [[], ['title' => [new stdClass()]]],
+            'different REST paper title' => [[], ['title' => ['An unrelated paper']]],
         ];
     }
 
