@@ -7078,6 +7078,31 @@ final class Template
                     return;
 
                 case 'work':
+                    if ($this->wikiname() === 'cite book' && $this->is_book_series('work')) {
+                        $work = $this->get3('work');
+                        $work_fields = array_filter($this->param, static fn (Parameter $p): bool => $p->param === 'work');
+                        $series_fields = array_filter($this->param, static fn (Parameter $p): bool => $p->param === 'series');
+                        $work_field = reset($work_fields);
+                        if (count($work_fields) !== 1 || !$work_field instanceof Parameter ||
+                            $work !== $this->get_without_comments_and_placeholders('work') ||
+                            str_contains($work_field->parsed_text(), 'CITATION_BOT_PLACEHOLDER') ||
+                            $this->has_but_maybe_blank('script-work') ||
+                            $this->has_but_maybe_blank('trans-work')
+                        ) {
+                            return;
+                        }
+
+                        $series_field = reset($series_fields);
+                        if ($series_field === false ||
+                            (count($series_fields) === 1 && $series_field->val === '' &&
+                                !str_contains($series_field->parsed_text(), 'CITATION_BOT_PLACEHOLDER'))
+                        ) {
+                            $this->rename('work', 'series');
+                        } elseif (count($series_fields) === 1 && $work === $series_field->val) {
+                            $this->forget('work');
+                        }
+                        return;
+                    }
                     foreach (BAD_WORK_NAMES as $bad_name) {
                         if (mb_strtolower(mb_trim(str_replace(['[[', ']]'], '', $this->get($param)))) === $bad_name) {
                             $this->forget($param);
@@ -8130,6 +8155,9 @@ final class Template
             }
             if ($this->wikiname() === 'cite book') {
                 foreach (WORK_ALIASES as $worky) {
+                    if ($worky === 'work' && $this->is_book_series('work')) {
+                        continue; // Earlier routing preserved this field for editorial review.
+                    }
                     if ($this->blank($worky)) {
                         $this->forget($worky);
                     } // Discourage filling these in
