@@ -154,7 +154,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testPureGarbageCiteJournalTitleBloombergAreYouA(): void {
         $text = "{{cite journal|title=Bloomberg - Are you a robot?}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame("{{cite journal|title=}}", $expanded->parsed_text());
+        $this->assertSame("{{cite journal}}", $expanded->parsed_text());
     }
 
     public function testPureGarbageCiteJournalTitleWaybackMachine(): void {

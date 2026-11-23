@@ -44,7 +44,7 @@ final class UrlToolsCoverageMoreTest extends testBaseClass {
             'https://academic.oup.com/gji/article/230/1/50/6522179',
             $template->get2('url')
         );
-        $this->assertSame('', $template->get2('title'));
+        $this->assertNull($template->get2('title'));
         $this->assertNull($template->get2('website'));
     }
 

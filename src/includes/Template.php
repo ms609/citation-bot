@@ -646,12 +646,29 @@ final class Template
         $this->cookie_absent_doi_titles = [];
     }
 
+    private function editable_citation_title(): bool {
+        $key = $this->get_param_key('title');
+        return $key !== null && $this->get3('title') === $this->get_without_comments_and_placeholders('title') &&
+            !str_contains($this->param[$key]->parsed_text(), 'CITATION_BOT_PLACEHOLDER');
+    }
+
+    public function discard_unprotected_citation_title(): void {
+        if ($this->editable_citation_title()) {
+            $this->forget('title');
+        }
+    }
+
+    public function has_missing_title_placeholder(): bool {
+        return $this->editable_citation_title() &&
+            in_array(mb_strtolower($this->get('title')), ['no title', '[no title found]'], true);
+    }
+
     public function prepare(): void {
         set_time_limit(120);
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
             // Clean up bad data
             if (in_array(mb_strtolower($this->get('title')), ALWAYS_BAD_TITLES, true)) {
-                $this->set('title', '');
+                $this->discard_unprotected_citation_title();
             }
             if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl']) && $this->get('url') !== 'https://archive.org/web/') {
                 $this->set('title', '');
@@ -1162,7 +1179,7 @@ final class Template
      * $api (string) specifies the API route by which a parameter was found; this will log the
      * parameter so it is not used to trigger a new search via the same API.
      */
-    public function add_if_new(string $param_name, string $value, string $api = '', bool $literal_author = false): bool {
+    public function add_if_new(string $param_name, string $value, string $api = '', bool $literal_author = false, bool $verified_title = false): bool {
         // Clean up weird stuff from CrossRef etc.
         // U+200B can mark a word boundary in Thai and must remain invisible.
         $value = safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
@@ -2169,7 +2186,7 @@ final class Template
                 if (in_array(mb_strtolower(sanitize_string($value)), BAD_TITLES, true)) {
                     return false;
                 }
-                if (is_generic_title($value)) {
+                if (is_generic_title($value) || str_i_same('[No title found]', $value)) {
                     report_inaction("Not adding generic title: " . echoable($value));
                     return false;
                 }
@@ -2179,6 +2196,7 @@ final class Template
                 }
                 if (
                     $this->blank($param_name) ||
+                    ($verified_title && $this->has_missing_title_placeholder()) ||
                     in_array($this->get($param_name), GOOFY_TITLES, true) ||
                     (mb_stripos($this->get($param_name), 'EZProxy') !== false && mb_stripos($value, 'EZProxy') === false)
                 ) {
@@ -6848,12 +6866,12 @@ final class Template
                             $this->set('title', $title);
                         }
                     }
-                    if ($title === 'Validate User' || $title === 'Join Ancestry' || $title === 'Join Ancestry.com' || $title === 'Ancestry - Sign Up') {
+                    if ($title === 'Join Ancestry' || $title === 'Join Ancestry.com' || $title === 'Ancestry - Sign Up') {
                         $this->set('title', '');
                         return;
                     }
                     if (in_array(mb_strtolower($title), ALWAYS_BAD_TITLES, true)) {
-                        $this->forget('title');
+                        $this->discard_unprotected_citation_title();
                         return;
                     }
                     $title = straighten_quotes($title, false);
@@ -6972,10 +6990,10 @@ final class Template
                         preg_match('~^https://web\.archive\.org/web/\d+/https://wikipedialibrary\.wmflabs\.org/\?next_url=/ezproxy/~', $this->get($param)) ||
                         preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))
                     ) {
-                        $this->forget($param);
-                        if ($this->get('title') === 'Validate User') {
-                            $this->set('title', '');
+                        if ($this->get('title') === 'Validate User' && str_contains($this->get($param), 'academic.oup.com/crawlprevention')) {
+                            $this->discard_unprotected_citation_title();
                         }
+                        $this->forget($param);
                         return;
                     }
                     if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z]{9})(?:|\?url=.*)$~', $this->get($param), $matches)) {
