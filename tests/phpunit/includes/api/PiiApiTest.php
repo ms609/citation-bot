@@ -13,27 +13,22 @@ final class PiiApiTest extends testBaseClass {
      */
     public function testPII(): void {
         new TestPage(); // Fill page name with test name for debugging
-        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
-            $this->markTestSkipped('Offline PII transport fixture requires uopz');
-        }
 
         $pii = 'S0960076019302699';
         $doi_expect = '10.1016/j.jsbmb.2019.105494';
         $response = '<coredata><prism:doi>' . $doi_expect . '</prism:doi></coredata>';
         $requests = 0;
 
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('bot_curl_exec', static function (CurlHandle $_ch) use ($response, &$requests): string {
-            $requests++;
-            return $response;
-        }, true);
-        try {
+        $stubs = [
+            'bot_curl_exec' => static function (CurlHandle $_ch) use ($response, &$requests): string {
+                $requests++;
+                return $response;
+            },
+        ];
+        $this->with_function_stubs($stubs, function () use ($doi_expect, $pii, &$requests): void {
             $this->assertSame($doi_expect, get_doi_from_pii($pii));
             $this->assertSame(1, $requests, 'The PII lookup must call the transport exactly once');
-        } finally {
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('bot_curl_exec');
-        }
+        });
     }
 
     public function testPIIResponseParserAcceptsDoiWithWhitespace(): void {
