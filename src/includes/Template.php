@@ -1956,6 +1956,10 @@ final class Template
                 } // non-journals that are probably same as agency or publisher that come from zotero
                 if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
                     $lower_value = mb_strtolower(sanitize_string($value));
+                    $value = wikify_external_text($value, use_title_case: true);
+                    if ($value === '') {
+                        return false;
+                    }
                     if (in_array($lower_value, HAS_NO_VOLUME, true) && !in_array($lower_value, NUMBER_IS_PAGE, true)) {
                         $this->forget('volume');
                     } // No volumes, just issues.
@@ -1963,7 +1967,6 @@ final class Template
                         $this->forget('issue');
                         $this->forget('number');
                     } // No issues, just volumes
-                    $value = wikify_external_text($value, use_title_case: true);
                     if ($this->has('series') && (str_equivalent($this->get('series'), $value) || $this->memoirs_series_matches($value))) {
                         return false;
                     }
@@ -2048,7 +2051,7 @@ final class Template
             case 'series':
                 if ($this->blank($param_name)) {
                     $value = wikify_external_text($value);
-                    if ($this->series_matches_title_or_journal($value)) {
+                    if ($value === '' || $this->series_matches_title_or_journal($value)) {
                         return false;
                     }
                     if ($value === 'A Penguin book') {
@@ -2105,7 +2108,8 @@ final class Template
                 }
                 $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
                 if ($this->blank(CHAPTER_ALIASES)) {
-                    return $this->add($param_name, wikify_external_text($value));
+                    $value = wikify_external_text($value);
+                    return $value !== '' && $this->add($param_name, $value);
                 }
                 return false;
 
@@ -2128,7 +2132,8 @@ final class Template
                 } // TODO - check for things that should be swapped etc.
                 $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
                 if ($this->blank(CHAPTER_ALIASES)) {
-                    return $this->add($param_name, wikify_external_text($value));
+                    $value = wikify_external_text($value);
+                    return $value !== '' && $this->add($param_name, $value);
                 }
                 return false;
 
@@ -2149,7 +2154,8 @@ final class Template
                 } // TODO - check for things that should be swapped etc.
                 $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
                 if ($this->blank(CHAPTER_ALIASES)) {
-                    return $this->add($param_name, wikify_external_text($value));
+                    $value = wikify_external_text($value);
+                    return $value !== '' && $this->add($param_name, $value);
                 }
                 return false;
 
@@ -2190,14 +2196,9 @@ final class Template
                     if (!$this->blank('book-title')) {
                         return false;
                     } // Cite conference uses this
-                    if ($this->blank('script-title')) {
-                        return $this->add($param_name, wikify_external_text($value));
-                    } else {
-                        $value = mb_trim($value);
-                        $script_value = $this->get('script-title');
-                        if (citation_titles_use_romanization($value, $script_value)) {
-                            return $this->add($param_name, wikify_external_text($value));
-                        }
+                    if ($this->blank('script-title') || citation_titles_use_romanization(mb_trim($value), $this->get('script-title'))) {
+                        $value = wikify_external_text($value);
+                        return $value !== '' && $this->add($param_name, $value);
                     }
                 }
                 return false;

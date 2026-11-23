@@ -54,7 +54,7 @@ function mathml_safe_preg_replace_callback(string $regex, callable $replace, str
  * via add_if_new(). It does NOT modify existing parameters that already contain MathML.
  * Existing citations with MathML will retain their current values during tidying operations.
  */
-function convert_mathml_to_latex(string $mathml): string {
+function convert_mathml_to_latex(string $mathml): ?string {
     $mathml = mathml_safe_preg_replace_callback(
         '~&#(?:x[0-9a-f]+|[0-9]+);~i',
         static function (array $match): string {
@@ -66,6 +66,17 @@ function convert_mathml_to_latex(string $mathml): string {
     );
     // Remove mml: namespace prefix if present
     $mathml = str_replace(['<mml:', '</mml:'], ['<', '</'], $mathml);
+
+    if (preg_match('~</?m(?:frac|root|subsup|sub|sup|table|tr|td|over|enclose|phantom|action|error|stack|longdiv|padded)\b~', $mathml) === 1) {
+        // Wrap the fragment and keep named math entities for the symbol pass below.
+        $document = new DOMDocument();
+        if (!$document->loadXML('<math>' . str_replace('&', '&amp;', $mathml) . '</math>', LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING)
+            || $document->documentElement === null) {
+            return null;
+        }
+        $rendered = render_mathml_element($document->documentElement);
+        return $rendered === null ? null : finish_mathml_conversion($rendered);
+    }
 
     // Handle mmultiscripts for isotope notation: <mmultiscripts>base<mprescripts/>prescript</mmultiscripts>
     // Example: <mmultiscripts>Ni<mprescripts/><none/>67</mmultiscripts> -> ^{67}\mathrm{Ni}
@@ -93,65 +104,6 @@ function convert_mathml_to_latex(string $mathml): string {
 
             // Default fallback
             return $base;
-        },
-        $mathml
-    );
-
-    // Handle msup (superscript): <msup><mi>x</mi><mn>2</mn></msup> -> x^{2}
-    // Also handles <mi> superscripts, e.g. <msup><mi>x</mi><mi>n</mi></msup> -> x^{n}
-    $mathml = mathml_safe_preg_replace_callback(
-        '~<msup>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*</msup>~s',
-        static function (array $matches): string {
-            $base = mb_trim($matches[2]);
-            $super = mb_trim($matches[4]);
-            return $base . "^{" . $super . "}";
-        },
-        $mathml
-    );
-
-    // Handle msub (subscript): <msub><mi>H</mi><mn>2</mn></msub> -> H_{2}
-    // Also handles <mi> subscripts, e.g. <msub><mi>R</mi><mi>K</mi></msub> -> R_{K}
-    $mathml = mathml_safe_preg_replace_callback(
-        '~<msub>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*</msub>~s',
-        static function (array $matches): string {
-            $base = mb_trim($matches[2]);
-            $sub = mb_trim($matches[4]);
-            return $base . "_{" . $sub . "}";
-        },
-        $mathml
-    );
-
-    // Handle msubsup (subscript and superscript): <msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup> -> x_{1}^{2}
-    // Also handles <mi> sub/superscripts for consistency with msub/msup, e.g. R_{K}^{*}
-    $mathml = mathml_safe_preg_replace_callback(
-        '~<msubsup>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*<(mi|mn)>(.*?)</\5>\s*</msubsup>~s',
-        static function (array $matches): string {
-            $base = mb_trim($matches[2]);
-            $sub = mb_trim($matches[4]);
-            $super = mb_trim($matches[6]);
-            return $base . "_{" . $sub . "}^{" . $super . "}";
-        },
-        $mathml
-    );
-
-    // Handle mfrac (fractions): <mfrac><mn>1</mn><mn>2</mn></mfrac> -> \frac{1}{2}
-    $mathml = mathml_safe_preg_replace_callback(
-        '~<mfrac>\s*<m[ino]>(.*?)</m[ino]>\s*<m[ino]>(.*?)</m[ino]>\s*</mfrac>~s',
-        static function (array $matches): string {
-            $num = mb_trim($matches[1]);
-            $den = mb_trim($matches[2]);
-            return "\\frac{" . $num . "}{" . $den . "}";
-        },
-        $mathml
-    );
-
-    // Handle mroot (nth root): <mroot><mi>x</mi><mn>3</mn></mroot> -> \sqrt[3]{x}
-    $mathml = mathml_safe_preg_replace_callback(
-        '~<mroot>\s*<m[ino]>(.*?)</m[ino]>\s*<m[ino]>(.*?)</m[ino]>\s*</mroot>~s',
-        static function (array $matches): string {
-            $base = mb_trim($matches[1]);
-            $index = mb_trim($matches[2]);
-            return "\\sqrt[" . $index . "]{" . $base . "}";
         },
         $mathml
     );
@@ -195,6 +147,82 @@ function convert_mathml_to_latex(string $mathml): string {
         $mathml
     );
 
+    return finish_mathml_conversion($mathml);
+}
+
+/** Render grouped presentation MathML before the shared entity and symbol pass. */
+function render_mathml_element(DOMElement $element): ?string {
+    $tag = $element->tagName;
+    if ($element->hasAttributes() && !($tag === 'mo' && $element->attributes->length === 1 && $element->getAttribute('stretchy') === 'false')) {
+        return null;
+    }
+
+    $operands = [];
+    $child_tags = [];
+    $sequence = '';
+    $has_text = false;
+    foreach ($element->childNodes as $child) {
+        if ($child instanceof DOMElement) {
+            $operand = render_mathml_element($child);
+            if ($operand === null) {
+                return null;
+            }
+            $operands[] = $operand;
+            $child_tags[] = $child->tagName;
+            $sequence .= $operand;
+        } elseif ($child instanceof DOMText) {
+            $sequence .= $child->data;
+            $has_text = $has_text || mb_trim($child->data) !== '';
+        }
+    }
+
+    $sequence = mb_trim($sequence);
+    switch ($tag) {
+        case 'math':
+        case 'mrow':
+            return $sequence;
+        case 'mi':
+        case 'mn':
+        case 'mo':
+            return $operands === [] ? $sequence : null;
+        case 'mtext':
+        case 'msqrt':
+        case 'mfenced':
+            if ($tag === 'mfenced' && count($operands) > 1) {
+                return null; // Implicit separators require their own rendering.
+            }
+            return MML_TAGS['<' . $tag . '>'] . $sequence . MML_TAGS['</' . $tag . '>'];
+        case 'mspace':
+            return $sequence === '' ? MML_TAGS['<mspace/>'] : null;
+    }
+
+    $arity = match ($tag) {
+        'mfrac', 'mroot', 'msub', 'msup', 'munder' => 2,
+        'msubsup', 'munderover' => 3,
+        default => null,
+    };
+    if ($has_text || count($operands) !== $arity || in_array('', $operands, true)) {
+        return null;
+    }
+
+    [$base, $script] = $operands;
+    if (in_array($tag, ['msub', 'msup', 'msubsup', 'munderover'], true)
+        && !in_array($child_tags[0], ['mi', 'mn', 'mo'], true)
+        && preg_match('~\A\([^()]+\)\z~', $base) !== 1) {
+        $base = '{' . $base . '}';
+    }
+    return match ($tag) {
+        'mfrac' => '\frac{' . $base . '}{' . $script . '}',
+        'mroot' => '\sqrt[' . (str_contains($script, ']') ? '{' . $script . '}' : $script) . ']{' . $base . '}',
+        'msub' => $base . '_{' . $script . '}',
+        'msup' => $base . '^{' . $script . '}',
+        'msubsup', 'munderover' => $base . '_{' . $script . '}^{' . $operands[2] . '}',
+        'munder' => '\underset{' . $script . '}{' . $base . '}',
+        default => null,
+    };
+}
+
+function finish_mathml_conversion(string $mathml): string {
     // Keep comparison operators away from strip_tags(): once decoded, "p<0.05" looks like the
     // start of a tag and everything after it would be removed.  Private-use placeholders are restored below.
     $mathml = str_replace(['&lt;', '&gt;'], ["\u{E000}", "\u{E001}"], $mathml);
