@@ -2506,6 +2506,23 @@ XML;
         $this->assertSame('cite journal', $prepared->wikiname());
     }
 
+    public function testPreprintParameterInsertionUsesTheCorrectAllowlist(): void {
+        $ids = [
+            'biorxiv' => '10.1101/2020.01.01.123456',
+            'medrxiv' => '10.1101/2020.01.01.12345678',
+        ];
+        foreach ($ids as $server => $id) {
+            $other_server = $server === 'biorxiv' ? 'medrxiv' : 'biorxiv';
+            $template = $this->make_citation('{{cite ' . $server . '|title=Preprint}}');
+            $this->assertTrue($template->add_if_new('date', '2020'));
+            $this->assertTrue($template->add_if_new($server, $id));
+            $this->assertFalse($template->add_if_new($other_server, $ids[$other_server]));
+            $this->assertSame('2020', $template->get2('date'));
+            $this->assertSame($id, $template->get2($server));
+            $this->assertNull($template->get2($other_server));
+        }
+    }
+
     public function testPreprintIdWithImpossibleDateIsNotAddedOrMoved(): void {
         foreach (['biorxiv' => '10.1101/2021.02.29.123456', 'medrxiv' => '10.64898/2025.04.31.123456v2'] as $server => $doi) {
             $template = $this->make_citation('{{cite journal |title=Test |journal=' . $server . ' |doi=' . $doi . '}}');
