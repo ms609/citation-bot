@@ -1682,6 +1682,57 @@ final class ZoteroTest extends testBaseClass {
         $this->assertSame('cite web', $template->wikiname());
     }
 
+    public function testValidateUserTitleSurvivesOutsideOupChallenge(): void {
+        $text = '{{cite web|title=Validate User|url=https://example.test/manual}}';
+        $this->with_function_stubs(['bot_curl_exec' => '', 'bot_curl_exec_withFalse' => false], function () use ($text): void {
+            $this->assertSame($text, $this->process_page($text)->parsed_text());
+        });
+    }
+
+    public function testChallengeTitleCanBeReplacedAfterUrlCleanup(): void {
+        foreach ([
+            ['https://www.bloomberg.com/news/articles/Example', 'https://www.bloomberg.com/news/articles/Example', 'Bloomberg - Are you a robot?'],
+            ['https://academic.oup.com/crawlprevention/governor?content=/journal/article/Example', 'https://academic.oup.com/journal/article/Example', 'Validate User'],
+        ] as [$original, $url, $title]) {
+            $template = $this->prepare_citation('{{cite web|url=' . $original . '|title=' . $title . '}}');
+            $this->assertNull($template->get2('title'));
+            $this->assertSame($url, $template->get2('url'));
+            $response = json_encode([['itemType' => 'webpage', 'title' => 'Verified Study', 'url' => $url]], JSON_THROW_ON_ERROR);
+            Zotero::process_zotero_response($response, $template, $url, 0);
+            $this->assertSame('Verified Study', $template->get2('title'));
+        }
+    }
+
+    public function testOnlyVerifiedTitleChangesInOtherwiseCompleteCitation(): void {
+        $url = 'https://example.test/Study';
+        $text = '{{cite journal|title=No Title|journal=Journal|volume=3|year=2001|url=' . $url . '}}';
+        foreach ([$url, $url . '/another'] as $returned) {
+            $template = $this->make_citation($text);
+            $response = json_encode([['url' => $returned, 'itemType' => 'journalArticle', 'title' => 'Verified Study', 'pages' => '1-4']], JSON_THROW_ON_ERROR);
+            Zotero::process_zotero_response($response, $template, $url, 0);
+            $expected = $returned === $url ? str_replace('No Title', 'Verified Study', $text) : $text;
+            $this->assertSame($expected, $template->parsed_text());
+        }
+    }
+
+    public function testVerifiedZoteroTitleCanReplaceMissingTitlePlaceholder(): void {
+        $url = 'https://example.test/Study';
+        $response = json_encode([['itemType' => 'webpage', 'title' => 'Verified Study', 'url' => $url]], JSON_THROW_ON_ERROR);
+        foreach (['No Title', '[No TITLE found]', 'No Title for This Study', '((No Title))'] as $title) {
+            $template = $this->make_citation('{{cite web|url=' . $url . '|title=' . $title . '}}');
+            Zotero::process_zotero_response($response, $template, $url, 0);
+            $expected = in_array($title, ['No Title', '[No TITLE found]'], true) ? 'Verified Study' : $title;
+            $this->assertSame($expected, $template->get3('title'));
+        }
+        $template = $this->make_citation('{{cite web|url=' . $url . '|title=No Title}}');
+        $malformed = json_encode([['itemType' => 'webpage', 'title' => 'Wrong', 'url' => ['href' => $url]]], JSON_THROW_ON_ERROR);
+        Zotero::process_zotero_response($malformed, $template, $url, 0);
+        $this->assertSame('No Title', $template->get3('title'));
+        $different = str_replace('/Study', '/Different', $response);
+        Zotero::process_zotero_response($different, $template, $url, 0);
+        $this->assertSame('No Title', $template->get3('title'));
+    }
+
     public function testZoteroResponseChecksIdEmptyWebTranslator(): void {
         $text = '{{cite web|id=}}';
         $template = $this->prepare_citation($text);

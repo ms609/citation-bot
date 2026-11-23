@@ -894,7 +894,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
             $template->set($param, 'https://academic.oup.com' .
                 safe_preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', $path));
             if ($template->get('title') === 'Validate User') {
-                $template->set('title', '');
+                $template->discard_unprotected_citation_title();
             }
             if ($template->get('website') === 'academic.oup.com') {
                 $template->forget('website');

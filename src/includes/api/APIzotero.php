@@ -943,7 +943,8 @@ final class Zotero {
             }
         }
 
-        if (!$allow_non_profoundly_incomplete && !$template->profoundly_incomplete($url)) {
+        if (!$allow_non_profoundly_incomplete && !$template->profoundly_incomplete($url) &&
+            !$template->has_missing_title_placeholder()) {
             return; // Only risk unvetted data if there's little good data to sully
         }
 
@@ -1268,6 +1269,9 @@ final class Zotero {
             report_info("No good meta-data from URL " . echoable($url));
             return;
         }
+        $verified_title = isset($result->itemType) && is_string($result->url ?? null) &&
+            citation_urls_equivalent($url, $result->url) &&
+            citation_urls_equivalent($url, $template->get('url'));
         // Remove unused stuff
         unset($result->abstractNote);
         unset($result->version);
@@ -1466,6 +1470,15 @@ final class Zotero {
                     unset($result->publicationTitle);
                 }
             }
+        }
+
+        if (!$allow_non_profoundly_incomplete && $template->has_missing_title_placeholder() &&
+            !$template->profoundly_incomplete($url)
+        ) {
+            if ($verified_title) {
+                $template->add_if_new('title', $result->bookTitle ?? $result->title, verified_title: true);
+            }
+            return;
         }
 
         // Ignore junk website names
@@ -1801,7 +1814,7 @@ final class Zotero {
             }
         }
         if (isset($result->bookTitle)) {
-            $template->add_if_new('title', (string) $result->bookTitle);
+            $template->add_if_new('title', (string) $result->bookTitle, verified_title: $verified_title);
             if (isset($result->title)) {
                 $template->add_if_new('chapter', (string) $result->title);
             }
@@ -1810,7 +1823,7 @@ final class Zotero {
             }
         } else {
             if (isset($result->title)) {
-                $template->add_if_new('title', (string) $result->title);
+                $template->add_if_new('title', (string) $result->title, verified_title: $verified_title);
             }
             if (isset($result->itemType) && ($result->itemType === 'book' || $result->itemType === 'bookSection')) {
                 if (isset($result->publisher)) {
