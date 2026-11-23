@@ -439,9 +439,8 @@ const CITE_BOOK_UNSUPPORTED_PARAMS = [
     'issue',
 ];
 
-/** Parameters allowed by cite bioRxiv template per Wikipedia documentation at https://en.wikipedia.org/wiki/Template:Cite_bioRxiv */
-const CITE_BIORXIV_ALLOWED_PARAMS = [
-    'biorxiv',
+/** Parameters shared by the cite bioRxiv and cite medRxiv templates. */
+const CITE_RXIV_SHARED_ALLOWED_PARAMS = [
     'title',
     'trans-title',
     'script-title',
@@ -471,37 +470,11 @@ const CITE_BIORXIV_ALLOWED_PARAMS = [
     'orig-date',
 ];
 
-/** Parameters allowed by cite medRxiv template (mirrors cite bioRxiv) */
-const CITE_MEDRXIV_ALLOWED_PARAMS = [
-    'medrxiv',
-    'title',
-    'trans-title',
-    'script-title',
-    'language',
-    'lang',
-    'date',
-    'year',
-    'publication-date',
-    'quote',
-    'quotation',
-    'postscript',
-    'ref',
-    'mode',
-    'class',
-    'page',
-    'pages',
-    'pp',
-    'p',
-    'at',
-    'no-pp',
-    'df',
-    'name-list-style',
-    'name-list-format',
-    'collaboration',
-    'access-date',
-    'archive-date',
-    'orig-date',
-];
+/** Parameters allowed by https://en.wikipedia.org/wiki/Template:Cite_bioRxiv */
+const CITE_BIORXIV_ALLOWED_PARAMS = ['biorxiv', ...CITE_RXIV_SHARED_ALLOWED_PARAMS];
+
+/** Parameters allowed by https://en.wikipedia.org/wiki/Template:Cite_medRxiv */
+const CITE_MEDRXIV_ALLOWED_PARAMS = ['medrxiv', ...CITE_RXIV_SHARED_ALLOWED_PARAMS];
 
 const ALL_ALIASES = [
     TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
