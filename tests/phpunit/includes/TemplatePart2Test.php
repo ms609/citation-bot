@@ -1721,25 +1721,42 @@ final class TemplatePart2Test extends testBaseClass {
     public function testAllSortsOfBadDataCiteJournalJournalArxiv(): void {
         $text = "{{Cite journal|journal=arXiv|title=[No title found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|journal=arXiv|title=[No title found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal|journal=arXiv|title=[No title found]|pmc=1}}', $expanded->parsed_text());
     }
 
     public function testAllSortsOfBadDataCiteJournalJournalArxivJournalArxiv(): void {
         $text = "{{Cite journal|journal=arXiv|title=[No TITLE found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|journal=arXiv|title=[No TITLE found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal|journal=arXiv|title=[No TITLE found]|pmc=1}}', $expanded->parsed_text());
     }
 
     public function testAllSortsOfBadDataCiteJournalJournalArxivBlah(): void {
         $text = "{{Cite journal|journal=arXiv: blah|title=arXiv|issue=null|volume=n/a|page=n/a|pages=null|eprint=x}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|title=arXiv|volume=n/a|page=n/a}}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal|title=arXiv}}', $expanded->parsed_text());
     }
 
     public function testAllSortsOfBadDataCiteJournalPagesNA(): void {
         $text = "{{Cite journal|pages=n/a|pmc=1}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|pages=n/a|pmc=1}}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal|pmc=1}}', $expanded->parsed_text());
+    }
+
+    public function testJournalLocatorPlaceholdersPreserveRealValuesAndOverrides(): void {
+        $prefix = '{{cite journal|title=Study|journal=Example Journal';
+        foreach ([
+            '|volume=N/A|page=n/a|pages=0' => '|pages=0',
+            '|volume=0|page=9–10|pages=n/a' => '|volume=0|page=9–10',
+            '|volume=((n/a))|page=n/a<!-- keep -->' => '|volume=((n/a))|page=n/a<!-- keep -->',
+            '|volume<!-- keep -->=n/a|issue=3' => '|volume<!-- keep -->=n/a|issue=3',
+        ] as $input => $expected) {
+            $this->assertSame($prefix . $expected . '}}', $this->process_page($prefix . $input . '}}')->parsed_text());
+        }
+        $template = $this->prepare_citation($prefix . '|volume=n/a|page=n/a}}');
+        $this->assertTrue($template->add_if_new('volume', '12'));
+        $this->assertTrue($template->add_if_new('pages', '15–18'));
+        $this->assertSame('12', $template->get2('volume'));
+        $this->assertSame('15–18', $template->get2('pages'));
     }
 
     public function testTidyUpNA(): void {
