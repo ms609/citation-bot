@@ -8,7 +8,7 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 final class FunctionStubsTest extends testBaseClass {
     public function testPartialStubSetupIsCleanedUp(): void {
         $this->expectException(AssertionFailedError::class);
-        $this->expectExceptionMessage('Could not stub missing_citation_bot_test_function');
+        $this->expectExceptionMessageIsOrContains('Could not stub missing_citation_bot_test_function');
 
         $stubs = [
             'parse_pii_doi_response' => 'stubbed',
