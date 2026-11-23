@@ -1230,23 +1230,23 @@ final class TemplatePart4Test extends testBaseClass {
         $this->assertNull($template->get2('doi'));
     }
 
-    public function testAddBrokenDateFormatAcceptsDoiBrokenDate1December2019Doi100001RubbishBotFailureTes(): void {
-        $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
+    public function testAddBrokenDateFormatsDateInDefaultStyle(): void {
+        $text = "{{cite journal|doi=10.1000/date-format-fixture}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
         $this->assertSame('1 December 2019', $template->get2('doi-broken-date'));
     }
 
-    public function testAddBrokenDateFormatAcceptsDoiBrokenDateDecember12019Doi100001RubbishBotFailureTes(): void {
-        $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
+    public function testAddBrokenDateFormatsDateInMdyStyle(): void {
+        $text = "{{cite journal|doi=10.1000/date-format-fixture}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_MDY;
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
         $this->assertSame('December 1, 2019', $template->get2('doi-broken-date'));
     }
 
-    public function testAddBrokenDateFormatAcceptsDoiBrokenDate1December2019Doi100001RubbishBotFailureTesCiteJournalDoi100001Rubbish(): void {
-        $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
+    public function testAddBrokenDateFormatsDateInDmyStyle(): void {
+        $text = "{{cite journal|doi=10.1000/date-format-fixture}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_DMY;
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));

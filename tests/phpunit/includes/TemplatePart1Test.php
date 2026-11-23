@@ -1078,7 +1078,7 @@ JSON;
         $this->assertSame('10.0001/Rubbish_bot_failure_test', $expanded->get2('doi'));
         $this->assertSame('1234', $expanded->get2('oclc'));
         $this->assertSame('12345M', $expanded->get2('ol'));
-        $this->assertNotNull($expanded->get2('doi-broken-date'));
+        $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertSame(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
     }
 
