@@ -2659,14 +2659,14 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testWarnAboutUnsupportedParamsInCiteBook(): void {
-        // Test that warnings are shown for unsupported parameters in cite book
-        // Note: This test verifies the warning is triggered, but doesn't capture output
-        $text = "{{cite book|title=Test Book|journal=Test Journal|work=Test Work}}";
+        $text = '{{cite book|title=Test Book|chapter=Chapter|journal=Test Journal|work=Test Work}}';
         $template = $this->make_citation($text);
-        $template->final_tidy();
-        // The parameters should still be present (not removed), but warnings should be shown
+        $warnings = $this->captureCitationWarnings($template->final_tidy(...));
+
         $this->assertSame('Test Journal', $template->get2('journal'));
         $this->assertSame('Test Work', $template->get2('work'));
+        $this->assertMatchesRegularExpression('~unsupported parameter \|journal=Test Journal\|~', implode("\n", $warnings));
+        $this->assertMatchesRegularExpression('~unsupported parameter \|work=Test Work\|~', implode("\n", $warnings));
     }
 
     public function testBlockUnsupportedParamsInHistoricalBookCitation(): void {
@@ -2700,12 +2700,26 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testWarnAboutExistingURLInNonURLParameter(): void {
-        // Test that existing URLs in non-URL parameters trigger warnings but are not removed
-        $text = "{{cite journal|article-number=https://www.example.com/}}";
-        $template = $this->process_citation($text);
-        // The parameter should still be there (we don't remove it)
-        $this->assertSame('https://www.example.com/', $template->get2('article-number'));
-        // A warning should have been generated (captured by report_warning)
+        $warnings = $this->captureCitationWarnings(function (): void {
+            $template = $this->process_citation('{{cite journal|title=Study|journal=Journal|url=https://example.test/toc|article-number=https://example.test/paper}}');
+            $this->assertSame('https://example.test/toc', $template->get2('url'));
+            $this->assertSame('https://example.test/paper', $template->get2('article-number'));
+        });
+        $this->assertStringContainsString('Found URL in non-URL parameter |article-number=https://example.test/paper', implode("\n", $warnings));
+    }
+
+    /** @return list<string> */
+    private function captureCitationWarnings(Closure $run): array {
+        $warnings = [];
+        $this->assertTrue(uopz_set_hook('report_warning', static function (string $warning) use (&$warnings): void {
+            $warnings[] = $warning;
+        }));
+        try {
+            $run();
+        } finally {
+            $this->assertTrue(uopz_unset_hook('report_warning'));
+        }
+        return $warnings;
     }
 
     public function testInvalidExistingIsbnDoesNotDisplaceAsin(): void {
