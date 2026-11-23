@@ -1070,13 +1070,13 @@ JSON;
     }
 
     public function testId2ParamCiteBookIsbn9780306SetsIsbnTo9780306(): void {
-        $text = '{{cite book |id=ISBN 978-0-306-40615-7, DOI 10.0001/Rubbish_bot_failure_test, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+        $text = '{{cite book |id=ISBN 978-0-306-40615-7, DOI 10.0001/Rubbish_bot_failure_test, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345M}} }}';
         $expanded = $this->process_citation($text);
         $this->assertSame('978-0-306-40615-7', $expanded->get2('isbn'));
         $this->assertSame('1234.5678', $expanded->get2('arxiv'));
         $this->assertSame('10.0001/Rubbish_bot_failure_test', $expanded->get2('doi'));
         $this->assertSame('1234', $expanded->get2('oclc'));
-        $this->assertSame('12345', $expanded->get2('ol'));
+        $this->assertSame('12345M', $expanded->get2('ol'));
         $this->assertNotNull($expanded->get2('doi-broken-date'));
         $this->assertSame(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
     }

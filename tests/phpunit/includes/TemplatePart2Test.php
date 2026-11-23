@@ -832,8 +832,8 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->process_citation($text);
         $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
         $this->assertSame('02268454', $template->get2('oclc'));
-        $this->assertSame('1234', $template->get2('ol'));
-        $this->assertNull($template->get2('id'));
+        $this->assertNull($template->get2('ol'));
+        $this->assertStringContainsString('{{ol|1234}}', $template->parsed_text());
     }
 
     public function testIDconvertCiteJournalJfmSetsJfmTo02268454(): void {
@@ -841,9 +841,48 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->process_citation($text);
         $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
         $this->assertSame('02268454', $template->get2('jfm'));
-        $this->assertSame('1234', $template->get2('lccn'));
+        $this->assertSame('12000034', $template->get2('lccn'));
         $this->assertSame('222', $template->get2('mr'));
         $this->assertNull($template->get2('id'));
+    }
+
+    public function testCatalogueSubtemplatesConvertToEquivalentIdentifiers(): void {
+        foreach ([
+            ['{{LCCN|89456}}', 'lccn', '89000456'],
+            ['{{LCCN|id=sn94485}}', 'lccn', 'sn94000485'],
+            ['{{LCCN|1=2001000001}}', 'lccn', '2001000001'],
+            ['{{OL|7100655M}}', 'ol', '7100655M'],
+            ['{{OL| 1234A }}', 'ol', '1234A'],
+            ['{{OL|id=1234W}}', 'ol', '1234W'],
+        ] as [$source, $parameter, $identifier]) {
+            $citation = $this->process_citation('{{cite book|title=Study|id=' . $source . '}}');
+            $this->assertSame($identifier, $citation->get2($parameter), $source);
+            $this->assertNull($citation->get2('id'), $source);
+        }
+    }
+
+    public function testCatalogueSubtemplatesArePreservedWhenConversionWouldChangeTheLink(): void {
+        foreach ([
+            '{{LCCN|89456|Catalogue label}}',
+            '{{LCCN|id=89456|title=Catalogue label}}',
+            '{{LCCN|89456|long=yes}}',
+            '{{LCCN|89-456}}',
+            '{{LCCN|n79021164}}',
+            '{{LCCN| 89456 }}',
+            '{{OL|1234}}',
+            '{{OL|OL7100655M}}',
+            '{{OL|ia:example}}',
+            '{{OL|7100655M|author=1}}',
+            '{{OL|7100655M<!-- catalogue edition -->}}',
+        ] as $source) {
+            $input = '{{cite book|title=Study|id=' . $source . '}}';
+            $this->assertSame($input, $this->process_page($input)->parsed_text(), $source);
+        }
+    }
+
+    public function testCatalogueSubtemplateIsKeptWhenTheDestinationIsOccupied(): void {
+        $input = '{{cite book|title=Study|lccn=89000455|id={{LCCN|89456}}}}';
+        $this->assertSame($input, $this->process_page($input)->parsed_text());
     }
 
     public function testIDconvertCiteJournalMrSetsMrToChecksMr222IdMrId222(): void {

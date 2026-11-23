@@ -121,6 +121,28 @@ final class TidyMalformedIdentifiersTest extends testBaseClass {
         $this->assertSame('12345 and 67890', $template->get2('oclc'));
     }
 
+    public function testAmbiguousExplicitCatalogueIdentifiersAreReportedAndPreserved(): void {
+        $warnings = [];
+        // Use the hook to check both the report and the unchanged citation.
+        $this->assertTrue(uopz_set_hook('report_warning', static function (string $warning) use (&$warnings): void {
+            $warnings[] = $warning;
+        }));
+        try {
+            foreach (['ol', 'lccn'] as $parameter) {
+                $input = '{{cite book|title=Study|' . $parameter . '=1234}}';
+                $citation = $this->make_citation($input);
+                $citation->tidy_parameter($parameter);
+                $this->assertSame($input, $citation->parsed_text());
+            }
+        } finally {
+            $this->assertTrue(uopz_unset_hook('report_warning'));
+        }
+        $this->assertSame([
+            'Malformed |ol= identifier needs review: 1234',
+            'Malformed |lccn= identifier needs review: 1234',
+        ], $warnings);
+    }
+
     public function testHdlTrailingPunctuationIsRemoved(): void {
         $template = $this->make_citation('{{cite journal|title=X|journal=J|hdl=10.1000/abcdef.}}');
         $template->tidy();

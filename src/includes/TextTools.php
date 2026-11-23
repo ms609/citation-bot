@@ -2069,17 +2069,11 @@ function oclc_valid(string $value): bool {
 }
 
 /**
- * Validate an Open Library identifier against CS1's rules: one or more
- * digits followed by A (authors), M (books), or W (works), without the OL
- * prefix.  Checker-only: do NOT gate add_if_new with this, since established
- * subtemplate extraction produces bare digits ({{ol|1234}}).
+ * Validate an Open Library identifier against CS1's rules: an optional OL
+ * prefix, one or more digits, and A (authors), M (books), or W (works).
  */
 function ol_valid(string $value): bool {
-    $value = preg_replace('~^OL~i', '', $value);
-    if ($value === null || preg_match('~^\d+[AMW]$~', $value) !== 1) {
-        return false;
-    }
-    return true;
+    return preg_match('~\A(?:OL)?[0-9]+[AMW]\z~', $value) === 1;
 }
 
 /**
@@ -2088,8 +2082,7 @@ function ol_valid(string $value): bool {
  * characters constrained by total length (8: all digits; 9: one lowercase
  * letter; 10: two lowercase letters or two digits; 11: one lowercase letter
  * plus two lowercase letters or two digits; 12: two leading lowercase
- * letters).  Checker-only: do NOT gate add_if_new with this, since
- * established subtemplate extraction produces bare digits ({{lccn|1234}}).
+ * letters).
  */
 function lccn_valid(string $value): bool {
     $length = mb_strlen($value);

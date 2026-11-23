@@ -365,9 +365,7 @@ function check_citation(Template $template): array {
     if ($template->has('oclc') && !oclc_valid($template->get('oclc'))) {
         $violations[] = 'oclc-malformed: CS1 "Check |oclc= value"';
     }
-    // Checker-only rules (accepted gaps): ol/lccn adds stay ungated so
-    // bare-digit subtemplate extraction keeps working, and reserved DOI
-    // registrants must stay processable.
+    // Ambiguous explicit OL/LCCN values are reported for review and preserved.
     if ($template->has('ol') && !ol_valid($template->get('ol'))) {
         $violations[] = 'ol-malformed: CS1 "Check |ol= value"';
     }
@@ -607,6 +605,8 @@ function build_matrix(): array {
         ['Malformed s2cid in input removed in tidy', '{{cite journal |title=X |journal=J |s2cid=abc}}', 'pass'],
         ['Trailing-dot hdl repaired in tidy', '{{cite journal |title=X |journal=J |hdl=10.1000/abcdef.}}', 'pass'],
         ['Malformed oclc in input removed in tidy', '{{cite journal |title=X |journal=J |oclc=abc}}', 'pass'],
+        ['Incomplete nested OL is not emitted as malformed CS1 ol', '{{cite book |title=X |id={{OL|1234}}}}', 'pass'],
+        ['Short nested LCCN expands to valid CS1 lccn', '{{cite book |title=X |id={{LCCN|89456}}}}', 'pass'],
         ['GAP bare-digit ol in input survives tidy', '{{cite journal |title=X |journal=J |ol=1234}}', 'gap'],
         ['GAP short lccn in input survives tidy', '{{cite journal |title=X |journal=J |lccn=1234}}', 'gap'],
         ['GAP out-of-range doi registrant in input survives tidy', '{{cite journal |title=X |journal=J |doi=10.123/abc}}', 'gap'],

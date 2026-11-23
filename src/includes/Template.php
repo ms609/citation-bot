@@ -3040,9 +3040,7 @@ final class Template
                 }
                 return false;
 
-            // ol and lccn are deliberately ungated: subtemplate extraction
-            // legitimately produces bare digits ({{ol|1234}}, {{lccn|1234}}),
-            // so CS1-strict shape checks would break established behavior.
+            // OL and LCCN subtemplates are checked separately before extraction.
             case 'zbl':
             case 'mr':
             case 'lccn':
@@ -3731,6 +3729,37 @@ final class Template
         unset($p); // Destroy pointer to be safe
     }
 
+    /** Extract only when the catalogue template and CS1 address the same record. */
+    private function catalogue_subtemplate_identifier(string $name): ?string {
+        if (count($this->param) !== 1 || str_contains($this->rawtext, 'CITATION_BOT_PLACEHOLDER')) {
+            return null;
+        }
+        $parameter = $this->param[0];
+        if (!in_array($parameter->param, ['', '1', 'id'], true)) {
+            return null;
+        }
+
+        $identifier = $parameter->val;
+        if ($name === 'ol') {
+            // {{OL}} adds the OL prefix itself; CS1 strips an existing prefix.
+            return ol_valid($identifier) && !str_starts_with($identifier, 'OL') ? $identifier : null;
+        }
+
+        // Module:LCCN slices the original positional value, including whitespace.
+        if ($parameter->param === '' && ($parameter->pre !== '' || $parameter->post !== '')) {
+            return null;
+        }
+        // Module:LCCN pads the serial after the two-digit year (and optional
+        // two-letter prefix) to six digits. Ten bare digits already contain
+        // a four-digit year and six-digit serial. Leave other forms as written.
+        if (preg_match('~\A((?:[a-z]{2})?[0-9]{2})([0-9]{1,6})\z~', $identifier, $match) === 1) {
+            $identifier = $match[1] . mb_str_pad($match[2], 6, '0', STR_PAD_LEFT);
+        } elseif (preg_match('~\A[0-9]{10}\z~', $identifier) !== 1) {
+            return null;
+        }
+        return lccn_valid($identifier) ? $identifier : null;
+    }
+
     private function id_to_param(): void {
         set_time_limit(120);
         $id = $this->get('id');
@@ -3770,6 +3799,13 @@ final class Template
                         }
                         $id = str_replace($matches[0][$i], '', $id);
                         break;
+                    case "lccn":
+                    case "ol":
+                        $identifier = $subtemplate->catalogue_subtemplate_identifier($subtemplate_name);
+                        if ($identifier !== null && $this->add_if_new($subtemplate_name, $identifier)) {
+                            $id = str_replace($matches[0][$i], '', $id);
+                        }
+                        break;
                     case "asin":
                     case "oclc":
                     case "bibcode":
@@ -3778,7 +3814,6 @@ final class Template
                     case "issn":
                     case "jfm":
                     case "jstor":
-                    case "lccn":
                     case "mr":
                     case "osti":
                     case "pmid":
@@ -3788,7 +3823,6 @@ final class Template
                     case "s2cid":
                     case "hdl":
                     case "zbl":
-                    case "ol":
                     case "lcc":
                     case "ismn":
                     case "biorxiv":
@@ -3796,14 +3830,6 @@ final class Template
                         // Specific checks for particular templates:
                         if ($subtemplate_name === 'asin' && $subtemplate->has('country')) {
                             report_info("{{ASIN}} country parameter not supported: cannot convert.");
-                            break;
-                        }
-                        if ($subtemplate_name === 'ol' && $subtemplate->has('author')) {
-                            report_info("{{OL}} author parameter not supported: cannot convert.");
-                            break;
-                        }
-                        if ($subtemplate_name === 'ol' && mb_stripos($subtemplate->parsed_text(), "ia:") !== false) {
-                            report_info("{{OL}} ia: parameter not supported: cannot convert.");
                             break;
                         }
                         if (($subtemplate_name === 'jstor' && $subtemplate->has('sici')) || $subtemplate->has('issn')) {
@@ -5702,6 +5728,14 @@ final class Template
                     }
                     $handle = safe_preg_replace('~[\s.,]+$~u', '', $handle); // Trailing punctuation is never part of a handle (CS1 flags it)
                     $this->set('hdl', $handle);
+                    return;
+
+                case 'lccn':
+                case 'ol':
+                    $value = $this->identifier_tidy_value($param);
+                    if ($value !== null && !($param === 'ol' ? ol_valid($value) : lccn_valid($value))) {
+                        report_warning("Malformed |" . echoable($param) . "= identifier needs review: " . echoable($value));
+                    }
                     return;
 
                 case 'oclc':
