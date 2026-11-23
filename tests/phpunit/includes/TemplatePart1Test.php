@@ -397,13 +397,14 @@ JSON;
         $this->assertNull($expanded->get2('url'));
     }
 
-    public function testJstorCleanupPreservesUnrelatedJournalLocators(): void {
+    public function testZeroIssueCleanupIsJstorSpecific(): void {
         $jstor = $this->prepare_citation('{{cite journal|jstor=3073767|volume=n/a|issue=0}}');
         $this->assertNull($jstor->get2('volume'));
         $this->assertNull($jstor->get2('issue'));
 
-        $other = $this->prepare_citation('{{Cite journal|journal=arXiv|volume=n/a}}');
-        $this->assertSame('n/a', $other->get2('volume'));
+        $other = $this->prepare_citation('{{Cite journal|journal=arXiv|volume=n/a|issue=0}}');
+        $this->assertNull($other->get2('volume'));
+        $this->assertSame('0', $other->get2('issue'));
     }
 
     public function testDropBadDataCiteJournalDoi10106350088162(): void {
