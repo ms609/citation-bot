@@ -1870,9 +1870,19 @@ final class Zotero {
             unset($result->author);
             unset($result->creators);
         }
-        // CalMatters supplies this collective byline as two parts of a person's name.
         $creator_host = parse_url($url, PHP_URL_HOST);
-        $is_calmatters = is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true);
+        $creator_host = is_string($creator_host) ? mb_strtolower($creator_host) : '';
+        // The old NPR translator emits each letter of a string byline as a separate author.
+        if (
+            in_array($creator_host, ['npr.org', 'www.npr.org'], true) &&
+            count($result->author ?? []) >= 4 &&
+            array_all($result->author, static fn (array $name): bool =>
+                mb_trim($name[0] ?? '') === '' && preg_match('~\A[A-Za-z]\z~', mb_trim($name[1] ?? '')) === 1)
+        ) {
+            unset($result->author);
+        }
+        // CalMatters supplies this collective byline as two parts of a person's name.
+        $is_calmatters = in_array($creator_host, ['calmatters.org', 'www.calmatters.org'], true);
         if ($is_calmatters) {
             $result->author = array_values(array_filter(
                 $result->author ?? [],

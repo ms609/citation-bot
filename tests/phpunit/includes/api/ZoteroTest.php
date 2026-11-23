@@ -1325,6 +1325,45 @@ final class ZoteroTest extends testBaseClass {
         $this->assertNull($template->get2('first4'));
     }
 
+    #[DataProvider('nprBylineProvider')]
+    public function testNprCitoidByline(string $url, string $title, string $date, array $authors, ?string $expected_author): void {
+        $template = $this->make_citation('{{cite web|url=' . $url . '|title=' . $title . '}}');
+        $response = json_encode([[
+            'itemType' => 'newspaperArticle',
+            'title' => $title,
+            'publicationTitle' => 'NPR',
+            'date' => $date,
+            'author' => $authors,
+        ]], JSON_THROW_ON_ERROR);
+        Zotero::process_zotero_response($response, $template, $url, 0);
+
+        $this->assertSame(strtotime($date), strtotime($template->get('date')));
+        $this->assertSame($title, $template->get2('title'));
+        $this->assertSame($expected_author, $template->get2('last1') ?? $template->get2('author1'));
+        if ($expected_author === null) {
+            $this->assertDoesNotMatchRegularExpression('~\|\s*(?:author|first|last)\d*\s*=~', $template->parsed_text());
+        }
+    }
+
+    /** @return array<string, array{string, string, string, list<array{string, string}>, ?string}> */
+    public static function nprBylineProvider(): array {
+        $housing_url = 'https://www.npr.org/2017/05/03/526655831/a-forgotten-history-of-how-the-u-s-government-segregated-america';
+        $housing_title = "A 'Forgotten History' Of How The U.S. Government Segregated America";
+        $cowboys_url = 'https://www.npr.org/2010/12/05/131761541/we-ve-all-heard-cowboy-songs-but-who-were-the-cowboys';
+        $cowboys_title = "Who Were The Cowboys Behind 'Cowboy Songs'?";
+        $gross_letters = [['', 'T'], ['', 'e'], ['', 'r'], ['', 'r'], ['', 'y'], ['', 'G'], ['', 'r'], ['', 'o'], ['', 's'], ['', 's']];
+        $cannon_letters = [['', 'H'], ['', 'a'], ['', 'l'], ['', 'C'], ['', 'a'], ['', 'n'], ['', 'n'], ['', 'o'], ['', 'n']];
+        return [
+            'Terry Gross split into letters' => [$housing_url, $housing_title, '2017-05-03', $gross_letters, null],
+            'Hal Cannon split into letters' => [$cowboys_url, $cowboys_title, '2010-12-04', $cannon_letters, null],
+            'bare NPR hostname' => [str_replace('www.', '', $cowboys_url), $cowboys_title, '2010-12-04', $cannon_letters, null],
+            'corrected Terry Gross byline' => [$housing_url, $housing_title, '2017-05-03', [['Terry', 'Gross']], 'Gross'],
+            'given names with one-letter surnames' => [$cowboys_url, $cowboys_title, '2010-12-04', [['Hal', 'C'], ['Jo', 'T'], ['Sam', 'V'], ['Kim', 'Y']], 'C'],
+            'single one-letter byline' => [$housing_url, $housing_title, '2017-05-03', [['', 'T']], 'T.'],
+            'lookalike hostname' => ['https://www.npr.org.example/a', $housing_title, '2017-05-03', $gross_letters, 'T.'],
+        ];
+    }
+
     public function testSameNameDifferentRolesPreserved(): void {
         // Same name in different roles must not collapse: author vs editor
         // use separate counters and both must be kept, while a repeat within
