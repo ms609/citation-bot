@@ -830,9 +830,16 @@ function clean_existing_urls(Template $template, string $param): void {
     }
 }
 
+/** Identify a DNS authority without altering the rest of the URL. */
+function citation_url_has_bare_hostname(string $url): bool {
+    return preg_match('~\A([a-z0-9.-]+\.[a-z]{2,63})(?:[/?#][^\s\p{C}<>{}\[\]|\\\\]*)?\z~iu', $url, $matches) === 1 &&
+        filter_var($matches[1], FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) !== false;
+}
+
 function clean_existing_urls_INSIDE(Template $template, string $param): void {
-    if (preg_match('~^(?:web\.|www\.).+$~', $template->get($param), $matches) && mb_stripos($template->get($param), 'citation') === false) {
-        $template->set($param, 'http://' . $matches[0]);
+    $raw_url = $template->get3($param);
+    if (preg_match('~\A(?:web\.|www\.)~i', $raw_url) === 1 && citation_url_has_bare_hostname($raw_url)) {
+        $template->set($param, 'https://' . $raw_url);
     }
     $the_original_url = $template->get($param);
     if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $template->get($param), $matches)) {
