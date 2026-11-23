@@ -7953,14 +7953,18 @@ final class Template
                     $this->quietly_forget('url');
                 }
             }
-            if (
-                !$this->blank(DOI_BROKEN_ALIASES) &&
-                $this->has('jstor') &&
-                (mb_strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') || mb_substr($this->get('doi'), 0, -2) === $this->get('jstor') || mb_substr($this->get('doi'), 0, -3) === $this->get('jstor'))
-            ) {
-                $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
-                foreach (DOI_BROKEN_ALIASES as $alias) {
-                    $this->forget($alias);
+            if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor')) {
+                $doi = $this->get('doi');
+                $jstor = $this->get('jstor');
+                if (str_contains($doi, '?')) {
+                    $redundant = $this->doi_is_jstor_stable_id_with_query($doi, $jstor);
+                } else {
+                    $redundant = str_starts_with($doi, '10.2307') || $doi === $jstor ||
+                        mb_substr($doi, 0, -2) === $jstor || mb_substr($doi, 0, -3) === $jstor;
+                }
+                if ($redundant) {
+                    $this->forget('doi'); // This also clears the broken DOI aliases.
+                    $this->forget('doi-access');
                 }
             }
             if ($this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') === false && $this->wikiname() !== 'cite ssrn') {
@@ -8416,6 +8420,16 @@ final class Template
         }
 
         return false;
+    }
+
+    private function doi_is_jstor_stable_id_with_query(string $doi, string $jstor): bool {
+        // JSTOR uses DOI-shaped stable IDs for some book chapters. A matching
+        // JSTOR ID is enough to keep the link when neither DOI form resolves.
+        $parts = explode('?', $doi, 2);
+        return isset($parts[1]) && mb_trim($parts[0]) === $jstor &&
+            $this->get3('doi') === $this->get_without_comments_and_placeholders('doi') &&
+            preg_match('~\A10\.[0-9]{4,9}/j\.[a-z0-9]+(?:\.[0-9]+)?\z~i', $jstor) === 1 &&
+            doi_works($doi) === false && doi_works($jstor) === false;
     }
 
     public function verify_doi(): bool {
