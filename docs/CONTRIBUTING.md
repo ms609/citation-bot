@@ -32,7 +32,7 @@ docker run --rm --network none -v "$PWD:/work:ro" -w /work citation-bot \
 
 ## Quality verification
 
-All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, YAML, XML, cff, etc.
+All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, YAML, XML, cff, etc.  The large number of tests are essential, since the code is actively used.
 
 | Tool | Purpose | Composer script |
 | ------- | --------- | ----------------- |
