@@ -16,7 +16,7 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 // ============================================= String/Text functions ======================================
 
 /**
- * This function converts formatting from external sources into wiki style
+ * Convert external formatting to wiki style. Return an empty string if MathML cannot be converted.
  */
 function wikify_external_text(string $title, bool $use_title_case = false): string {
     $title = str_replace(["\r\n", "\n", "\r"], ' ', $title);
@@ -44,6 +44,10 @@ function wikify_external_text(string $title, bool $use_title_case = false): stri
         $num_matches = count($matches[0]);
         for ($i = 0; $i < $num_matches; $i++) {
             $converted_latex = convert_mathml_to_latex($matches[1][$i]);
+            if ($converted_latex === null) {
+                report_inaction('Not importing text with unsupported MathML');
+                return '';
+            }
             $replacement[$i] = '<math>' . $converted_latex . '</math>';
             $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
             // Need to use a placeholder to protect contents from URL-safening

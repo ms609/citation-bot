@@ -115,6 +115,42 @@ final class MathToolsTest extends testBaseClass {
         $this->assertSame('\\frac{1}{2}', convert_mathml_to_latex($mathml));
     }
 
+    public function testImportedTitlePreservesGroupedMathML(): void {
+        $row = '<mml:mrow><mml:mi>x</mml:mi><mml:mo>+</mml:mo><mml:mn>1</mml:mn></mml:mrow>';
+        $division = '<mml:mfrac>' . $row . '<mml:mn>2</mml:mn></mml:mfrac>';
+        $parenthesized = '<mrow><mo stretchy="false">(</mo>' . $row . '<mo>)</mo></mrow>';
+        foreach ([
+            [$division, '\frac{x+1}{2}'],
+            ['<msup>' . $parenthesized . '<mn>2</mn></msup>', '(x+1)^{2}'],
+            ['<mfrac><mn>1</mn><mn>2</mn></mfrac>', '\frac{1}{2}'],
+            ['<msup>' . $division . '<mrow><mi>&alpha;</mi><mo>+</mo><mn>3</mn></mrow></msup>', '{\frac{x+1}{2}}^{\alpha+3}'],
+            ['<msubsup><mi>x</mi>' . $row . '<mn>2</mn></msubsup>', 'x_{x+1}^{2}'],
+            ['<mroot>' . $row . '<mn>3</mn></mroot>', '\sqrt[3]{x+1}'],
+        ] as [$formula, $latex]) {
+            $template = $this->make_citation('{{cite journal|journal=Example Journal}}');
+            $candidate = 'Calculating <mml:math>' . $formula . '</mml:math> for this model';
+
+            $this->assertTrue($template->add_if_new('title', $candidate, 'crossref'), $formula);
+            $template->final_tidy();
+            $this->assertSame('Calculating <math>' . $latex . '</math> for this model', $template->get('title'), $formula);
+        }
+    }
+
+    public function testImportedTitleWithUnrenderableMathMLIsDeclined(): void {
+        foreach ([
+            '<mfrac><mi>x</mi></mfrac>',
+            '<mfrac><mi>x</mi><mrow><mover><mi>y</mi><mo>¯</mo></mover></mrow></mfrac>',
+            '<mfrac><mi>x</mi><mn>2</mi></mfrac>',
+            '<mtable><mtr><mtd><mi>x</mi></mtd></mtr></mtable>',
+        ] as $formula) {
+            $template = $this->make_citation('{{cite journal|journal=Example Journal}}');
+            $candidate = 'Calculating <mml:math>' . $formula . '</mml:math> for this model';
+
+            $this->assertFalse($template->add_if_new('title', $candidate, 'crossref'), $formula);
+            $this->assertNull($template->get2('title'));
+        }
+    }
+
     public function testMathMLUnderWithExpression(): void {
         $mathml = '<munder><mo>lim</mo><mrow><mi>x</mi><mo>→</mo><mn>0</mn></mrow></munder>';
         $this->assertSame('\\underset{x\\rightarrow{}0}{lim}', convert_mathml_to_latex($mathml));
