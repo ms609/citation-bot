@@ -281,6 +281,36 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         }
     }
 
+    /**
+     * Temporarily override unstubbed global functions. Closures supply the
+     * replacement implementation. Other values are returned directly.
+     *
+     * @param array<string, mixed> $stubs
+     * @param Closure(): void $test
+     */
+    protected function with_function_stubs(array $stubs, Closure $test): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Function stubs require uopz');
+        }
+
+        $installed = [];
+        try {
+            foreach ($stubs as $function => $value) {
+                $this->assertTrue(
+                    function_exists($function) && uopz_set_return($function, $value, $value instanceof Closure),
+                    "Could not stub $function"
+                );
+                $installed[] = $function;
+            }
+            $test();
+        } finally {
+            foreach (array_reverse($installed) as $function) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($function);
+            }
+        }
+    }
+
     protected function expand_via_zotero(string $text): Template {
         $expanded = $this->make_citation($text);
         Zotero::expand_by_zotero($expanded);

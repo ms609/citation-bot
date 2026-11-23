@@ -78,65 +78,37 @@ final class ArxivTest extends testBaseClass {
     }
 
     public function testArxivPublicationMetadataPreservesExistingMathTitle(): void {
-        if (!function_exists('uopz_set_return')) {
-            $this->markTestSkipped('uopz is required to stub arXiv and DOI metadata');
-        }
-
         $math_title = 'The structure of isoperimetric bubbles on <math>\mathbb{R}^n</math> and <math>\mathbb{S}^n</math>';
         $citation = '{{citation|title=' . $math_title . '|arxiv=2205.09102}}';
         $atom = '<feed xmlns:arxiv="http://arxiv.org/schemas/atom"><entry>' .
             '<id>https://arxiv.org/abs/2205.09102</id><title>Isoperimetric bubbles</title>' .
             '<arxiv:doi>10.4310/ACTA.2025.v234.n1.a2</arxiv:doi></entry></feed>';
 
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('bot_curl_exec', static function (CurlHandle $handle) use ($atom): string {
-            $url = curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
-            return is_string($url) && str_starts_with($url, 'https://export.arxiv.org/') ? $atom : '';
-        }, true);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('curl_exec', false);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('sleep', 0);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('doi_works', true);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('doi_active', true);
         $published_title = 'The structure of isoperimetric bubbles on R^n and S^n';
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('query_crossref', new SimpleXMLElement(
-            '<query><article_title>' . $published_title . '</article_title>' .
-            '<journal_title>Acta Mathematica</journal_title><year>2025</year><volume>234</volume></query>'
-        ));
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('query_crossref_newapi', (object) ['title' => [$published_title], 'type' => 'journal-article']);
-        try {
+        $stubs = [
+            'bot_curl_exec' => static function (CurlHandle $handle) use ($atom): string {
+                $url = curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+                return is_string($url) && str_starts_with($url, 'https://export.arxiv.org/') ? $atom : '';
+            },
+            'curl_exec' => false,
+            'sleep' => 0,
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => new SimpleXMLElement(
+                '<query><article_title>' . $published_title . '</article_title>' .
+                '<journal_title>Acta Mathematica</journal_title><year>2025</year><volume>234</volume></query>'
+            ),
+            'query_crossref_newapi' => (object) ['title' => [$published_title], 'type' => 'journal-article'],
+        ];
+        $this->with_function_stubs($stubs, function () use ($citation, $math_title): void {
             $expanded = $this->process_page($citation)->parsed_text();
             $this->assertStringContainsString('title=' . $math_title, $expanded);
             $this->assertMatchesRegularExpression('~journal\s*=\s*Acta Mathematica~', $expanded);
             $this->assertSame($expanded, $this->process_page($expanded)->parsed_text());
-        } finally {
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('query_crossref_newapi');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('query_crossref');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('doi_active');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('doi_works');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('sleep');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('curl_exec');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('bot_curl_exec');
-        }
+        });
     }
 
     public function testArxivDoesNotReplaceCitedConferenceVersion(): void {
-        if (!function_exists('uopz_set_return')) {
-            $this->markTestSkipped('uopz is required to stub arXiv and DOI metadata');
-        }
-
         $paper = 'Orthogonal dissection into few rectangles';
         $proceedings = 'Proceedings of the 34th Canadian Conference on Computational Geometry';
         $doi = '10.1007/s00454-023-00614-w';
@@ -160,11 +132,7 @@ final class ArxivTest extends testBaseClass {
             'query_crossref' => $published,
             'query_crossref_newapi' => (object) ['type' => 'journal-article'],
         ];
-        foreach ($stubs as $name => $value) {
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_set_return($name, $value, $value instanceof Closure);
-        }
-        try {
+        $this->with_function_stubs($stubs, function () use ($paper, $proceedings, $doi): void {
             foreach (['citation' => 'contribution', 'cite book' => 'chapter'] as $name => $parameter) {
                 $conference = $this->process_citation(
                     '{{' . $name . '|last=Eppstein|first=David|arxiv=2206.10675|' .
@@ -181,12 +149,7 @@ final class ArxivTest extends testBaseClass {
             $preprint = $this->process_citation('{{cite arXiv|eprint=2206.10675}}');
             $this->assertSame($doi, $preprint->get('doi'));
             $this->assertSame('Discrete & Computational Geometry', $preprint->get('journal'));
-        } finally {
-            foreach (array_keys($stubs) as $name) {
-                /** @psalm-suppress UnusedFunctionCall */
-                uopz_unset_return($name);
-            }
-        }
+        });
     }
 
     public function testArxivEntriesAreMatchedByIdentifierNotResponseOrder(): void {

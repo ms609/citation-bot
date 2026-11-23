@@ -41,24 +41,13 @@ final class UnpaywallApiTest extends testBaseClass {
 
     #[DataProvider('unusableLocations')]
     public function testUnusableUnpaywallLocationLeavesCitationUntouched(int $http_status, string $json, string $expected): void {
-        if (!function_exists('uopz_set_return')) {
-            $this->markTestSkipped('uopz is required to stub Unpaywall');
-        }
         $input = '{{cite journal|doi=10.1000/coverage-fixture}}';
         $template = $this->make_citation($input);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('curl_getinfo', $http_status);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('bot_curl_exec', $json);
-        try {
+        $stubs = ['curl_getinfo' => $http_status, 'bot_curl_exec' => $json];
+        $this->with_function_stubs($stubs, function () use ($template, $input, $expected): void {
             $this->assertSame($expected, get_unpaywall_url($template, '10.1000/coverage-fixture'));
             $this->assertSame($input, $template->parsed_text());
-        } finally {
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('bot_curl_exec');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('curl_getinfo');
-        }
+        });
     }
 
     /** @return array<string, array{int, string, string}> */
@@ -92,22 +81,17 @@ final class UnpaywallApiTest extends testBaseClass {
 
     #[DataProvider('unpaywallUrlProvider')]
     public function testUnpaywallUrlEncodesReservedCharactersInDoi(string $doi, string $expected_url): void {
-        if (!function_exists('uopz_set_return')) {
-            $this->markTestSkipped('uopz is required to stub Unpaywall');
-        }
         $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
         $urls = [];
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('bot_curl_exec', static function ($handle) use (&$urls): string {
-            $urls[] = (string) curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
-            return '';
-        }, true);
-        try {
+        $stubs = [
+            'bot_curl_exec' => static function ($handle) use (&$urls): string {
+                $urls[] = (string) curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+                return '';
+            },
+        ];
+        $this->with_function_stubs($stubs, static function () use ($template, $doi): void {
             get_unpaywall_url($template, $doi);
-        } finally {
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('bot_curl_exec');
-        }
+        });
 
         $this->assertSame([$expected_url], $urls);
     }
@@ -189,37 +173,23 @@ final class UnpaywallApiTest extends testBaseClass {
     }
 
     public function testUnpaywallAddsPmcIdentifierFromRepositoryLocation(): void {
-        if (!function_exists('uopz_set_return')) {
-            $this->markTestSkipped('uopz is required to stub Unpaywall');
-        }
         $doi = '10.1000/pmc-fixture';
         $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
         $json = '{"best_oa_location":{"host_type":"repository","evidence":"oa repository",' .
             '"url_for_landing_page":"https://pmc.ncbi.nlm.nih.gov/articles/PMC300808/"}}';
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('curl_getinfo', 200);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('bot_curl_exec', $json);
-        // The URL extractor also checks the existing DOI and enriches PMC.
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('doi_works', true);
-        /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return('query_pmc_api', null);
-        try {
+        $stubs = [
+            'curl_getinfo' => 200,
+            'bot_curl_exec' => $json,
+            // The URL extractor also checks the existing DOI and enriches PMC.
+            'doi_works' => true,
+            'query_pmc_api' => null,
+        ];
+        $this->with_function_stubs($stubs, function () use ($template, $doi): void {
             $this->assertSame('got one', get_unpaywall_url($template, $doi));
             $this->assertSame('300808', $template->get2('pmc'));
             $this->assertNull($template->get2('url'));
             $this->assertSame($doi, $template->get2('doi'));
-        } finally {
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('query_pmc_api');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('doi_works');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('bot_curl_exec');
-            /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return('curl_getinfo');
-        }
+        });
     }
 
     public function testOpenAccessLookup3(): void {
