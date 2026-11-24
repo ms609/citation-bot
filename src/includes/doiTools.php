@@ -243,6 +243,12 @@ function throttle_dx(): void {
     $last = microtime(true);
 }
 
+/** The local registrant rejection applies only to DOI-shaped handles. */
+function doi_has_invalid_registrant(string $doi): bool {
+    return preg_match('~\A10\.([^/]*)/~', mb_trim($doi), $matches) === 1 &&
+        !doi_registrant_code_valid($matches[1]);
+}
+
 function is_doi_works(string $doi): ?bool {
     $doi = mb_trim($doi);
     // And now some obvious fails
@@ -255,7 +261,7 @@ function is_doi_works(string $doi): ?bool {
     if (preg_match('~^10\.1007/springerreference~', $doi)) {
         return false;
     }
-    if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) {
+    if (!preg_match('~^[^/]+/~', $doi)) {
         return false;
     }
     if (isset(NULL_DOI_ANNOYING[$doi])) {
@@ -272,13 +278,8 @@ function is_doi_works(string $doi): ?bool {
         }
     }
 
-    $registrant = $matches[1];
-    // The registrant rules live in doi_registrant_code_valid() so that this pre-flight check and
-    // doi_registrant_valid() can never disagree.  Update them there when CS1 changes its ranges.
-    if (mb_strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
-        if (!doi_registrant_code_valid(mb_substr($registrant, 3))) {
-            return false;
-        }
+    if (doi_has_invalid_registrant($doi)) {
+        return false;
     }
     throttle_dx();
 

@@ -2726,6 +2726,11 @@ final class Template
                 return false;
 
             case 'doi-broken-date':
+                $doi = $this->get_without_comments_and_placeholders('doi');
+                if (doi_has_invalid_registrant($doi)) {
+                    report_warning('Malformed DOI registrant needs review: ' . echoable($doi));
+                    return false;
+                }
                 if ($this->blank('jstor')) {
                     check_doi_for_jstor($this->get('doi'), $this);
                     if ($this->has('jstor')) {

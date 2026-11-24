@@ -6,6 +6,58 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class DoiReliabilityTest extends testBaseClass {
+    public function testLocallyRejectedDoiDoesNotAcquireBrokenDate(): void {
+        $warnings = [];
+        $this->assertTrue(uopz_set_hook('report_warning', static function (string $warning) use (&$warnings): void {
+            $warnings[] = $warning;
+        }));
+        try {
+            $this->with_function_stubs([
+                'get_headers_array' => static function (string $url): false {
+                    self::assertStringNotContainsString('https://doi.org/10.123/', $url);
+                    return false;
+                },
+                'doi_active' => false,
+                'bot_curl_exec' => '',
+                'bot_curl_exec_withFalse' => false,
+            ], function (): void {
+                $template = $this->process_citation('{{cite journal|title=Study|journal=Example Journal|doi=10.123/abc}}');
+                $this->assertSame('10.123/abc', $template->get2('doi'));
+                $this->assertNull($template->get2('doi-broken-date'));
+                $dated = $this->make_citation('{{cite journal|doi=10.123/abc|doi-broken-date=2001-01-01}}');
+                $dated->mark_inactive_doi();
+                $this->assertSame('2001-01-01', $dated->get2('doi-broken-date'));
+            });
+        } finally {
+            $this->assertTrue(uopz_unset_hook('report_warning'));
+        }
+        $this->assertContains('Malformed DOI registrant needs review: 10.123/abc', $warnings);
+    }
+
+    public function testOnlyDefinitiveDoiFailureSetsBrokenDate(): void {
+        foreach ([false, null, true] as $status) {
+            HandleCache::free_memory();
+            $headers = match ($status) {
+                false => doi_headers_mark_transport_trust(['0' => 'HTTP/1.1 404 Not Found'], true),
+                null => false,
+                true => ['0' => 'HTTP/1.1 302 Found', 'Location' => 'https://example.test/study'],
+            };
+            $this->with_function_stubs([
+                'get_headers_array' => static fn (): array|false => $headers,
+            ], function () use ($status): void {
+                $template = $this->make_citation('{{cite journal|doi=10.1000/status-fixture}}');
+                $this->assertSame($status === true, $template->verify_doi());
+                $this->assertSame($status === false, $template->has('doi-broken-date'));
+
+                $template = $this->make_citation('{{cite journal|doi=10.1000/status-fixture|doi-broken-date=2001-01-01}}');
+                if ($status !== false) {
+                    $template->verify_doi();
+                    $this->assertSame($status === null ? '2001-01-01' : null, $template->get2('doi-broken-date'));
+                }
+            });
+        }
+    }
+
     public function testThrottleDelayUsesSecondsToMicrosecondsConversion(): void {
         $this->assertSame(40000, dx_throttle_delay(10.0, 10.0));
         $half_delay = dx_throttle_delay(10.020, 10.0);
