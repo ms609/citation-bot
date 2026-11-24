@@ -903,7 +903,8 @@ final class Zotero {
         bool $do_it_anyway = false,
         bool $require_title_match = false,
         bool $allow_non_profoundly_incomplete = false,
-        bool $skip_doi_expansion = false
+        bool $skip_doi_expansion = false,
+        bool $title_only = false
     ): void {
         $access_date = 0;
         if (is_null($url)) {
@@ -986,7 +987,8 @@ final class Zotero {
             $access_date,
             $require_title_match,
             $allow_non_profoundly_incomplete,
-            $skip_doi_expansion
+            $skip_doi_expansion,
+            $title_only
         );
         return;
     }
@@ -998,7 +1000,8 @@ final class Zotero {
         int $access_date,
         bool $require_title_match = false,
         bool $allow_non_profoundly_incomplete = false,
-        bool $skip_doi_expansion = false
+        bool $skip_doi_expansion = false,
+        bool $title_only = false
     ): void {
         ExternalApiResponseGuard::run(
             'Citoid/Zotero',
@@ -1009,7 +1012,8 @@ final class Zotero {
                 $access_date,
                 $require_title_match,
                 $allow_non_profoundly_incomplete,
-                $skip_doi_expansion
+                $skip_doi_expansion,
+                $title_only
             ): void {
                 self::process_zotero_response_unchecked(
                     $zotero_response,
@@ -1018,7 +1022,8 @@ final class Zotero {
                     $access_date,
                     $require_title_match,
                     $allow_non_profoundly_incomplete,
-                    $skip_doi_expansion
+                    $skip_doi_expansion,
+                    $title_only
                 );
             }
         );
@@ -1135,7 +1140,8 @@ final class Zotero {
         int $access_date,
         bool $require_title_match,
         bool $allow_non_profoundly_incomplete,
-        bool $skip_doi_expansion
+        bool $skip_doi_expansion,
+        bool $title_only
     ): void {
         if ($zotero_response === self::ERROR_DONE) {
             return;  // Error message already printed in zotero_request()
@@ -1182,6 +1188,9 @@ final class Zotero {
                 report_warning("JSON did not parse correctly for URL " . echoable($url) . ": " . echoable(self::raw_response_excerpt($zotero_response)));
                 return;
             }
+        }
+        if ($title_only && $zotero_data === []) {
+            return; // No item to verify against the cited URL.
         }
         if (!isset($zotero_data[0])) {
             $result = $zotero_data;
@@ -1472,8 +1481,8 @@ final class Zotero {
             }
         }
 
-        if (!$allow_non_profoundly_incomplete && $template->has_missing_title_placeholder() &&
-            !$template->profoundly_incomplete($url)
+        if ($title_only ||
+            (!$allow_non_profoundly_incomplete && $template->has_missing_title_placeholder() && !$template->profoundly_incomplete($url))
         ) {
             if ($verified_title) {
                 $template->add_if_new('title', $result->bookTitle ?? $result->title, verified_title: true);
