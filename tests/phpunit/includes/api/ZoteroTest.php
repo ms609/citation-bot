@@ -1703,6 +1703,56 @@ final class ZoteroTest extends testBaseClass {
         }
     }
 
+    /** @return array<string, array{string, string, string, bool}> */
+    public static function magazinePlaceholderProvider(): array {
+        $url = 'https://example.test/Study';
+        $citation = '{{cite magazine|title=No Title|url=' . $url . '}}';
+        $metadata = ['itemType' => 'magazineArticle', 'url' => $url, 'title' => 'Verified Study', 'date' => '2001', 'pages' => '3-5'];
+        $response = static fn (array $changes): string => json_encode([array_merge($metadata, $changes)], JSON_THROW_ON_ERROR);
+        $valid = $response([]);
+        $fixed = str_replace('No Title', 'Verified Study', $citation);
+        $cases = [
+            'matching article' => [$citation, $valid, $fixed, true],
+            'bracketed placeholder' => [str_replace('No Title', '[No TITLE found]', $citation), $valid, $fixed, true],
+            'different article' => [$citation, $response(['url' => $url . '/Other']), $citation, true],
+            'case-sensitive path' => [$citation, $response(['url' => 'https://example.test/study']), $citation, true],
+            'missing source URL' => [$citation, $response(['url' => null]), $citation, true],
+            'malformed source URL' => [$citation, $response(['url' => [$url]]), $citation, true],
+            'missing item type' => [$citation, $response(['itemType' => null]), $citation, true],
+            'provider repeats placeholder' => [$citation, $response(['title' => '[No title found]']), $citation, true],
+            'empty result list' => [$citation, '[]', $citation, true],
+            'no items from translator' => [$citation, 'No items returned from any translator', $citation, true],
+            'temporary outage' => [$citation, '503 Service Temporarily Unavailable', $citation, true],
+        ];
+        foreach ([
+            'literal title' => '((No Title))',
+            'ordinary title' => 'No Title for This Study',
+            'editor comment' => 'No Title<!-- keep -->',
+        ] as $label => $title) {
+            $text = str_replace('No Title', $title, $citation);
+            $cases[$label] = [$text, $valid, $text, false];
+        }
+        $dead = str_replace('}}', '|url-status=dead}}', $citation);
+        $cases['dead URL'] = [$dead, $valid, $dead, false];
+        return $cases;
+    }
+
+    #[DataProvider('magazinePlaceholderProvider')]
+    public function testMagazinePlaceholderLookupDuringPageExpansion(string $text, string $response, string $expected, bool $lookup): void {
+        $requests = [];
+        $this->assertTrue(uopz_set_return(Zotero::class, 'zotero_request', static function (string $requested) use (&$requests, $response): string {
+            $requests[] = $requested;
+            return $response;
+        }, true));
+        try {
+            $actual = $this->process_page($text)->parsed_text();
+            $this->assertSame(SLOW_MODE && $lookup ? ['https://example.test/Study'] : [], $requests);
+            $this->assertSame(SLOW_MODE ? $expected : $text, $actual);
+        } finally {
+            $this->assertTrue(uopz_unset_return(Zotero::class, 'zotero_request'));
+        }
+    }
+
     public function testOnlyVerifiedTitleChangesInOtherwiseCompleteCitation(): void {
         $url = 'https://example.test/Study';
         $text = '{{cite journal|title=No Title|journal=Journal|volume=3|year=2001|url=' . $url . '}}';
