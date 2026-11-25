@@ -52,6 +52,48 @@ final class MetadataConflictTest extends testBaseClass {
         ];
     }
 
+    #[DataProvider('crossrefArticleNumberCases')]
+    public function testCrossrefArticleNumbers(string $doi, string $article_number, string $existing, string $expected): void {
+        $template = $this->make_citation('{{cite journal|title=' . self::TITLE . '|doi=' . $doi .
+            '|page=14' . ($existing === '' ? '' : '|article-number=' . $existing) . '}}');
+        $record = new SimpleXMLElement('<query><doi>' . $doi . '</doi><article_title>' . self::TITLE .
+            '</article_title><journal_title>' . self::JOURNAL . '</journal_title><year>2001</year>' .
+            '<volume>54</volume><issue>12</issue><first_page>14</first_page></query>');
+        $this->with_function_stubs([
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) [
+                'DOI' => $doi, 'type' => 'journal-article', 'title' => [self::TITLE],
+                'container-title' => [self::JOURNAL], 'article-number' => $article_number,
+            ],
+        ], function () use ($template, $expected): void {
+            expand_by_doi($template, true);
+            $this->assertSame($expected, $template->get('article-number'));
+            $this->assertSame('14', $template->get('page'));
+            $this->assertSame('54', $template->get('volume'));
+            $this->assertSame('12', $template->get('issue'));
+        });
+    }
+
+    /** @return array<string, array{string, string, string, string}> */
+    public static function crossrefArticleNumberCases(): array {
+        $doi = '10.1063/1.1445529';
+        $internal_id = '00000199cf61d656a39ffff966050000';
+        return [
+            'reported AIP identifier' => [$doi, $internal_id, '', ''],
+            'uppercase identifier' => [$doi, strtoupper($internal_id), '', ''],
+            'surrounding whitespace' => [$doi, ' ' . $internal_id . ' ', '', ''],
+            'hyphenated UUID' => [$doi, '00000199-cf61-d656-a39f-fff966050000', '', ''],
+            'ordinary article number' => [$doi, '014001', '', '014001'],
+            'electronic locator' => [$doi, 'e1234', '', 'e1234'],
+            'alphanumeric locator' => [$doi, '65050P', '', '65050P'],
+            'long numeric locator' => [$doi, '123456789012', '', '123456789012'],
+            'existing article number' => [$doi, $internal_id, '014001', '014001'],
+            'other publisher unchanged' => [self::DOI, $internal_id, '', $internal_id],
+        ];
+    }
+
     /**
      * @param bool $crossref_first
      * @param string $citation_fields

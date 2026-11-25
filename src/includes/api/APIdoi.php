@@ -325,7 +325,12 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 }
             }
             if (isset($crossRefNewAPI->{"article-number"})) {
-                $template->add_if_new("article-number", (string) $crossRefNewAPI->{"article-number"});
+                $article_number = (string) $crossRefNewAPI->{"article-number"};
+                // AIP can deposit internal CMS identifiers instead of published article numbers.
+                if (!str_starts_with($doi, '10.1063/') ||
+                    !preg_match('~\A(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\z~i', mb_trim($article_number))) {
+                    $template->add_if_new("article-number", $article_number);
+                }
             }
         } elseif ($expand) {
             report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
