@@ -82,7 +82,7 @@ final class MetadataConflictTest extends testBaseClass {
         $internal_id = '00000199cf61d656a39ffff966050000';
         return [
             'reported AIP identifier' => [$doi, $internal_id, '', ''],
-            'uppercase identifier' => [$doi, strtoupper($internal_id), '', ''],
+            'uppercase identifier' => [$doi, mb_strtoupper($internal_id), '', ''],
             'surrounding whitespace' => [$doi, ' ' . $internal_id . ' ', '', ''],
             'hyphenated UUID' => [$doi, '00000199-cf61-d656-a39f-fff966050000', '', ''],
             'ordinary article number' => [$doi, '014001', '', '014001'],
