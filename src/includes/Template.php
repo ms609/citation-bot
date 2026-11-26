@@ -5324,7 +5324,7 @@ final class Template
                     return;
 
                 case 'citeseerx':
-                    if ($this->blank($param)) {
+                    if ($this->blank($param) || !$this->blank(['hdl', 'doi', 'bibcode', 'pmid', 'pmc', 'arxiv', 'url'])) {
                         $this->forget($param);
                     }
                     return;
